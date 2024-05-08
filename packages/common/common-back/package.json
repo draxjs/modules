@@ -1,0 +1,31 @@
+{
+  "name": "@drax/common-back",
+  "version": "1.0.0",
+  "description": "Common utils across modules",
+  "main": "dist/index.mjs",
+  "types": "types/index.d.mts",
+  "type": "module",
+  "scripts": {
+    "serve": "nodemon --exec node --loader ts-node/esm src/index.mts",
+    "prepublish": "npm run tsc && npm run copygql",
+    "clean": "rm -rf dist",
+    "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
+    "tsc": "tsc -b tsconfig.json",
+    "test": "test"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-tools/load-files": "^7.0.0",
+    "@graphql-tools/merge": "^9.0.4",
+    "mongoose": "^8.3.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/node": "^20.12.10",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "copyfiles": "^2.4.1"
+  }
+}

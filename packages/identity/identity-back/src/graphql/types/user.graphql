@@ -1,0 +1,30 @@
+type User {
+    _id: ID!
+    username: String!
+
+}
+
+type UserPaginated{
+    totalDocs: Int
+    page: Int
+    limit: Int
+    docs: [User]
+}
+
+type Query{
+    findUserById(id: ID): User
+    paginateUser: UserPaginated
+}
+
+input UserInput{
+    username: String!
+    email: String!
+    password: String!
+    role: ID
+}
+
+type Mutation{
+    createUser(input: UserInput): User
+    updateUser(id: ID!, input: UserInput): User
+    deleteUser(id: ID!): Boolean
+}

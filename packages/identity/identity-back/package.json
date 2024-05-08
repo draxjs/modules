@@ -1,0 +1,49 @@
+{
+  "name": "@drax/identity-back",
+  "version": "1.0.0",
+  "description": "Identity module for user management, authentication and authorization.",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "serve": "nodemon --exec node --loader ts-node/esm src/index.ts",
+    "prepublish": "npm run tsc && npm run copygql",
+    "clean": "rm -rf dist",
+    "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
+    "tsc": "tsc -b tsconfig.json",
+    "test": "node --loader tsx --test test/**/*",
+    "testRepositoryRole": "node --loader tsx --test test/repository/role*",
+    "testServiceRole": "node --loader tsx --test test/service/role*",
+    "testRepositoryUser": "node --loader tsx --test test/repository/user*",
+    "testServiceUser": "node --loader tsx --test test/service/user*",
+    "testcoverage": "node --loader tsx --experimental-test-coverage  test/service/*"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2",
+    "express-jwt": "^8.4.1",
+    "bcryptjs": "^2.4.3"
+  },
+  "peerDependencies": {
+    "mongoose": "^8.3.4",
+    "mongoose-unique-validator": "^5.0.0",
+    "mongoose-paginate-v2": "^1.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/node": "^20.12.10",
+    "@types/bcryptjs": "^2.4.6",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^3.12.7",
+    "glob": "^10.2.6",
+    "copyfiles": "^2.4.1",
+    "mongodb-memory-server": "^9.2.0"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+      "debug": "0"
+    }
+  }
+}

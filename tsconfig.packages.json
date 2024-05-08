@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/common/common-back"
+    },
+    {
+      "path": "./packages/identity/identity-back"
+    },
+    {
+      "path": "./packages/zuite/zuite-back"
+    }
+  ]
+}

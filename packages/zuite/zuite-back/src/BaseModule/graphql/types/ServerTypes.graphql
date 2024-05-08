@@ -1,0 +1,7 @@
+type Server{
+    applicationName: String
+}
+
+type Query{
+    server: Server
+}

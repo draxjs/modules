@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "module": "ESNext",
+    "target": "es2020",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "paths": {
+      "common": ["packages/common/common-back/src"],
+      "identity": ["packages/identity/identity-back/src"],
+      "api": ["packages/zuite/zuite-back/src"]
+    }
+  }
+}

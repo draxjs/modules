@@ -1,0 +1,19 @@
+{
+  "name": "drax",
+  "private": true,
+  "workspaces": [
+    "packages/**/*"
+  ],
+  "devDependencies": {
+    "lerna": "^8.1.2",
+    "tsc-watch": "^6.2.0",
+    "concurrently": "^8.2.2"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap --hoist",
+    "tsc": "tsc -b ./tsconfig.packages.json",
+    "tsc:watch": "tsc-watch -b --watch  ./tsconfig.packages.json --onSuccess 'npm run copygql' ",
+    "copygql": "lerna run copygql --stream",
+    "dev": "lerna run dev --scope @drax/zuite-back"
+  }
+}
