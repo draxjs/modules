@@ -34,9 +34,10 @@ UserGroupSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 UserGroupSchema.plugin(MongooseSoftDelete);
 UserGroupSchema.plugin(mongoosePaginate);
 
-const USERS_COLLECTION_NAME = 'userGroups';
+const USERGROUP_MODEL_NAME = 'UserGroup';
+const USERGROUP_COLLECTION_NAME = 'userGroups';
 
-const UserGroupModel = mongoose.model<IUserGroup,PaginateModel<IUserGroup>>(USERS_COLLECTION_NAME, UserGroupSchema,USERS_COLLECTION_NAME);
+const UserGroupModel = mongoose.model<IUserGroup,PaginateModel<IUserGroup>>(USERGROUP_MODEL_NAME, UserGroupSchema,USERGROUP_COLLECTION_NAME);
 
 export {
     UserGroupSchema,

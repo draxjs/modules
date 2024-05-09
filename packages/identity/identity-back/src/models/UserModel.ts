@@ -80,9 +80,10 @@ UserSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 UserSchema.plugin(MongooseSoftDelete);
 UserSchema.plugin(mongoosePaginate);
 
-const USERS_COLLECTION_NAME = 'users';
+const USER_MODEL_NAME = 'User';
+const USER_COLLECTION_NAME = 'users';
 
-const UserModel = mongoose.model<IUser,PaginateModel<IUser>>(USERS_COLLECTION_NAME, UserSchema,USERS_COLLECTION_NAME);
+const UserModel = mongoose.model<IUser,PaginateModel<IUser>>(USER_MODEL_NAME, UserSchema,USER_COLLECTION_NAME);
 
 export {
     UserSchema,

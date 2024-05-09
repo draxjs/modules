@@ -35,8 +35,9 @@ RoleSchema.plugin(mongoosePaginate);
 
 RoleSchema.set('toJSON', {getters: true});
 
-const ROLES_COLLECTION_NAME = 'roles';
-const RoleModel = mongoose.model<IRole, PaginateModel<IRole>>(ROLES_COLLECTION_NAME, RoleSchema,ROLES_COLLECTION_NAME);
+const ROLE_MODEL_NAME = 'Role';
+const ROLE_COLLECTION_NAME = 'roles';
+const RoleModel = mongoose.model<IRole, PaginateModel<IRole>>(ROLE_MODEL_NAME, RoleSchema,ROLE_COLLECTION_NAME);
 
 export {
     RoleSchema,

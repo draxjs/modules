@@ -27,8 +27,8 @@ class UserService {
         userData.username = userData.username.trim()
         delete userData.password
 
-        const role: IUser = await this._repository.update(_id, userData)
-        return role
+        const user: IUser = await this._repository.update(_id, userData)
+        return user
     }
 
     async delete(_id: any): Promise<boolean> {
@@ -37,8 +37,8 @@ class UserService {
     }
 
     async findById(_id: any): Promise<IUser | null> {
-        const role: IUser = await this._repository.findById(_id);
-        return role
+        const user: IUser = await this._repository.findById(_id);
+        return user
     }
 
     async findByUsername(username: string): Promise<IUser | null> {
