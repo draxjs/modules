@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { VCard, VCardText, VCardTitle } from 'vuetify/components/VCard'
+
 defineProps<{
   msg: string
 }>()
