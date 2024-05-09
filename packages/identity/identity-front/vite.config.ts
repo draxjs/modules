@@ -13,11 +13,10 @@ export default defineConfig({
       fileName: "drax-identity-front",
     },
     rollupOptions: {
-      external: ["vue","vuetify"],
+      external: ["vue"],
       output: {
         globals: {
-          vue: "Vue",
-          Vuetify: "Vuetify"
+          vue: "Vue"
         },
       },
     },

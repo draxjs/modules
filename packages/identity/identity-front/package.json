@@ -8,6 +8,13 @@
   "main": "./dist/drax-identity-front.umd.js",
   "module": "./dist/drax-identity-front.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/drax-identity-front.js",
+      "require": "./dist/drax-identity-front.umd.cjs"
+    },
+    "./style.css": "./dist/style.css"
+  },
   "files": [
     "dist",
     "src"
