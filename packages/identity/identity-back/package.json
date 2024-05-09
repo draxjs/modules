@@ -45,5 +45,6 @@
     "mongodbMemoryServer": {
       "debug": "0"
     }
-  }
+  },
+  "gitHead": "b8aff0f8aa8854ad459b44d7fbe0ab9b88a79f14"
 }
