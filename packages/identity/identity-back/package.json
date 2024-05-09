@@ -1,7 +1,9 @@
 {
   "name": "@drax/identity-back",
-  "publishConfig": {"access": "public"},
-  "version": "0.0.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.3",
   "description": "Identity module for user management, authentication and authorization.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
