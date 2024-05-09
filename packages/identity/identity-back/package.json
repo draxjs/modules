@@ -21,25 +21,25 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
     "express-jwt": "^8.4.1",
-    "bcryptjs": "^2.4.3"
+    "jsonwebtoken": "^9.0.2"
   },
   "peerDependencies": {
     "mongoose": "^8.3.4",
-    "mongoose-unique-validator": "^5.0.0",
-    "mongoose-paginate-v2": "^1.8.0"
+    "mongoose-paginate-v2": "^1.8.0",
+    "mongoose-unique-validator": "^5.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.4.5",
-    "@types/node": "^20.12.10",
     "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.12.10",
+    "copyfiles": "^2.4.1",
+    "glob": "^10.2.6",
+    "mongodb-memory-server": "^9.2.0",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "tsx": "^3.12.7",
-    "glob": "^10.2.6",
-    "copyfiles": "^2.4.1",
-    "mongodb-memory-server": "^9.2.0"
+    "typescript": "^5.4.5"
   },
   "config": {
     "mongodbMemoryServer": {
