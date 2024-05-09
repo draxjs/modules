@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Common utils across modules",
   "main": "dist/index.mjs",
   "types": "types/index.d.mts",
