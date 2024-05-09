@@ -5,16 +5,8 @@
   },
   "version": "0.0.6",
   "type": "module",
-  "main": "./dist/drax-identity-front.umd.js",
-  "module": "./dist/drax-identity-front.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/drax-identity-front.js",
-      "require": "./dist/drax-identity-front.umd.cjs"
-    },
-    "./style.css": "./dist/style.css"
-  },
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "files": [
     "dist",
     "src"
@@ -58,6 +50,7 @@
     "typescript": "~5.4.0",
     "vite": "^5.2.8",
     "vite-plugin-dts": "^3.9.1",
+    "vite-plugin-css-injected-by-js": "^3.5.1",
     "vitest": "^1.4.0",
     "vue": "^3.4.21",
     "vue-tsc": "^2.0.11",
