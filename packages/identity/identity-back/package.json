@@ -1,6 +1,6 @@
 {
   "name": "@drax/identity-back",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Identity module for user management, authentication and authorization.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",

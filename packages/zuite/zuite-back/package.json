@@ -1,9 +1,10 @@
 {
   "name": "@drax/zuite-back",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
+  "private": true,
   "scripts": {
     "serve": "nodemon --exec node --env-file .env --loader ts-node/esm src/index.ts",
     "dev": "nodemon --exec node --env-file .env dist/index.js",

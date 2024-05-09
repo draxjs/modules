@@ -1,17 +1,11 @@
 {
   "name": "@drax/identity-front",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "main": "./dist/drax-identity-front.umd.js",
   "module": "./dist/drax-identity-front.js",
   "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/drax-identity-front.esm.js",
-      "require": "./dist/drax-identity-front.js"
-    }
-  },
   "files": [
     "dist",
     "src"

@@ -1,7 +1,7 @@
 <template>
   <h1>HOME</h1>
   <p>Esta es una descripcion</p>
-  <IdentityLogin></IdentityLogin>
+  <IdentityLogin msg="hola lok"></IdentityLogin>
 </template>
 
 <script lang="ts" setup>
