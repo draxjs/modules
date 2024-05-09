@@ -1,6 +1,6 @@
 {
   "name": "@drax/identity-front",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "main": "./dist/drax-identity-front.umd.js",
   "module": "./dist/drax-identity-front.js",

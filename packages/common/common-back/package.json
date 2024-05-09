@@ -1,6 +1,6 @@
 {
   "name": "@drax/common-back",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Common utils across modules",
   "main": "dist/index.mjs",
   "types": "types/index.d.mts",
