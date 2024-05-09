@@ -1,5 +1,6 @@
 {
   "name": "@drax/identity-front",
+  "publishConfig": {"access": "public"},
   "version": "0.0.2",
   "type": "module",
   "main": "./dist/drax-identity-front.umd.js",
@@ -53,5 +54,5 @@
     "vue-tsc": "^2.0.11",
     "vuetify": "^3.6.4"
   },
-  "gitHead": "b8aff0f8aa8854ad459b44d7fbe0ab9b88a79f14"
+  "gitHead": "0b6b01d1116714843b943a91cdf9d3fbb361623b"
 }

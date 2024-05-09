@@ -1,5 +1,6 @@
 {
   "name": "@drax/identity-back",
+  "publishConfig": {"access": "public"},
   "version": "0.0.2",
   "description": "Identity module for user management, authentication and authorization.",
   "main": "dist/index.js",
@@ -46,5 +47,5 @@
       "debug": "0"
     }
   },
-  "gitHead": "b8aff0f8aa8854ad459b44d7fbe0ab9b88a79f14"
+  "gitHead": "0b6b01d1116714843b943a91cdf9d3fbb361623b"
 }
