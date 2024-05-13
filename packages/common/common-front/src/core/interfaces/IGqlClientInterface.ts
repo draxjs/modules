@@ -8,4 +8,4 @@ interface IGqlClientInterface{
 
 }
 
-export {IGqlClientInterface, IGqlOptionsInterface}
+export type {IGqlClientInterface, IGqlOptionsInterface}

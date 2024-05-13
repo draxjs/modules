@@ -1,14 +1,14 @@
 import type {IGqlClientInterface} from '@drax/common-front'
-import type {IAuthProviderInterface} from "@/core/interfaces/IAuthProviderInterface";
+import type {IAuthProviderInterface} from "../../interfaces/IAuthProviderInterface.ts";
 class AuthGqlProvider implements IAuthProviderInterface{
 
     gqlClient : IGqlClientInterface
     constructor(gqlClient: IGqlClientInterface) {
         this.gqlClient = gqlClient
     }
-    async login(username: string, password: string): Promise<string> {
+    async login(username: string, password: string): Promise<object> {
 
-        const url = null
+        const url : string = ''
         const data = {username, password}
         let r = this.gqlClient.mutation(url, data)
 

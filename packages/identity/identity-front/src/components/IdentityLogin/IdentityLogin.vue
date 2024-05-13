@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineProps } from 'vue'
-import {useAuthStore} from "../../stores/auth/AuthStore";
+import {useAuthStore} from "../../stores/auth/AuthStore.js";
 
 const {getAuthSystem} = useAuthStore()
 
@@ -34,7 +34,7 @@ const isFormValid = computed(() => username.value.trim() !== '' && password.valu
 // Function to handle form submission
 const submitForm = () => {
   console.log('Submitting:', { username: username.value, password: password.value })
-  getAuthSystem.login(username.value, password.value)
+  getAuthSystem?.login(username.value, password.value)
   // Here you would typically send the data to your backend
 }
 </script>

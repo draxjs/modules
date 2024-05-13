@@ -1,5 +1,5 @@
 interface IAuthProviderInterface{
-    login(username: string, password: string): Promise<string>
+    login(username: string, password: string): Promise<object>
 }
 
-export {IAuthProviderInterface}
+export type {IAuthProviderInterface}

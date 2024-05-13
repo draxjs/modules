@@ -1,5 +1,5 @@
 import type {IGqlClientInterface, IHttpClientInterface} from '@drax/common-front'
-import {HttpFetchClientFactory} from '@drax/common-front';
+import {GqlApolloClientFactory, HttpFetchClientFactory} from '@drax/common-front';
 import type {IAuthProviderInterface} from "@/core/interfaces/IAuthProviderInterface";
 import AuthRestProvider from "@/core/providers/gql/AuthGqlProvider";
 import AuthGqlProvider from "@/core/providers/gql/AuthGqlProvider";
@@ -12,7 +12,7 @@ class AuthProviderFactory{
     }
 
     static createGql(): IAuthProviderInterface {
-        const gqlClient: IGqlClientInterface = null
+        const gqlClient: IGqlClientInterface = GqlApolloClientFactory.create()
         return new AuthGqlProvider(gqlClient)
     }
 

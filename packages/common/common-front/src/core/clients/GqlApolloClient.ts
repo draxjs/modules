@@ -1,6 +1,6 @@
-import {IGqlClientInterface, IGqlOptionsInterface} from "../interfaces/IGqlClientInterface";
+import type {IGqlClientInterface, IGqlOptionsInterface} from "../interfaces/IGqlClientInterface";
 
-class GqlClient implements IGqlClientInterface {
+class GqlApolloClient implements IGqlClientInterface {
 
   baseUrl: string;
   baseHeaders: Headers;
@@ -23,4 +23,4 @@ class GqlClient implements IGqlClientInterface {
 
 }
 
-export default GqlClient
+export default GqlApolloClient

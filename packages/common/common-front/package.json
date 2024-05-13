@@ -6,14 +6,16 @@
   "version": "0.0.7",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
-  "types": "./src/index.d.ts",
+  "types": "./types/index.d.ts",
   "files": [
-    "src"
+    "src",
+    "types"
   ],
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
     "@mdi/font": "6.2.95",

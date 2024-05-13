@@ -1,4 +1,4 @@
-import {IHttpClientInterface, IHttpOptionsInterface} from "../interfaces/IHttpClientInterface";
+import type {IHttpClientInterface, IHttpOptionsInterface} from "../interfaces/IHttpClientInterface";
 
 class HttpFetchClient implements IHttpClientInterface {
 

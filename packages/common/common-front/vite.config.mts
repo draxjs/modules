@@ -10,9 +10,14 @@ export default defineConfig({
     Vue({
       template: { transformAssetUrls },
     }),
-    Vuetify(),
+    Vuetify({
+      autoImport: true,
+    }),
     dts()
   ],
+  optimizeDeps: {
+    include: ["vuetify"],
+  },
   define: { 'process.env': {} },
   resolve: {
     alias: {
