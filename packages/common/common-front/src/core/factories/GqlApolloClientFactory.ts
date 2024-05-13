@@ -1,9 +1,9 @@
-import GqlApolloClient from "../clients/HttpFetchClient";
+import GqlApolloClient from "../clients/GqlApolloClient";
 
 class GqlApolloClientFactory{
 
-  static create(baseUrl: string, baseHeaders: Headers) {
-    return new GqlApolloClient(baseUrl, baseHeaders)
+  static create(baseUrl: string, baseHeaders ?: object) : GqlApolloClient {
+    return new GqlApolloClient(baseUrl)
   }
 }
 

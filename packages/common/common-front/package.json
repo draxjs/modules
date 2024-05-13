@@ -6,10 +6,9 @@
   "version": "0.0.8",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
-  "types": "./types/index.d.ts",
+  "types": "./src/index.ts",
   "files": [
-    "src",
-    "types"
+    "src"
   ],
   "scripts": {
     "dev": "vite",

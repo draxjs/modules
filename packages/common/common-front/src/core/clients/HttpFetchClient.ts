@@ -3,8 +3,8 @@ import type {IHttpClientInterface, IHttpOptionsInterface} from "../interfaces/IH
 class HttpFetchClient implements IHttpClientInterface {
 
   baseUrl: string;
-  baseHeaders: object;
-  constructor(baseUrl: string = '', baseHeaders: object) {
+  baseHeaders: object | undefined;
+  constructor(baseUrl: string = '', baseHeaders ?: object) {
     this.baseUrl = baseUrl;
     this.baseHeaders = baseHeaders;
   }

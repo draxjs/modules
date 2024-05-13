@@ -12,12 +12,6 @@
     },
     {
       "path": "./packages/identity/identity-front"
-    },
-    {
-      "path": "./packages/zuite/zuite-back"
-    },
-    {
-      "path": "./packages/zuite/zuite-front"
     }
   ]
 }

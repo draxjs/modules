@@ -3,11 +3,9 @@ import type {IGqlClientInterface, IGqlOptionsInterface} from "../interfaces/IGql
 class GqlApolloClient implements IGqlClientInterface {
 
   baseUrl: string;
-  baseHeaders: Headers;
 
-  constructor(baseUrl: string, baseHeaders: Headers) {
+  constructor(baseUrl: string = '/graphql') {
     this.baseUrl = baseUrl;
-    this.baseHeaders = baseHeaders;
   }
 
   async query(url: string, input: any, options: IGqlOptionsInterface): Promise<object> {
