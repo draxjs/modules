@@ -3,6 +3,10 @@ input AuthInput{
     password: String!
 }
 
+type Auth{
+    accessToken: String
+}
+
 type Mutation{
-    auth(input: AuthInput): String
+    auth(input: AuthInput): Auth
 }

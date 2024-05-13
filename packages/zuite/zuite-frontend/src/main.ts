@@ -10,11 +10,16 @@ import { registerPlugins } from '@/plugins'
 // Components
 import App from './App.vue'
 
+
+
 // Composables
 import { createApp } from 'vue'
 
 const app = createApp(App)
-
 registerPlugins(app)
+
+//Core Systems
+import {authSystemFactory} from "./factories/AuthSystemFactory";
+authSystemFactory()
 
 app.mount('#app')

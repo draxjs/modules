@@ -11,6 +11,7 @@ export default {
                 return await authService.auth(input.username, input.password)
             }catch (e) {
                 console.log(e)
+                throw e
             }
 
         },

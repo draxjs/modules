@@ -3,7 +3,9 @@ declare const _default: {
     Mutation: {
         auth: (_: any, { input }: {
             input: any;
-        }) => Promise<string>;
+        }) => Promise<{
+            accessToken: string;
+        }>;
     };
 };
 export default _default;

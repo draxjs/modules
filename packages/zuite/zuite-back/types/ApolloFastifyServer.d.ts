@@ -5,6 +5,7 @@ declare class ApolloExpressServer {
     typeDefs: any;
     resolvers: any;
     constructor(typeDefs: any, resolvers: any);
+    fastifyRegister(route: any): void;
     fastifyRegisterApollo(): Promise<void>;
     addMonitorEndpoint(): void;
     start(port: number, baseUrl?: string): Promise<void>;

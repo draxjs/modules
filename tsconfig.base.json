@@ -10,9 +10,9 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "paths": {
+      "api": ["packages/zuite/zuite-back/src"],
       "common": ["packages/common/common-back/src"],
-      "identity": ["packages/identity/identity-back/src"],
-      "api": ["packages/zuite/zuite-back/src"]
+      "identity": ["packages/identity/identity-back/src"]
     }
   }
 }

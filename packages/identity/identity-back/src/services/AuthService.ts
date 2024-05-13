@@ -18,8 +18,8 @@ class AuthService {
         if (user && AuthUtils.checkPassword(password, user.password)) {
             //TODO: Generar Sesion
             const session = '123'
-            const token = AuthUtils.generateToken(user._id.toString(), user.username, session)
-            return token
+            const accessToken = AuthUtils.generateToken(user._id.toString(), user.username, session)
+            return {accessToken: accessToken}
         }else{
             throw Error('BadCredentials')
         }

@@ -14,6 +14,9 @@ class ApolloExpressServer {
         });
         this.addMonitorEndpoint();
     }
+    fastifyRegister(route) {
+        this.fastifyServer.register(route);
+    }
     async fastifyRegisterApollo() {
         await this.fastifyServer.register(fastifyApollo(this.apolloServer));
     }

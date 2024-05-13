@@ -13,6 +13,12 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    port: 3000,
+    proxy: {
+      '/api/auth': 'http://localhost:8082'
+    },
+  },
   plugins: [
     VueRouter({
       dts: 'src/typed-router.d.ts',
@@ -68,7 +74,5 @@ export default defineConfig({
       '.vue',
     ],
   },
-  server: {
-    port: 3000,
-  },
+
 })

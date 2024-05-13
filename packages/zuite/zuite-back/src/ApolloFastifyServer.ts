@@ -1,8 +1,9 @@
-import { ApolloServer } from "@apollo/server";
+import {ApolloServer} from "@apollo/server";
 import Fastify, {FastifyInstance} from "fastify";
-import fastifyApollo, { fastifyApolloDrainPlugin } from "@as-integrations/fastify";
+import fastifyApollo, {fastifyApolloDrainPlugin} from "@as-integrations/fastify";
 import ApolloErrorPlugin from "./ApolloPlugins/ApolloErrorPlugin.js";
-interface ApolloContext{
+
+interface ApolloContext {
     request: Request
 }
 
@@ -20,19 +21,22 @@ class ApolloExpressServer {
         this.apolloServer = new ApolloServer<ApolloContext>({
                 typeDefs: this.typeDefs,
                 resolvers: this.resolvers,
-                plugins: [ fastifyApolloDrainPlugin(this.fastifyServer), ApolloErrorPlugin]
+                plugins: [fastifyApolloDrainPlugin(this.fastifyServer), ApolloErrorPlugin]
             },
         )
 
         this.addMonitorEndpoint()
     }
 
+    fastifyRegister(route){
+        this.fastifyServer.register(route)
+    }
 
     async fastifyRegisterApollo(): Promise<void> {
         await this.fastifyServer.register(fastifyApollo(this.apolloServer))
     }
 
-    addMonitorEndpoint() : void {
+    addMonitorEndpoint(): void {
         this.fastifyServer.get('/info', async (request, reply) => {
             return 'Running'
         })
