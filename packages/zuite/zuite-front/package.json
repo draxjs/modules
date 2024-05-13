@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-front",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -9,8 +9,8 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@drax/common-front": "^0.0.8",
-    "@drax/identity-front": "^0.0.8",
+    "@drax/common-front": "^0.0.9",
+    "@drax/identity-front": "^0.0.9",
     "@mdi/font": "6.2.95",
     "core-js": "^3.34.0",
     "roboto-fontface": "*",
