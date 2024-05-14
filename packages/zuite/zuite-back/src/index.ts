@@ -2,7 +2,6 @@ import ModuleMerger from "./ModuleMerger.js";
 import ApolloFastifyServer from "./ApolloFastifyServer.js";
 import MongoDb from './MongoDB.js'
 import {jwtMiddleware, authRoutes} from "@drax/identity-back"
-import type {IJwtUser} from "@drax/identity-back"
 
 MongoDb()
 

@@ -1,4 +1,6 @@
 import IdentityLogin from "./components/IdentityLogin/IdentityLogin.vue";
+import IdentityProfileAvatar from "./components/IdentityProfileAvatar/IdentityProfileAvatar.vue";
+import IdentityProfileDrawer from "./components/IdentityProfileDrawer/IdentityProfileDrawer.vue";
 import AuthSystem from "./core/system/AuthSystem.js"
 import AuthRestProvider from "./core/providers/rest/AuthRestProvider.js";
 import AuthGqlProvider from "./core/providers/gql/AuthGqlProvider.js";
@@ -13,6 +15,8 @@ export type {
 export {
     //Vue Components
     IdentityLogin,
+    IdentityProfileAvatar,
+    IdentityProfileDrawer,
 
     //Providers
     AuthRestProvider,

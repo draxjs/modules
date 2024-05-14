@@ -16,7 +16,7 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api/auth': 'http://localhost:8082'
+      '/api': 'http://localhost:8082'
     },
   },
   plugins: [

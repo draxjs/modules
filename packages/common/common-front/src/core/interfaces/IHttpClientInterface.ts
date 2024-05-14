@@ -1,5 +1,9 @@
+interface IHttpHeader {
+  [headerName: string]: string;
+}
+
 interface IHttpOptionsInterface {
-  headers: Headers;
+  headers: IHttpHeader;
 }
 
 interface IHttpClientInterface {
@@ -18,4 +22,4 @@ interface IHttpClientInterface {
   removeHeader(name: string): void
 }
 
-export type {IHttpClientInterface, IHttpOptionsInterface}
+export type {IHttpClientInterface, IHttpOptionsInterface, IHttpHeader}

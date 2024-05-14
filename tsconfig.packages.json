@@ -4,14 +4,10 @@
     {
       "path": "./packages/common/common-back"
     },
-    {
-      "path": "./packages/common/common-front"
-    },
+
     {
       "path": "./packages/identity/identity-back"
     },
-    {
-      "path": "./packages/identity/identity-front"
-    }
+
   ]
 }

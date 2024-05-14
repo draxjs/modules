@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import vuetify from '../../plugins/vuetify.js'
 
-export const useVuetifyStore = defineStore('useVuetifyStore', {
+export const useVuetifyStore = defineStore('VuetifyStore', {
   state: () => (
     {
       darkMode: true as boolean,

@@ -9,7 +9,7 @@ async function authRoutes(fastify, options) {
         try {
             const username = request.body.username
             const password = request.body.password
-            console.log("authRoutes username",username)
+            console.log("/api/auth username",username)
             return await authService.auth(username, password)
         } catch (e) {
             if (e.message === "BadCredentials") {
