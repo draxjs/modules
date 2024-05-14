@@ -14,6 +14,12 @@ class ApolloExpressServer {
         });
         this.addMonitorEndpoint();
     }
+    fastifyDecorateRequest(prop, defaultValue) {
+        this.fastifyServer.decorateRequest(prop, defaultValue);
+    }
+    fastifyHook(hookName, hookFunction) {
+        this.fastifyServer.addHook(hookName, hookFunction);
+    }
     fastifyRegister(route) {
         this.fastifyServer.register(route);
     }

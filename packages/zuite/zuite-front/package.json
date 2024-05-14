@@ -15,7 +15,9 @@
     "core-js": "^3.34.0",
     "roboto-fontface": "*",
     "vue": "^3.4.21",
-    "vuetify": "^3.5.8"
+    "vuetify": "^3.5.8",
+    "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1"
   },
   "devDependencies": {
     "@babel/types": "^7.24.0",
@@ -29,7 +31,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-vue": "^9.22.0",
-    "pinia": "^2.1.7",
     "sass": "^1.71.1",
     "typescript": "^5.4.2",
     "unplugin-auto-import": "^0.17.5",

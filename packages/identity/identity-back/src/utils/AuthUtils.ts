@@ -1,7 +1,15 @@
 import bcryptjs from "bcryptjs";
-import jsonwebtoken, {SignOptions} from "jsonwebtoken";
+import jsonwebtoken, {SignOptions, VerifyOptions} from "jsonwebtoken";
 
 class AuthUtils{
+
+    static verifyToken(token : string) {
+        const JWT_SECRET = process.env.JWT_SECRET? process.env.JWT_SECRET : 'KRgDV3CeR5lVhsFF'
+        const options : VerifyOptions = {
+            algorithms: ['HS256'],
+        }
+        return jsonwebtoken.verify(token, JWT_SECRET, options)
+    }
 
     static hashPassword(password : string) :string {
         if (!password) {

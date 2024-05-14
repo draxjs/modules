@@ -1,13 +1,13 @@
-import IdentityLogin from "@/components/IdentityLogin/IdentityLogin.vue";
+import IdentityLogin from "./components/IdentityLogin/IdentityLogin.vue";
 import AuthSystem from "./core/system/AuthSystem.js"
 import AuthRestProvider from "./core/providers/rest/AuthRestProvider.js";
 import AuthGqlProvider from "./core/providers/gql/AuthGqlProvider.js";
 import {useAuthStore} from "./stores/auth/AuthStore.js";
 
-import type {IAuthProviderInterface} from "./core/interfaces/IAuthProviderInterface"
+import type {IAuthProvider} from "./core/interfaces/IAuthProvider"
 
 export type {
-    IAuthProviderInterface
+    IAuthProvider
 }
 
 export {

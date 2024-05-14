@@ -1,11 +1,11 @@
 import AuthSystem from "@/core/system/AuthSystem";
-import type {IAuthProviderInterface} from "@/core/interfaces/IAuthProviderInterface";
+import type {IAuthProvider} from "@/core/interfaces/IAuthProvider";
 import AuthRestProviderFactory from "@/core/factories/providers/AuthProviderFactory";
 
 class AuthSystemFactory {
 
     static create(type: string = 'rest'): AuthSystem {
-        const provider: IAuthProviderInterface = AuthRestProviderFactory.create(type)
+        const provider: IAuthProvider = AuthRestProviderFactory.create(type)
 
         return new AuthSystem(provider)
     }

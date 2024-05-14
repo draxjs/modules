@@ -16,6 +16,7 @@ interface IUser {
     role: mongoose.Types.ObjectId | IRole
     groups: mongoose.Types.ObjectId[] | IUserGroup[]
 
+    toObject(): IUser;
 }
 
 export {IUser}

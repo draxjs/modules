@@ -1,4 +1,6 @@
+import jsonwebtoken from "jsonwebtoken";
 declare class AuthUtils {
+    static verifyToken(token: string): string | jsonwebtoken.Jwt | jsonwebtoken.JwtPayload;
     static hashPassword(password: string): string;
     static checkPassword(password: string, hashPassword: string): boolean;
     static tokenSignPayload(userId: string, username: string, session: string): {

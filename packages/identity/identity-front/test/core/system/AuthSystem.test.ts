@@ -1,10 +1,10 @@
 // Import statements for Vitest functions and any necessary types
 import { describe, it, expect, vi } from 'vitest';
 import { AuthSystem } from '../../../src/core/system/AuthSystem';
-import { IAuthProviderInterface } from '../../../src/core/interfaces/IAuthProviderInterface';
+import { IAuthProvider } from '../../../src/core/interfaces/IAuthProvider';
 
 // Enhanced Mock implementation of AuthRestProvider to handle bad credentials
-class MockAuthRestProvider implements IAuthProviderInterface {
+class MockAuthRestProvider implements IAuthProvider {
   async login(username: string, password: string): Promise<string> {
     // Simulate bad credentials by checking for a specific username and password
     if (username === 'baduser' || password === 'badpassword') {

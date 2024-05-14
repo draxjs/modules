@@ -3,24 +3,44 @@ import type {IHttpClientInterface, IHttpOptionsInterface} from "../interfaces/IH
 class HttpFetchClient implements IHttpClientInterface {
 
   baseUrl: string;
-  baseHeaders: object | undefined;
-  constructor(baseUrl: string = '', baseHeaders ?: object) {
+  baseHeaders: Headers;
+  constructor(baseUrl: string = '', baseHeaders : Headers = new Headers()) {
     this.baseUrl = baseUrl;
     this.baseHeaders = baseHeaders;
   }
 
+  addHeader(name: string, value: string): void {
+    this.baseHeaders.set(name,value)
+  }
+
+  removeHeader(name: string): void {
+    this.baseHeaders.delete(name)
+  }
+
+  mergeHeaders(optionHeaders: Headers): Headers {
+    const mergedHeaders = new Headers(this.baseHeaders);
+    optionHeaders.forEach((value, name) => {
+      mergedHeaders.set(name, value)
+    })
+    console.log("mergedHeaders",mergedHeaders)
+    return mergedHeaders;
+  }
+
   async get(url: string, options: IHttpOptionsInterface): Promise<object> {
     url = this.baseUrl + url;
+    const headers =  options?.headers ? this.mergeHeaders(options.headers) : this.baseHeaders
+    console.log("get.headers",headers)
     const response = await fetch(url, {
       method: 'GET',
-      headers: options?.headers,
+      headers: headers,
     });
     return response.json();
   }
 
   async post(url: string, data: any, options: IHttpOptionsInterface): Promise<object> {
     url = this.baseUrl + url;
-    const headers = {...this.baseHeaders, ...options?.headers }
+    const headers =  options?.headers ? this.mergeHeaders(options.headers) : this.baseHeaders
+    console.log("post.headers",headers)
     const response = await fetch(url, {
       method: 'POST',
       headers: headers,
@@ -34,7 +54,7 @@ class HttpFetchClient implements IHttpClientInterface {
 
     const response = await fetch(url, {
       method: 'PUT',
-      headers: options?.headers,
+      headers: this.mergeHeaders(options?.headers),
       body: JSON.stringify(data),
     });
     return response.json();
@@ -42,9 +62,10 @@ class HttpFetchClient implements IHttpClientInterface {
 
   async delete(url: string, data: any, options: IHttpOptionsInterface): Promise<object> {
     url = this.baseUrl + url;
+
     const response = await fetch(url, {
       method: 'DELETE',
-      headers: options?.headers,
+      headers: this.mergeHeaders(options?.headers),
       body: JSON.stringify(data),
     });
     return response.json();
@@ -54,7 +75,7 @@ class HttpFetchClient implements IHttpClientInterface {
     url = this.baseUrl + url;
     const response = await fetch(url, {
       method: 'PATCH',
-      headers: options?.headers,
+      headers: this.mergeHeaders(options?.headers),
       body: JSON.stringify(data),
     });
     return response.json();

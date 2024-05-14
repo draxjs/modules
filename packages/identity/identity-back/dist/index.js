@@ -3,6 +3,7 @@ import UserServiceFactory from "./factory/UserServiceFactory.js";
 import RoleServiceFactory from "./factory/RoleServiceFactory.js";
 import AuthServiceFactory from "./factory/AuthServiceFactory.js";
 import { authRoutes } from "./routes/authRoutes.js";
+import { jwtMiddleware } from "./middleware/jwtMiddleware.js";
 const graphqlMergeResult = await GraphqlMerge();
 const identityTypeDefs = await graphqlMergeResult.typeDefs;
 const identityResolvers = await graphqlMergeResult.resolvers;
@@ -15,5 +16,7 @@ userService, roleService, authService,
 //GQL
 identityTypeDefs, identityResolvers, 
 //API REST
-authRoutes };
+authRoutes, 
+//API MIDDLEWARE
+jwtMiddleware, };
 /// <reference types="index.d.ts" />

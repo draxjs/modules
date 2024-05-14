@@ -1,6 +1,6 @@
 import type {IGqlClientInterface} from '@drax/common-front'
-import type {IAuthProviderInterface} from "../../interfaces/IAuthProviderInterface.ts";
-class AuthGqlProvider implements IAuthProviderInterface{
+import type {IAuthProvider} from "../../interfaces/IAuthProvider.ts";
+class AuthGqlProvider implements IAuthProvider{
 
     gqlClient : IGqlClientInterface
     constructor(gqlClient: IGqlClientInterface) {

@@ -31,7 +31,8 @@
   "peerDependencies": {
     "mongoose": "^8.3.4",
     "mongoose-paginate-v2": "^1.8.0",
-    "mongoose-unique-validator": "^5.0.0"
+    "mongoose-unique-validator": "^5.0.0",
+    "fastify": "^4.27.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

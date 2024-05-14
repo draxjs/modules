@@ -1,6 +1,13 @@
 import bcryptjs from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 class AuthUtils {
+    static verifyToken(token) {
+        const JWT_SECRET = process.env.JWT_SECRET ? process.env.JWT_SECRET : 'KRgDV3CeR5lVhsFF';
+        const options = {
+            algorithms: ['HS256'],
+        };
+        return jsonwebtoken.verify(token, JWT_SECRET, options);
+    }
     static hashPassword(password) {
         if (!password) {
             throw new Error("password must be provided");

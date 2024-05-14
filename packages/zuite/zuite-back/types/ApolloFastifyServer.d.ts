@@ -5,6 +5,8 @@ declare class ApolloExpressServer {
     typeDefs: any;
     resolvers: any;
     constructor(typeDefs: any, resolvers: any);
+    fastifyDecorateRequest(prop: string, defaultValue: any): void;
+    fastifyHook(hookName: any, hookFunction: any): void;
     fastifyRegister(route: any): void;
     fastifyRegisterApollo(): Promise<void>;
     addMonitorEndpoint(): void;

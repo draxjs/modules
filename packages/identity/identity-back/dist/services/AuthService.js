@@ -5,7 +5,10 @@ class AuthService {
     }
     async auth(username, password) {
         let user = null;
+        console.log("username", username);
+        console.log("password", password);
         user = await this._userService.findByUsername(username);
+        console.log("user", user);
         //Si obtuve usuario chequeo la password
         if (user && AuthUtils.checkPassword(password, user.password)) {
             //TODO: Generar Sesion

@@ -35,6 +35,8 @@ const isFormValid = computed(() => username.value.trim() !== '' && password.valu
 const submitForm = () => {
   console.log('Submitting:', { username: username.value, password: password.value })
   getAuthSystem?.login(username.value, password.value)
+  const authUser = getAuthSystem?.me()
+  console.log("Login authUser", authUser)
   // Here you would typically send the data to your backend
 }
 </script>

@@ -1,6 +1,6 @@
 declare const _default: () => Promise<{
-    typeDefs: Promise<import("@graphql-tools/utils").TypeSource>;
-    resolvers: Promise<import("@graphql-tools/utils").IResolvers>;
+    typeDefs: any;
+    resolvers: any;
 }>;
 export default _default;
 //# sourceMappingURL=index.d.mts.map

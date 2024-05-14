@@ -6,6 +6,13 @@ import GqlApolloClientFactory from './core/factories/GqlApolloClientFactory';
 import type {IHttpClientInterface, IHttpOptionsInterface} from './core/interfaces/IHttpClientInterface';
 import type {IGqlClientInterface, IGqlOptionsInterface} from './core/interfaces/IGqlClientInterface';
 
+export {
+  HttpFetchClient,
+  HttpFetchClientFactory,
+  GqlApolloClient,
+  GqlApolloClientFactory
+}
+
 export type {
   IHttpClientInterface,
   IHttpOptionsInterface,
@@ -13,12 +20,7 @@ export type {
   IGqlOptionsInterface
 }
 
-export {
-  HttpFetchClient,
-  HttpFetchClientFactory,
-  GqlApolloClient,
-  GqlApolloClientFactory
-}
+
 
 
 
