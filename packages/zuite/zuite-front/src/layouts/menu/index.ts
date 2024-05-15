@@ -10,7 +10,7 @@ const menu: MenuItem[] = [
   {
     icon: 'mdi-login',
     text:'LOGIN',
-    link: { name: "/login/" },
+    link: { name: "/user/login/" },
     gallery: true
   },
   {

@@ -12,15 +12,13 @@
       <slot name="toolbar-right"></slot>
       <dark-mode></dark-mode>
 
-      <identity-profile-avatar @click="toggleProfileDrawer"></identity-profile-avatar>
+      <identity-profile-avatar @click="profileDrawer = !profileDrawer"></identity-profile-avatar>
     </v-app-bar>
 
     <identity-profile-drawer v-model="profileDrawer" ></identity-profile-drawer>
 
 
     <v-main>
-      drawer: {{drawer}}
-      profileDrawer: {{profileDrawer}}
       <router-view/>
     </v-main>
 
@@ -33,9 +31,4 @@ import menu from './menu'
 import {IdentityProfileAvatar, IdentityProfileDrawer} from "@drax/identity-front";
 let profileDrawer = ref(false)
 let drawer = ref(false)
-
-const toggleProfileDrawer= () => {
-  console.log("ProfileDrawer",profileDrawer.value,!profileDrawer.value)
-  profileDrawer.value = !profileDrawer.value
-}
 </script>

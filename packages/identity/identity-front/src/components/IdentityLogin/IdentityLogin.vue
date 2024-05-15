@@ -2,7 +2,7 @@
 import { ref, computed, defineProps } from 'vue'
 import {useAuthStore} from "../../stores/auth/AuthStore.js";
 
-const {getAuthSystem, setAccessToken, setAuthUser} = useAuthStore()
+const authStore = useAuthStore()
 
 // Define props for customizing labels, title, and button text
 const props = defineProps({
@@ -34,13 +34,13 @@ const isFormValid = computed(() => username.value.trim() !== '' && password.valu
 // Function to handle form submission
 const submitForm = async () => {
   console.log('Submitting:', { username: username.value, password: password.value })
-  const loginResponse = await getAuthSystem?.login(username.value, password.value)
+  const loginResponse = await authStore.getAuthSystem?.login(username.value, password.value)
   if(loginResponse){
-    setAccessToken(loginResponse.accessToken)
-    const authUser = await getAuthSystem?.me()
+    authStore.setAccessToken(loginResponse.accessToken)
+    const authUser = await authStore.getAuthSystem?.me()
     console.log("Login authUser", authUser)
     if(authUser){
-      setAuthUser(authUser)
+      authStore.setAuthUser(authUser)
     }
   }
 }
