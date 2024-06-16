@@ -10,6 +10,8 @@ import UniqueError from "./errors/UniqueError";
 import ValidationError from "./errors/ValidationError";
 import ValidationFieldError from "./errors/ValidationFieldError";
 import TransformMongooseValidationError from "./utils/TransformMongooseValidationError";
+import TransformSqliteValidationError from "./utils/TransformSqliteValidationError";
+
 
 const graphqlMergeResult = await GraphqlMerge()
 const commonTypeDefs : TypeSource = await graphqlMergeResult.typeDefs;
@@ -27,6 +29,7 @@ export {
 
     //Utils
     TransformMongooseValidationError,
+    TransformSqliteValidationError,
 
     //Errors
     UniqueError,

@@ -7,7 +7,8 @@ const UserServiceFactory = () : UserService => {
 
     let userRepository
     if(process.env.SQLITE_DATABASE){
-        userRepository = new UserSqliteRepository(process.env.SQLITE_DATABASE)
+        userRepository = new UserSqliteRepository(process.env.SQLITE_DATABASE,false)
+        userRepository.table()
     }else{
         userRepository = new UserMongoRepository()
     }

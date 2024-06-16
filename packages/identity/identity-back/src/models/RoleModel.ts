@@ -9,15 +9,6 @@ import {PaginateModel} from "mongoose";
 const RoleSchema = new Schema<IRole>({
     name: {
         type: String, unique: true, required: true, index: true,
-        validate: [
-            {
-                validator: function(v) {
-                    return !/(\s){2}/.test(v);
-                },
-                message: props => `Role name cant contain two spaces`
-            },
-
-        ],
     },
     permissions: [{type: String, required: true}],
     childRoles: [{

@@ -1,7 +1,7 @@
 import  {describe,it, before, after} from "node:test"
 import {equal} from "assert";
 import RoleMongoRepository from "../../../src/repository/mongo/RoleMongoRepository";
-import MongoInMemory from "../../initializers/MongoInMemory";
+import MongoInMemory from "../../db/MongoInMemory";
 import {IRole} from "../../../src/interfaces/IRole";
 import {PaginateResult} from "mongoose";
 import {IPaginateResult} from "@drax/common-back";
@@ -61,15 +61,5 @@ describe("RoleRepositoryTest",  function() {
         equal(roleDeleted,true)
     })
 
-    it("Fail create role when name has two spaces",  async function() {
-        let roleData = (await import("../../data-obj/roles/admin-mongo-role")).default
-        roleData.name = "Admin  Role"
-        try{
-            let roleCreated: IRole = await roleReposirory.create(roleData)
-            equal("Not error throw it","Error expected")
-        }catch (e) {
-            equal(e.errors['name'].message,"Role name cant contain two spaces")
-        }
 
-    })
 })

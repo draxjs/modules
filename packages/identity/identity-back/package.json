@@ -18,6 +18,7 @@
     "testMongoRepositoryRole": "node --import tsx --test test/repository/mongo/role*",
     "testMongoRepositoryUser": "node --import tsx --test test/repository/mongo/user*",
     "testSqliteRepositoryUser": "node --import tsx --test test/repository/sqlite/user*",
+    "testSqliteRepositoryRole": "node --import tsx --test test/repository/sqlite/role*",
     "testServiceRole": "node --import tsx --test test/service/role*",
     "testServiceUser": "node --import tsx --test test/service/user*",
     "testcoverage": "node --import tsx --experimental-test-coverage  test/service/*"

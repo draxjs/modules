@@ -2,7 +2,7 @@ import RoleService from "../../src/services/RoleService";
 import {IRole} from "../../src/interfaces/IRole";
 import RoleMongoRepository from "../../src/repository/mongo/RoleMongoRepository";
 
-class RoleInitializer{
+class RoleMongoInitializer {
 
     static async initAdminRole(): Promise<IRole>{
         const roleService = new RoleService(new RoleMongoRepository())
@@ -12,4 +12,4 @@ class RoleInitializer{
     }
 }
 
-export default RoleInitializer
+export default RoleMongoInitializer

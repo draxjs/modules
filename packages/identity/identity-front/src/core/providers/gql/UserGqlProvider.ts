@@ -27,7 +27,7 @@ class UserGqlProvider implements IUserProvider {
     }
 
     async paginateUser(page: number, limit: number): Promise<any> {
-        const query: string = `query paginateUser { paginateUser { total, page, limit, items{id, username, email, active} } }`
+        const query: string = `query paginateUser { paginateUser { total, page, limit, items{id, username, email, active, role{id, name} } } }`
         const variables = {page, limit}
         let data = await this.gqlClient.query(query, variables)
         return data.paginateUser

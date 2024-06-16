@@ -1,7 +1,7 @@
 import  {describe,it, before, after} from "node:test"
 import assert from "assert";
 import RoleService from "../../src/services/RoleService";
-import MongoInMemory from "../initializers/MongoInMemory";
+import MongoInMemory from "../db/MongoInMemory";
 import {IRole} from "../../src/interfaces/IRole";
 import RoleMongoRepository from "../../src/repository/mongo/RoleMongoRepository";
 import {IRoleRepository} from "../../src/interfaces/IRoleRepository";

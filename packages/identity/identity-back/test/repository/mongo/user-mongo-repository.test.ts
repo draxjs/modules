@@ -1,8 +1,8 @@
 import  {before, after, describe, it, test} from "node:test"
 import assert, {equal} from "assert";
 import UserMongoRepository from "../../../src/repository/mongo/UserMongoRepository";
-import MongoInMemory from "../../initializers/MongoInMemory";
-import RoleInitializer from "../../initializers/RoleInitializer";
+import MongoInMemory from "../../db/MongoInMemory";
+import RoleMongoInitializer from "../../initializers/RoleMongoInitializer";
 import {IRole} from "../../../src/interfaces/IRole";
 import {IUser} from "../../../src/interfaces/IUser";
 import type {IPaginateResult} from "@drax/common-back";
@@ -17,7 +17,7 @@ test.describe("UserRepositoryTest", function () {
 
     before(async () => {
         await MongoInMemory.connect()
-        adminRole = await RoleInitializer.initAdminRole()
+        adminRole = await RoleMongoInitializer.initAdminRole()
 
         //console.log("BEFORE USER", MongoInMemory.mongooseStatus, MongoInMemory.serverStatus)
         return

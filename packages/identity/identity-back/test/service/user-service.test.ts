@@ -1,8 +1,8 @@
 import  {before, after, describe, it} from "node:test"
 import assert from "assert";
 import UserService from "../../src/services/UserService";
-import MongoInMemory from "../initializers/MongoInMemory";
-import RoleInitializer from "../initializers/RoleInitializer";
+import MongoInMemory from "../db/MongoInMemory";
+import RoleMongoInitializer from "../initializers/RoleMongoInitializer";
 import {IRole} from "../../src/interfaces/IRole";
 import {IUser} from "../../src/interfaces/IUser";
 import UserMongoRepository from "../../src/repository/mongo/UserMongoRepository";
@@ -16,7 +16,7 @@ describe("UserServiceTest", function () {
 
     before(async () => {
         await MongoInMemory.connect()
-        adminRole = await RoleInitializer.initAdminRole()
+        adminRole = await RoleMongoInitializer.initAdminRole()
         userAdminData = (await import("../data-obj/users/root-mongo-user")).default
         console.log("BEFORE USER", MongoInMemory.mongooseStatus, MongoInMemory.serverStatus)
         return

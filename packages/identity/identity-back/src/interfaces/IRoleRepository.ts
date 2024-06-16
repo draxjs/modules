@@ -5,6 +5,7 @@ interface IRoleRepository{
     update(id: any, updatedRole: IRole): Promise<IRole | null>;
     delete(id: any): Promise<boolean>;
     findById(id: any): Promise<IRole | null>;
+    fetchAll(): Promise<IRole[]>;
     paginate(page?: number, limit?: number, filters?: IPaginateFilter[]): Promise<IPaginateResult>;
 }
 

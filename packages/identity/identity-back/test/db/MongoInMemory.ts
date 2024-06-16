@@ -1,11 +1,12 @@
 import {mongoose} from '@drax/common-back';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-const mongoServer = await MongoMemoryServer.create();
+let mongoServer
 
 class MongoInMemory{
 
     static async connect(){
+        mongoServer = await MongoMemoryServer.create();
         if(mongoServer.state == "new"){
             await mongoServer.start()
         }

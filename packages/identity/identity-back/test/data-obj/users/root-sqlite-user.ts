@@ -1,5 +1,3 @@
-import {IUser} from "../../../src/interfaces/IUser"
-import {randomUUID} from "node:crypto";
 import role from "../roles/admin-sqlite-role";
 
 const user = {

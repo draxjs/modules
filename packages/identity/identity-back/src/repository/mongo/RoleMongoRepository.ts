@@ -28,7 +28,7 @@ class RoleMongoRepository implements IRoleRepository{
         return role
     }
 
-    async fetch(): Promise<IRole[]>{
+    async fetchAll(): Promise<IRole[]>{
         const roles: mongoose.HydratedDocument<IRole>[] = await RoleModel.find().exec()
         return roles
     }
@@ -37,7 +37,6 @@ class RoleMongoRepository implements IRoleRepository{
 
         const query = {} as FilterQuery<IRole>
         const options = {page, limit} as PaginateOptions
-
         const roles: PaginateResult<IRole> = await RoleModel.paginate(query, options)
         return {
             page: page,

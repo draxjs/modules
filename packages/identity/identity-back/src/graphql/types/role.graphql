@@ -7,7 +7,7 @@ type Role {
 }
 
 type RolePaginated{
-    totalDocs: Int
+    total: Int
     page: Int
     limit: Int
     items: [Role]
@@ -15,6 +15,7 @@ type RolePaginated{
 
 type Query{
     paginateRole: RolePaginated
+    fetchRole: [Role]
     findRoleById(id: ID): Role
 }
 

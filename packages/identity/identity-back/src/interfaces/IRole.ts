@@ -4,9 +4,9 @@ import {IID} from "./IID";
 interface IRole{
     id?: IID
     name: string
-    permissions: string[]
-    childRoles?: mongoose.Types.ObjectId[]
-    readonly: boolean
+    permissions: string[] | string
+    childRoles?: mongoose.Types.ObjectId[] | string
+    readonly: boolean | number
 }
 
 export {IRole}

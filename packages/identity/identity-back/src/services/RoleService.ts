@@ -30,6 +30,11 @@ class RoleService {
         return role
     }
 
+    async fetchAll(): Promise<IRole[]> {
+        const roles : IRole[] =  await this._repository.fetchAll();
+        return roles
+    }
+
     async paginate( page: number = 1, limit: number = 1, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
         const pagination = await this._repository.paginate(page, limit, filters);
         return pagination;

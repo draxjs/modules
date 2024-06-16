@@ -6,6 +6,9 @@ export default {
         findRoleById:  async (_,{id}) => {
             return await roleService.findById(id)
         },
+        fetchRole: async () => {
+            return await roleService.fetchAll()
+        },
         paginateRole: async () => {
             return await roleService.paginate()
         }

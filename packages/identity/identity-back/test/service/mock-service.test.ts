@@ -1,5 +1,5 @@
 import {describe, it, before, after} from "node:test"
-import MongoInMemory from "../initializers/MongoInMemory";
+import MongoInMemory from "../db/MongoInMemory";
 
 
 

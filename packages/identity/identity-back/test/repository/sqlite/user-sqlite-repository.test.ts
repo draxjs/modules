@@ -1,22 +1,23 @@
 import  {before, after, describe, it, test} from "node:test"
 import assert, {equal} from "assert";
 import UserSqliteRepository from "../../../src/repository/sqlite/UserSqliteRepository";
-import RoleInitializer from "../../initializers/RoleInitializer";
-import {IRole} from "../../../src/interfaces/IRole";
 import {IUser} from "../../../src/interfaces/IUser";
+import {IRole} from "../../../src/interfaces/IRole";
+
 import {ValidationError} from "@drax/common-back";
 import {UUID} from "crypto";
-
+import RoleSqliteInitializer from "../../initializers/RoleSqliteInitializer";
 
 test.describe("UserRepositoryTest", function () {
 
-    const verbose = console.log
-    let userRepository = new UserSqliteRepository("test.db", verbose)
+    let userRepository = new UserSqliteRepository("test.db", false)
+    let userAdminData: any
     let adminRole: IRole
-    let userAdminData: IUser
 
     before(async () => {
-        //adminRole = await RoleInitializer.initAdminRole()
+        userRepository.table()
+        adminRole = (await import("../../data-obj/roles/admin-sqlite-role")).default
+        adminRole = await RoleSqliteInitializer()
         return
     })
 
@@ -29,6 +30,15 @@ test.describe("UserRepositoryTest", function () {
         userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
         let userCreated = await userRepository.create(userAdminData)
        equal(userCreated.username, userAdminData.username)
+    })
+
+    test("Find user by ID successfully", async function () {
+        userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
+        let userFound = await userRepository.findById(userAdminData.id as UUID)
+        equal(userFound.username, userAdminData.username)
+        //ROLE POPULATED
+        let rolefound = userFound.role as IRole
+        equal(rolefound.name, adminRole.name)
     })
 
     test("Create sqlite user fail same id", async function () {
@@ -74,11 +84,7 @@ test.describe("UserRepositoryTest", function () {
         equal(userUpdated.phone,userUpdated.phone)
     })
 
-    test("Find user by ID successfully", async function () {
-        userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
-        let userFound = await userRepository.findById(userAdminData.id as UUID)
-        equal(userFound.username, userAdminData.username)
-    })
+
 
     test("Find user by username successfully", async function () {
         userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
@@ -89,9 +95,12 @@ test.describe("UserRepositoryTest", function () {
 
     test("Paginate users successfully.",  async function() {
         let paginateUsers = await userRepository.paginate()
-        equal(paginateUsers.items.length,1)
+
         equal(paginateUsers.total,1)
         equal(paginateUsers.page,1)
+        equal(paginateUsers.limit,5)
+        equal(paginateUsers.items.length,1)
+        equal(paginateUsers.items[0].role.name,adminRole.name)
     })
 
 })

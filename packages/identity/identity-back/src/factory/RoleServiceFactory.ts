@@ -6,7 +6,8 @@ const RoleServiceFactory = () : RoleService => {
 
     let roleRepository
     if(process.env.SQLITE_DATABASE){
-        roleRepository = new RoleSqliteRepository()
+        roleRepository = new RoleSqliteRepository(process.env.SQLITE_DATABASE, false)
+        roleRepository.table()
     }else{
         roleRepository = new RoleMongoRepository()
     }
