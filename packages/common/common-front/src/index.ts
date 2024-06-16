@@ -1,23 +1,39 @@
-import GqlApolloClient from './core/clients/GqlApolloClient';
-import HttpFetchClient from './core/clients/HttpFetchClient';
+import HttpGqlClient from './core/clients/HttpGqlClient';
+import HttpRestClient from './core/clients/HttpRestClient';
+import HttpError from './core/errors/http/HttpError';
+import HttpStatusError from './core/errors/http/HttpStatusError';
+import HttpTimeoutError from './core/errors/http/HttpTimeoutError';
+import HttpNetworkError from './core/errors/http/HttpNetworkError';
+import UnknownError from './core/errors/UnknownError';
+import ServerError from './core/errors/ServerError';
+import ClientError from './core/errors/ClientError';
 import HttpFetchClientFactory from './core/factories/HttpFetchClientFactory';
 import GqlApolloClientFactory from './core/factories/GqlApolloClientFactory';
 
-import type {IHttpClientInterface, IHttpOptionsInterface} from './core/interfaces/IHttpClientInterface';
-import type {IGqlClientInterface, IGqlOptionsInterface} from './core/interfaces/IGqlClientInterface';
+import type {IHttpClient, IHttpOptions} from './core/interfaces/IHttpClient';
+import type {IGqlClient, IGqlOptions} from './core/interfaces/IGqlClient';
+import type {IHttpError} from './core/interfaces/IHttpError';
 
 export {
-  HttpFetchClient,
+  HttpRestClient,
   HttpFetchClientFactory,
-  GqlApolloClient,
-  GqlApolloClientFactory
+  HttpGqlClient,
+  GqlApolloClientFactory,
+  HttpError,
+  HttpStatusError,
+  HttpTimeoutError,
+  HttpNetworkError,
+  ServerError,
+  ClientError,
+  UnknownError
 }
 
 export type {
-  IHttpClientInterface,
-  IHttpOptionsInterface,
-  IGqlClientInterface,
-  IGqlOptionsInterface
+  IHttpClient,
+  IHttpOptions,
+  IGqlClient,
+  IGqlOptions,
+  IHttpError
 }
 
 

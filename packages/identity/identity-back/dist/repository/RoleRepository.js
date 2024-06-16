@@ -5,16 +5,16 @@ class RoleRepository {
         await role.save();
         return role;
     }
-    async update(_id, roleData) {
-        const role = await RoleModel.findOneAndUpdate(_id, roleData, { new: true }).exec();
+    async update(id, roleData) {
+        const role = await RoleModel.findOneAndUpdate(id, roleData, { new: true }).exec();
         return role;
     }
-    async delete(_id) {
-        const result = await RoleModel.deleteOne(_id).exec();
+    async delete(id) {
+        const result = await RoleModel.deleteOne(id).exec();
         return result.deletedCount == 1;
     }
-    async findById(_id) {
-        const role = await RoleModel.findById(_id).exec();
+    async findById(id) {
+        const role = await RoleModel.findById(id).exec();
         return role;
     }
     async fetch() {

@@ -1,5 +1,5 @@
 import RoleService from "../../src/services/RoleService.mjs";
-import RoleRepository from "../../src/repository/RoleRepository.mjs";
+import RoleRepository from "../../src/repository/mongo/RoleRepository.ts";
 class RoleInitializer {
     static async initAdminRole() {
         const roleService = new RoleService(new RoleRepository());

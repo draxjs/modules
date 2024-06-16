@@ -4,30 +4,44 @@ const menu: MenuItem[] = [
   {
     icon: 'mdi-home',
     text:'HOME',
-    link: { name: "/home/" },
+    link: { name: "Home" },
     gallery: true
   },
   {
     icon: 'mdi-login',
     text:'LOGIN',
-    link: { name: "/user/login/" },
+    link: { name: "Login" },
     gallery: true
   },
   {
     icon: 'mdi-account-circle',
+    text:'Admin',
+    gallery: true,
+    children: [
+      {
+        icon: 'mdi-table-account',
+        text:'Users',
+        link: { name: "CrudUser" },
+        gallery: true
+      },
+
+    ]
+  },
+  {
+    icon: 'mdi-information-box',
     text:'INFO',
     gallery: true,
     children: [
       {
         icon: 'mdi-information-outline',
         text:'ABOUT',
-        link: { name: "/info/about/" },
+        link: { name: "InfoAbout" },
         gallery: true
       },
       {
         icon: 'mdi-frequently-asked-questions',
         text:'FAQ',
-        link: { name: "/info/faq/" },
+        link: { name: "InfoFaq" },
         gallery: true
       },
     ]

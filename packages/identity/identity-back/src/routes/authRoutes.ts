@@ -16,7 +16,7 @@ async function authRoutes(fastify, options) {
                 reply.code(401)
                 reply.send({error: e.message})
             }
-            console.log(e)
+            console.error(e)
             throw e
         }
     })

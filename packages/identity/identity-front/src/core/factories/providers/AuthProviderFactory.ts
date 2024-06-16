@@ -1,4 +1,4 @@
-import type {IGqlClientInterface, IHttpClientInterface} from '@drax/common-front'
+import type {IGqlClient, IHttpClient} from '@drax/common-front'
 import {GqlApolloClientFactory, HttpFetchClientFactory} from '@drax/common-front';
 import type {IAuthProvider} from "@/core/interfaces/IAuthProvider";
 import AuthRestProvider from "@/core/providers/rest/AuthRestProvider";
@@ -12,7 +12,7 @@ class AuthProviderFactory{
     }
 
     static createGql(): IAuthProvider {
-        const gqlClient: IGqlClientInterface = GqlApolloClientFactory.create('/graphql')
+        const gqlClient: IGqlClient = GqlApolloClientFactory.create('/graphql')
         return new AuthGqlProvider(gqlClient)
     }
 
@@ -20,7 +20,7 @@ class AuthProviderFactory{
         const baseUrl = import.meta.env.API_URL ? import.meta.env.API_URL : ''
         console.log("baseUrl",baseUrl)
         const baseHeaders = new Headers()
-        const httpClient: IHttpClientInterface = HttpFetchClientFactory.create(baseUrl,baseHeaders)
+        const httpClient: IHttpClient = HttpFetchClientFactory.create(baseUrl,baseHeaders)
         return new AuthRestProvider(httpClient)
     }
 }

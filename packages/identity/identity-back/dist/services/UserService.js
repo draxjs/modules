@@ -10,26 +10,26 @@ class UserService {
         const user = await this._repository.create(userData);
         return user;
     }
-    async update(_id, userData) {
+    async update(id, userData) {
         userData.name = userData.name.trim();
         userData.username = userData.username.trim();
         delete userData.password;
-        const user = await this._repository.update(_id, userData);
+        const user = await this._repository.update(id, userData);
         return user;
     }
-    async delete(_id) {
-        const deletedRole = await this._repository.delete(_id);
+    async delete(id) {
+        const deletedRole = await this._repository.delete(id);
         return deletedRole;
     }
-    async findById(_id) {
-        const user = await this._repository.findById(_id);
+    async findById(id) {
+        const user = await this._repository.findById(id);
         return user;
     }
     async findByUsername(username) {
         const user = await this._repository.findByUsername(username);
         return user;
     }
-    async paginate(filters, page = 1, limit = 10) {
+    async paginate(page = 1, limit = 10, filters) {
         const query = {};
         const options = {
             page: page,

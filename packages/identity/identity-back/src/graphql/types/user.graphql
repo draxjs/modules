@@ -1,14 +1,14 @@
 type User {
-    _id: ID!
+    id: ID!
     username: String!
     email: String
     role: Role
     phone: String
-
+    active: Boolean
 }
 
 type UserPaginated{
-    totalDocs: Int
+    total: Int
     page: Int
     limit: Int
     docs: [User]
@@ -17,7 +17,7 @@ type UserPaginated{
 type Query{
     findUserByUsername(username: String!): User
     findUserById(id: ID!): User
-    paginateUser: UserPaginated
+    paginateUser(page: Int, limit: Int): UserPaginated
 }
 
 input UserInput{
@@ -25,6 +25,7 @@ input UserInput{
     email: String!
     password: String!
     role: ID
+    active: Boolean
 }
 
 type Mutation{

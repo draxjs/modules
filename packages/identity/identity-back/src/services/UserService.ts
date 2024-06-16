@@ -21,23 +21,23 @@ class UserService {
         return user
     }
 
-    async update(_id: any, userData: IUser) {
+    async update(id: any, userData: IUser) {
 
         userData.name = userData.name.trim()
         userData.username = userData.username.trim()
         delete userData.password
 
-        const user: IUser = await this._repository.update(_id, userData)
+        const user: IUser = await this._repository.update(id, userData)
         return user
     }
 
-    async delete(_id: any): Promise<boolean> {
-        const deletedRole: boolean = await this._repository.delete(_id);
+    async delete(id: any): Promise<boolean> {
+        const deletedRole: boolean = await this._repository.delete(id);
         return deletedRole;
     }
 
-    async findById(_id: any): Promise<IUser | null> {
-        const user: IUser = await this._repository.findById(_id);
+    async findById(id: any): Promise<IUser | null> {
+        const user: IUser = await this._repository.findById(id);
         return user
     }
 
@@ -46,7 +46,7 @@ class UserService {
         return user
     }
 
-    async paginate(filters ?: IPaginateFilter, page : number = 1, limit : number = 10): Promise<{
+    async paginate( page : number = 1, limit : number = 10, filters ?: IPaginateFilter): Promise<{
         roles: IUser[],
         totalCount: number
     }> {

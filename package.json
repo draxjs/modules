@@ -12,7 +12,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap --hoist",
     "vuetsc": "vue-tsc -b ./tsconfig.packages.json",
-    "vuetsc:wartch": "vue-tsc -b --watch  ./tsconfig.packages.json",
+    "vuetsc:watch": "vue-tsc -b --watch  ./tsconfig.packages.json",
     "tsc": "tsc -b ./tsconfig.packages.json",
     "tsc:watch": "tsc-watch -b --watch  ./tsconfig.packages.json --onSuccess 'npm run copygql' ",
     "copygql": "lerna run copygql --stream",

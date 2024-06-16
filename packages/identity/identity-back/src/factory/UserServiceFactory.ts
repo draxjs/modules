@@ -1,4 +1,4 @@
-import UserRepository from "../repository/UserRepository.js";
+import UserRepository from "../repository/mongo/UserRepository.js";
 import UserService from "../services/UserService.js";
 
 const UserServiceFactory = () : UserService => {

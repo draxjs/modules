@@ -3,7 +3,7 @@ import assert from "assert";
 import RoleService from "../../src/services/RoleService";
 import MongoInMemory from "../initializers/MongoInMemory";
 import {IRole} from "../../src/interfaces/IRole";
-import RoleRepository from "../../src/repository/RoleRepository";
+import RoleRepository from "../../src/repository/mongo/RoleRepository";
 import {IRoleRepository} from "../../src/interfaces/IRoleRepository";
 
 describe("RoleServiceTest",  function() {

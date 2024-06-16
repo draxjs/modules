@@ -1,5 +1,5 @@
 type Role {
-    _id: ID!
+    id: ID!
     name: String
     readonly: Boolean
     childRoles: [Role]

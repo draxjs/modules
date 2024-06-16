@@ -5,9 +5,9 @@ export default {
         findUserById: async (_, { id }) => {
             return await userService.findById(id);
         },
-        paginateUser: async () => {
+        paginateUser: async (_, { page, limit }) => {
             console.log("paginateUser");
-            return await userService.paginate();
+            return await userService.paginate(page, limit);
         }
     },
     Mutation: {

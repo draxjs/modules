@@ -1,7 +1,7 @@
 import type {IAuthRole} from "@/core/interfaces/IAuthRole";
 
 interface IAuthUser {
-    _id: string
+    id: string
     username: string
     email: string
     active: boolean

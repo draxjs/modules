@@ -3,7 +3,6 @@
   <v-app>
     <v-navigation-drawer v-model="drawer" temporary>
       <sidebar-menu :menu="menu"></sidebar-menu>
-
     </v-navigation-drawer>
     <v-app-bar  >
       <v-app-bar-nav-icon v-model="menu" @click="drawer=!drawer"/>

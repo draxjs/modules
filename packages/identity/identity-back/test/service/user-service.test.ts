@@ -5,7 +5,7 @@ import MongoInMemory from "../initializers/MongoInMemory";
 import RoleInitializer from "../initializers/RoleInitializer";
 import {IRole} from "../../src/interfaces/IRole";
 import {IUser} from "../../src/interfaces/IUser";
-import UserRepository from "../../src/repository/UserRepository";
+import UserRepository from "../../src/repository/mongo/UserRepository";
 import {IUserRepository} from "../../src/interfaces/IUserRepository";
 
 describe("UserServiceTest", function () {
@@ -36,7 +36,7 @@ describe("UserServiceTest", function () {
     })
 
     it("should find one user", async function () {
-        let userCreated = await userService.findById(userAdminData._id)
+        let userCreated = await userService.findById(userAdminData.id)
 
 
         assert.equal(userCreated.username, userAdminData.username)

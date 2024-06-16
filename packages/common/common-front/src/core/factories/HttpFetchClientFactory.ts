@@ -1,9 +1,9 @@
-import HttpFetchClient from "../clients/HttpFetchClient";
+import HttpRestClient from "../clients/HttpRestClient";
 
 class HttpFetchClientFactory{
 
   static create(baseUrl: string, baseHeaders: Headers) {
-    return new HttpFetchClient(baseUrl, baseHeaders)
+    return new HttpRestClient(baseUrl, baseHeaders)
   }
 }
 

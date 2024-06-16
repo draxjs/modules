@@ -1,5 +1,5 @@
 import RoleService from "../services/RoleService.js";
-import RoleRepository from "../repository/RoleRepository.js";
+import RoleRepository from "../repository/mongo/RoleRepository.js";
 
 const RoleServiceFactory = () : RoleService => {
     const roleRepository = new RoleRepository

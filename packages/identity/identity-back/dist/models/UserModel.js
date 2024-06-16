@@ -65,7 +65,7 @@ const UserSchema = new mongoose.Schema({
               }
           ],
           default: [],
-          _id: false
+          id: false
       }*/
 }, { timestamps: true });
 UserSchema.set('toJSON', { getters: true });

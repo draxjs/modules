@@ -6,17 +6,17 @@ class UserRepository {
         await user.populate('role');
         return user;
     }
-    async update(_id, userData) {
-        const user = await UserModel.findOneAndUpdate(_id, userData).populate('role').exec();
+    async update(id, userData) {
+        const user = await UserModel.findOneAndUpdate(id, userData).populate('role').exec();
         return user;
     }
-    async delete(_id) {
-        const result = await UserModel.deleteOne(_id).exec();
+    async delete(id) {
+        const result = await UserModel.deleteOne(id).exec();
         return result.deletedCount == 1;
     }
-    async findById(_id) {
-        console.log("_id", _id);
-        const user = await UserModel.findById(_id).populate('role').exec();
+    async findById(id) {
+        console.log("id", id);
+        const user = await UserModel.findById(id).populate('role').exec();
         console.log("user", user);
         return user;
     }

@@ -1,6 +1,6 @@
 
 interface IAuthRole{
-    _id ?: string
+    id ?: string
     name: string
     permissions: string[]
     childRoles?: IAuthRole[]

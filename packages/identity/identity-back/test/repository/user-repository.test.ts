@@ -1,6 +1,6 @@
 import  {before, after, describe, it} from "node:test"
 import {equal} from "assert";
-import UserRepository from "../../src/repository/UserRepository";
+import UserRepository from "../../src/repository/mongo/UserRepository";
 import MongoInMemory from "../initializers/MongoInMemory";
 import RoleInitializer from "../initializers/RoleInitializer";
 import {IRole} from "../../src/interfaces/IRole";
@@ -35,12 +35,12 @@ describe("UserRepositoryTest", function () {
     it("Update a user successfully.",  async function() {
         let adminData = (await import("../data-obj/users/root-user")).default
         adminData.name = "AdminUpdated"
-        let userUpdated: IUser = await userRepository.update(adminData._id, adminData)
+        let userUpdated: IUser = await userRepository.update(adminData.id, adminData)
         equal(userUpdated.name,userUpdated.name)
     })
 
     it("Find user by ID successfully", async function () {
-        let userCreated = await userRepository.findById(userAdminData._id)
+        let userCreated = await userRepository.findById(userAdminData.id)
         equal(userCreated.username, userAdminData.username)
     })
 

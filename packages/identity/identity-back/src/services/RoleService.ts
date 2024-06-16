@@ -15,18 +15,18 @@ class RoleService {
         return role
     }
 
-    async update(_id: any, roleData: IRole) {
-        const role = await this._repository.update(_id, roleData)
+    async update(id: any, roleData: IRole) {
+        const role = await this._repository.update(id, roleData)
         return role
     }
 
-    async delete(_id: any): Promise<boolean> {
-        const deletedRole = await this._repository.delete(_id);
+    async delete(id: any): Promise<boolean> {
+        const deletedRole = await this._repository.delete(id);
         return deletedRole;
     }
 
-    async findById(_id: any): Promise<IRole | null> {
-        const role : IRole =  await this._repository.findById(_id);
+    async findById(id: any): Promise<IRole | null> {
+        const role : IRole =  await this._repository.findById(id);
         return role
     }
 

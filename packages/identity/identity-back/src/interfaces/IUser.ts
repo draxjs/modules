@@ -3,7 +3,7 @@ import {IRole} from "./IRole";
 import {IUserGroup} from "./IUserGroup";
 
 interface IUser {
-    _id?: mongoose.Types.ObjectId
+    id?: mongoose.Types.ObjectId
     username: string
     email: string
     password: string

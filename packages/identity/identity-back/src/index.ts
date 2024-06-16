@@ -3,6 +3,7 @@ import UserServiceFactory from "./factory/UserServiceFactory.js";
 import RoleServiceFactory from "./factory/RoleServiceFactory.js";
 import AuthServiceFactory from "./factory/AuthServiceFactory.js";
 import {authRoutes} from "./routes/authRoutes.js";
+import AuthUtils from "./utils/AuthUtils.js";
 import {jwtMiddleware} from "./middleware/jwtMiddleware.js";
 
 import type {IJwtUser} from "./interfaces/IJwtUser.js";
@@ -30,6 +31,8 @@ export {
 
     //API REST
     authRoutes,
+
+    AuthUtils,
 
     //API MIDDLEWARE
     jwtMiddleware,

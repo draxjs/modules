@@ -1,6 +1,6 @@
 import  {describe,it, before, after} from "node:test"
 import {equal} from "assert";
-import RoleRepository from "../../src/repository/RoleRepository";
+import RoleRepository from "../../src/repository/mongo/RoleRepository";
 import MongoInMemory from "../initializers/MongoInMemory";
 import {IRole} from "../../src/interfaces/IRole";
 import {PaginateResult} from "mongoose";
@@ -30,7 +30,7 @@ describe("RoleRepositoryTest",  function() {
     it("Update a role successfully.",  async function() {
         let roleData = (await import("../data-obj/roles/admin-role")).default
         roleData.name = "AdminUpdated"
-        let roleUpdated: IRole = await roleReposirory.update(roleData._id, roleData)
+        let roleUpdated: IRole = await roleReposirory.update(roleData.id, roleData)
         equal(roleUpdated.name,roleData.name)
     })
 
@@ -39,7 +39,7 @@ describe("RoleRepositoryTest",  function() {
 
     it("Find role by ID successfully.",  async function() {
         let roleData = (await import("../data-obj/roles/admin-role")).default
-        let role: IRole = await roleReposirory.findById(roleData._id)
+        let role: IRole = await roleReposirory.findById(roleData.id)
         equal(role.name,roleData.name)
     })
 
@@ -57,7 +57,7 @@ describe("RoleRepositoryTest",  function() {
 
     it("Delete a role successfully.",  async function() {
         let roleData = (await import("../data-obj/roles/admin-role")).default
-        let roleDeleted: Boolean = await roleReposirory.delete(roleData._id)
+        let roleDeleted: Boolean = await roleReposirory.delete(roleData.id)
         equal(roleDeleted,true)
     })
 

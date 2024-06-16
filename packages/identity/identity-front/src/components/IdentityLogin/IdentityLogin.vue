@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, defineProps } from 'vue'
+import {defineProps} from 'vue'
+import {useIdentityLogin} from '../../composables/useIdentityLogin.js'
 import {useAuthStore} from "../../stores/auth/AuthStore.js";
+import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 
+const {username, password, isFormValid, submitLogin, authError} = useIdentityLogin()
 const authStore = useAuthStore()
 
 // Define props for customizing labels, title, and button text
@@ -24,63 +27,59 @@ const props = defineProps({
   }
 })
 
-// Define reactive variables for form inputs
-const username = ref('')
-const password = ref('')
 
-// Compute whether the form is valid (both username and password are not empty)
-const isFormValid = computed(() => username.value.trim() !== '' && password.value.trim() !== '')
-
-// Function to handle form submission
-const submitForm = async () => {
-  console.log('Submitting:', { username: username.value, password: password.value })
-  const loginResponse = await authStore.getAuthSystem?.login(username.value, password.value)
-  if(loginResponse){
-    authStore.setAccessToken(loginResponse.accessToken)
-    const authUser = await authStore.getAuthSystem?.me()
-    console.log("Login authUser", authUser)
-    if(authUser){
-      authStore.setAuthUser(authUser)
-    }
-  }
-}
 </script>
 
 <template>
   <v-container>
-    <v-row justify="center">
-      <v-col cols="12" sm="8" md="6" lg="5" xl="4" >
-        <v-form @submit.prevent="submitForm">
-          <v-card variant="tonal">
-            <v-card-title>{{ props.title }}</v-card-title>
-            <v-card-text>
-              <v-text-field
-                id="username-input"
-                v-model="username"
-                :label="props.usernameLabel"
-                required
-              ></v-text-field>
-              <v-text-field
-                id="password-input"
-                v-model="password"
-                :label="props.passwordLabel"
-                type="password"
-                required
-              ></v-text-field>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                id="submit-button"
-                type="submit"
-                color="primary"
-                :disabled="!isFormValid"
-              >{{ props.buttonText }}</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-form>
-      </v-col>
-    </v-row>
+
+    <template v-if="authStore.isAuth">
+      <v-card>
+        <identity-profile-view></identity-profile-view>
+      </v-card>
+    </template>
+
+    <template v-else>
+      <v-row justify="center">
+        <v-col cols="12" sm="8" md="6" lg="5" xl="4">
+          <v-form @submit.prevent="submitLogin">
+            <v-card variant="tonal">
+              <v-card-title>{{ props.title }}</v-card-title>
+              <v-card-text v-if="authError">
+                <v-alert type="error">
+                  {{ authError }}
+                </v-alert>
+              </v-card-text>
+              <v-card-text>
+                <v-text-field
+                    id="username-input"
+                    v-model="username"
+                    :label="props.usernameLabel"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    id="password-input"
+                    v-model="password"
+                    :label="props.passwordLabel"
+                    type="password"
+                    required
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                    id="submit-button"
+                    type="submit"
+                    color="primary"
+                    :disabled="!isFormValid"
+                >{{ props.buttonText }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-col>
+      </v-row>
+    </template>
   </v-container>
 </template>
 

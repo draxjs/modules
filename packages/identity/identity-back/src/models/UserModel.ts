@@ -69,7 +69,7 @@ const UserSchema = new mongoose.Schema<IUser>({
             }
         ],
         default: [],
-        _id: false
+        id: false
     }*/
 }, {timestamps: true});
 

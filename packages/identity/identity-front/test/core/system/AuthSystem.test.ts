@@ -13,6 +13,10 @@ class MockAuthRestProvider implements IAuthProvider {
     // Otherwise, return a mocked token string
     return 'mocked-token';
   }
+
+  async me(){
+    return {id: '1', username: 'testuser', email: 'testemail', role: {id: 1, name: 'testrole' }}
+  }
 }
 
 describe('AuthSystem', () => {

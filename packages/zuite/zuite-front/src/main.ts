@@ -1,16 +1,9 @@
-/**
- * main.ts
- *
- * Bootstraps Vuetify and other plugins then mounts the App`
- */
-
 // Plugins
+// @ts-ignore
 import { registerPlugins } from '@/plugins'
 
 // Components
 import App from './App.vue'
-
-
 
 // Composables
 import { createApp } from 'vue'
@@ -18,8 +11,11 @@ import { createApp } from 'vue'
 const app = createApp(App)
 registerPlugins(app)
 
-//Core Systems
+//Core Systems Factories
 import {authSystemFactory} from "./factories/AuthSystemFactory";
-authSystemFactory()
+import {userSystemFactory} from "./factories/UserSystemFactory";
 
-app.mount('#app')
+app
+  .provide('AuthSystem', authSystemFactory('GRAPHQL'))
+  .provide('UserSystem', userSystemFactory('GRAPHQL'))
+  .mount('#app')

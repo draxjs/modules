@@ -6,16 +6,16 @@ class RoleService {
         const role = await this._repository.create(roleData);
         return role;
     }
-    async update(_id, roleData) {
-        const role = await this._repository.update(_id, roleData);
+    async update(id, roleData) {
+        const role = await this._repository.update(id, roleData);
         return role;
     }
-    async delete(_id) {
-        const deletedRole = await this._repository.delete(_id);
+    async delete(id) {
+        const deletedRole = await this._repository.delete(id);
         return deletedRole;
     }
-    async findById(_id) {
-        const role = await this._repository.findById(_id);
+    async findById(id) {
+        const role = await this._repository.findById(id);
         return role;
     }
     async paginate(filters, page = 1, limit = 10) {
