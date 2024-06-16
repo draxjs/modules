@@ -1,4 +1,5 @@
 import UserServiceFactory from "../factory/UserServiceFactory.js";
+import {IUser} from "../interfaces/IUser";
 
 const userService = UserServiceFactory()
 
@@ -19,7 +20,7 @@ async function authRoutes(fastify, options) {
         }
     })
 
-    fastify.get('/api/me', async (request, reply) => {
+    fastify.get('/api/me', async (request, reply): Promise<IUser | null> => {
         console.log("/api/me request.authUser:", request.authUser)
         let user =  await userService.findById(request.authUser.id)
         user = user.toObject()

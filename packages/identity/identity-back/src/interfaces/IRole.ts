@@ -1,8 +1,8 @@
 import {mongoose} from "@drax/common-back";
-import {UUID} from "crypto";
+import {IID} from "./IID";
 
 interface IRole{
-    id?: mongoose.Types.ObjectId | UUID
+    id?: IID
     name: string
     permissions: string[]
     childRoles?: mongoose.Types.ObjectId[]

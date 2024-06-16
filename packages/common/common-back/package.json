@@ -5,12 +5,13 @@
   },
   "version": "0.0.9",
   "description": "Common utils across modules",
-  "main": "dist/index.mjs",
-  "types": "types/index.d.mts",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
   "type": "module",
   "scripts": {
-    "serve": "nodemon --exec node --loader ts-node/esm src/index.mts",
+    "serve": "nodemon --exec node --loader ts-node/esm src/index.ts",
     "prepublish": "npm run tsc && npm run copygql",
+    "tscrun": "npm run tsc",
     "clean": "rm -rf dist",
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -b tsconfig.json",
@@ -21,7 +22,7 @@
   "dependencies": {
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.4",
-    "mongoose": "^8.3.4"
+    "mongoose": "^8.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.10",

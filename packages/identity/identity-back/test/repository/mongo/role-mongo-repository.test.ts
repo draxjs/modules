@@ -1,13 +1,14 @@
 import  {describe,it, before, after} from "node:test"
 import {equal} from "assert";
-import RoleRepository from "../../src/repository/mongo/RoleRepository";
-import MongoInMemory from "../initializers/MongoInMemory";
-import {IRole} from "../../src/interfaces/IRole";
+import RoleMongoRepository from "../../../src/repository/mongo/RoleMongoRepository";
+import MongoInMemory from "../../initializers/MongoInMemory";
+import {IRole} from "../../../src/interfaces/IRole";
 import {PaginateResult} from "mongoose";
+import {IPaginateResult} from "@drax/common-back";
 
 describe("RoleRepositoryTest",  function() {
 
-    const roleReposirory = new RoleRepository()
+    const roleReposirory = new RoleMongoRepository()
 
     before(async () => {
         await MongoInMemory.connect()
@@ -22,24 +23,22 @@ describe("RoleRepositoryTest",  function() {
     })
 
     it("Create a role successfully.",  async function() {
-        let roleData = (await import("../data-obj/roles/admin-role")).default
+        let roleData = (await import("../../data-obj/roles/admin-mongo-role")).default
         let roleCreated: IRole = await roleReposirory.create(roleData)
         equal(roleCreated.name,roleData.name)
     })
 
     it("Update a role successfully.",  async function() {
-        let roleData = (await import("../data-obj/roles/admin-role")).default
+        let roleData = (await import("../../data-obj/roles/admin-mongo-role")).default
         roleData.name = "AdminUpdated"
-        let roleUpdated: IRole = await roleReposirory.update(roleData.id, roleData)
+        let roleUpdated: IRole = await roleReposirory.update(roleData._id, roleData)
         equal(roleUpdated.name,roleData.name)
     })
 
 
-
-
     it("Find role by ID successfully.",  async function() {
-        let roleData = (await import("../data-obj/roles/admin-role")).default
-        let role: IRole = await roleReposirory.findById(roleData.id)
+        let roleData = (await import("../../data-obj/roles/admin-mongo-role")).default
+        let role: IRole = await roleReposirory.findById(roleData._id)
         equal(role.name,roleData.name)
     })
 
@@ -49,20 +48,21 @@ describe("RoleRepositoryTest",  function() {
     })
 
     it("Paginate roles successfully.",  async function() {
-        let paginateRoles: PaginateResult<IRole> = await roleReposirory.paginate()
-        equal(paginateRoles.docs.length,1)
-        equal(paginateRoles.totalDocs,1)
+        let paginateRoles: IPaginateResult = await roleReposirory.paginate(1,5)
+        equal(paginateRoles.items.length,1)
+        equal(paginateRoles.total,1)
         equal(paginateRoles.page,1)
+        equal(paginateRoles.limit,5)
     })
 
     it("Delete a role successfully.",  async function() {
-        let roleData = (await import("../data-obj/roles/admin-role")).default
-        let roleDeleted: Boolean = await roleReposirory.delete(roleData.id)
+        let roleData = (await import("../../data-obj/roles/admin-mongo-role")).default
+        let roleDeleted: Boolean = await roleReposirory.delete(roleData._id)
         equal(roleDeleted,true)
     })
 
     it("Fail create role when name has two spaces",  async function() {
-        let roleData = (await import("../data-obj/roles/admin-role")).default
+        let roleData = (await import("../../data-obj/roles/admin-mongo-role")).default
         roleData.name = "Admin  Role"
         try{
             let roleCreated: IRole = await roleReposirory.create(roleData)

@@ -5,6 +5,7 @@ import {UUID} from "crypto";
 import process from "node:process";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
+import {IPaginateFilter} from "@drax/common-back";
 
 const DATABASE = process.env.SQLITE_DATABASE ? process.env.SQLITE_DATABASE : 'drax.db'
 
@@ -60,7 +61,7 @@ class RoleSqliteRepository implements IRoleRepository{
         return result
     }
 
-    async paginate(page = 1, limit = 5, filters): Promise<PaginateResult<IRole>>{
+    async paginate(page = 1, limit = 5): Promise<PaginateResult<IRole>>{
         const offset = (page - 1) * limit
         const result = this.db.prepare('SELECT * FROM roles LIMIT ? OFFSET ?').all([limit, offset]);
         return result

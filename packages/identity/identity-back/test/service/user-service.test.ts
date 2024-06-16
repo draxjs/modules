@@ -5,19 +5,19 @@ import MongoInMemory from "../initializers/MongoInMemory";
 import RoleInitializer from "../initializers/RoleInitializer";
 import {IRole} from "../../src/interfaces/IRole";
 import {IUser} from "../../src/interfaces/IUser";
-import UserRepository from "../../src/repository/mongo/UserRepository";
+import UserMongoRepository from "../../src/repository/mongo/UserMongoRepository";
 import {IUserRepository} from "../../src/interfaces/IUserRepository";
 
 describe("UserServiceTest", function () {
-    let userRepository: IUserRepository = new UserRepository()
+    let userRepository: IUserRepository = new UserMongoRepository()
     let userService = new UserService(userRepository)
     let adminRole: IRole
-    let userAdminData: IUser
+    let userAdminData: any
 
     before(async () => {
         await MongoInMemory.connect()
         adminRole = await RoleInitializer.initAdminRole()
-        userAdminData = (await import("../data-obj/users/root-user")).default
+        userAdminData = (await import("../data-obj/users/root-mongo-user")).default
         console.log("BEFORE USER", MongoInMemory.mongooseStatus, MongoInMemory.serverStatus)
         return
     })
@@ -36,9 +36,7 @@ describe("UserServiceTest", function () {
     })
 
     it("should find one user", async function () {
-        let userCreated = await userService.findById(userAdminData.id)
-
-
-        assert.equal(userCreated.username, userAdminData.username)
+        let user = await userService.findById(userAdminData._id)
+        assert.equal(user.username, userAdminData.username)
     })
 })

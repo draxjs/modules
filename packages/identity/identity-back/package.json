@@ -15,11 +15,12 @@
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -b tsconfig.json",
     "test": "node --loader tsx --test test/**/*",
-    "testRepositoryRole": "node --loader tsx --test test/repository/role*",
-    "testServiceRole": "node --loader tsx --test test/service/role*",
-    "testRepositoryUser": "node --loader tsx --test test/repository/user*",
-    "testServiceUser": "node --loader tsx --test test/service/user*",
-    "testcoverage": "node --loader tsx --experimental-test-coverage  test/service/*"
+    "testMongoRepositoryRole": "node --import tsx --test test/repository/mongo/role*",
+    "testMongoRepositoryUser": "node --import tsx --test test/repository/mongo/user*",
+    "testSqliteRepositoryUser": "node --import tsx --test test/repository/sqlite/user*",
+    "testServiceRole": "node --import tsx --test test/service/role*",
+    "testServiceUser": "node --import tsx --test test/service/user*",
+    "testcoverage": "node --import tsx --experimental-test-coverage  test/service/*"
   },
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",

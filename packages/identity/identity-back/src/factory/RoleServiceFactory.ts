@@ -1,5 +1,5 @@
 import RoleService from "../services/RoleService.js";
-import RoleRepository from "../repository/mongo/RoleRepository.js";
+import RoleMongoRepository from "../repository/mongo/RoleMongoRepository";
 import RoleSqliteRepository from "../repository/sqlite/RoleSqliteRepository.js";
 
 const RoleServiceFactory = () : RoleService => {
@@ -8,7 +8,7 @@ const RoleServiceFactory = () : RoleService => {
     if(process.env.SQLITE_DATABASE){
         roleRepository = new RoleSqliteRepository()
     }else{
-        roleRepository = new RoleRepository()
+        roleRepository = new RoleMongoRepository()
     }
 
     const roleService = new RoleService(roleRepository)

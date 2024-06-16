@@ -50,7 +50,7 @@ class UserService {
         return deletedRole;
     }
 
-    async findById(id: any): Promise<IUser | null> {
+    async findById(id: any): Promise<IUser> {
         const user: IUser = await this._repository.findById(id);
         return user
     }
@@ -60,7 +60,7 @@ class UserService {
         return user
     }
 
-    async paginate( page : number = 1, limit : number = 10, filters ?: IPaginateFilter): Promise<{
+    async paginate( page : number = 1, limit : number = 10, filters ?: IPaginateFilter[]): Promise<{
         roles: IUser[],
         totalCount: number
     }> {

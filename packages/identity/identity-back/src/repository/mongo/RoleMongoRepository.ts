@@ -1,11 +1,11 @@
 import {RoleModel} from "../../models/RoleModel.js";
 import {IRole} from '../../interfaces/IRole'
 import {IRoleRepository} from '../../interfaces/IRoleRepository'
-import {mongoose} from "@drax/common-back";
+import {IPaginateFilter, IPaginateResult, mongoose} from "@drax/common-back";
 import {FilterQuery, PaginateOptions, PaginateResult} from "mongoose";
 import {DeleteResult} from "mongodb";
 
-class RoleRepository implements IRoleRepository{
+class RoleMongoRepository implements IRoleRepository{
 
     async create(roleData: IRole): Promise<IRole> {
         const role : mongoose.HydratedDocument<IRole> = new RoleModel(roleData)
@@ -13,8 +13,8 @@ class RoleRepository implements IRoleRepository{
         return role
     }
 
-    async update(id: mongoose.Types.ObjectId, roleData: IRole): Promise<IRole> {
-        const role : mongoose.HydratedDocument<IRole> = await RoleModel.findOneAndUpdate(id, roleData, {new: true}).exec()
+    async update(id: mongoose.Types.ObjectId | string, roleData: IRole): Promise<IRole> {
+        const role : mongoose.HydratedDocument<IRole> = await RoleModel.findOneAndUpdate({_id: id}, roleData, {new: true}).exec()
         return role
     }
 
@@ -33,14 +33,19 @@ class RoleRepository implements IRoleRepository{
         return roles
     }
 
-    async paginate(page = 1, limit = 5, filters): Promise<PaginateResult<IRole>>{
+    async paginate(page:number = 1, limit:number = 5): Promise<IPaginateResult>{
 
         const query = {} as FilterQuery<IRole>
         const options = {page, limit} as PaginateOptions
 
         const roles: PaginateResult<IRole> = await RoleModel.paginate(query, options)
-        return roles
+        return {
+            page: page,
+            limit: limit,
+            total: roles.totalDocs,
+            items: roles.docs
+        }
     }
 }
 
-export default RoleRepository
+export default RoleMongoRepository

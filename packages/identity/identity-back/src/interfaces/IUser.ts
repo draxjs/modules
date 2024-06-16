@@ -1,20 +1,20 @@
 import {mongoose} from "@drax/common-back";
 import {IRole} from "./IRole";
 import {IUserGroup} from "./IUserGroup";
-import {UUID} from "crypto";
+import {IID} from "./IID";
 
 interface IUser {
-    id?: mongoose.Types.ObjectId | UUID
+    id?: IID
     username: string
     email: string
     password: string
-    active: boolean
+    active: boolean | number
     name?: string
     phone?: string
     avatar?: string
     avatarurl?: string
     code?: string
-    role: mongoose.Types.ObjectId | IRole
+    role: IID | IRole
     groups: mongoose.Types.ObjectId[] | IUserGroup[]
 
     toObject(): IUser;

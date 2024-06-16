@@ -3,11 +3,11 @@ import assert from "assert";
 import RoleService from "../../src/services/RoleService";
 import MongoInMemory from "../initializers/MongoInMemory";
 import {IRole} from "../../src/interfaces/IRole";
-import RoleRepository from "../../src/repository/mongo/RoleRepository";
+import RoleMongoRepository from "../../src/repository/mongo/RoleMongoRepository";
 import {IRoleRepository} from "../../src/interfaces/IRoleRepository";
 
 describe("RoleServiceTest",  function() {
-    let roleRepository: IRoleRepository = new RoleRepository()
+    let roleRepository: IRoleRepository = new RoleMongoRepository()
     let roleService = new RoleService(roleRepository)
     before(async () => {
         await MongoInMemory.connect()
@@ -22,7 +22,7 @@ describe("RoleServiceTest",  function() {
     })
 
     it("should create role",  async function() {
-        let roleData = (await import("../data-obj/roles/admin-role")).default
+        let roleData = (await import("../data-obj/roles/admin-mongo-role")).default
         let roleCreated: IRole = await roleService.create(roleData)
 
         assert.equal(roleCreated.name,roleData.name)

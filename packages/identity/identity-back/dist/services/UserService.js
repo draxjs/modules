@@ -35,7 +35,7 @@ class UserService {
         const deletedRole = await this._repository.delete(id);
         return deletedRole;
     }
-    async findById(id) {
+    async findById(id):Promise<IUser | null> {
         const user = await this._repository.findById(id);
         return user;
     }

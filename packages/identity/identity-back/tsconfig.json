@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "declarationDir": "./types"
+    "declarationDir": "./types",
+    "moduleResolution": "node"
   },
   "exclude": ["test", "types","dist"],
   "references": [{ "path": "../../common/common-back" }],

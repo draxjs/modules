@@ -1,7 +1,0 @@
-type CommonModule{
-    name: String
-}
-
-type Query{
-    commonModule: CommonModule
-}

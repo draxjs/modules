@@ -1,8 +1,9 @@
 import {mongoose} from "@drax/common-back";
 import {IUser} from "./IUser";
+import {IID} from "./IID";
 
 interface IUserGroup{
-    id?: mongoose.Types.ObjectId
+    id?: IID
     name: string
     users: mongoose.Types.ObjectId[] | IUser[]
 }
