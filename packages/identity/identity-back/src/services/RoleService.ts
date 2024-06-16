@@ -30,18 +30,8 @@ class RoleService {
         return role
     }
 
-    async paginate(filters ?: IPaginateFilter, page: number = 1, limit: number = 10): Promise<{ roles: IRole[], totalCount: number }> {
-
-        const query = {
-
-        }
-
-        const options = {
-            page: page,
-            limit: limit
-        }
-
-        const pagination = await this._repository.paginate(query, options);
+    async paginate( page: number = 1, limit: number = 1, filters ?: IPaginateFilter): Promise<{ roles: IRole[], totalCount: number }> {
+        const pagination = await this._repository.paginate(page, limit, filters);
         return pagination;
     }
 

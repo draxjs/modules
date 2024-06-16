@@ -15,6 +15,7 @@ type UserPaginated{
 }
 
 type Query{
+    me: User
     findUserByUsername(username: String!): User
     findUserById(id: ID!): User
     paginateUser(page: Int, limit: Int): UserPaginated
@@ -26,9 +27,20 @@ input UserInput{
     password: String!
     role: ID
     active: Boolean
+    phone: String
+}
+
+type Auth{
+    accessToken: String
+}
+
+input AuthInput{
+    username: String!
+    password: String!
 }
 
 type Mutation{
+    auth(input: AuthInput): Auth
     createUser(input: UserInput): User
     updateUser(id: ID!, input: UserInput): User
     deleteUser(id: ID!): Boolean

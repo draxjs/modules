@@ -35,9 +35,10 @@ class UserRepository {
         return user
     }
 
-    async paginate(query ?: FilterQuery<IUser>, options ?: PaginateOptions): Promise<PaginateResult<IUser>> {
+    async paginate(page: number, limit: number, filters): Promise<PaginateResult<IUser>> {
 
-        options.populate = ['role']
+        const query = {}
+        const options = {populate: ['role'], page: page, limit: limit }
 
         const userPaginated: PaginateResult<IUser> = await UserModel.paginate(query, options)
         return userPaginated

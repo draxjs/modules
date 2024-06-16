@@ -11,6 +11,20 @@ class UserService {
         this._repository = userRepository;
     }
 
+    async auth(username : string, password : string){
+        let user = null
+        console.log("auth username",username)
+        user = await this.findByUsername(username)
+        if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
+            //TODO: Generar Sesion
+            const session = '123'
+            const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, session)
+            return {accessToken: accessToken}
+        }else{
+            throw Error('BadCredentials')
+        }
+    }
+
     async create(userData: IUser): Promise<IUser> {
 
         userData.name = userData?.name?.trim()
@@ -51,14 +65,7 @@ class UserService {
         totalCount: number
     }> {
 
-        const query = {}
-
-        const options = {
-            page: page,
-            limit: limit
-        }
-
-        const pagination = await this._repository.paginate(query, options);
+        const pagination = await this._repository.paginate( page, limit, filters);
         console.log("pagination",pagination)
         return pagination;
     }

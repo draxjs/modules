@@ -1,7 +1,5 @@
-import AuthServiceFactory from "../factory/AuthServiceFactory.js";
 import UserServiceFactory from "../factory/UserServiceFactory.js";
 
-const authService = AuthServiceFactory()
 const userService = UserServiceFactory()
 
 async function authRoutes(fastify, options) {
@@ -10,7 +8,7 @@ async function authRoutes(fastify, options) {
             const username = request.body.username
             const password = request.body.password
             console.log("/api/auth username",username)
-            return await authService.auth(username, password)
+            return await userService.auth(username, password)
         } catch (e) {
             if (e.message === "BadCredentials") {
                 reply.code(401)

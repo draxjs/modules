@@ -1,9 +1,10 @@
 import {mongoose} from "@drax/common-back";
 import {IRole} from "./IRole";
 import {IUserGroup} from "./IUserGroup";
+import {UUID} from "crypto";
 
 interface IUser {
-    id?: mongoose.Types.ObjectId
+    id?: mongoose.Types.ObjectId | UUID
     username: string
     email: string
     password: string

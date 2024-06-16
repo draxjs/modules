@@ -33,7 +33,11 @@ class RoleRepository implements IRoleRepository{
         return roles
     }
 
-    async paginate(query ?: FilterQuery<IRole>, options ?: PaginateOptions): Promise<PaginateResult<IRole>>{
+    async paginate(page = 1, limit = 5, filters): Promise<PaginateResult<IRole>>{
+
+        const query = {} as FilterQuery<IRole>
+        const options = {page, limit} as PaginateOptions
+
         const roles: PaginateResult<IRole> = await RoleModel.paginate(query, options)
         return roles
     }

@@ -18,13 +18,8 @@ class RoleService {
         const role = await this._repository.findById(id);
         return role;
     }
-    async paginate(filters, page = 1, limit = 10) {
-        const query = {};
-        const options = {
-            page: page,
-            limit: limit
-        };
-        const pagination = await this._repository.paginate(query, options);
+    async paginate(page = 1, limit = 1, filters) {
+        const pagination = await this._repository.paginate(page, limit, filters);
         return pagination;
     }
 }
