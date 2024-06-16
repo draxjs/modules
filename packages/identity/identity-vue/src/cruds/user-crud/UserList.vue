@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
 import {onMounted, ref} from "vue";
-import {useUserCrud} from "../../composables/useUserCrud";
+import {useUser} from "../../composables/useUser";
 
-const {paginateUser} = useUserCrud()
+const {paginateUser} = useUser()
 
 const itemsPerPage = ref(5)
 const headers = ref([
-  {title: 'ID', align: 'start', sortable: false, key: 'id'},
+  //{title: 'ID', align: 'start', sortable: false, key: 'id'},
   { title: 'Username', key: 'username', align: 'start' },
   { title: 'Role', key: 'role.name', align: 'start' },
   { title: 'Active', key: 'active', align: 'start' },
@@ -46,7 +46,14 @@ async function loadItems(){
       :search="search"
       item-value="name"
       @update:options="loadItems"
-  ></v-data-table-server>
+  >
+    <template v-slot:item.active="{ value }" >
+      <v-chip :color="value ? 'green':'red'" >
+        {{ value ? 'Active' : 'Inactive' }}
+      </v-chip>
+    </template>
+
+  </v-data-table-server>
 </template>
 
 <style scoped>

@@ -20,7 +20,7 @@ export function userSystemFactory(HttpClient: string = REST): UserSystem {
     userProvider = new UserRestProvider(new HttpRestClient(baseUrl))
   }
 
-  const authSystem = new UserSystem(userProvider)
-  return authSystem
+  const userSystem = new UserSystem(userProvider)
+  return userSystem
 
 }

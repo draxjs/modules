@@ -20,8 +20,8 @@ class UserGqlProvider implements IUserProvider {
     async createUser(params: IUserCreate): Promise<any> {
         const {username, email, password, role} = params
         const query: string = `mutation createUser($input: UserInput) { createUser(input: $input) {  
-        id username email role phone } }`
-        const variables = {input: {username, email, password, role}}
+        id username name email role phone } }`
+        const variables = {input: {username, name, email, password, role}}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createUser
     }

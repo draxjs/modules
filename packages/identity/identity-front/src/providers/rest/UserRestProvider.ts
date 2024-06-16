@@ -17,14 +17,17 @@ class UserRestProvider implements IUserProvider {
         this.httpClient.removeHeader('Authorization')
     }
 
-    async createUser(params: IUserCreate): Promise<any> {
-        const {username, email, password, role} = params
-        return null
+    async createUser(data: IUserCreate): Promise<any> {
+        const url = '/api/users'
+        let user = await this.httpClient.post(url, data)
+        return user
     }
 
-    async paginateUser(page: number, limit: number): Promise<any> {
-
-        return null
+    async paginateUser(page: number = 1, limit: number = 5): Promise<any> {
+        const url = '/api/users'
+        const params = {page, limit}
+        let paginatedUsers = await this.httpClient.get(url, {params})
+        return paginatedUsers
     }
 }
 

@@ -1,21 +1,30 @@
-import AuthSystem from "./core/system/AuthSystem.js"
-import UserSystem from "./core/system/UserSystem.js"
-import AuthRestProvider from "./core/providers/rest/AuthRestProvider.js";
-import AuthGqlProvider from "./core/providers/gql/AuthGqlProvider.js";
+import AuthSystem from "./system/AuthSystem.js"
+import UserSystem from "./system/UserSystem.js"
+import RoleSystem from "./system/RoleSystem.js"
 
-import UserRestProvider from "./core/providers/rest/UserRestProvider.js";
-import UserGqlProvider from "./core/providers/gql/UserGqlProvider.js";
+import AuthRestProvider from "./providers/rest/AuthRestProvider.js";
+import AuthGqlProvider from "./providers/gql/AuthGqlProvider.js";
+
+import UserRestProvider from "./providers/rest/UserRestProvider.js";
+import UserGqlProvider from "./providers/gql/UserGqlProvider.js";
+
+import RoleRestProvider from "./providers/rest/RoleRestProvider.js";
+import RoleGqlProvider from "./providers/gql/RoleGqlProvider.js";
 
 
-import type {IAuthProvider} from "./core/interfaces/IAuthProvider"
-import type {IUserProvider} from "./core/interfaces/IUserProvider"
-import type {IAuthUser} from "./core/interfaces/IAuthUser"
-import type {IAuthRole} from "./core/interfaces/IAuthRole"
-import type {ILoginResponse} from "./core/interfaces/ILoginResponse"
+import type {IAuthProvider} from "./interfaces/IAuthProvider"
+import type {IUserProvider} from "./interfaces/IUserProvider"
+import type {IRoleProvider} from "./interfaces/IRoleProvider"
+
+import type {IAuthUser} from "./interfaces/IAuthUser"
+import type {IAuthRole} from "./interfaces/IAuthRole"
+
+import type {ILoginResponse} from "./interfaces/ILoginResponse"
 
 export type {
     IAuthProvider,
     IUserProvider,
+    IRoleProvider,
     IAuthUser,
     IAuthRole,
     ILoginResponse
@@ -29,8 +38,12 @@ export {
     UserGqlProvider,
     UserRestProvider,
 
+    RoleGqlProvider,
+    RoleRestProvider,
+
     //Systems
     AuthSystem,
     UserSystem,
+    RoleSystem
 
 }

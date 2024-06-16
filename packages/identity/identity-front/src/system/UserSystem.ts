@@ -1,4 +1,4 @@
-import type {IUserProvider} from "@/core/interfaces/IUserProvider";
+import type {IUserProvider} from "@/interfaces/IUserProvider";
 
 
 class UserSystem {

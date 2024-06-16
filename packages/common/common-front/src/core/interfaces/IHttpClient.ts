@@ -2,8 +2,13 @@ interface IHttpHeader {
   [headerName: string]: string;
 }
 
+interface IHttpParam {
+  [paramName: string]: string | number;
+}
+
 interface IHttpOptions {
-  headers: IHttpHeader;
+  headers?: IHttpHeader;
+  params?: IHttpParam
 }
 
 interface IHttpClient {

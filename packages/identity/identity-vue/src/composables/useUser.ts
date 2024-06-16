@@ -2,7 +2,7 @@ import {inject} from "vue";
 import type {UserSystem} from "@drax/identity-front";
 
 
-export function useUserCrud() {
+export function useUser() {
 
     const userSystem = inject('UserSystem') as UserSystem
 
