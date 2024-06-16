@@ -10,7 +10,7 @@ type RolePaginated{
     totalDocs: Int
     page: Int
     limit: Int
-    docs: [Role]
+    items: [Role]
 }
 
 type Query{

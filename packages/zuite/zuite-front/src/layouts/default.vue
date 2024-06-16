@@ -27,7 +27,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
 import menu from './menu'
-import {IdentityProfileAvatar, IdentityProfileDrawer} from "@drax/identity-front";
+import {IdentityProfileAvatar, IdentityProfileDrawer} from "@drax/identity-vue";
 let profileDrawer = ref(false)
 let drawer = ref(false)
 </script>

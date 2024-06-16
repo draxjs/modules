@@ -1,4 +1,4 @@
-import {IPaginateFilter} from "@drax/common-back"
+import {IPaginateFilter, IPaginateResult} from "@drax/common-back"
 import {IUser} from "../interfaces/IUser";
 import {IUserRepository} from "../interfaces/IUserRepository";
 import AuthUtils from "../utils/AuthUtils.js";
@@ -60,10 +60,7 @@ class UserService {
         return user
     }
 
-    async paginate( page : number = 1, limit : number = 10, filters ?: IPaginateFilter[]): Promise<{
-        roles: IUser[],
-        totalCount: number
-    }> {
+    async paginate( page : number = 1, limit : number = 10, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
 
         const pagination = await this._repository.paginate( page, limit, filters);
         console.log("pagination",pagination)

@@ -10,7 +10,8 @@ import {UUID} from "crypto";
 
 test.describe("UserRepositoryTest", function () {
 
-    let userRepository = new UserSqliteRepository("test.db",null)
+    const verbose = console.log
+    let userRepository = new UserSqliteRepository("test.db", verbose)
     let adminRole: IRole
     let userAdminData: IUser
 

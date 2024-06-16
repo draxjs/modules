@@ -12,10 +12,7 @@ const user = {
   name: "root",
   phone: "123456789",
   avatar: "asd",
-  role: role.id,
-  toObject(): IUser {
-    return this;
-  }
+  role: role.id
 };
 
 export default user

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {IdentityLogin} from "@drax/identity-front";
+import {IdentityLogin} from "@drax/identity-vue";
 </script>
 
 <template>

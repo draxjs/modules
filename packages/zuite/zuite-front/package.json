@@ -11,6 +11,7 @@
   "dependencies": {
     "@drax/common-front": "^0.0.9",
     "@drax/identity-front": "^0.0.9",
+    "@drax/identity-vue": "^0.0.9",
     "@mdi/font": "7.4.47",
     "core-js": "^3.34.0",
     "roboto-fontface": "*",

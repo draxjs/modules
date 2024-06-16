@@ -18,6 +18,7 @@ const userTableSQL: string = `
         email TEXT UNIQUE,
         phone TEXT,
         role TEXT,
+        groups TEXT,
         avatar TEXT
     );
 `;
@@ -34,13 +35,32 @@ class UserSqliteRepository implements IUserRepository{
         this.db.exec(userTableSQL);
     }
 
+
+
     async create(userData: IUser): Promise<IUser> {
         if(!userData.id){
             userData.id = randomUUID()
         }
+        if(userData.groups && Array.isArray(userData.groups)){
+            userData.groups = userData.groups.join(",")
+        }
         userData.active = !!userData ? 1 : 0
+
         try{
-            const stmt = this.db.prepare('INSERT INTO users (id, name, username, email,password, phone, role, active, avatar ) VALUES (@id, @name, @username, @email, @password, @phone, @role, @active, @avatar)');
+
+            const fields = Object.keys(userData)
+                .map(field => `${field}`)
+                .join(', ');
+
+            const values = Object.keys(userData)
+                .map(field => `@${field}`)
+                .join(', ');
+
+            /*console.log("fields", fields)
+            console.log("values",values)
+            console.log("userData",userData)*/
+
+            const stmt = this.db.prepare(`INSERT INTO users (${fields}) VALUES (${values})`);
             stmt.run(userData)
             return this.findById(userData.id as UUID)
         }catch (e){
@@ -62,7 +82,12 @@ class UserSqliteRepository implements IUserRepository{
     async update(id: UUID, userData: IUser): Promise<IUser> {
         try {
             userData.id = id
-            const stmt = this.db.prepare('UPDATE users SET name= @name, username = @username, email = @email, password = @password, phone = @phone, role = @role, active = @active, avatar = @avatar WHERE id = @id');
+
+            const setClauses = Object.keys(userData)
+                .map(field => `${field} = @${field}`)
+                .join(', ');
+
+            const stmt = this.db.prepare( `UPDATE users SET ${setClauses} WHERE id = @id `);
             stmt.run(userData);
         }catch (e){
             if(e.code === 'SQLITE_CONSTRAINT_UNIQUE'){

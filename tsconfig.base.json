@@ -8,6 +8,7 @@
     "target": "es2020",
     "outDir": "dist",
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "paths": {
       "api": ["packages/zuite/zuite-back/src"],

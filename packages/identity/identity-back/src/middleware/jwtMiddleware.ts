@@ -1,5 +1,5 @@
 import AuthUtils from "../utils/AuthUtils.js";
-import {IJwtUser} from "@drax/identity-back";
+import {IJwtUser} from "../interfaces/IJwtUser";
 
 function jwtMiddleware (request, reply, done) {
         try{

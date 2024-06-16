@@ -10,7 +10,7 @@
   "type": "module",
   "scripts": {
     "serve": "nodemon --exec node --loader ts-node/esm src/index.ts",
-    "prepublish": "npm run tsc && npm run copygql",
+    "prepublish": "tsc && npm run copygql",
     "clean": "rm -rf dist",
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -b tsconfig.json",
@@ -27,7 +27,8 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express-jwt": "^8.4.1",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "graphql": "^16.8.2"
   },
   "peerDependencies": {
     "mongoose": "^8.3.4",
@@ -44,6 +45,7 @@
     "mongodb-memory-server": "^9.2.0",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
     "tsx": "^3.12.7",
     "typescript": "^5.4.5"
   },

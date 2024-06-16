@@ -8,5 +8,9 @@
   "exclude": ["test", "types","dist"],
   "ts-node": {
     "esm": true
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
   }
 }

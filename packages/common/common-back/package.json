@@ -10,8 +10,8 @@
   "type": "module",
   "scripts": {
     "serve": "nodemon --exec node --loader ts-node/esm src/index.ts",
-    "prepublish": "npm run tsc && npm run copygql",
-    "tscrun": "npm run tsc",
+    "prepublish": "tsc &&  tsc-alias && npm run copygql",
+    "tscrun": "tsc",
     "clean": "rm -rf dist",
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -b tsconfig.json",
@@ -30,7 +30,8 @@
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "tsc-alias": "^1.8.10"
   },
   "gitHead": "0b6b01d1116714843b943a91cdf9d3fbb361623b"
 }

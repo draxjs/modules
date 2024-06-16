@@ -1,4 +1,4 @@
-import UserMongoRepository from "../repository/mongo/UserMongoRepository";
+import UserMongoRepository from "../repository/mongo/UserMongoRepository.js";
 import UserService from "../services/UserService.js";
 import UserSqliteRepository from "../repository/sqlite/UserSqliteRepository.js";
 import process from "node:process";

@@ -6,9 +6,21 @@
     "declarationDir": "./types",
     "moduleResolution": "node"
   },
-  "exclude": ["test", "types","dist"],
-  "references": [{ "path": "../../common/common-back" }],
+  "exclude": [
+    "test",
+    "types",
+    "dist"
+  ],
+  "references": [
+    {
+      "path": "../../common/common-back"
+    }
+  ],
   "ts-node": {
     "esm": true
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
   }
 }

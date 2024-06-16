@@ -1,4 +1,4 @@
-import {UserCrudPage} from "@drax/identity-front";
+import {UserCrudPage} from "@drax/identity-vue";
 import HomePage from '../pages/home/index.vue'
 import LoginPage from '../pages/user/login/index.vue'
 

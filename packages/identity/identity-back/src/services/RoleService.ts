@@ -1,6 +1,6 @@
 import {IRole} from "../interfaces/IRole";
 import {IRoleRepository} from "../interfaces/IRoleRepository";
-import { IPaginateFilter} from "@drax/common-back"
+import {IPaginateFilter, IPaginateResult} from "@drax/common-back"
 
 class RoleService {
 
@@ -30,7 +30,7 @@ class RoleService {
         return role
     }
 
-    async paginate( page: number = 1, limit: number = 1, filters ?: IPaginateFilter): Promise<{ roles: IRole[], totalCount: number }> {
+    async paginate( page: number = 1, limit: number = 1, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
         const pagination = await this._repository.paginate(page, limit, filters);
         return pagination;
     }
