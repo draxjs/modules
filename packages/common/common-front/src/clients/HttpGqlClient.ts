@@ -1,12 +1,13 @@
 import type {IGqlClient, IGqlOptions} from "../interfaces/IGqlClient";
-import type {IHttpHeader} from "@/core/interfaces/IHttpClient";
+import type {IHttpHeader} from "../interfaces/IHttpClient";
 import HttpStatusError from "../errors/http/HttpStatusError";
-import HttpTimeoutError from "../errors/http/HttpTimeoutError";
-import HttpNetworkError from "../errors/http/HttpNetworkError";
-import HttpError from "../errors/http/HttpError";
 import GqlError from "../errors/gql/GqlError";
 import GqlMultiError from "../errors/gql/GqlMultiError";
-import type {IGqlError} from "@/core/interfaces/IGqlError";
+import type {IGqlError} from "../interfaces/IGqlError";
+import ClientError from "../errors/ClientError";
+import ServerError from "../errors/ServerError";
+import NetworkError from "../errors/NetworkError";
+import UnknownError from "../errors/UnknownError";
 
 class HttpGqlClient implements IGqlClient {
 
@@ -34,19 +35,21 @@ class HttpGqlClient implements IGqlClient {
 
   errorHandler(error: Error): Error {
 
-    if (error instanceof GqlError || error instanceof GqlMultiError) {
+    if (error instanceof GqlError) {
+      if(error.isBadUserInput){
+        return new ClientError(error.message, error.extensions?.inputErrors)
+      }
+      return new UnknownError(error.message);
+    }else if (error instanceof GqlMultiError) {
       return error
     } else if (error instanceof HttpStatusError) {
-      return error
+      return new ServerError(error.message)
     } else if (error.name === 'AbortError') {
-      return new HttpTimeoutError()
+      return new ServerError(error.message)
     } else if (error.name === 'TypeError') {
-      return new HttpNetworkError()
+      return new NetworkError(error.message)
     } else {
-      const message: string = error.message;
-      const statusCode: number = 0
-      const body: string | undefined = error.stack
-      return new HttpError(message, statusCode, body);
+      return new UnknownError(error.message);
     }
   }
 

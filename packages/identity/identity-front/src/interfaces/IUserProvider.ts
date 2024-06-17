@@ -1,13 +1,10 @@
-interface IUserCreate{
-    username: string
-    email: string
-    password: string
-    role: string
-}
+import type {IUser} from "@/interfaces/IUser";
+
+
 
 interface IUserProvider {
     paginateUser(page: number, limit: number): Promise<any>
-    createUser(input: IUserCreate): Promise<any>
+    createUser(input: IUser): Promise<any>
 }
 
-export type {IUserProvider, IUserCreate}
+export type {IUserProvider}

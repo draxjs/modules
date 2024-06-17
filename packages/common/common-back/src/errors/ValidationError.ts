@@ -1,4 +1,4 @@
-import {IValidationFieldError} from "../interfaces/IValidationFieldError";
+import type {IValidationFieldError} from "../interfaces/IValidationFieldError";
 
 class ValidationError extends Error {
     public errors: IValidationFieldError[];

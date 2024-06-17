@@ -1,17 +1,17 @@
 import type {IRole} from "@/interfaces/IRole";
 
-interface IAuthUser {
-    id: string
+interface IUser {
+    id?: string
+    name?: string
     username: string
+    password: string
     email: string
     active: boolean
-    name?: string
     phone?: string
     avatar?: string
     avatarurl?: string
-    code?: string
     role: IRole
 
 }
 
-export type {IAuthUser}
+export type {IUser}

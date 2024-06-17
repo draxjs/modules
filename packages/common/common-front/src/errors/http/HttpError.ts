@@ -1,4 +1,4 @@
-import type {IHttpError} from "../../interfaces/IHttpError";
+import type {IHttpError} from "@/interfaces/IHttpError";
 
 class HttpError extends Error implements IHttpError{
   public statusCode: number;

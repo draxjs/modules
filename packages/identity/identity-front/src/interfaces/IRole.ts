@@ -1,10 +1,10 @@
 
-interface IAuthRole{
+interface IRole{
     id ?: string
     name: string
     permissions: string[]
-    childRoles?: IAuthRole[]
+    childRoles?: IRole[]
     readonly: boolean
 }
 
-export type {IAuthRole}
+export type {IRole}

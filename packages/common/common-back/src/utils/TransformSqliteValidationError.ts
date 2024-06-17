@@ -1,13 +1,13 @@
-import ValidationError from '../errors/ValidationError';
-import {IValidationFieldError} from "../interfaces/IValidationFieldError";
+import ValidationError from '../errors/ValidationError.js';
+import type {IValidationFieldError} from "../interfaces/IValidationFieldError";
 
 interface SqliteError extends Error{
     code: string
 }
 
-function TransformSqliteValidationError( sqliteError: SqliteError, data: any, entity?: string): ValidationError | SqliteError {
+function TransformSqliteValidationError( sqliteError: SqliteError, data: any): ValidationError | SqliteError {
     if(sqliteError.code === 'SQLITE_CONSTRAINT_PRIMARYKEY'){
-        const error: IValidationFieldError = {entity:entity, field: 'id', value:data.id, reason:'validation.unique'}
+        const error: IValidationFieldError = { field: 'id', value:data.id, reason:'validation.unique'}
         return new ValidationError([error])
     }
 
@@ -19,7 +19,7 @@ function TransformSqliteValidationError( sqliteError: SqliteError, data: any, en
             field = msg[1]
             value = data[field]
         }
-        const error: IValidationFieldError = {entity:entity, field: field, value:value, reason:'validation.unique'}
+        const error: IValidationFieldError = { field: field, value:value, reason:'validation.unique'}
         return new ValidationError([error])
     }
 

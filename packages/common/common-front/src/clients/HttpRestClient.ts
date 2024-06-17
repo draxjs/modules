@@ -1,8 +1,9 @@
 import type {IHttpClient, IHttpHeader, IHttpOptions} from "../interfaces/IHttpClient";
-import HttpError from "../errors/http/HttpError";
 import HttpStatusError from "../errors/http/HttpStatusError";
-import HttpTimeoutError from "../errors/http/HttpTimeoutError";
-import HttpNetworkError from "../errors/http/HttpNetworkError";
+import NetworkError from "../errors/NetworkError";
+import ServerError from "../errors/ServerError";
+import ClientError from "../errors/ClientError";
+import UnknownError from "../errors/UnknownError";
 
 class HttpRestClient implements IHttpClient {
 
@@ -31,17 +32,20 @@ class HttpRestClient implements IHttpClient {
 
 
   errorHandler(error: Error): Error {
-    if (error instanceof HttpStatusError) {
-      return error
+    if (error instanceof HttpStatusError && error.statusCode >= 400 && error.statusCode <= 599) {
+      if(error.statusCode >= 400 && error.statusCode <= 599){
+        return new ClientError(error.message, error.body)
+      }else if(error.statusCode >= 500 && error.statusCode <= 599){
+        return new ServerError(error.message)
+      }else{
+        return new UnknownError(error.message);
+      }
     }else if (error.name === 'AbortError') {
-      return new HttpTimeoutError()
+      return new ServerError(error.message)
     } else if (error.name === 'TypeError') {
-      return new HttpNetworkError()
+      return new NetworkError(error.message);
     }else{
-      const message: string = error.message;
-      const statusCode: number = 0
-      const body: string | undefined = error.stack
-      return new HttpError(message, statusCode, body);
+      return new UnknownError(error.message);
     }
   }
 

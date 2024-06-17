@@ -2,17 +2,26 @@
 import {ref} from 'vue'
 import UserList from "./UserList.vue";
 import UserForm from "../../forms/UserForm.vue";
+import {useUser} from "../../composables/useUser";
+import type {IUser} from "@drax/identity-front";
+
+const {createUser, userError, inputErrors} = useUser()
 
 let dialog = ref(false);
 let dialogTitle = ref('');
+const list = ref(null);
 
 function add(){
   dialog.value = true;
   dialogTitle.value = 'Agregar Usuario';
 }
 
+let form = ref<IUser>({name: "", username: "", password: "", email: "", phone: "", role: "", active: true})
+
 function save(){
-  dialog.value = false;
+  //dialog.value = false;
+  createUser(form.value);
+  list.value.loadItems()
 }
 
 </script>
@@ -26,7 +35,7 @@ function save(){
       <v-btn color="primary" @click="add">Agregar</v-btn>
     </v-toolbar>
     <v-theme-provider with-background class="pa-2 rounded-b" >
-        <UserList />
+        <UserList ref="list" />
     </v-theme-provider>
   </v-sheet>
 
@@ -37,7 +46,7 @@ function save(){
       </v-toolbar>
       <v-card class="pa-10">
         <v-card-text>
-          <UserForm></UserForm>
+          <UserForm v-model="form" :inputErrors="inputErrors"></UserForm>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>

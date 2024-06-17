@@ -23,12 +23,13 @@ type Query{
 }
 
 input UserInput{
+    name: String
     username: String!
-    email: String!
     password: String!
     role: ID
-    active: Boolean
+    email: String!
     phone: String
+    active: Boolean
 }
 
 type Auth{

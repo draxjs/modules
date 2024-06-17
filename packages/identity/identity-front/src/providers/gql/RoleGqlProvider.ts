@@ -1,5 +1,6 @@
 import type {IGqlClient} from '@drax/common-front'
-import type {IRoleProvider, IRoleCreate} from "../../interfaces/IRoleProvider.ts";
+import type {IRoleProvider} from "../../interfaces/IRoleProvider";
+import type {IRole} from "../../interfaces/IRole";
 
 class RoleGqlProvider implements IRoleProvider {
 
@@ -17,14 +18,13 @@ class RoleGqlProvider implements IRoleProvider {
         this.gqlClient.removeHeader('Authorization')
     }
 
-    async createRole(params: IRoleCreate): Promise<any> {
-        const {name, permissions, readonly} = params
-        const query: string = `mutation createUser($input: UserInput) { 
+    async createRole(payload: IRole): Promise<any> {
+        const query: string = `mutation createRole($input: UserInput) { 
         createRole(input: $input) {id name permissions readonly } 
         }`
-        const variables = {input: {name, permissions, readonly}}
+        const variables = {input: payload}
         let data = await this.gqlClient.mutation(query, variables)
-        return data.createUser
+        return data.createRole
     }
 
     async fetchRole(): Promise<any> {

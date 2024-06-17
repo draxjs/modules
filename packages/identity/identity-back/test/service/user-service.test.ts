@@ -7,6 +7,7 @@ import {IRole} from "../../src/interfaces/IRole";
 import {IUser} from "../../src/interfaces/IUser";
 import UserMongoRepository from "../../src/repository/mongo/UserMongoRepository";
 import {IUserRepository} from "../../src/interfaces/IUserRepository";
+import {ValidationError} from "@drax/common-back";
 
 describe("UserServiceTest", function () {
     let userRepository: IUserRepository = new UserMongoRepository()
@@ -29,10 +30,24 @@ describe("UserServiceTest", function () {
     })
 
     it("should create user", async function () {
-
         let userCreated = await userService.create(userAdminData)
-
         assert.equal(userCreated.username, userAdminData.username)
+    })
+
+    it("should fail create user with short password", async function () {
+        let userData = {...userAdminData, password: "123"}
+        await assert.rejects(
+            async () => {
+                await userService.create(userData)
+            },
+            (err) => {
+                assert(err instanceof ValidationError, 'Expected error to be instance of UniqueError');
+                assert.strictEqual(err.errors[0].entity, 'User');
+                assert.strictEqual(err.errors[0].field, 'password');
+                assert.strictEqual(err.errors[0].reason, 'Password must be more than 8 characters');
+                return true;
+            },
+        );
     })
 
     it("should find one user", async function () {

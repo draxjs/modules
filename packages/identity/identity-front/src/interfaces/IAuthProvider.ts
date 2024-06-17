@@ -1,5 +1,5 @@
-import type {IAuthUser} from "@/core/interfaces/IAuthUser";
-import type {ILoginResponse} from "@/core/interfaces/ILoginResponse";
+import type {IAuthUser} from "@/interfaces/IAuthUser";
+import type {ILoginResponse} from "@/interfaces/ILoginResponse";
 
 interface IAuthProvider {
     login(username: string, password: string): Promise<ILoginResponse>

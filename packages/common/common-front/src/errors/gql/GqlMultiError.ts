@@ -1,10 +1,10 @@
-import type {IGqlError} from "../../interfaces/IGqlError";
+import GqlError from "./GqlError";
 
 
 class GqlMultiError extends Error{
-  public errors: Array<IGqlError>;
+  public errors: Array<GqlError>;
 
-  constructor(errors: Array<IGqlError>) {
+  constructor(errors: Array<GqlError>) {
     const message = 'Graphql Errors'
     super(message)
     this.errors = errors

@@ -1,5 +1,6 @@
 import type {IGqlClient} from '@drax/common-front'
-import type {IUserProvider, IUserCreate} from "../../interfaces/IUserProvider.ts";
+import type {IUserProvider} from "../../interfaces/IUserProvider";
+import type {IUser} from "../../interfaces/IUser";
 
 class UserGqlProvider implements IUserProvider {
 
@@ -17,11 +18,10 @@ class UserGqlProvider implements IUserProvider {
         this.gqlClient.removeHeader('Authorization')
     }
 
-    async createUser(params: IUserCreate): Promise<any> {
-        const {username, email, password, role} = params
+    async createUser(payload: IUser): Promise<any> {
         const query: string = `mutation createUser($input: UserInput) { createUser(input: $input) {  
-        id username name email role phone } }`
-        const variables = {input: {username, name, email, password, role}}
+        id username name email role{id name} phone } }`
+        const variables = {input: payload}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createUser
     }

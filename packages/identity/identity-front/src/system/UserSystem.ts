@@ -1,4 +1,5 @@
 import type {IUserProvider} from "@/interfaces/IUserProvider";
+import type {IUser} from "@/interfaces/IUser";
 
 
 class UserSystem {
@@ -11,8 +12,12 @@ class UserSystem {
         this.prototype = 'UserSystem'
     }
 
-    paginateUser(page:number = 1, perPage:number = 5):Promise<any> {
+    async paginateUser(page:number = 1, perPage:number = 5):Promise<any> {
         return this._provider.paginateUser(page, perPage)
+    }
+
+    async create(userPayload: IUser):Promise<any> {
+        return this._provider.createUser(userPayload)
     }
 
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import {useUser} from "../../composables/useUser";
 
 const {paginateUser} = useUser()
@@ -29,10 +29,11 @@ async function loadItems(){
   }finally {
     loading.value = false
   }
-
-
 }
 
+defineExpose({
+  loadItems
+});
 
 </script>
 

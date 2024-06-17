@@ -1,4 +1,4 @@
-import type {IHttpError} from "../../interfaces/IHttpError";
+import type {IHttpError} from "@/interfaces/IHttpError";
 import HttpError from "./HttpError";
 
 class HttpNetworkError extends HttpError implements IHttpError{

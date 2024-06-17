@@ -17,7 +17,8 @@ import type {IUserProvider} from "./interfaces/IUserProvider"
 import type {IRoleProvider} from "./interfaces/IRoleProvider"
 
 import type {IAuthUser} from "./interfaces/IAuthUser"
-import type {IAuthRole} from "./interfaces/IAuthRole"
+import type {IUser} from "./interfaces/IUser"
+import type {IRole} from "./interfaces/IRole"
 
 import type {ILoginResponse} from "./interfaces/ILoginResponse"
 
@@ -26,7 +27,8 @@ export type {
     IUserProvider,
     IRoleProvider,
     IAuthUser,
-    IAuthRole,
+    IUser,
+    IRole,
     ILoginResponse
 }
 

@@ -1,4 +1,4 @@
-import GraphqlMerger from "../utils/GraphqlMerger"
+import GraphqlMerger from "../utils/GraphqlMerger.js"
 
 export default async () => {
      const __dirname = new URL(".", import.meta.url).pathname;

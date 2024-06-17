@@ -1,8 +1,9 @@
 import HttpRestClient from "../clients/HttpRestClient";
+import type {IHttpHeader} from "@/interfaces/IHttpClient";
 
 class HttpFetchClientFactory{
 
-  static create(baseUrl: string, baseHeaders: Headers) {
+  static create(baseUrl: string, baseHeaders: IHttpHeader) {
     return new HttpRestClient(baseUrl, baseHeaders)
   }
 }

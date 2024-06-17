@@ -1,11 +1,7 @@
 <script setup lang="ts">
 
-import {ref, onMounted, defineProps} from 'vue'
-const props = defineProps({
-  modelValue: {
-    type: String,
-  },
-})
+import {ref, onMounted, defineModel} from 'vue'
+const model = defineModel()
 
 import {useRole} from "../composables/useRole";
 
@@ -22,7 +18,7 @@ onMounted(async () => {
 
 <template>
   <v-select
-      v-model="props.modelValue"
+      v-model="model"
       label="Rol"
       :items="items"
       item-title="name"

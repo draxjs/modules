@@ -1,5 +1,6 @@
 import UserServiceFactory from "../../factory/UserServiceFactory.js";
 import {GraphQLError} from "graphql";
+import {TransformValidationGraphqlError, ValidationError} from "@drax/common-back";
 
 const userService = UserServiceFactory()
 
@@ -22,7 +23,6 @@ export default {
             return await userService.findById(id)
         },
         paginateUser: async (_,{page, limit}) => {
-            console.log("paginateUser")
             return await userService.paginate(page, limit)
         }
     },
@@ -38,8 +38,20 @@ export default {
         },
         createUser: async (_,{input}) => {
             console.log("createUser")
-            const user =  await userService.create(input)
-            return user
+            try{
+                const user =  await userService.create(input)
+                return user
+            }catch (e){
+                if(e instanceof ValidationError){
+                    throw new GraphQLError('BAD_USER_INPUT', {
+                        extensions: {
+                            code: 'BAD_USER_INPUT',
+                            inputErrors: e.errors
+                        },
+                    });
+                }
+            }
+
         },
         updateUser: async (_,{id, input}) => {
             return await userService.update(id, input)

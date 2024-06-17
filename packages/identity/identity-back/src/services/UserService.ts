@@ -1,7 +1,10 @@
-import {IPaginateFilter, IPaginateResult} from "@drax/common-back"
 import {IUser} from "../interfaces/IUser";
 import {IUserRepository} from "../interfaces/IUserRepository";
 import AuthUtils from "../utils/AuthUtils.js";
+import {UserZod} from "../zod/UserZod.js";
+import {ZodError} from "zod";
+import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
+import {TransformZodValidationError} from "@drax/common-back";
 
 class UserService {
 
@@ -26,13 +29,24 @@ class UserService {
     }
 
     async create(userData: IUser): Promise<IUser> {
+        try{
+            userData.name = userData?.name?.trim()
+            userData.username = userData.username.trim()
 
-        userData.name = userData?.name?.trim()
-        userData.username = userData.username.trim()
-        userData.password = AuthUtils.hashPassword(userData.password.trim())
+            await UserZod.parseAsync(userData)
 
-        const user: IUser = await this._repository.create(userData)
-        return user
+            userData.password = AuthUtils.hashPassword(userData.password.trim())
+
+            const user: IUser = await this._repository.create(userData)
+            return user
+        }catch (e){
+            if(e instanceof ZodError){
+                throw TransformZodValidationError(e,userData,'User')
+            }
+            throw e
+        }
+
+
     }
 
     async update(id: any, userData: IUser) {
@@ -63,7 +77,6 @@ class UserService {
     async paginate( page : number = 1, limit : number = 10, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
 
         const pagination = await this._repository.paginate( page, limit, filters);
-        console.log("pagination",pagination)
         return pagination;
     }
 }
