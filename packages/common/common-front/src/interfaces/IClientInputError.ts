@@ -1,5 +1,5 @@
 interface IClientInputError {
-  [fieldName: string]: string;
+  [fieldName: string]: string[];
 }
 
 export type {IClientInputError}

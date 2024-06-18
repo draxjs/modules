@@ -5,11 +5,9 @@ interface IAuthUser {
     username: string
     email: string
     active: boolean
-    name?: string
-    phone?: string
-    avatar?: string
-    avatarurl?: string
-    code?: string
+    name: string
+    phone: string
+    avatar: string
     role: IRole
 
 }

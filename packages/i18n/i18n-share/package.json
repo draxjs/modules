@@ -1,0 +1,29 @@
+{
+  "name": "@drax/i18n-share",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.9",
+  "description": "i18n-share messages across modules",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prepublish": "tsc",
+    "tscrun": "tsc",
+    "clean": "rm -rf dist",
+    "tsc": "tsc -b tsconfig.json",
+    "test": "test"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "dependencies": {
+    "deepmerge": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.10",
+    "copyfiles": "^2.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

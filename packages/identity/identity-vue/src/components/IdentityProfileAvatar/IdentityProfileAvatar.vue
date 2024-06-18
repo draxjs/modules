@@ -7,6 +7,10 @@ const props = defineProps({
   avatarSize: {
     type: Number,
     default: 54
+  },
+  customClass:{
+    type: String,
+    default: ''
   }
 })
 
@@ -22,8 +26,9 @@ const onClick = () => {
       @click="onClick"
       color="surface"
       class="border-md border-opacity-100 border-surface-light"
+      :class="customClass"
   >
-    <v-img v-if="authStore.avatarurl" :src="authStore.avatarurl"/>
+    <v-img v-if="authStore.authUser && authStore.authUser.avatar" :src="authStore.authUser.avatar"/>
     <v-icon v-else size="50">mdi-account-circle</v-icon>
   </v-avatar>
 </template>

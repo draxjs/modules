@@ -49,7 +49,6 @@ const UserSchema = new mongoose.Schema<IUser>({
         }
     },
     avatar: {type: String, required: false},
-    avatarurl: {type: String, required: false},
     role: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role',

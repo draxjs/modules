@@ -1,3 +1,12 @@
+<script lang="ts" setup>
+import {ref} from 'vue'
+import menu from './menu'
+import {IdentityProfileAvatar, IdentityProfileDrawer} from "@drax/identity-vue";
+import DarkMode from "./components/DarkMode/index.vue";
+import SidebarMenu from "./components/SidebarMenu/SidebarMenu.vue";
+let profileDrawer = ref(false)
+let drawer = ref(false)
+</script>
 
 <template>
   <v-app>
@@ -11,7 +20,7 @@
       <slot name="toolbar-right"></slot>
       <dark-mode></dark-mode>
 
-      <identity-profile-avatar @click="profileDrawer = !profileDrawer"></identity-profile-avatar>
+      <identity-profile-avatar class="cursor-pointer" @click="profileDrawer = !profileDrawer"></identity-profile-avatar>
     </v-app-bar>
 
     <identity-profile-drawer v-model="profileDrawer" ></identity-profile-drawer>
@@ -24,10 +33,4 @@
   </v-app>
 </template>
 
-<script lang="ts" setup>
-import {ref} from 'vue'
-import menu from './menu'
-import {IdentityProfileAvatar, IdentityProfileDrawer} from "@drax/identity-vue";
-let profileDrawer = ref(false)
-let drawer = ref(false)
-</script>
+

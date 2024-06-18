@@ -18,7 +18,7 @@ interface IHttpClient {
 
   put(url: string, data: any, options?: IHttpOptions): Promise<object>
 
-  delete(url: string, data: any, options?: IHttpOptions): Promise<object>
+  delete(url: string, data?: any, options?: IHttpOptions): Promise<object>
 
   patch(url: string, data: any, options?: IHttpOptions): Promise<object>
 

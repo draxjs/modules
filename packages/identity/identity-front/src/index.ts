@@ -11,15 +11,12 @@ import UserGqlProvider from "./providers/gql/UserGqlProvider.js";
 import RoleRestProvider from "./providers/rest/RoleRestProvider.js";
 import RoleGqlProvider from "./providers/gql/RoleGqlProvider.js";
 
-
 import type {IAuthProvider} from "./interfaces/IAuthProvider"
 import type {IUserProvider} from "./interfaces/IUserProvider"
 import type {IRoleProvider} from "./interfaces/IRoleProvider"
-
 import type {IAuthUser} from "./interfaces/IAuthUser"
 import type {IUser} from "./interfaces/IUser"
 import type {IRole} from "./interfaces/IRole"
-
 import type {ILoginResponse} from "./interfaces/ILoginResponse"
 
 export type {
@@ -46,6 +43,8 @@ export {
     //Systems
     AuthSystem,
     UserSystem,
-    RoleSystem
+    RoleSystem,
+
+
 
 }

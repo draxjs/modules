@@ -1,5 +1,6 @@
 import type {IUserProvider} from "@/interfaces/IUserProvider";
-import type {IUser} from "@/interfaces/IUser";
+import type {IUser, IUserCreate, IUserUpdate} from "@/interfaces/IUser";
+import type {IPaginateClient} from "@drax/common-front";
 
 
 class UserSystem {
@@ -12,12 +13,20 @@ class UserSystem {
         this.prototype = 'UserSystem'
     }
 
-    async paginateUser(page:number = 1, perPage:number = 5):Promise<any> {
+    async paginateUser(page:number = 1, perPage:number = 5):Promise<IPaginateClient> {
         return this._provider.paginateUser(page, perPage)
     }
 
-    async create(userPayload: IUser):Promise<any> {
+    async createUser(userPayload: IUserCreate):Promise<IUser> {
         return this._provider.createUser(userPayload)
+    }
+
+    async editUser(id:string, userPayload: IUserUpdate):Promise<IUser> {
+        return this._provider.editUser(id, userPayload)
+    }
+
+    async deleteUser(id: string):Promise<any> {
+        return this._provider.deleteUser(id)
     }
 
 }

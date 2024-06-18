@@ -9,19 +9,26 @@ import ServerError from './errors/ServerError';
 import ClientError from './errors/ClientError';
 import NetworkError from './errors/NetworkError';
 import HttpFetchClientFactory from './factories/HttpFetchClientFactory';
-import GqlApolloClientFactory from './factories/GqlApolloClientFactory';
+import HttpGqlClientFactory from './factories/HttpGqlClientFactory';
 
 import type {IHttpClient, IHttpOptions} from './interfaces/IHttpClient';
 import type {IGqlClient, IGqlOptions} from './interfaces/IGqlClient';
 import type {IHttpError} from './interfaces/IHttpError';
 import type {IInputError} from './interfaces/IInputError';
 import type {IClientInputError} from './interfaces/IClientInputError';
+import type {IPaginateClient} from './interfaces/IPaginateClient';
+
+
 
 export {
+  //Clients
   HttpRestClient,
-  HttpFetchClientFactory,
   HttpGqlClient,
-  GqlApolloClientFactory,
+
+  HttpFetchClientFactory,
+  HttpGqlClientFactory,
+
+  //Errors
   HttpError,
   HttpStatusError,
   HttpTimeoutError,
@@ -30,6 +37,7 @@ export {
   ClientError,
   NetworkError,
   UnknownError,
+
 }
 
 export type {
@@ -39,7 +47,8 @@ export type {
   IGqlOptions,
   IHttpError,
   IInputError,
-  IClientInputError
+  IClientInputError,
+  IPaginateClient
 }
 
 

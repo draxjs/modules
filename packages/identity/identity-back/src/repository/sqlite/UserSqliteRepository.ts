@@ -4,7 +4,7 @@ import {randomUUID} from "node:crypto";
 import {UUID} from "crypto";
 import {IUserRepository} from "../../interfaces/IUserRepository";
 import type {IPaginateResult} from "@drax/common-back";
-import {UniqueError, ValidationError} from "@drax/common-back";
+import {SqliteErrorToValidationError} from "@drax/common-back";
 import RoleSqliteRepository from "./RoleSqliteRepository.js";
 
 
@@ -70,22 +70,7 @@ class UserSqliteRepository implements IUserRepository{
             stmt.run(userData)
             return this.findById(userData.id as UUID)
         }catch (e){
-            if(e.code === 'SQLITE_CONSTRAINT_PRIMARYKEY'){
-                throw new ValidationError([{entity:'User', field: 'id', value:userData.id, reason:'validation.unique'}])
-            }
-
-            if(e.code === 'SQLITE_CONSTRAINT_UNIQUE'){
-                const msg = e.message.split(".")
-                let field : string
-                let value : any
-                if(msg.length === 2){
-                    field = msg[1]
-                    value = userData[field]
-                }
-                throw new ValidationError([{entity:'User', field: field, value:value, reason:'validation.unique'}])
-            }
-
-            throw new Error(e.message)
+            throw SqliteErrorToValidationError(e, userData)
         }
 
     }
@@ -101,18 +86,13 @@ class UserSqliteRepository implements IUserRepository{
             const stmt = this.db.prepare( `UPDATE users SET ${setClauses} WHERE id = @id `);
             stmt.run(userData);
         }catch (e){
-            if(e.code === 'SQLITE_CONSTRAINT_UNIQUE'){
-                const msg = e.message.split(".")
-                const field = msg.length === 2 ? msg[1]: 'unknown'
-                throw new ValidationError([{entity:'User', field: field, value:userData.id, reason:'validation.unique'}])
-            }
-            throw new Error(e.message)
+            throw SqliteErrorToValidationError(e, userData)
         }
         return this.findById(id)
     }
 
     async delete(id: UUID): Promise<boolean> {
-        const stmt = this.db.prepare('DELETE FROM users WHERE id = @id');
+        const stmt = this.db.prepare('DELETE FROM users WHERE id = ?');
         stmt.run(id);
         return true
     }
@@ -125,12 +105,18 @@ class UserSqliteRepository implements IUserRepository{
 
     async findById(id: UUID): Promise<IUser> {
         const user = this.db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+        if(!user){
+            return null
+        }
         user.role = await this.populateRole(user.role)
         return user
     }
 
     async findByUsername(username: string): Promise<IUser> {
         const user = this.db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+        if(!user){
+            return null
+        }
         user.role = await this.populateRole(user.role)
         return user
     }
@@ -142,6 +128,7 @@ class UserSqliteRepository implements IUserRepository{
 
         for (const user of users) {
             user.role = await this.populateRole(user.role)
+            user.active = user.active === 1
         }
 
         return {

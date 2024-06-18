@@ -12,7 +12,6 @@ interface IUser {
     name?: string
     phone?: string
     avatar?: string
-    avatarurl?: string
     code?: string
     role: IRole | IID
     groups: mongoose.Types.ObjectId[] | IUserGroup[] | string[] | string

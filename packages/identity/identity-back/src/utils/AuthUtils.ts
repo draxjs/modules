@@ -25,16 +25,17 @@ class AuthUtils{
         return bcryptjs.compareSync(password, hashPassword);
     }
 
-    static tokenSignPayload(userId : string, username: string, session : string) {
+    static tokenSignPayload(userId : string, username: string, roleId: string, session : string) {
         return {
             id: userId,
             username: username,
+            roleId: roleId,
             session: session
         };
     }
 
-    static generateToken(userId : string, username: string, session : string) {
-        const payload = AuthUtils.tokenSignPayload(userId, username, session)
+    static generateToken(userId : string, username: string, roleId: string,  session : string) {
+        const payload = AuthUtils.tokenSignPayload(userId, username, roleId, session)
 
         const JWT_SECRET = process.env.JWT_SECRET ? process.env.JWT_SECRET :'KRgDV3CeR5lVhsFF'
 

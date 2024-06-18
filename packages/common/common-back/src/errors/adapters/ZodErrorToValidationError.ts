@@ -1,8 +1,8 @@
 import { ZodError } from 'zod';
-import type {IValidationFieldError} from "../interfaces/IValidationFieldError";
-import ValidationError from '../errors/ValidationError.js';
+import type {IValidationFieldError} from "../../interfaces/IValidationFieldError";
+import ValidationError from '../ValidationError.js';
 
-function TransformZodValidationError(zodError: ZodError, payload?: any) {
+function ZodErrorToValidationError(zodError: ZodError, payload?: any) {
     let errors : IValidationFieldError[] = zodError.errors.map(err => {
         let path = err.path.join('.')
         return {
@@ -15,4 +15,4 @@ function TransformZodValidationError(zodError: ZodError, payload?: any) {
     return new ValidationError(errors);
 }
 
-export default TransformZodValidationError
+export default ZodErrorToValidationError

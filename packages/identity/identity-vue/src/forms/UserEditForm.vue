@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import {ref, defineModel, type PropType} from "vue";
 import RoleCombobox from "../combobox/RoleCombobox.vue";
-import type {IUser} from "@drax/identity-front";
 import type {IClientInputError} from "@drax/common-front";
-
+import type {IUserUpdate} from "@drax/identity-front/src/interfaces/IUser";
+import {useI18nValidation} from "../composables/useI18nValidation";
+const {$ta} = useI18nValidation()
 
 const props = defineProps({
   inputErrors: {
@@ -12,15 +13,12 @@ const props = defineProps({
   }
 })
 
-const form = defineModel<IUser>({
+const form = defineModel<IUserUpdate>({
   type: Object,
-  default: () => ({name: "", username: "", password: "", email: "", phone: "", role: "", active: true})
+  default: () => ({name: "", username: "", email: "", phone: "", role: "", active: true})
 })
 
-let passwordVisibility = ref(false)
-function togglePasswordVisibility() {
-  passwordVisibility.value = !passwordVisibility.value
-}
+
 </script>
 
 <template>
@@ -35,7 +33,7 @@ function togglePasswordVisibility() {
         v-model="form.name"
         prepend-inner-icon="mdi-card-account-details"
         required
-        :error-messages="inputErrors.name"
+        :error-messages="$ta(inputErrors.name)"
     ></v-text-field>
     <v-text-field
         variant="outlined"
@@ -44,48 +42,37 @@ function togglePasswordVisibility() {
         v-model="form.username"
         prepend-inner-icon="mdi-account-question"
         required
-        :error-messages="inputErrors.username"
+        :error-messages="$ta(inputErrors.username)"
         autocomplete="new-username"
-    ></v-text-field>
-    <v-text-field
-        variant="outlined"
-        id="password-input"
-        label="Password"
-        v-model="form.password"
-        :type="passwordVisibility ? 'text': 'password'"
-        required
-        prepend-inner-icon="mdi-lock-outline"
-        :append-inner-icon="passwordVisibility ? 'mdi-eye-off': 'mdi-eye'"
-        @click:append-inner="togglePasswordVisibility"
-        autocomplete="new-password"
-        :error-messages="inputErrors.password"
     ></v-text-field>
 
     <RoleCombobox
         v-model="form.role"
+        :error-messages="$ta(inputErrors.role)"
     ></RoleCombobox>
 
     <v-text-field
         v-model="form.email"
         variant="outlined"
-        id="name-input"
+        id="email-input"
         label="Email"
         prepend-inner-icon="mdi-email"
         required
-        :error-messages="inputErrors.email"
+        :error-messages="$ta(inputErrors.email)"
     ></v-text-field>
 
     <v-text-field
         v-model="form.phone"
         variant="outlined"
-        id="name-input"
+        id="phone-input"
         label="Phone"
         prepend-inner-icon="mdi-phone"
         required
-        :error-messages="inputErrors.phone"
+        :error-messages="$ta(inputErrors.phone)"
     ></v-text-field>
 
     <v-switch
+        id="active-input"
         v-model="form.active"
         color="primary"
         label="Active"

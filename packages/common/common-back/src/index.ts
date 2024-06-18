@@ -8,17 +8,22 @@ import type {IResolvers, TypeSource} from "@graphql-tools/utils";
 import UniqueError from "./errors/UniqueError.js";
 import ValidationError from "./errors/ValidationError.js";
 import ValidationFieldError from "./errors/ValidationFieldError.js";
-import TransformMongooseValidationError from "./utils/TransformMongooseValidationError.js";
-import TransformSqliteValidationError from "./utils/TransformSqliteValidationError.js";
-import TransformZodValidationError from "./utils/TransformZodValidationError.js";
-import TransformValidationGraphqlError from "./utils/TransformValidationGraphqlError.js";
+import MongooseErrorToValidationError from "./errors/adapters/MongooseErrorToValidationError.js";
+import SqliteErrorToValidationError from "./errors/adapters/SqliteErrorToValidationError.js";
+import ZodErrorToValidationError from "./errors/adapters/ZodErrorToValidationError.js";
+import ValidationErrorToGraphQLError from "./errors/adapters/ValidationErrorToGraphQLError.js";
 import commonGraphql  from "./graphql/index.js"
+import DraxCache  from "./cache/DraxCache.js"
 
 const graphqlMergeResult = await commonGraphql()
 const commonTypeDefs : TypeSource = await graphqlMergeResult.typeDefs;
 const commonResolvers: IResolvers = await graphqlMergeResult.resolvers;
 
 export {
+
+    //Cache
+    DraxCache,
+
     //Graphql
     GraphqlMerger,
     commonTypeDefs,
@@ -29,10 +34,10 @@ export {
     MongooseSoftDelete,
 
     //Utils
-    TransformMongooseValidationError,
-    TransformSqliteValidationError,
-    TransformZodValidationError,
-    TransformValidationGraphqlError,
+    MongooseErrorToValidationError,
+    SqliteErrorToValidationError,
+    ZodErrorToValidationError,
+    ValidationErrorToGraphQLError,
 
     //Errors
     UniqueError,
@@ -44,6 +49,6 @@ export {
 export type{
     IPaginateFilter,
     IPaginateResult,
-    IValidationFieldError,
+    IValidationFieldError
 }
 

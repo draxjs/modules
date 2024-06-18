@@ -1,4 +1,4 @@
-import {jwtMiddleware, authRoutes} from "@drax/identity-back"
+import {jwtMiddleware, UserRoutes, RoleRoutes, rbacMiddleware} from "@drax/identity-back"
 import ModuleMerger from "../utils/ModuleMerger.js";
 import ApolloFastifyServer from "../servers/ApolloFastifyServer.js";
 const {typeDefs, resolvers} = await ModuleMerger()
@@ -8,8 +8,10 @@ const {typeDefs, resolvers} = await ModuleMerger()
 function ApolloFastifyServerFactory() {
     const server = new ApolloFastifyServer(typeDefs,resolvers);
     server.fastifyDecorateRequest('authUser',null)
-    server.fastifyHook('preHandler',jwtMiddleware)
-    server.fastifyRegister(authRoutes)
+    server.fastifyHook('onRequest',jwtMiddleware)
+    server.fastifyHook('onRequest',rbacMiddleware)
+    server.fastifyRegister(UserRoutes)
+    server.fastifyRegister(RoleRoutes)
     return server
 }
 

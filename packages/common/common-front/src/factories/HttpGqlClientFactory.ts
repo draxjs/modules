@@ -1,11 +1,11 @@
 import HttpGqlClient from "../clients/HttpGqlClient";
 
-class GqlApolloClientFactory{
+class HttpGqlClientFactory {
 
   static create(baseUrl: string, baseHeaders ?: object) : HttpGqlClient {
     return new HttpGqlClient(baseUrl)
   }
 }
 
-export default GqlApolloClientFactory
-export {GqlApolloClientFactory}
+export default HttpGqlClientFactory
+export {HttpGqlClientFactory}

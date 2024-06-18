@@ -21,7 +21,7 @@ describe("RoleServiceTest",  function() {
         return
     })
 
-    it("should create role",  async function() {
+    it("should createUser role",  async function() {
         let roleData = (await import("../data-obj/roles/admin-mongo-role")).default
         let roleCreated: IRole = await roleService.create(roleData)
 

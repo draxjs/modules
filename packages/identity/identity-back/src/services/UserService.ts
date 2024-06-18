@@ -1,10 +1,10 @@
 import {IUser} from "../interfaces/IUser";
 import {IUserRepository} from "../interfaces/IUserRepository";
 import AuthUtils from "../utils/AuthUtils.js";
-import {UserZod} from "../zod/UserZod.js";
+import {createUserSchema, editUserSchema,} from "../zod/UserZod.js";
 import {ZodError} from "zod";
 import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
-import {TransformZodValidationError} from "@drax/common-back";
+import {ZodErrorToValidationError} from "@drax/common-back";
 
 class UserService {
 
@@ -21,7 +21,7 @@ class UserService {
         if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
             //TODO: Generar Sesion
             const session = '123'
-            const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, session)
+            const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, user.role.id, session)
             return {accessToken: accessToken}
         }else{
             throw Error('BadCredentials')
@@ -33,7 +33,7 @@ class UserService {
             userData.name = userData?.name?.trim()
             userData.username = userData.username.trim()
 
-            await UserZod.parseAsync(userData)
+            await createUserSchema.parseAsync(userData)
 
             userData.password = AuthUtils.hashPassword(userData.password.trim())
 
@@ -41,7 +41,7 @@ class UserService {
             return user
         }catch (e){
             if(e instanceof ZodError){
-                throw TransformZodValidationError(e,userData,'User')
+                throw ZodErrorToValidationError(e,userData)
             }
             throw e
         }
@@ -50,13 +50,22 @@ class UserService {
     }
 
     async update(id: any, userData: IUser) {
-
+        try{
         userData.name = userData.name.trim()
         userData.username = userData.username.trim()
         delete userData.password
 
+        await editUserSchema.parseAsync(userData)
+
+
         const user: IUser = await this._repository.update(id, userData)
         return user
+        }catch (e){
+            if(e instanceof ZodError){
+                throw ZodErrorToValidationError(e,userData)
+            }
+            throw e
+        }
     }
 
     async delete(id: any): Promise<boolean> {

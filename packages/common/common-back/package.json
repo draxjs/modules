@@ -9,13 +9,13 @@
   "types": "types/index.d.ts",
   "type": "module",
   "scripts": {
-    "serve": "nodemon --exec node --loader ts-node/esm src/index.ts",
     "prepublish": "tsc && npm run copygql",
     "tscrun": "tsc",
     "clean": "rm -rf dist",
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -b tsconfig.json",
-    "test": "test"
+    "test": "node --import tsx --test test/**/*",
+    "testCache": "node --import tsx --test test/cache/*"
   },
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
@@ -29,7 +29,6 @@
     "copyfiles": "^2.4.1",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5",
     "tsc-alias": "^1.8.10"
   },

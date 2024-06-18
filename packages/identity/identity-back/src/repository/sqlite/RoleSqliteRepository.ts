@@ -4,7 +4,7 @@ import {UUID} from "crypto";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {IPaginateFilter, IPaginateResult, ValidationError} from "@drax/common-back";
-import {TransformSqliteValidationError} from "@drax/common-back";
+import {SqliteErrorToValidationError} from "@drax/common-back";
 
 const roleTableSQL: string = `
     CREATE TABLE IF NOT EXISTS roles
@@ -70,7 +70,7 @@ class RoleSqliteRepository implements IRoleRepository{
         return this.findById(roleData.id as UUID)
         }catch (e){
             console.log(e)
-            throw TransformSqliteValidationError(e, roleData, 'Role')
+            throw SqliteErrorToValidationError(e, roleData)
         }
     }
 
@@ -92,7 +92,7 @@ class RoleSqliteRepository implements IRoleRepository{
             return this.findById(id)
         }catch (e){
             console.log(e)
-            throw TransformSqliteValidationError(e, roleData, 'Role')
+            throw SqliteErrorToValidationError(e, roleData)
         }
 
     }

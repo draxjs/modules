@@ -29,12 +29,12 @@ describe("UserServiceTest", function () {
         return
     })
 
-    it("should create user", async function () {
+    it("should createUser user", async function () {
         let userCreated = await userService.create(userAdminData)
         assert.equal(userCreated.username, userAdminData.username)
     })
 
-    it("should fail create user with short password", async function () {
+    it("should fail createUser user with short password", async function () {
         let userData = {...userAdminData, password: "123"}
         await assert.rejects(
             async () => {

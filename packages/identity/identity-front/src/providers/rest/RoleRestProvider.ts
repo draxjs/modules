@@ -1,6 +1,6 @@
 import type {IHttpClient} from '@drax/common-front'
-import type {IRoleProvider, IRoleCreate} from "../../interfaces/IRoleProvider.ts";
-import type {ILoginResponse} from "@/interfaces/ILoginResponse";
+import type {IRoleProvider} from "../../interfaces/IRoleProvider.ts";
+import type {IRole} from "../../interfaces/IRole";
 
 class RoleRestProvider implements IRoleProvider {
 
@@ -18,16 +18,16 @@ class RoleRestProvider implements IRoleProvider {
         this.httpClient.removeHeader('Authorization')
     }
 
-    async createRole(data: IRoleCreate): Promise<any> {
-        const url = '/api/roles'
-        let role = await this.httpClient.post(url, data)
-        return role
+    async createRole(data: IRole): Promise<any> {
+            const url = '/api/roles'
+            let role = await this.httpClient.post(url, data)
+            return role
     }
 
     async fetchRole(): Promise<any> {
-        const url = '/api/roles'
-        let role = await this.httpClient.get(url)
-        return role
+            const url = '/api/roles'
+            let role = await this.httpClient.get(url)
+            return role
     }
 }
 

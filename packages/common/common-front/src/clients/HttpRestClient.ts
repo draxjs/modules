@@ -33,8 +33,12 @@ class HttpRestClient implements IHttpClient {
 
   errorHandler(error: Error): Error {
     if (error instanceof HttpStatusError && error.statusCode >= 400 && error.statusCode <= 599) {
-      if(error.statusCode >= 400 && error.statusCode <= 599){
-        return new ClientError(error.message, error.body)
+      if(error.statusCode >= 400 && error.statusCode <= 499){
+
+        let message = error.body  && error.body.error ? error.body.error : error.message;
+        let inputErrors = error.body && error.body.inputErrors? error.body.inputErrors : {}
+        return new ClientError(message, inputErrors)
+
       }else if(error.statusCode >= 500 && error.statusCode <= 599){
         return new ServerError(error.message)
       }else{
@@ -53,8 +57,10 @@ class HttpRestClient implements IHttpClient {
   async get(url: string, options: IHttpOptions): Promise<object> {
 
     try {
-      url = this.baseUrl + url;
+      const queryParams = new URLSearchParams(options?.params as any).toString();
+      url = this.baseUrl + url + (queryParams ? `?${queryParams}` : '');
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
+
       const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
       const response = await fetch(url, {
         method: 'GET',

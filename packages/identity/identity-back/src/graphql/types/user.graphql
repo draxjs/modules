@@ -5,6 +5,7 @@ type User {
     email: String
     role: Role
     phone: String
+    avatar: String
     active: Boolean
 }
 
@@ -22,10 +23,19 @@ type Query{
     paginateUser(page: Int, limit: Int): UserPaginated
 }
 
-input UserInput{
+input UserCreateInput{
     name: String
     username: String!
     password: String!
+    role: ID
+    email: String!
+    phone: String
+    active: Boolean
+}
+
+input UserUpdateInput{
+    name: String
+    username: String!
     role: ID
     email: String!
     phone: String
@@ -43,7 +53,7 @@ input AuthInput{
 
 type Mutation{
     auth(input: AuthInput): Auth
-    createUser(input: UserInput): User
-    updateUser(id: ID!, input: UserInput): User
+    createUser(input: UserCreateInput): User
+    updateUser(id: ID!, input: UserUpdateInput): User
     deleteUser(id: ID!): Boolean
 }

@@ -7,8 +7,13 @@ class ValidationError extends Error {
         super('ValidationError');
         this.name = 'ValidationError';
         this.errors = errors
-        this.message = errors.map(error => `${error.field}: ${error.reason}`).join(', ')
     }
+
+    get statusCode(){
+        return 422 // 422 Unprocessable Entity
+    }
+
+
 }
 
 export default ValidationError

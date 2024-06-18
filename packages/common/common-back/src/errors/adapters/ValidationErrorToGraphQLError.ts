@@ -1,7 +1,7 @@
 import { GraphQLError } from 'graphql';
-import ValidationError from '../errors/ValidationError.js';
+import ValidationError from '../ValidationError.js';
 
-function TransformValidationGraphqlError(validationError: ValidationError) {
+function ValidationErrorToGraphQLError(validationError: ValidationError) {
     return new GraphQLError('BAD_USER_INPUT', {
         extensions: {
             code: 'BAD_USER_INPUT',
@@ -11,4 +11,4 @@ function TransformValidationGraphqlError(validationError: ValidationError) {
 
 }
 
-export default TransformValidationGraphqlError
+export default ValidationErrorToGraphQLError

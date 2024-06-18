@@ -1,6 +1,10 @@
 // Plugins
 // @ts-ignore
 import { registerPlugins } from '@/plugins'
+//Core Systems Factories
+import {SystemFactory} from "./factories/SystemFactory";
+
+import i18n from "@/i18n/I18n";
 
 // Components
 import App from './App.vue'
@@ -11,13 +15,12 @@ import { createApp } from 'vue'
 const app = createApp(App)
 registerPlugins(app)
 
-//Core Systems Factories
-import {authSystemFactory} from "./factories/AuthSystemFactory";
-import {userSystemFactory} from "./factories/UserSystemFactory";
-import {roleSystemFactory} from "./factories/RoleSystemFactory";
+app.use(i18n)
+
+const {authSystem: AuthSystem, userSystem: UserSystem, roleSystem: RoleSystem} = SystemFactory()
 
 app
-  .provide('AuthSystem', authSystemFactory('GRAPHQL'))
-  .provide('UserSystem', userSystemFactory('GRAPHQL'))
-  .provide('RoleSystem', roleSystemFactory('GRAPHQL'))
+  .provide('AuthSystem', AuthSystem)
+  .provide('UserSystem', UserSystem)
+  .provide('RoleSystem', RoleSystem)
   .mount('#app')

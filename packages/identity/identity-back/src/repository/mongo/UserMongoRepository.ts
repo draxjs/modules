@@ -1,5 +1,5 @@
 import {UserModel} from "../../models/UserModel.js";
-import {mongoose, TransformMongooseValidationError} from "@drax/common-back"
+import {mongoose, MongooseErrorToValidationError} from "@drax/common-back"
 import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
 import {IUser} from "../../interfaces/IUser";
 import {DeleteResult} from "mongodb";
@@ -16,7 +16,7 @@ class UserMongoRepository implements IUserRepository {
             return user
         }catch (e){
             if(e instanceof mongoose.Error.ValidationError){
-                throw TransformMongooseValidationError(e, 'User')
+                throw MongooseErrorToValidationError(e)
             }
             throw e
         }
@@ -29,7 +29,7 @@ class UserMongoRepository implements IUserRepository {
         return user
         }catch (e){
             if(e instanceof mongoose.Error.ValidationError){
-                throw TransformMongooseValidationError(e, 'User')
+                throw MongooseErrorToValidationError(e)
             }
             throw e
         }

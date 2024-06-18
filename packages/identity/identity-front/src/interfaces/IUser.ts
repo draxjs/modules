@@ -1,17 +1,34 @@
 import type {IRole} from "@/interfaces/IRole";
 
 interface IUser {
-    id?: string
-    name?: string
+    id: string
+    name: string
     username: string
-    password: string
     email: string
     active: boolean
-    phone?: string
-    avatar?: string
-    avatarurl?: string
+    phone: string
+    avatar: string
     role: IRole
 
 }
 
-export type {IUser}
+interface IUserCreate {
+    name: string
+    username: string
+    password: string
+    email: string
+    active: boolean
+    phone: string
+    role: string
+}
+
+interface IUserUpdate {
+    name: string
+    username: string
+    email: string
+    active: boolean
+    phone: string
+    role: string
+}
+
+export type {IUser, IUserCreate, IUserUpdate}
