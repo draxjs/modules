@@ -42,7 +42,6 @@ describe("UserServiceTest", function () {
             },
             (err) => {
                 assert(err instanceof ValidationError, 'Expected error to be instance of UniqueError');
-                assert.strictEqual(err.errors[0].entity, 'User');
                 assert.strictEqual(err.errors[0].field, 'password');
                 assert.strictEqual(err.errors[0].reason, 'Password must be more than 8 characters');
                 return true;

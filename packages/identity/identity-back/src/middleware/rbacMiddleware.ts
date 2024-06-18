@@ -4,7 +4,8 @@ import {DraxCache} from "@drax/common-back";
 import RoleServiceFactory from "../factory/RoleServiceFactory.js";
 import Rbac from "../rbac/Rbac.js";
 
-const draxCache = new DraxCache<IRoleBase>(10000);
+const cacheTTL = process.env.RBAC_CACHE_TTL ? parseInt(process.env.RBAC_CACHE_TTL) : 10000;
+const draxCache = new DraxCache<IRoleBase>(cacheTTL);
 const roleService = RoleServiceFactory()
 
 async function roleLoader(k):Promise<IRoleBase | null> {

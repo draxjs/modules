@@ -17,6 +17,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "deepmerge": "^4.3.1"
   },
   "devDependencies": {
     "@babel/types": "^7.24.0",

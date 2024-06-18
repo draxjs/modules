@@ -10,6 +10,7 @@ import ClientError from './errors/ClientError';
 import NetworkError from './errors/NetworkError';
 import HttpFetchClientFactory from './factories/HttpFetchClientFactory';
 import HttpGqlClientFactory from './factories/HttpGqlClientFactory';
+import {CommonI18nMessages} from './i18n/index';
 
 import type {IHttpClient, IHttpOptions} from './interfaces/IHttpClient';
 import type {IGqlClient, IGqlOptions} from './interfaces/IGqlClient';
@@ -27,6 +28,9 @@ export {
 
   HttpFetchClientFactory,
   HttpGqlClientFactory,
+
+  //I18n
+  CommonI18nMessages,
 
   //Errors
   HttpError,

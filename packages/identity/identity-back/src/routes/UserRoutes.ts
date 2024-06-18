@@ -24,9 +24,26 @@ async function UserRoutes(fastify, options) {
     })
 
     fastify.get('/api/me', async (request, reply): Promise<IUser | null> => {
-        let user = await userService.findById(request.authUser.id)
-        delete user.password
-        return user
+        try {
+            if (request.authUser) {
+                let user = await userService.findById(request.authUser.id)
+                delete user.password
+                return user
+            } else {
+                throw new UnauthorizedError()
+
+            }
+        } catch (e) {
+            if (e instanceof UnauthorizedError) {
+                reply.code(401)
+                reply.send({error: "Unauthorized"})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+            }
+        }
+
+
     })
 
     fastify.get('/api/users', async (request, reply): Promise<IPaginateResult> => {
@@ -64,10 +81,11 @@ async function UserRoutes(fastify, options) {
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message, inputErrors: e.errors})
-            } if (e instanceof UnauthorizedError) {
+            }
+            if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message})
-            }else {
+            } else {
                 reply.statusCode = 500
                 reply.send({error: 'INTERNAL_SERVER_ERROR'})
             }

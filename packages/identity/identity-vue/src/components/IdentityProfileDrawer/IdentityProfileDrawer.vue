@@ -24,7 +24,7 @@ function gotoLogin(){
       location="right"
   >
 
-    <template v-if="authStore.me">
+    <template v-if="authStore.authUser">
       <identity-profile-view></identity-profile-view>
       <v-divider></v-divider>
 

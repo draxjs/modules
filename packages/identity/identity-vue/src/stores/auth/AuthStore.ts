@@ -2,21 +2,24 @@
 import { defineStore } from 'pinia'
 import type {IAuthUser} from "@drax/identity-front";
 import type from 'pinia-plugin-persistedstate'
+import {AuthHelper} from "@drax/identity-front";
 
 export const useAuthStore = defineStore('AuthStore', {
   state: () => ({
     accessToken: null as string | null,
     authUser: null as IAuthUser | null,
-    authError : '' as string
   }),
   getters:{
-    me: (state): IAuthUser | null => {
-      return state.authUser
-    },
     isAuth: (state): boolean => {
       //TODO verify token
       return !!state.accessToken
-    }
+    },
+    hasPermission: (state) => (permission:string) => {
+      return state.authUser && state.authUser.role && state.authUser.role.permissions ? state.authUser.role.permissions.includes(permission) : false
+    },
+    tokenIsValid: (state) => () => {
+      return state.accessToken ? AuthHelper.isJWTValid(state.accessToken) : false
+    },
   },
   actions:{
     setAccessToken(accessToken:string){
@@ -28,7 +31,6 @@ export const useAuthStore = defineStore('AuthStore', {
     clearAuth(){
       this.accessToken = null
       this.authUser = null
-      this.authError = ''
     }
   },
 

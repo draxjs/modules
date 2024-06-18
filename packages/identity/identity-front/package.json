@@ -27,7 +27,6 @@
     "@drax/common-front": "^0.0.9"
   },
   "peerDependencies": {
-
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

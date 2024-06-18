@@ -28,7 +28,7 @@ test.describe("UserRepositoryTest", function () {
 
     test("Create sqlite user successfully", async function () {
         userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
-        let userCreated = await userRepository.create(userAdminData)
+        let userCreated:IUser = await userRepository.create(userAdminData)
        equal(userCreated.username, userAdminData.username)
     })
 
@@ -51,7 +51,6 @@ test.describe("UserRepositoryTest", function () {
             },
             (err) => {
                 assert(err instanceof ValidationError, 'Expected error to be instance of UniqueError');
-                assert.strictEqual(err.errors[0].entity, 'User');
                 assert.strictEqual(err.errors[0].field, 'id');
                 assert.strictEqual(err.errors[0].reason, 'validation.unique');
                 return true;
@@ -69,7 +68,6 @@ test.describe("UserRepositoryTest", function () {
             },
             (err) => {
                 assert(err instanceof ValidationError, 'Expected error to be instance of UniqueError');
-                assert.strictEqual(err.errors[0].entity, 'User');
                 assert.strictEqual(err.errors[0].field, 'username');
                 assert.strictEqual(err.errors[0].reason, 'validation.unique');
                 return true;

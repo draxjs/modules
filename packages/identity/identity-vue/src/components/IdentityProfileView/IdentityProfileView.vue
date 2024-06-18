@@ -13,15 +13,15 @@ const onClick = () => {
     <v-sheet class="position-absolute bg-surface-light w-100 top-0" height="65"></v-sheet>
     <v-sheet class="text-center">
       <identity-profile-avatar :avatar-size="70"></identity-profile-avatar>
-      <h6 class="text-h6">{{ authStore.me?.username }}</h6>
+      <h6 class="text-h6">{{ authStore.authUser?.username }}</h6>
     </v-sheet>
   </v-sheet>
 
   <v-divider></v-divider>
   <v-sheet class="d-flex justify-center align-center" height="50">
     <v-sheet class="text-center">
-      <h6 class="text-caption">{{ authStore.me?.email }}</h6>
-      <h6 class="text-subtitle-2">role: {{ authStore.me?.role?.name }}</h6>
+      <h6 class="text-caption">{{ authStore.authUser?.email }}</h6>
+      <h6 class="text-subtitle-2">role: {{ authStore.authUser?.role?.name }}</h6>
     </v-sheet>
   </v-sheet>
 </template>

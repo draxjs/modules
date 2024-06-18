@@ -1,8 +1,7 @@
 // Plugins
 // @ts-ignore
 import { registerPlugins } from '@/plugins'
-//Core Systems Factories
-import {SystemFactory} from "./factories/SystemFactory";
+
 
 import i18n from "@/i18n/I18n";
 
@@ -17,6 +16,8 @@ registerPlugins(app)
 
 app.use(i18n)
 
+//Core Systems Factories
+import {SystemFactory} from "./factories/SystemFactory";
 const {authSystem: AuthSystem, userSystem: UserSystem, roleSystem: RoleSystem} = SystemFactory()
 
 app

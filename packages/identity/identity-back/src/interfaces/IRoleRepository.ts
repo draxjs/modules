@@ -1,10 +1,11 @@
 import {IRole} from './IRole'
 import {IPaginateFilter, IPaginateResult} from "@drax/common-back";
+import {IID} from "./IID";
 interface IRoleRepository{
     create(role: IRole): Promise<IRole>;
-    update(id: any, updatedRole: IRole): Promise<IRole | null>;
-    delete(id: any): Promise<boolean>;
-    findById(id: any): Promise<IRole | null>;
+    update(id: IID, updatedRole: IRole): Promise<IRole | null>;
+    delete(id: IID): Promise<boolean>;
+    findById(id: IID): Promise<IRole | null>;
     fetchAll(): Promise<IRole[]>;
     paginate(page?: number, limit?: number, filters?: IPaginateFilter[]): Promise<IPaginateResult>;
 }

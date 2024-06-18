@@ -1,8 +1,5 @@
 <template>
   <v-list dense class="pt-3">
-
-
-
     <template v-for="(item) in menu" :key="item.text">
 
       <v-list-group
@@ -41,6 +38,11 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
+import {useAuth} from "@drax/identity-vue";
+
+const route = useRoute()
+const auth = useAuth()
 
 import type {MenuItem} from "../../../types/menu";
 import {computed} from "vue";
@@ -52,43 +54,44 @@ interface Props {
 const props = defineProps<Props>();
 
 const itemText = computed(() => {
-  return item => item.text
+  return (item:MenuItem) => item.text
 })
 
-const isGranted = computed(() => {
-  return item => {
-    return true
+
+const isGranted = (item: MenuItem) => {
+  if(item.auth &&!isAuth.value){
+    return false;
   }
-})
+  if(item.permission && !auth.hasPermission(item.permission)){
+    return false;
+  }
+  return true;
+};
 
 const childActives = computed(() => {
-  return items => {
-    //return items.filter(item => isGranted(item))
-    return items.filter(item => true)
+  return (items: MenuItem[]) => {
+    return items.filter((item : MenuItem) => isGranted(item))
   }
 })
 
 const isAuth = computed(() => {
-  return true
+  return auth.isAuthenticated()
 })
 
 const isActive = computed(() => {
-  return item => {
-    return true
-  }
-  /* return item => {
+  return (item: MenuItem) => {
      if(item.children){
-       return item.children.some(i => {
+       return item.children.some((i: MenuItem) => {
          if(i.link && i.link.name){
-           return i.link.name === this.$route.name
+           return i.link.name === route.name
          }
          return false
        })
      }else if(item.link && item.link.name){
-       return item.link.name === this.$route.name
+       return item.link.name === route.name
      }
 
-   }*/
+   }
 })
 
 </script>

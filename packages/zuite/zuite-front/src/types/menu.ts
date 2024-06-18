@@ -8,6 +8,8 @@ interface MenuItem {
   link?: Link;
   gallery: boolean;
   children?: MenuItem[];
+  permission?: string;
+  auth?: boolean;
 }
 
 export type{

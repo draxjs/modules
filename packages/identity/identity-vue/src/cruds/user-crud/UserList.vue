@@ -2,9 +2,12 @@
 
 import {ref} from "vue";
 import {useUser} from "../../composables/useUser";
+import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
-const {t} = useI18n()
+
+const {hasPermission} = useAuth()
 const {paginateUser} = useUser()
+const {t} = useI18n()
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -45,6 +48,7 @@ defineExpose({
 
 <template>
   <v-data-table-server
+      v-if="hasPermission('user:manage')"
       v-model:items-per-page="itemsPerPage"
       v-model:page="page"
       :headers="headers"
@@ -62,8 +66,8 @@ defineExpose({
     </template>
 
     <template v-slot:item.actions="{item}" >
-      <v-btn icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
-      <v-btn icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
+      <v-btn v-if="hasPermission('user:edit')" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
+      <v-btn v-if="hasPermission('user:delete')" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
     </template>
 
   </v-data-table-server>

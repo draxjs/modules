@@ -3,6 +3,7 @@ import {GraphQLError} from "graphql";
 import {ValidationErrorToGraphQLError, ValidationError} from "@drax/common-back";
 import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
 import {Rbac} from "../../rbac/Rbac.js";
+import UnauthorizedError from "../../errors/UnauthorizedError.js";
 
 const userService = UserServiceFactory()
 
@@ -15,7 +16,7 @@ export default {
                     delete user.password
                     return user
                 }
-                return null
+                throw new UnauthorizedError()
             }catch (e) {
                 console.log(e)
                 throw new GraphQLError(e.message)

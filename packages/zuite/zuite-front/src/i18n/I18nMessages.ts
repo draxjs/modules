@@ -1,5 +1,7 @@
-import {commonValidationI18n, identityValidationI18n, identityUserI18n} from "@drax/i18n-share"
+import {IdentityI18nMessages} from "@drax/identity-front"
+import {CommonI18nMessages } from "@drax/common-front"
 import merge from 'deepmerge'
+import {LocaleMessages} from "vue-i18n";
 
 const mainMsg = {
   en: {
@@ -14,8 +16,6 @@ const mainMsg = {
   }
 }
 
-const messages = merge.all([mainMsg,commonValidationI18n, identityValidationI18n, identityUserI18n])
-
-console.log("messages",messages)
+const messages = merge.all([mainMsg,CommonI18nMessages,IdentityI18nMessages]) as LocaleMessages<any>
 
 export default messages

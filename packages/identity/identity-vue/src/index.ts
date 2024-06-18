@@ -5,7 +5,9 @@ import IdentityProfileView from "./components/IdentityProfileView/IdentityProfil
 import UserCrud from "./cruds/user-crud/UserCrud.vue";
 import UserList from "./cruds/user-crud/UserList.vue";
 import UserCrudPage from "./pages/UserCrudPage.vue";
-
+import {useAuth} from "./composables/useAuth.js";
+import {useUser} from "./composables/useUser.js";
+import {useRole} from "./composables/useRole.js";
 import {useAuthStore} from "./stores/auth/AuthStore.js";
 
 export {
@@ -14,6 +16,11 @@ export {
     IdentityProfileAvatar,
     IdentityProfileView,
     IdentityProfileDrawer,
+
+    //Vue Composables
+    useAuth,
+    useUser,
+    useRole,
 
     //Cruds
     UserCrud,
