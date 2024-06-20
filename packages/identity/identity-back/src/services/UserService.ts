@@ -13,6 +13,7 @@ class UserService {
 
     constructor(userRepository: IUserRepository) {
         this._repository = userRepository;
+        console.log("UserService constructor")
     }
 
     async auth(username : string, password : string){

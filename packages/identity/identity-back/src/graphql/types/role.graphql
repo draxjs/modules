@@ -16,6 +16,7 @@ type RolePaginated{
 type Query{
     paginateRole: RolePaginated
     fetchRole: [Role]
+    fetchPermissions: [String]
     findRoleById(id: ID): Role
 }
 

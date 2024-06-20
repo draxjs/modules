@@ -1,11 +1,12 @@
 import Fastify, {FastifyInstance, FastifyRequest, FastifyReply} from "fastify";
 import {createSchema, createYoga} from 'graphql-yoga'
-import {IJwtUser} from "@drax/identity-back";
+import {IJwtUser, Rbac} from "@drax/identity-back";
 
 
 declare module 'fastify' {
     interface FastifyRequest {
         authUser?: IJwtUser;
+        rbac?: Rbac;
     }
 }
 
@@ -59,6 +60,7 @@ class YogaFastifyServer {
                 // Second parameter adds Fastify's `req` and `reply` to the GraphQL Context
                 const response = await this.yoga.handleNodeRequestAndResponse(req, reply, {
                     authUser: req.authUser,
+                    rbac: req.rbac,
                     //req,
                     //reply
                 })

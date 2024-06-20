@@ -25,6 +25,9 @@ async function rbacMiddleware (request, reply) {
                 const role = await draxCache.getOrLoad(cacheKey, roleLoader)
                 const rbac = new Rbac(authUser,role)
                 request.rbac = rbac
+            }else{
+                const rbac = new Rbac(null,null)
+                request.rbac = rbac
             }
             return
         }catch (e) {

@@ -3,7 +3,7 @@ import type {UserSystem} from "@drax/identity-front";
 import type {IUser} from "@drax/identity-front";
 import type {IClientInputError} from "@drax/common-front";
 import {ClientError} from "@drax/common-front";
-import type {IUserCreate, IUserUpdate} from "@drax/identity-front/src/interfaces/IUser";
+import type {IUserCreate, IUserUpdate} from "@drax/identity-front";
 
 
 export function useUser() {

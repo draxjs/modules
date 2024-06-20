@@ -70,7 +70,11 @@ class ApolloFastifyServer {
     async linkFastifyApollo(): Promise<void> {
 
         const contextFunction: ApolloFastifyContextFunction<ApolloContext> = async (request) => {
-            return {request: request, authUser: request.authUser }
+            return {
+                request: request,
+                authUser: request.authUser,
+                rbac: request.rbac
+            }
         };
 
         this.fastifyServer.post("/graphql", fastifyApolloHandler(this.apolloServer, {

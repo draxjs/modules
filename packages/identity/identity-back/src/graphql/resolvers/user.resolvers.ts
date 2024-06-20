@@ -2,7 +2,6 @@ import UserServiceFactory from "../../factory/UserServiceFactory.js";
 import {GraphQLError} from "graphql";
 import {ValidationErrorToGraphQLError, ValidationError} from "@drax/common-back";
 import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
-import {Rbac} from "../../rbac/Rbac.js";
 import UnauthorizedError from "../../errors/UnauthorizedError.js";
 import BadCredentialsError from "../../errors/BadCredentialsError.js";
 
@@ -25,12 +24,27 @@ export default {
 
         },
         findUserById: async (_, {id}, {rbac}) => {
-            rbac.assertPermission(IdentityPermissions.ViewUser)
-            return await userService.findById(id)
+            try {
+                rbac.assertPermission(IdentityPermissions.ViewUser)
+                return await userService.findById(id)
+            } catch (e) {
+                if (e instanceof UnauthorizedError) {
+                    throw new GraphQLError(e.message)
+                }
+                throw new GraphQLError('error.server')
+            }
+
         },
         paginateUser: async (_, {page, limit}, {rbac}) => {
-            rbac.assertPermission(IdentityPermissions.ViewUser)
-            return await userService.paginate(page, limit)
+            try {
+                rbac.assertPermission(IdentityPermissions.ViewUser)
+                return await userService.paginate(page, limit)
+            } catch (e) {
+                if (e instanceof UnauthorizedError) {
+                    throw new GraphQLError(e.message)
+                }
+                throw new GraphQLError('error.server')
+            }
         }
     },
     Mutation: {
@@ -38,6 +52,7 @@ export default {
             try {
                 return await userService.auth(input.username, input.password)
             } catch (e) {
+                console.error("auth",e)
                 if (e instanceof BadCredentialsError) {
                     throw new GraphQLError(e.message)
                 }
@@ -51,8 +66,11 @@ export default {
                 const user = await userService.create(input)
                 return user
             } catch (e) {
+                console.error("createUser",e)
                 if (e instanceof ValidationError) {
                     throw ValidationErrorToGraphQLError(e)
+                } else if (e instanceof UnauthorizedError) {
+                    throw new GraphQLError(e.message)
                 }
                 throw new GraphQLError('error.server')
             }
@@ -65,8 +83,11 @@ export default {
                 const user = await userService.update(id, input)
                 return user
             } catch (e) {
+                console.error("updateUser",e)
                 if (e instanceof ValidationError) {
                     throw ValidationErrorToGraphQLError(e)
+                } else if (e instanceof UnauthorizedError) {
+                    throw new GraphQLError(e.message)
                 }
                 throw new GraphQLError('error.server')
             }
@@ -76,8 +97,11 @@ export default {
                 rbac.assertPermission(IdentityPermissions.DeleteUser)
                 return await userService.delete(id)
             } catch (e) {
+                console.error("deleteUser",e)
                 if (e instanceof ValidationError) {
                     throw ValidationErrorToGraphQLError(e)
+                } else if (e instanceof UnauthorizedError) {
+                    throw new GraphQLError(e.message)
                 }
                 throw new GraphQLError('error.server')
             }

@@ -5,6 +5,14 @@ import IdentityProfileView from "./components/IdentityProfileView/IdentityProfil
 import UserCrud from "./cruds/user-crud/UserCrud.vue";
 import UserList from "./cruds/user-crud/UserList.vue";
 import UserCrudPage from "./pages/UserCrudPage.vue";
+import UserCreateForm from "./forms/UserCreateForm.vue";
+import UserEditForm from "./forms/UserEditForm.vue";
+import RoleForm from "./forms/RoleForm.vue";
+
+import RoleCrud from "./cruds/role-crud/RoleCrud.vue";
+import RoleList from "./cruds/role-crud/RoleList.vue";
+import RoleCrudPage from "./pages/RoleCrudPage.vue";
+
 import {useAuth} from "./composables/useAuth.js";
 import {useUser} from "./composables/useUser.js";
 import {useRole} from "./composables/useRole.js";
@@ -17,6 +25,11 @@ export {
     IdentityProfileView,
     IdentityProfileDrawer,
 
+    //Forms
+    UserCreateForm,
+    UserEditForm,
+    RoleForm,
+
     //Vue Composables
     useAuth,
     useUser,
@@ -26,8 +39,12 @@ export {
     UserCrud,
     UserList,
 
+    RoleCrud,
+    RoleList,
+
     //Pages
     UserCrudPage,
+    RoleCrudPage,
 
     //Stores
     useAuthStore

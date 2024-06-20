@@ -28,7 +28,13 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'user:manage'
       },
-
+      {
+        icon: 'mdi-table-account',
+        text:'Roles',
+        link: { name: "CrudRole" },
+        gallery: true,
+        permission: 'role:manage'
+      },
     ]
   },
   {

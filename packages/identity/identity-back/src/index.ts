@@ -3,6 +3,7 @@ import UserServiceFactory from "./factory/UserServiceFactory.js";
 import RoleServiceFactory from "./factory/RoleServiceFactory.js";
 import RoleService from "./services/RoleService.js";
 import UserService from "./services/UserService.js";
+import PermissionService from "./services/PermissionService.js";
 import Rbac from "./rbac/Rbac.js";
 import {UserRoutes} from "./routes/UserRoutes.js";
 import {RoleRoutes} from "./routes/RoleRoutes.js";
@@ -37,6 +38,7 @@ export {
     //Service
     UserService,
     RoleService,
+    PermissionService,
     Rbac,
 
     //Factories

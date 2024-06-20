@@ -14,11 +14,11 @@ async function UserRoutes(fastify, options) {
             const password = request.body.password
             return await userService.auth(username, password)
         } catch (e) {
+            console.error('/api/auth error', e)
             if (e instanceof BadCredentialsError) {
                 reply.code(401)
                 reply.send({error: e.message})
             }
-            console.error('/api/auth error',e)
             reply.code(500)
             reply.send({error: 'error.server'})
         }
@@ -38,6 +38,9 @@ async function UserRoutes(fastify, options) {
             if (e instanceof UnauthorizedError) {
                 reply.code(401)
                 reply.send({error: "Unauthorized"})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
                 reply.send({error: 'INTERNAL_SERVER_ERROR'})
@@ -48,11 +51,25 @@ async function UserRoutes(fastify, options) {
     })
 
     fastify.get('/api/users', async (request, reply): Promise<IPaginateResult> => {
-        request.rbac.assertPermission(IdentityPermissions.ViewUser)
-        const page = request.query.page
-        const limit = request.query.limit
-        let paginateResult = await userService.paginate(page, limit)
-        return paginateResult
+
+        try {
+            request.rbac.assertPermission(IdentityPermissions.ViewUser)
+            const page = request.query.page
+            const limit = request.query.limit
+            let paginateResult = await userService.paginate(page, limit)
+            return paginateResult
+        } catch (e) {
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+            }
+        }
     })
 
     fastify.post('/api/users', async (request, reply): Promise<IUser> => {
@@ -65,6 +82,9 @@ async function UserRoutes(fastify, options) {
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
                 reply.send({error: 'INTERNAL_SERVER_ERROR'})
@@ -88,6 +108,9 @@ async function UserRoutes(fastify, options) {
             if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
                 reply.send({error: 'INTERNAL_SERVER_ERROR'})
@@ -105,6 +128,9 @@ async function UserRoutes(fastify, options) {
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
                 reply.send({error: 'INTERNAL_SERVER_ERROR'})

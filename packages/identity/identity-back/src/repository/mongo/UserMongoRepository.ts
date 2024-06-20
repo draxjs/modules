@@ -1,11 +1,11 @@
 import {UserModel} from "../../models/UserModel.js";
 import {mongoose, MongooseErrorToValidationError, ValidationError} from "@drax/common-back"
 import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
-import {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
+import type {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
 import {DeleteResult} from "mongodb";
-import {IUserRepository} from "../../interfaces/IUserRepository";
+import type {IUserRepository} from "../../interfaces/IUserRepository";
 import {PaginateResult} from "mongoose";
-import RoleMongoRepository from "./RoleMongoRepository";
+import RoleMongoRepository from "./RoleMongoRepository.js";
 
 class UserMongoRepository implements IUserRepository {
     private roleRepository: RoleMongoRepository;

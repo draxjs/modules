@@ -1,4 +1,4 @@
-import {UserCrudPage} from "@drax/identity-vue";
+import {UserCrudPage, RoleCrudPage} from "@drax/identity-vue";
 import HomePage from '../pages/home/index.vue'
 import LoginPage from '../pages/user/login/index.vue'
 
@@ -26,6 +26,15 @@ const routes = [
     meta:{
       auth: true,
       permission: 'user:manage'
+    }
+  },
+  {
+    name: 'CrudRole',
+    path: '/crud/role',
+    component: RoleCrudPage,
+    meta:{
+      auth: true,
+      permission: 'role:manage'
     }
   },
   {

@@ -13,6 +13,7 @@ enum IdentityPermissions {
     DeleteRole = "role:delete",
     ViewRole = "role:view",
     ManageRole = "role:manage",
+    PermissionsRole = "role:permissions",
 
 }
 

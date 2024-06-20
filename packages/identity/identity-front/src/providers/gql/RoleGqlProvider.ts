@@ -1,6 +1,7 @@
-import type {IGqlClient} from '@drax/common-front'
+import type {IGqlClient, IPaginateClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider";
 import type {IRole} from "../../interfaces/IRole";
+
 
 class RoleGqlProvider implements IRoleProvider {
 
@@ -18,13 +19,11 @@ class RoleGqlProvider implements IRoleProvider {
         this.gqlClient.removeHeader('Authorization')
     }
 
-    async createRole(payload: IRole): Promise<any> {
-        const query: string = `mutation createRole($input: UserInput) { 
-        createRole(input: $input) {id name permissions readonly } 
-        }`
-        const variables = {input: payload}
-        let data = await this.gqlClient.mutation(query, variables)
-        return data.createRole
+    async fetchPermissions(): Promise<any> {
+        const query: string = `query fetchPermissions { fetchPermissions }`
+        const variables = {}
+        let data = await this.gqlClient.query(query, variables)
+        return data.fetchPermissions
     }
 
     async fetchRole(): Promise<any> {
@@ -33,6 +32,39 @@ class RoleGqlProvider implements IRoleProvider {
         let data = await this.gqlClient.query(query, variables)
         return data.fetchRole
     }
+
+    async createRole(payload: IRole): Promise<any> {
+        const query: string = `mutation createRole($input: RoleInput) { 
+        createRole(input: $input) {id name permissions readonly } 
+        }`
+        const variables = {input: payload}
+        let data = await this.gqlClient.mutation(query, variables)
+        return data.createRole
+    }
+
+    async editRole(id: string, payload: IRole): Promise<IRole> {
+        const query: string = `mutation updateRole($id: ID!, $input: RoleInput) { updateRole(id: $id, input: $input) {  
+        id name permissions readonly  } }`
+        const variables = {id, input: payload}
+        let data = await this.gqlClient.mutation(query, variables)
+        return data.createRole
+    }
+
+    async deleteRole(id: string): Promise<any> {
+        const query: string = `mutation deleteRole($id: ID!) { deleteRole(id: $id) }`
+        const variables = {id: id}
+        let data = await this.gqlClient.mutation(query, variables)
+        return data.createRole
+    }
+
+    async paginateRole(page: number, limit: number): Promise<IPaginateClient> {
+        const query: string = `query paginateRole { paginateRole { total, page, limit, items{id, name username, email, phone, active, role{id, name} } } }`
+        const variables = {page, limit}
+        let data = await this.gqlClient.query(query, variables)
+        return data.paginateRole
+    }
+
+
 }
 
 export default RoleGqlProvider

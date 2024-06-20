@@ -8,6 +8,7 @@ class RoleService {
 
     constructor(roleRepostitory: IRoleRepository) {
         this._repository = roleRepostitory
+        console.log("RoleService constructor")
     }
 
     async create(roleData: IRole): Promise<IRole> {
