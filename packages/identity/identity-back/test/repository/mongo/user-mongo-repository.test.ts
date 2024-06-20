@@ -3,7 +3,6 @@ import assert, {equal} from "assert";
 import UserMongoRepository from "../../../src/repository/mongo/UserMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
 import RoleMongoInitializer from "../../initializers/RoleMongoInitializer";
-import {IRole} from "../../../src/interfaces/IRole";
 import {IUser} from "../../../src/interfaces/IUser";
 import type {IPaginateResult} from "@drax/common-back";
 import {mongoose, ValidationError} from "@drax/common-back";
@@ -12,8 +11,8 @@ import {mongoose, ValidationError} from "@drax/common-back";
 test.describe("UserRepositoryTest", function () {
 
     let userRepository = new UserMongoRepository()
-    let adminRole: IRole
-    let userAdminData: IUser
+    let adminRole
+    let userAdminData
 
     before(async () => {
         await MongoInMemory.connect()
@@ -46,7 +45,6 @@ test.describe("UserRepositoryTest", function () {
             },
             (error) => {
                 assert(error instanceof ValidationError, 'Expected error to be instance of ValidationError');
-                assert.strictEqual(error.errors[0].entity, 'User');
                 assert.strictEqual(error.errors[0].field, '_id');
                 return true;
             },
@@ -64,8 +62,31 @@ test.describe("UserRepositoryTest", function () {
             },
             (error) => {
                 assert(error instanceof ValidationError, 'Expected error to be instance of ValidationError');
-                assert.strictEqual(error.errors[0].entity, 'User');
                 assert.strictEqual(error.errors[0].field, 'username');
+                assert.strictEqual(error.errors[0].reason, 'validation.unique');
+                return true;
+            },
+        );
+    })
+
+    test("Create mongo user fail if role doesnt exist", async function () {
+        userAdminData = (await import("../../data-obj/users/root-mongo-user")).default
+        let userData = {...userAdminData,
+            _id: '646a661e44c93567c23d8d56',
+            email: "a456@asd567.com",
+            username: "rolenotexist",
+            role: "646a661e44c93567c23d8d89"
+        }
+
+        await assert.rejects(
+            async () => {
+                await userRepository.create(userData)
+            },
+            (err) => {
+                //console.log("error",err)
+                assert(err instanceof ValidationError, 'Expected error to be instance of ValidationError');
+                assert.strictEqual(err.errors[0].field, 'role');
+                assert.strictEqual(err.errors[0].reason, 'validation.notfound');
                 return true;
             },
         );

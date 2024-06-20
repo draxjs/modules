@@ -18,7 +18,7 @@ async function roleLoader(k):Promise<IRoleBase | null> {
 
 async function rbacMiddleware (request, reply) {
         try{
-            console.log("rbacMiddleware authUser",request.authUser)
+            //console.log("rbacMiddleware authUser",request.authUser)
             if(request.authUser as IJwtUser){
                 const authUser = request.authUser
                 const cacheKey= authUser.roleId

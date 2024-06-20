@@ -14,6 +14,11 @@ export function useAuth() {
         return authUser
     }
 
+    function logout(){
+        authSystem.logout()
+        authStore.clearAuth()
+    }
+
     function hasPermission(permission:string) {
         return authStore?.authUser?.role?.permissions ? authStore.authUser.role.permissions.includes(permission) : false
     }
@@ -32,6 +37,6 @@ export function useAuth() {
 
     }
 
-    return {hasPermission, tokenIsValid, isAuthenticated, fetchAuthUser}
+    return {hasPermission, logout, tokenIsValid, isAuthenticated, fetchAuthUser}
 
 }

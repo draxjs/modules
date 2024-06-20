@@ -4,6 +4,7 @@ import type {ILoginResponse} from "@/interfaces/ILoginResponse";
 interface IAuthProvider {
     login(username: string, password: string): Promise<ILoginResponse>
     me(): Promise<IAuthUser>
+    logout(): void
 }
 
 export type {IAuthProvider}

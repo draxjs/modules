@@ -37,19 +37,19 @@ class HttpGqlClient implements IGqlClient {
 
     if (error instanceof GqlError) {
       if(error.isBadUserInput){
-        return new ClientError(error.message, error.extensions?.inputErrors)
+        return new ClientError(error)
       }
-      return new UnknownError(error.message);
+      return new UnknownError(error);
     }else if (error instanceof GqlMultiError) {
       return error
     } else if (error instanceof HttpStatusError) {
-      return new ServerError(error.message)
+      return new ServerError(error)
     } else if (error.name === 'AbortError') {
-      return new ServerError(error.message)
+      return new ServerError(error)
     } else if (error.name === 'TypeError') {
-      return new NetworkError(error.message)
+      return new NetworkError(error)
     } else {
-      return new UnknownError(error.message);
+      return new UnknownError(error);
     }
   }
 

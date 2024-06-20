@@ -19,6 +19,10 @@ class AuthGqlProvider implements IAuthProvider {
         this.gqlClient.removeHeader('Authorization')
     }
 
+    logout(): void {
+        this.removeHttpClientToken()
+    }
+
     async login(username: string, password: string): Promise<ILoginResponse> {
 
         const query: string = `mutation auth($input: AuthInput) { auth(input: $input) {accessToken} }`

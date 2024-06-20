@@ -1,7 +1,12 @@
+import type {IInputError} from "@/interfaces/IInputError";
+
 interface IGqlError {
   message: string;
   path: Array<string>;
-  extensions?: any
+  extensions?: {
+    code?: string;
+    inputError?:  IInputError[]
+  }
   isBadUserInput: boolean
 }
 

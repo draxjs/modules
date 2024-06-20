@@ -5,6 +5,7 @@ import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {IPaginateFilter, IPaginateResult, ValidationError} from "@drax/common-back";
 import {SqliteErrorToValidationError} from "@drax/common-back";
+import {IID} from "../../interfaces/IID";
 
 const roleTableSQL: string = `
     CREATE TABLE IF NOT EXISTS roles
@@ -74,13 +75,16 @@ class RoleSqliteRepository implements IRoleRepository{
         }
     }
 
-    async findById(id: UUID): Promise<IRole | null>{
+    async findById(id: IID): Promise<IRole | null>{
         const role = this.db.prepare('SELECT * FROM roles WHERE id = ?').get(id);
-        role.permissions = role.permissions ? role.permissions.split(",") : []
-        return role
+        if(role){
+            role.permissions = role.permissions ? role.permissions.split(",") : []
+            return role
+        }
+        return undefined
     }
 
-    async update(id: UUID, roleData: IRole): Promise<IRole> {
+    async update(id: IID, roleData: IRole): Promise<IRole> {
         try{
             this.normalizeData(roleData)
             const setClauses = Object.keys(roleData)
@@ -97,7 +101,7 @@ class RoleSqliteRepository implements IRoleRepository{
 
     }
 
-    async delete(id: UUID): Promise<boolean> {
+    async delete(id: IID): Promise<boolean> {
         const stmt = this.db.prepare('DELETE FROM roles WHERE id = ?');
         stmt.run(id);
         return true
@@ -133,6 +137,8 @@ class RoleSqliteRepository implements IRoleRepository{
             items: roles
         }
     }
+
+
 }
 
 export default RoleSqliteRepository

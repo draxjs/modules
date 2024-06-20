@@ -11,7 +11,7 @@ export function useUser() {
     const userSystem = inject('UserSystem') as UserSystem
 
     let userError = ref<string>('')
-    let inputErrors = ref<IClientInputError>({})
+    let inputErrors = ref<IClientInputError>()
     let loading = ref(false);
 
     async function paginateUser(page = 1, perPage = 5) {

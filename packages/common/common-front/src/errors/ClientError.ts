@@ -1,16 +1,46 @@
 import type {IInputError} from "../interfaces/IInputError";
 import type {IClientInputError} from "../interfaces/IClientInputError";
+import type {IGqlError} from "../interfaces/IGqlError";
+import type {IRestError} from "../interfaces/IRestError";
+
 
 class ClientError extends Error {
-  inputErrors: IClientInputError
+  inputErrors: IClientInputError|undefined
+  private error: IRestError|IGqlError;
 
-  constructor(message: string, inputErrors?: IInputError[]) {
+  constructor(error: IRestError|IGqlError) {
+    let inputErrors = ClientError.extractInputErrors(error)
+    let message = ClientError.extractErorMessage(error)
     super(message)
     this.name = 'ClientError'
-    this.inputErrors = inputErrors ? this.convertToKeyValue(inputErrors) : {}
+    this.inputErrors = inputErrors
+    this.error = error
   }
 
-  convertToKeyValue(input: IInputError[]) {
+  static extractErorMessage(error: IRestError|IGqlError): string {
+    if ('body' in error && error.body && error.body.inputError) {
+      return 'error.validation'
+    }
+
+    if ('body' in error && error.body && error.body.error) {
+      return error.body.error
+    }
+
+    return 'error.client'
+  }
+
+  static extractInputErrors(error: IRestError|IGqlError): IClientInputError|undefined {
+    if ('body' in error && error.body && error.body.inputError) {
+      return ClientError.convertToKeyValue(error.body.inputError)
+    }
+    if ('extensions' in error && error.extensions && error.extensions.inputError) { // Corrected property name to inputError
+      return ClientError.convertToKeyValue(error.extensions.inputError) // Corrected property name to inputError
+    }
+
+    return undefined
+  }
+
+  static convertToKeyValue(input: IInputError[]) {
     if (Array.isArray(input) && input.length > 0) {
       return input.reduce((acc: IClientInputError, {field, reason}) => {
         if (!acc[field]) {

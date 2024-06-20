@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import {useAuthStore} from "../../stores/auth/AuthStore.js";
+import {useAuth} from "../../composables/useAuth";
 import {defineModel, ref} from "vue";
-import IdentityProfileAvatar from "../IdentityProfileAvatar/IdentityProfileAvatar.vue";
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 
-const authStore = useAuthStore()
+const auth = useAuth()
 
 const valueModel = defineModel()
 
@@ -24,7 +23,7 @@ function gotoLogin(){
       location="right"
   >
 
-    <template v-if="authStore.authUser">
+    <template v-if="auth.isAuthenticated()">
       <identity-profile-view></identity-profile-view>
       <v-divider></v-divider>
 
@@ -36,7 +35,7 @@ function gotoLogin(){
         >
         </v-list-item>
         <v-list-item
-            @click="authStore.clearAuth"
+            @click="auth.logout()"
             prepend-icon="mdi-logout"
             title="Logout"
         >

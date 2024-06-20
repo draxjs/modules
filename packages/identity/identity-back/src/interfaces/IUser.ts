@@ -14,8 +14,32 @@ interface IUser {
     avatar?: string
     code?: string
     role: IRole | IID
-    groups: mongoose.Types.ObjectId[] | IUserGroup[] | string[] | string
+    groups: IID[] | IUserGroup[] | string[] | string
     toObject(): IUser;
 }
 
-export {IUser}
+interface IUserCreate {
+    id?: IID
+    name: string
+    username: string
+    password: string
+    email: string
+    active: boolean | number
+    phone: string
+    role: IID
+    groups: IID[] | string
+}
+
+interface IUserUpdate {
+    id?: IID
+    name: string
+    username: string
+    email: string
+    active: boolean
+    phone: string
+    role: IID
+    groups: IID[]
+    password?: string
+}
+
+export {IUser, IUserCreate, IUserUpdate}

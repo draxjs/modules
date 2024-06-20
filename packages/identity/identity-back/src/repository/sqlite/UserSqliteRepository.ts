@@ -1,11 +1,12 @@
-import {IUser} from "../../interfaces/IUser";
+import {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {UUID} from "crypto";
 import {IUserRepository} from "../../interfaces/IUserRepository";
 import type {IPaginateResult} from "@drax/common-back";
-import {SqliteErrorToValidationError} from "@drax/common-back";
+import {SqliteErrorToValidationError, ValidationError} from "@drax/common-back";
 import RoleSqliteRepository from "./RoleSqliteRepository.js";
+import {IID} from "../../interfaces/IID";
 
 
 const userTableSQL: string = `
@@ -38,16 +39,20 @@ class UserSqliteRepository implements IUserRepository{
         this.db.exec(userTableSQL);
     }
 
-    normalizeData(userData: IUser){
+    normalizeData(userData: IUserCreate | IUserUpdate): void{
         if(userData.groups && Array.isArray(userData.groups)){
             userData.groups = userData.groups.join(",")
         }
         userData.active = userData.active ? 1 : 0
     }
 
-    async create(userData: IUser): Promise<IUser> {
+    async create(userData: IUserCreate): Promise<IUser> {
         if(!userData.id){
             userData.id = randomUUID()
+        }
+
+        if(!await this.findRoleById(userData.role)){
+            throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
         }
 
         this.normalizeData(userData)
@@ -75,8 +80,12 @@ class UserSqliteRepository implements IUserRepository{
 
     }
 
-    async update(id: UUID, userData: IUser): Promise<IUser> {
+    async update(id: UUID, userData: IUserUpdate): Promise<IUser> {
         try {
+            if(!await this.findRoleById(userData.role)){
+                throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
+            }
+
             this.normalizeData(userData)
 
             const setClauses = Object.keys(userData)
@@ -108,7 +117,7 @@ class UserSqliteRepository implements IUserRepository{
         if(!user){
             return null
         }
-        user.role = await this.populateRole(user.role)
+        user.role = await this.findRoleById(user.role)
         return user
     }
 
@@ -117,7 +126,7 @@ class UserSqliteRepository implements IUserRepository{
         if(!user){
             return null
         }
-        user.role = await this.populateRole(user.role)
+        user.role = await this.findRoleById(user.role)
         return user
     }
 
@@ -127,7 +136,13 @@ class UserSqliteRepository implements IUserRepository{
         const users = this.db.prepare('SELECT * FROM users LIMIT ? OFFSET ?').all([limit, offset]);
 
         for (const user of users) {
-            user.role = await this.populateRole(user.role)
+            let role = await this.findRoleById(user.role)
+            if(role){
+                user.role = role
+            }else{
+                user.role = null
+            }
+
             user.active = user.active === 1
         }
 
@@ -139,7 +154,7 @@ class UserSqliteRepository implements IUserRepository{
         }
     }
 
-    async populateRole(id : UUID){
+    async findRoleById(id : IID){
         return await this.roleRepository.findById(id)
     }
 }

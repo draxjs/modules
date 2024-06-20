@@ -1,15 +1,27 @@
 import {UserModel} from "../../models/UserModel.js";
-import {mongoose, MongooseErrorToValidationError} from "@drax/common-back"
+import {mongoose, MongooseErrorToValidationError, ValidationError} from "@drax/common-back"
 import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
-import {IUser} from "../../interfaces/IUser";
+import {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
 import {DeleteResult} from "mongodb";
 import {IUserRepository} from "../../interfaces/IUserRepository";
 import {PaginateResult} from "mongoose";
+import RoleMongoRepository from "./RoleMongoRepository";
 
 class UserMongoRepository implements IUserRepository {
+    private roleRepository: RoleMongoRepository;
 
-    async create(userData: IUser): Promise<IUser> {
+
+    constructor() {
+        this.roleRepository = new RoleMongoRepository()
+    }
+
+    async create(userData: IUserCreate): Promise<IUser> {
         try{
+
+            if(!await this.roleRepository.findById(userData.role as mongoose.Types.ObjectId)){
+                throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
+            }
+
             const user: mongoose.HydratedDocument<IUser> = new UserModel(userData)
             await user.save()
             await user.populate('role')
@@ -23,7 +35,7 @@ class UserMongoRepository implements IUserRepository {
 
     }
 
-    async update(id: mongoose.Types.ObjectId, userData: IUser): Promise<IUser> {
+    async update(id: mongoose.Types.ObjectId, userData: IUserUpdate): Promise<IUser> {
         try{
         const user: mongoose.HydratedDocument<IUser> = await UserModel.findOneAndUpdate(id, userData, {new: true}).populate('role').exec()
         return user

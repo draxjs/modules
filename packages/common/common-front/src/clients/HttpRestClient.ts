@@ -34,22 +34,19 @@ class HttpRestClient implements IHttpClient {
   errorHandler(error: Error): Error {
     if (error instanceof HttpStatusError && error.statusCode >= 400 && error.statusCode <= 599) {
       if(error.statusCode >= 400 && error.statusCode <= 499){
-
-        let message = error.body  && error.body.error ? error.body.error : error.message;
-        let inputErrors = error.body && error.body.inputErrors? error.body.inputErrors : {}
-        return new ClientError(message, inputErrors)
-
+        return new ClientError(error)
       }else if(error.statusCode >= 500 && error.statusCode <= 599){
-        return new ServerError(error.message)
+        return new ServerError(error)
       }else{
-        return new UnknownError(error.message);
+        console.log("UnknownError",error)
+        return new UnknownError(error);
       }
     }else if (error.name === 'AbortError') {
-      return new ServerError(error.message)
+      return new ServerError(error)
     } else if (error.name === 'TypeError') {
-      return new NetworkError(error.message);
+      return new NetworkError(error);
     }else{
-      return new UnknownError(error.message);
+      return new UnknownError(error);
     }
   }
 

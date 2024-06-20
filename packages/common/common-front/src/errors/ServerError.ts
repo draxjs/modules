@@ -1,8 +1,10 @@
 class ServerError extends Error {
+  private error: Error;
 
-  constructor(message: string) {
-    super(message)
+  constructor(error: Error) {
+    super('error.server')
     this.name = 'ServerError'
+    this.error = error
   }
 
   consoleError() {

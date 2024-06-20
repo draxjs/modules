@@ -1,7 +1,7 @@
-import {IUser} from "../interfaces/IUser";
-import {IPaginateResult, ValidationError} from "@drax/common-back";
+import {ValidationError} from "@drax/common-back";
 import RoleServiceFactory from "../factory/RoleServiceFactory.js";
 import {IRole} from "../interfaces/IRole";
+import {IdentityPermissions} from "identity";
 
 const roleService = RoleServiceFactory()
 
@@ -9,6 +9,7 @@ async function RoleRoutes(fastify, options) {
 
     fastify.get('/api/roles', async (request, reply): Promise<IRole[]> => {
         try {
+            request.rbac.assertPermission(IdentityPermissions.ViewRole)
             let roles = await roleService.fetchAll()
             return roles
         } catch (e) {
@@ -24,6 +25,7 @@ async function RoleRoutes(fastify, options) {
 
     fastify.post('/api/roles', async (request, reply): Promise<IRole> => {
         try {
+            request.rbac.assertPermission(IdentityPermissions.CreateRole)
             const payload = request.body
             let role = await roleService.create(payload)
             return role
@@ -41,6 +43,7 @@ async function RoleRoutes(fastify, options) {
 
     fastify.put('/api/roles/:id', async (request, reply): Promise<IRole> => {
         try {
+            request.rbac.assertPermission(IdentityPermissions.EditRole)
             const id = request.params.id
             const payload = request.body
             let role = await roleService.update(id, payload)
@@ -59,6 +62,7 @@ async function RoleRoutes(fastify, options) {
 
     fastify.delete('/api/roles/:id', async (request, reply): Promise<any> => {
         try {
+            request.rbac.assertPermission(IdentityPermissions.DeleteRole)
             const id = request.params.id
             let r = await roleService.delete(id)
             return r

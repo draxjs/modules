@@ -43,7 +43,7 @@ describe("RoleRepositoryTest",  function() {
     })
 
     it("Retrieving all roles successfully.",  async function() {
-        let roles: IRole[] = await roleReposirory.fetch()
+        let roles: IRole[] = await roleReposirory.fetchAll()
         equal(roles.length,1)
     })
 

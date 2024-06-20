@@ -1,10 +1,11 @@
-import {IUser} from "../interfaces/IUser";
-import {IUserRepository} from "../interfaces/IUserRepository";
+import type {IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser";
+import type {IUserRepository} from "../interfaces/IUserRepository";
+import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
+import {ZodError} from "zod";
+import {ZodErrorToValidationError} from "@drax/common-back";
 import AuthUtils from "../utils/AuthUtils.js";
 import {createUserSchema, editUserSchema,} from "../zod/UserZod.js";
-import {ZodError} from "zod";
-import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
-import {ZodErrorToValidationError} from "@drax/common-back";
+import BadCredentialsError from "../errors/BadCredentialsError.js";
 
 class UserService {
 
@@ -24,11 +25,11 @@ class UserService {
             const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, user.role.id, session)
             return {accessToken: accessToken}
         }else{
-            throw Error('BadCredentials')
+            throw new BadCredentialsError()
         }
     }
 
-    async create(userData: IUser): Promise<IUser> {
+    async create(userData: IUserCreate): Promise<IUser> {
         try{
             userData.name = userData?.name?.trim()
             userData.username = userData.username.trim()
@@ -49,7 +50,7 @@ class UserService {
 
     }
 
-    async update(id: any, userData: IUser) {
+    async update(id: any, userData: IUserUpdate) {
         try{
         userData.name = userData.name.trim()
         userData.username = userData.username.trim()

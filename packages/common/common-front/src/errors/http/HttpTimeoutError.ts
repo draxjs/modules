@@ -1,7 +1,7 @@
-import type {IHttpError} from "@/interfaces/IHttpError";
+import type {IRestError} from "@/interfaces/IRestError";
 import HttpError from "./HttpError";
 
-class HttpTimeoutError extends HttpError implements IHttpError {
+class HttpTimeoutError extends HttpError implements IRestError {
   public statusCode: number;
   public body: any;
 

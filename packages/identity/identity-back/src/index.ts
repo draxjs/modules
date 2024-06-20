@@ -12,6 +12,7 @@ import {rbacMiddleware} from "./middleware/rbacMiddleware.js";
 
 import IdentityPermissions from "./permissions/IdentityPermissions.js";
 import UnauthorizedError from "./errors/UnauthorizedError.js";
+import BadCredentialsError from "./errors/BadCredentialsError.js";
 
 import type {IJwtUser} from "./interfaces/IJwtUser";
 import type {IRole, IRoleBase} from "./interfaces/IRole";
@@ -61,6 +62,7 @@ export {
 
     //Errors
     UnauthorizedError,
+    BadCredentialsError
 }
 
 

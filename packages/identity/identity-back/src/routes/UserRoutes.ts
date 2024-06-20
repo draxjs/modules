@@ -1,8 +1,9 @@
 import UserServiceFactory from "../factory/UserServiceFactory.js";
 import {IUser} from "../interfaces/IUser";
 import {IPaginateResult, ValidationError} from "@drax/common-back";
-import {IdentityPermissions} from "identity";
+import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
+import BadCredentialsError from "../errors/BadCredentialsError.js";
 
 const userService = UserServiceFactory()
 
@@ -11,15 +12,15 @@ async function UserRoutes(fastify, options) {
         try {
             const username = request.body.username
             const password = request.body.password
-            console.log("/api/auth username", username)
             return await userService.auth(username, password)
         } catch (e) {
-            if (e.message === "BadCredentials") {
+            if (e instanceof BadCredentialsError) {
                 reply.code(401)
                 reply.send({error: e.message})
             }
-            console.error(e)
-            throw e
+            console.error('/api/auth error',e)
+            reply.code(500)
+            reply.send({error: 'error.server'})
         }
     })
 
@@ -47,6 +48,7 @@ async function UserRoutes(fastify, options) {
     })
 
     fastify.get('/api/users', async (request, reply): Promise<IPaginateResult> => {
+        request.rbac.assertPermission(IdentityPermissions.ViewUser)
         const page = request.query.page
         const limit = request.query.limit
         let paginateResult = await userService.paginate(page, limit)
@@ -55,6 +57,7 @@ async function UserRoutes(fastify, options) {
 
     fastify.post('/api/users', async (request, reply): Promise<IUser> => {
         try {
+            request.rbac.assertPermission(IdentityPermissions.CreateUser)
             const payload = request.body
             let user = await userService.create(payload)
             return user
@@ -94,6 +97,7 @@ async function UserRoutes(fastify, options) {
 
     fastify.delete('/api/users/:id', async (request, reply): Promise<any> => {
         try {
+            request.rbac.assertPermission(IdentityPermissions.DeleteUser)
             const id = request.params.id
             let r = await userService.delete(id)
             return r

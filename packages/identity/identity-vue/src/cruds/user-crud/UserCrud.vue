@@ -87,7 +87,7 @@ function toEdit(item: IUser) {
   dialogTitle.value = 'Editando Usuario';
   const {id, ...rest} = item;
   targetId.value = id;
-  rest.role = rest.role.id
+  rest.role = rest.role ? rest.role.id : null
   editForm.value = {...rest}
   dialog.value = true;
 }

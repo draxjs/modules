@@ -16,6 +16,10 @@ class AuthSystem {
         return r
     }
 
+    logout():void {
+        this._provider.logout()
+    }
+
     async me():Promise<IAuthUser> {
         const authUser: IAuthUser = await this._provider.me()
         return authUser

@@ -50,7 +50,7 @@ test.describe("UserRepositoryTest", function () {
                 await userRepository.create(userData)
             },
             (err) => {
-                assert(err instanceof ValidationError, 'Expected error to be instance of UniqueError');
+                assert(err instanceof ValidationError, 'Expected error to be instance of ValidationError');
                 assert.strictEqual(err.errors[0].field, 'id');
                 assert.strictEqual(err.errors[0].reason, 'validation.unique');
                 return true;
@@ -67,9 +67,31 @@ test.describe("UserRepositoryTest", function () {
                 await userRepository.create(userData)
             },
             (err) => {
-                assert(err instanceof ValidationError, 'Expected error to be instance of UniqueError');
+                assert(err instanceof ValidationError, 'Expected error to be instance of ValidationError');
                 assert.strictEqual(err.errors[0].field, 'username');
                 assert.strictEqual(err.errors[0].reason, 'validation.unique');
+                return true;
+            },
+        );
+    })
+
+    test("Create sqlite user fail if role doesnt exist", async function () {
+        userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
+        let userData = {...userAdminData,
+            id: '539f51a6-5d40-4ef2-85c4-f480f042f422',
+            email: "a456@asd567.com",
+            username: "rolenotexist",
+            role: "notexist"
+        }
+
+        await assert.rejects(
+            async () => {
+                await userRepository.create(userData)
+            },
+            (err) => {
+                assert(err instanceof ValidationError, 'Expected error to be instance of ValidationError');
+                assert.strictEqual(err.errors[0].field, 'role');
+                assert.strictEqual(err.errors[0].reason, 'validation.notfound');
                 return true;
             },
         );

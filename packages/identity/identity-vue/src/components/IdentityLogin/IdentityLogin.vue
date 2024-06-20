@@ -52,7 +52,7 @@ function togglePasswordVisibility(){
               <v-card-title class="pa-4 text-center">{{ props.title }}</v-card-title>
               <v-card-text v-if="authError">
                 <v-alert type="error">
-                  {{ authError }}
+                  {{ $t ? $t(authError) : authError }}
                 </v-alert>
               </v-card-text>
               <v-card-text>

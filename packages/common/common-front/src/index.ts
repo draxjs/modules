@@ -14,7 +14,8 @@ import {CommonI18nMessages} from './i18n/index';
 
 import type {IHttpClient, IHttpOptions} from './interfaces/IHttpClient';
 import type {IGqlClient, IGqlOptions} from './interfaces/IGqlClient';
-import type {IHttpError} from './interfaces/IHttpError';
+import type {IRestError} from './interfaces/IRestError';
+import type {IGqlError} from './interfaces/IGqlError';
 import type {IInputError} from './interfaces/IInputError';
 import type {IClientInputError} from './interfaces/IClientInputError';
 import type {IPaginateClient} from './interfaces/IPaginateClient';
@@ -49,7 +50,8 @@ export type {
   IHttpOptions,
   IGqlClient,
   IGqlOptions,
-  IHttpError,
+  IRestError,
+  IGqlError,
   IInputError,
   IClientInputError,
   IPaginateClient

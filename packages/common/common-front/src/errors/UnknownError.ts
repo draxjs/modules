@@ -1,8 +1,10 @@
 class UnknownError extends Error {
+  private error: Error;
 
-  constructor(message:string) {
-    super(message)
+  constructor(error:Error) {
+    super('error.unknown')
     this.name = 'UnknownError'
+    this.error = error
   }
 
   consoleError() {

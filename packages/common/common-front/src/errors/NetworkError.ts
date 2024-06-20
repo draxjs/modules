@@ -1,8 +1,10 @@
 class NetworkError extends Error {
+  private error: Error;
 
-  constructor(message: string) {
-    super(message)
+  constructor(error: Error) {
+    super('error.network')
     this.name = 'NetworkError'
+    this.error = error
   }
 
   consoleError() {
