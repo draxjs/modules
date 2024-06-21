@@ -24,6 +24,9 @@ async function UserRoutes(fastify, options) {
         }
     })
 
+
+
+
     fastify.get('/api/me', async (request, reply): Promise<IUser | null> => {
         try {
             if (request.authUser) {
@@ -43,7 +46,7 @@ async function UserRoutes(fastify, options) {
                 reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                reply.send({error: 'error.server'})
             }
         }
 
@@ -67,7 +70,7 @@ async function UserRoutes(fastify, options) {
                 reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                reply.send({error: 'error.server'})
             }
         }
     })
@@ -87,7 +90,7 @@ async function UserRoutes(fastify, options) {
                 reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                reply.send({error: 'error.server'})
             }
         }
 
@@ -113,7 +116,7 @@ async function UserRoutes(fastify, options) {
                 reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                reply.send({error: 'error.server'})
             }
         }
     })
@@ -133,7 +136,57 @@ async function UserRoutes(fastify, options) {
                 reply.send({error: e.message})
             } else {
                 reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                reply.send({error: 'error.server'})
+            }
+        }
+    })
+
+    fastify.post('/api/password', async (request, reply) => {
+        try {
+            if(!request.authUser){
+                throw new UnauthorizedError()
+            }
+            const userId = request.authUser.id
+            const currentPassword = request.body.currentPassword
+            const newPassword = request.body.newPassword
+            return await userService.changeOwnPassword(userId, currentPassword, newPassword)
+        } catch (e) {
+            console.error('/api/password error', e)
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'error.server'})
+            }
+        }
+    })
+
+
+    fastify.post('/api/password/:id', async (request, reply) => {
+        try {
+            request.rbac.assertPermission(IdentityPermissions.EditUser)
+            const userId = request.params.id
+            if(!userId){
+                throw new UnauthorizedError()
+            }
+            const newPassword = request.body.newPassword
+
+            return await userService.changeUserPassword(userId, newPassword)
+        } catch (e) {
+            console.error('/api/password error', e)
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'error.server'})
             }
         }
     })

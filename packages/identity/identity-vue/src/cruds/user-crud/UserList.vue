@@ -67,6 +67,7 @@ defineExpose({
 
     <template v-slot:item.actions="{item}" >
       <v-btn v-if="hasPermission('user:edit')" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
+      <v-btn v-if="hasPermission('user:edit')" icon="mdi-lock"  variant="text" color="orange" @click="$emit('toChangePassword', item)"></v-btn>
       <v-btn v-if="hasPermission('user:delete')" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
     </template>
 

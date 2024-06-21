@@ -43,6 +43,13 @@ class UserRestProvider implements IUserProvider {
             return paginatedUsers as IPaginateClient
 
     }
+
+    async changeUserPassword(userId: string, newPassword: string): Promise<boolean> {
+        const url = '/api/password/' + userId
+        const data = {userId, newPassword}
+        let r = await this.httpClient.post(url, data)
+        return /true/i.test(r as string)
+    }
 }
 
 export default UserRestProvider

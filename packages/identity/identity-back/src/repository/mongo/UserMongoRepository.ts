@@ -40,12 +40,10 @@ class UserMongoRepository implements IUserRepository {
         const user: mongoose.HydratedDocument<IUser> = await UserModel.findOneAndUpdate({_id: id}, userData, {new: true}).populate('role').exec()
         return user
         }catch (e){
-            console.log("UserRepositoryUpdate e",typeof e, e.name, e, )
             if(e instanceof mongoose.Error.ValidationError){
                 throw MongooseErrorToValidationError(e)
             }
             if(e instanceof MongoServerError || e.name === 'MongoServerError'){
-                console.log("UserRepositoryUpdate e instanceof MongoServerError")
                 throw MongoServerErrorToValidationError(e)
             }
             throw e
@@ -79,6 +77,16 @@ class UserMongoRepository implements IUserRepository {
             limit: limit,
             total: userPaginated.totalDocs,
             items: userPaginated.docs
+        }
+    }
+
+    async changePassword(id: mongoose.Types.ObjectId, password: string):Promise<boolean> {
+        try{
+        await UserModel.findOneAndUpdate({_id: id}, {password}).exec()
+        return true
+        }catch (e){
+            console.error(e)
+            return false
         }
     }
 }

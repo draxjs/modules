@@ -4,7 +4,7 @@ import {randomUUID} from "node:crypto";
 import {UUID} from "crypto";
 import {IUserRepository} from "../../interfaces/IUserRepository";
 import type {IPaginateResult} from "@drax/common-back";
-import {SqliteErrorToValidationError, ValidationError} from "@drax/common-back";
+import {mongoose, SqliteErrorToValidationError, ValidationError} from "@drax/common-back";
 import RoleSqliteRepository from "./RoleSqliteRepository.js";
 import {IID} from "../../interfaces/IID";
 
@@ -156,6 +156,12 @@ class UserSqliteRepository implements IUserRepository{
 
     async findRoleById(id : IID){
         return await this.roleRepository.findById(id)
+    }
+
+    async changePassword(id: IID, password: string):Promise<boolean> {
+        const stmt = this.db.prepare( `UPDATE users SET password = @password WHERE id = @id `);
+        stmt.run({id: id, password:  password});
+        return true
     }
 }
 

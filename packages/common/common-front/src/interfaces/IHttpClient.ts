@@ -12,15 +12,15 @@ interface IHttpOptions {
 }
 
 interface IHttpClient {
-  get(url: string, options?: IHttpOptions): Promise<object>
+  get(url: string, options?: IHttpOptions): Promise<object|string>
 
-  post(url: string, data: any, options?: IHttpOptions): Promise<object>
+  post(url: string, data: any, options?: IHttpOptions): Promise<object|string>
 
-  put(url: string, data: any, options?: IHttpOptions): Promise<object>
+  put(url: string, data: any, options?: IHttpOptions): Promise<object|string>
 
-  delete(url: string, data?: any, options?: IHttpOptions): Promise<object>
+  delete(url: string, data?: any, options?: IHttpOptions): Promise<object|string>
 
-  patch(url: string, data: any, options?: IHttpOptions): Promise<object>
+  patch(url: string, data: any, options?: IHttpOptions): Promise<object|string>
 
   addHeader(name: string, value: string): void
 

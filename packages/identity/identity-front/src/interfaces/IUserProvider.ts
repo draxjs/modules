@@ -8,6 +8,7 @@ interface IUserProvider {
     createUser(input: IUserCreate): Promise<IUser>
     editUser(id: string, input: IUserUpdate): Promise<IUser>
     deleteUser(id: string): Promise<any>
+    changeUserPassword(id: string, newPassword: string): Promise<boolean>
 }
 
 export type {IUserProvider}

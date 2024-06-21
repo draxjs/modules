@@ -38,6 +38,13 @@ class AuthRestProvider implements IAuthProvider {
             let r = await this.httpClient.get(url) as IAuthUser
             return r
     }
+
+    async changeOwnPassword(currentPassword: string, newPassword: string): Promise<boolean> {
+        const url = '/api/password'
+        const data = {currentPassword, newPassword}
+        let r = await this.httpClient.post(url, data)
+        return /true/i.test(r as string)
+    }
 }
 
 export default AuthRestProvider

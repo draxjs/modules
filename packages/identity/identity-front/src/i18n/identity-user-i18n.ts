@@ -10,7 +10,12 @@ const messages = {
             role: "Role",
             active: "Active",
             groups: "Groups",
-            code: "Code"
+            code: "Code",
+            currentPassword: "Current Password",
+            newPassword: "New Password",
+            confirmPassword: "Confirm Password",
+            changeOwnPassword: "Change Password",
+            passwordChanged: "Password Changed"
         }
     },
     es: {
@@ -24,7 +29,12 @@ const messages = {
             role: "Rol",
             active: "Activo",
             groups: "Grupos",
-            code: "Codigo"
+            code: "Codigo",
+            currentPassword: "Clave Actual",
+            newPassword: "Nueva Clave",
+            confirmPassword: "Confirmar Clave",
+            changeOwnPassword: "Cambiar Clave",
+            passwordChanged: "Clave Cambiada"
         }
     }
 }

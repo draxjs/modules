@@ -52,7 +52,7 @@ export default {
             try {
                 return await userService.auth(input.username, input.password)
             } catch (e) {
-                console.error("auth",e)
+                console.error("auth", e)
                 if (e instanceof BadCredentialsError) {
                     throw new GraphQLError(e.message)
                 }
@@ -66,7 +66,7 @@ export default {
                 const user = await userService.create(input)
                 return user
             } catch (e) {
-                console.error("createUser",e)
+                console.error("createUser", e)
                 if (e instanceof ValidationError) {
                     throw ValidationErrorToGraphQLError(e)
                 } else if (e instanceof UnauthorizedError) {
@@ -96,7 +96,37 @@ export default {
                 rbac.assertPermission(IdentityPermissions.DeleteUser)
                 return await userService.delete(id)
             } catch (e) {
-                console.error("deleteUser",e)
+                console.error("deleteUser", e)
+                if (e instanceof ValidationError) {
+                    throw ValidationErrorToGraphQLError(e)
+                } else if (e instanceof UnauthorizedError) {
+                    throw new GraphQLError(e.message)
+                }
+                throw new GraphQLError('error.server')
+            }
+        },
+        changeOwnPassword: async (_, {currentPassword, newPassword}, {authUser}) => {
+            try {
+                if (!authUser) {
+                    throw new UnauthorizedError()
+                }
+                let userId = authUser.id
+                return await userService.changeOwnPassword(userId, currentPassword, newPassword)
+            } catch (e) {
+                if (e instanceof ValidationError) {
+                    throw ValidationErrorToGraphQLError(e)
+                } else if (e instanceof UnauthorizedError) {
+                    throw new GraphQLError(e.message)
+                }
+                throw new GraphQLError('error.server')
+            }
+        },
+        changeUserPassword: async (_, {userId, newPassword}, {rbac}) => {
+            try {
+                rbac.assertPermission(IdentityPermissions.EditUser)
+
+                return await userService.changeUserPassword(userId, newPassword)
+            } catch (e) {
                 if (e instanceof ValidationError) {
                     throw ValidationErrorToGraphQLError(e)
                 } else if (e instanceof UnauthorizedError) {

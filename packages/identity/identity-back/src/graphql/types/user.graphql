@@ -56,4 +56,6 @@ type Mutation{
     createUser(input: UserCreateInput): User
     updateUser(id: ID!, input: UserUpdateInput): User
     deleteUser(id: ID!): Boolean
+    changeOwnPassword(currentPassword:String!, newPassword: String!): Boolean
+    changeUserPassword(userId:ID!, newPassword:String!): Boolean
 }

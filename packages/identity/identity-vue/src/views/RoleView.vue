@@ -12,17 +12,19 @@ const props = defineProps({
 
 <template>
   <v-sheet border class="position-relative d-flex justify-center align-center" height="150">
-    <v-sheet class="position-absolute bg-surface-light w-100 top-0" height="65"></v-sheet>
     <v-sheet class="text-center">
-      <h6 class="text-h6">{{ role.name }}</h6>
+      <h6 class="text-h6">{{$t ? $t('role.name') : 'Name'}} : {{ role.name }}</h6>
+      <h6 class="text-h6 text-grey">Permisos</h6>
+
+      <v-chip v-for="permission in role.permissions"
+              :key="permission" color="green"
+              class="ma-1"
+      >
+        {{$t ? $t(`permission.${permission}`) : permission }}
+      </v-chip>
     </v-sheet>
   </v-sheet>
 
-  <v-divider></v-divider>
-  <v-sheet class="d-flex justify-center align-center" height="50">
-    <v-sheet class="text-center">
-    </v-sheet>
-  </v-sheet>
 </template>
 
 <style scoped>

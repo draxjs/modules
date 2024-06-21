@@ -2,7 +2,7 @@ import type {IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser";
 import type {IUserRepository} from "../interfaces/IUserRepository";
 import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
 import {ZodError} from "zod";
-import {ZodErrorToValidationError} from "@drax/common-back";
+import {ValidationError, ZodErrorToValidationError} from "@drax/common-back";
 import AuthUtils from "../utils/AuthUtils.js";
 import {createUserSchema, editUserSchema,} from "../zod/UserZod.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
@@ -29,6 +29,35 @@ class UserService {
             throw new BadCredentialsError()
         }
     }
+
+    async changeUserPassword(userId : string, newPassword : string){
+        const user = await this.findById(userId)
+        if(user){
+            newPassword =  AuthUtils.hashPassword(newPassword)
+            await this._repository.changePassword(userId, newPassword)
+            return true
+        }else{
+            throw new ValidationError([{field: 'userId', reason: 'validation.notFound'}])
+        }
+    }
+
+
+    async changeOwnPassword(userId : string, currentPassword : string, newPassword : string){
+        const user = await this.findById(userId)
+        if(user && user.active){
+            if (AuthUtils.checkPassword(currentPassword, user.password)) {
+                newPassword =  AuthUtils.hashPassword(newPassword)
+                await this._repository.changePassword(userId, newPassword)
+                return true
+            }else{
+                throw new ValidationError([{field: 'currentPassword', reason: 'validation.notMatch'}])
+            }
+
+        }else{
+            throw new BadCredentialsError()
+        }
+    }
+
 
     async create(userData: IUserCreate): Promise<IUser> {
         try{

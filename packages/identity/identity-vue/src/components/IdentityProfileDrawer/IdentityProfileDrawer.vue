@@ -2,6 +2,7 @@
 import {useAuth} from "../../composables/useAuth";
 import {defineModel, ref} from "vue";
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
+import IdentityChangeOwnPassword from "../../components/IdentityChangeOwnPassword/IdentityChangeOwnPassword.vue";
 
 const auth = useAuth()
 
@@ -54,11 +55,20 @@ function gotoLogin(){
       </v-list>
     </template>
 
-    <v-dialog v-model="profile" class="h-50">
-      <v-card class="h-50">
-        <v-card-title>PROFILE</v-card-title>
+    <v-dialog v-model="profile"  fullscreen>
+      <v-toolbar>
+        <v-toolbar-title>PROFILE</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="profile = !profile">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card >
         <v-card-text>
           <identity-profile-view></identity-profile-view>
+        </v-card-text>
+        <v-card-text>
+          <IdentityChangeOwnPassword></IdentityChangeOwnPassword>
         </v-card-text>
       </v-card>
     </v-dialog>

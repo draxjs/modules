@@ -1,5 +1,5 @@
 import {inject, ref} from "vue";
-import type {UserSystem} from "@drax/identity-front";
+import type {IUserPassword, UserSystem} from "@drax/identity-front";
 import type {IUser} from "@drax/identity-front";
 import type {IClientInputError} from "@drax/common-front";
 import {ClientError} from "@drax/common-front";
@@ -39,6 +39,23 @@ export function useUser() {
 
     }
 
+    async function changeUserPassword(id: string, newPassword: string){
+        try {
+            loading.value = true
+            await userSystem.changeUserPassword(id, newPassword)
+        } catch (err) {
+            if (err instanceof ClientError) {
+                inputErrors.value = err.inputErrors
+            }
+            if(err instanceof Error) {
+                userError.value = err.message
+            }
+            throw err
+        }finally {
+            loading.value = false
+        }
+    }
+
     async function editUser(id: string, userData: IUserUpdate) {
         try {
             loading.value = true
@@ -75,5 +92,5 @@ export function useUser() {
         }
     }
 
-    return {paginateUser, createUser, editUser, deleteUser, loading, userError, inputErrors}
+    return {paginateUser, createUser, editUser, changeUserPassword, deleteUser, loading, userError, inputErrors}
 }

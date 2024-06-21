@@ -1,11 +1,28 @@
 <script setup lang="ts">
-import {defineProps, ref} from 'vue'
-import {useIdentityLogin} from '../../composables/useIdentityLogin.js'
-import {useAuthStore} from "../../stores/auth/AuthStore.js";
+import {computed, defineProps, ref} from 'vue'
+import {useAuth} from '../../composables/useAuth.js'
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 
-const {username, password, isFormValid, submitLogin, authError} = useIdentityLogin()
-const authStore = useAuthStore()
+const {login, isAuthenticated} = useAuth()
+
+const username = ref('')
+const password = ref('')
+const authError = ref('')
+const loading = ref(false)
+
+const isFormValid = computed(() => username.value.trim() !== '' && password.value.trim() !== '')
+
+async function submitLogin() {
+  try {
+    loading.value = true
+    await login(username.value, password.value)
+  } catch (e) {
+    const error = e as Error
+    authError.value = error.message
+  } finally {
+    loading.value = false
+  }
+}
 
 // Define props for customizing labels, title, and button text
 const props = defineProps({
@@ -29,7 +46,7 @@ const props = defineProps({
 
 let passwordVisibility = ref(false)
 
-function togglePasswordVisibility(){
+function togglePasswordVisibility() {
   passwordVisibility.value = !passwordVisibility.value
 }
 
@@ -38,7 +55,7 @@ function togglePasswordVisibility(){
 <template>
   <v-container>
 
-    <template v-if="authStore.isAuth">
+    <template v-if="isAuthenticated()">
       <v-card>
         <identity-profile-view></identity-profile-view>
       </v-card>
@@ -56,7 +73,7 @@ function togglePasswordVisibility(){
                 </v-alert>
               </v-card-text>
               <v-card-text>
-                <div class="text-subtitle-1 text-medium-emphasis">{{props.usernameLabel}}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ props.usernameLabel }}</div>
                 <v-text-field
                     variant="outlined"
                     id="username-input"
@@ -64,7 +81,7 @@ function togglePasswordVisibility(){
                     prepend-inner-icon="mdi-lock-outline"
                     required
                 ></v-text-field>
-                <div class="text-subtitle-1 text-medium-emphasis">{{props.passwordLabel}}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ props.passwordLabel }}</div>
                 <v-text-field
                     variant="outlined"
                     id="password-input"
@@ -79,14 +96,15 @@ function togglePasswordVisibility(){
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
-                class="mb-8"
-                color="blue"
-                size="large"
-                variant="tonal"
-                id="submit-button"
-                type="submit"
-                block
-                :disabled="!isFormValid"
+                    class="mb-8"
+                    color="blue"
+                    size="large"
+                    variant="tonal"
+                    id="submit-button"
+                    type="submit"
+                    block
+                    :disabled="!isFormValid"
+                    :loading="loading"
                 >
                   {{ props.buttonText }}
                 </v-btn>

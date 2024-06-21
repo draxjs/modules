@@ -4,7 +4,6 @@ import UserService from "../../src/services/UserService";
 import MongoInMemory from "../db/MongoInMemory";
 import RoleMongoInitializer from "../initializers/RoleMongoInitializer";
 import {IRole} from "../../src/interfaces/IRole";
-import {IUser} from "../../src/interfaces/IUser";
 import UserMongoRepository from "../../src/repository/mongo/UserMongoRepository";
 import {IUserRepository} from "../../src/interfaces/IUserRepository";
 import {ValidationError} from "@drax/common-back";
@@ -30,8 +29,24 @@ describe("UserServiceTest", function () {
     })
 
     it("should createUser user", async function () {
-        let userCreated = await userService.create(userAdminData)
+        const user = {...userAdminData}
+        let userCreated = await userService.create(user)
         assert.equal(userCreated.username, userAdminData.username)
+    })
+
+    it("should changeOwnPassword user", async function () {
+        const userId = userAdminData._id
+        const currentPassword = userAdminData.password
+        const newPassword = "123NewPassword"
+        let passwordChangedResult = await userService.changeOwnPassword(userId, currentPassword, newPassword)
+        assert.equal(passwordChangedResult, true)
+    })
+
+    it("should changeUserPassword user", async function () {
+        const userId = userAdminData._id
+        const newPassword = "123"
+        let passwordChangedResult = await userService.changeUserPassword(userId, newPassword)
+        assert.equal(passwordChangedResult, true)
     })
 
     it("should fail createUser user with short password", async function () {
@@ -43,7 +58,7 @@ describe("UserServiceTest", function () {
             (err) => {
                 assert(err instanceof ValidationError, 'Expected error to be instance of UniqueError');
                 assert.strictEqual(err.errors[0].field, 'password');
-                assert.strictEqual(err.errors[0].reason, 'Password must be more than 8 characters');
+                assert.strictEqual(err.errors[0].reason, 'validation.password.min8');
                 return true;
             },
         );

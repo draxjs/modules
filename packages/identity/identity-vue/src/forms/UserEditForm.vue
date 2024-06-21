@@ -9,7 +9,7 @@ const {$ta} = useI18nValidation()
 const props = defineProps({
   inputErrors: {
     type: Object as PropType<IClientInputError>,
-    default: () => ({name: "", username: "", password: "", email: "", phone: "", role: "", active: ""})
+    default: () => ({name: "", username: "", email: "", phone: "", role: "", active: ""})
   }
 })
 

@@ -31,4 +31,8 @@ interface IUserUpdate {
     role: string
 }
 
-export type {IUser, IUserCreate, IUserUpdate}
+interface IUserPassword {
+    newPassword: string
+}
+
+export type {IUser, IUserCreate, IUserUpdate, IUserPassword}

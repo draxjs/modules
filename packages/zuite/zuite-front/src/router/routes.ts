@@ -7,7 +7,7 @@ const routes = [
     name: 'Home',
     path: '/home',
     component: HomePage,
-    meta:{
+    meta: {
       auth: false,
     }
   },
@@ -15,7 +15,7 @@ const routes = [
     name: 'Login',
     path: '/login',
     component: LoginPage,
-    meta:{
+    meta: {
       auth: false,
     }
   },
@@ -23,7 +23,7 @@ const routes = [
     name: 'CrudUser',
     path: '/crud/user',
     component: UserCrudPage,
-    meta:{
+    meta: {
       auth: true,
       permission: 'user:manage'
     }
@@ -32,35 +32,28 @@ const routes = [
     name: 'CrudRole',
     path: '/crud/role',
     component: RoleCrudPage,
-    meta:{
+    meta: {
       auth: true,
       permission: 'role:manage'
     }
   },
+
   {
-    name: 'Info',
-    path: '/info',
-    meta:{
+    name: 'InfoAbout',
+    path: '/info/about',
+    component: () => import('../pages/info/about/index.vue'),
+    meta: {
       auth: true,
+    }
+  },
+  {
+    name: 'InfoFaq',
+    path: '/info/faq',
+    component: () => import('../pages/info/faq/index.vue'),
+    meta: {
+      auth: false,
     },
-    children: [
-      {
-        name: 'InfoAbout',
-        path: '/info/about',
-        component: () => import('../pages/info/about/index.vue'),
-        meta:{
-          auth: true,
-        }
-      },
-      {
-        name: 'InfoFaq',
-        path: '/info/faq',
-        component: () => import('../pages/info/faq/index.vue'),
-        meta:{
-          auth: false,
-        },
-      }
-    ]
+
   }
 ]
 

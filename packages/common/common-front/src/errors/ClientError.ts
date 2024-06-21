@@ -6,7 +6,7 @@ import type {IRestError} from "../interfaces/IRestError";
 
 class ClientError extends Error {
   inputErrors: IClientInputError|undefined
-  private error: IRestError|IGqlError;
+  error: IRestError|IGqlError;
 
   constructor(error: IRestError|IGqlError) {
     let inputErrors = ClientError.extractInputErrors(error)

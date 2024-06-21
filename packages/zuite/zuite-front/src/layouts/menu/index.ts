@@ -8,13 +8,7 @@ const menu: MenuItem[] = [
     gallery: true,
     auth: false
   },
-  {
-    icon: 'mdi-login',
-    text:'LOGIN',
-    link: { name: "Login" },
-    gallery: true,
-    auth: false
-  },
+
   {
     icon: 'mdi-account-circle',
     text:'Admin',

@@ -16,7 +16,7 @@ const headers = ref([
   { title: t('role.name'), key: 'name', align: 'start' },
   { title: t('role.permissions'), key: 'permissions', align: 'start' },
   { title: t('role.readonly'), key: 'readonly', align: 'start' },
-  { title: '', key: 'actions', align: 'start' },
+  { title: '', key: 'actions', align: 'start', minWidth: '150px' },
 ])
 
 const serverItems = ref([])
@@ -60,7 +60,6 @@ defineExpose({
   >
 
     <template v-slot:item.permissions="{ value }" >
-
           <v-chip v-for="permission in value"
                   :key="permission" color="green"
                   class="ma-1"
@@ -70,7 +69,7 @@ defineExpose({
     </template>
 
     <template v-slot:item.readonly="{ value }" >
-      <v-chip v-if="value" color="grey" >
+      <v-chip v-if="value" color="red" >
         <v-icon class="mdi mdi-pencil-off-outline"></v-icon>
       </v-chip>
       <v-chip v-else color="green">
@@ -79,8 +78,8 @@ defineExpose({
     </template>
 
     <template v-slot:item.actions="{item}" >
-      <v-btn v-if="hasPermission('user:edit')" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
-      <v-btn v-if="hasPermission('user:delete')" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
+      <v-btn v-if="hasPermission('user:edit')" :disabled="item.readonly" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
+      <v-btn v-if="hasPermission('user:delete')" :disabled="item.readonly" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
     </template>
 
   </v-data-table-server>

@@ -25,6 +25,12 @@ class UserSystem {
         return this._provider.editUser(id, userPayload)
     }
 
+    async changeUserPassword(userId:string, newPassword:string):Promise<boolean> {
+        console.log("UserSystem",userId, newPassword)
+        const result: boolean = await this._provider.changeUserPassword(userId,newPassword)
+        return result
+    }
+
     async deleteUser(id: string):Promise<any> {
         return this._provider.deleteUser(id)
     }

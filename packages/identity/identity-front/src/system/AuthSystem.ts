@@ -24,6 +24,11 @@ class AuthSystem {
         const authUser: IAuthUser = await this._provider.me()
         return authUser
     }
+
+    async changeOwnPassword(currentPassword:string, newPassword:string):Promise<boolean> {
+        const result: boolean = await this._provider.changeOwnPassword(currentPassword,newPassword)
+        return result
+    }
 }
 
 export default AuthSystem

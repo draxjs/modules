@@ -1,6 +1,6 @@
 import type {IGqlClient, IPaginateClient} from '@drax/common-front'
 import type {IUserProvider} from "../../interfaces/IUserProvider";
-import type {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
+import type {IUser, IUserCreate, IUserPassword, IUserUpdate} from "../../interfaces/IUser";
 
 class UserGqlProvider implements IUserProvider {
 
@@ -30,6 +30,13 @@ class UserGqlProvider implements IUserProvider {
         const query: string = `mutation updateUser($id: ID!, $input: UserUpdateInput) { updateUser(id: $id, input: $input) {  
         id username name email phone active role{id name}  } }`
         const variables = {id, input: payload}
+        let data = await this.gqlClient.mutation(query, variables)
+        return data.createUser
+    }
+
+    async changeUserPassword(userId: string, newPassword: string): Promise<boolean> {
+        const query: string = `mutation changeUserPassword($userId: ID!, $newPassword: String!) { changeUserPassword(userId:$userId, newPassword: $newPassword)   }`
+        const variables = {userId, newPassword}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createUser
     }

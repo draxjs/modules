@@ -8,7 +8,9 @@ interface IUserRepository{
     findById(id: IID): Promise<IUser | null>;
     findByUsername(username: string): Promise<IUser | null>;
     paginate(page?: number, limit?: number, filters?: IPaginateFilter[]): Promise<IPaginateResult>;
+    changePassword(id: IID, password:string):Promise<Boolean>;
     table?():void
+
 }
 
 export {IUserRepository}

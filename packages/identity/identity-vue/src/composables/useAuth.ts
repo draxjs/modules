@@ -8,6 +8,17 @@ export function useAuth() {
 
     const authSystem = inject('AuthSystem') as AuthSystem
 
+    const login = async (username:string, password:string) => {
+            const {accessToken} = await authSystem.login(username, password)
+            authStore.setAccessToken(accessToken)
+            const authUser = await authSystem.me()
+            authStore.setAuthUser(authUser)
+    }
+
+    const changeOwnPassword = async (currentPassword:string, newPassword:string) => {
+        return  await authSystem.changeOwnPassword(currentPassword, newPassword)
+    }
+
     async function fetchAuthUser() {
         const authUser =  await authSystem.me()
         authStore.setAuthUser(authUser)
@@ -37,6 +48,6 @@ export function useAuth() {
 
     }
 
-    return {hasPermission, logout, tokenIsValid, isAuthenticated, fetchAuthUser}
+    return {hasPermission, logout, tokenIsValid, isAuthenticated, fetchAuthUser, login, changeOwnPassword}
 
 }

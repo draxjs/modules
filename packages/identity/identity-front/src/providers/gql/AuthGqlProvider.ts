@@ -38,6 +38,22 @@ class AuthGqlProvider implements IAuthProvider {
         let data = await this.gqlClient.query(query)
         return data.me
     }
+
+    async changeOwnPassword(currentPassword: string, newPassword: string): Promise<boolean> {
+        const query: string = `mutation changeOwnPassword($currentPassword: String!, $newPassword: String!) 
+        { changeOwnPassword(currentPassword: $currentPassword, newPassword: $newPassword) }`
+        const variables = {currentPassword, newPassword}
+        let r = await this.gqlClient.mutation(query, variables)
+        return /true/i.test(r as string)
+    }
+
+    async changeUserPassword(currentPassword: string, newPassword: string): Promise<boolean> {
+        const query: string = `mutation changeUserPassword($userId: ID!, $newPassword: String!) 
+        { changeUserPassword(userId: $userId, newPassword: $newPassword) }`
+        const variables = {currentPassword, newPassword}
+        let r = await this.gqlClient.mutation(query, variables)
+        return /true/i.test(r as string)
+    }
 }
 
 export default AuthGqlProvider

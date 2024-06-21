@@ -1,8 +1,9 @@
 import {IRole} from "../interfaces/IRole";
 import {IRoleRepository} from "../interfaces/IRoleRepository";
-import {IPaginateFilter, IPaginateResult, ZodErrorToValidationError} from "@drax/common-back"
+import {IPaginateFilter, IPaginateResult, ValidationError, ZodErrorToValidationError} from "@drax/common-back"
 import {roleSchema} from "../zod/RoleZod.js";
 import {ZodError} from "zod";
+import UnauthorizedError from "../errors/UnauthorizedError.js";
 
 class RoleService {
 
@@ -31,6 +32,10 @@ class RoleService {
         try {
             roleData.name = roleData?.name?.trim()
             await roleSchema.parseAsync(roleData)
+            const currentRole = await this.findById(id)
+            if(currentRole.readonly){
+                throw new ValidationError([{field:'name', reason:"role.readonly", value:roleData.name}])
+            }
             const role = await this._repository.update(id, roleData)
             return role
         } catch (e) {
@@ -42,6 +47,10 @@ class RoleService {
     }
 
     async delete(id: any): Promise<boolean> {
+        const currentRole = await this.findById(id)
+        if(currentRole.readonly){
+            throw new UnauthorizedError()
+        }
         const deletedRole = await this._repository.delete(id);
         return deletedRole;
     }

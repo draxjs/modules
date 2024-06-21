@@ -3,19 +3,20 @@ import {computed, ref} from 'vue'
 import UserList from "./UserList.vue";
 import {useUser} from "../../composables/useUser";
 import type {IUser} from "@drax/identity-front";
-import type {IUserCreate, IUserUpdate} from "@drax/identity-front/src/interfaces/IUser";
+import type {IUserCreate, IUserUpdate, IUserPassword} from "@drax/identity-front/src/interfaces/IUser";
 import UserCreateForm from "../../forms/UserCreateForm.vue";
 import UserEditForm from "../../forms/UserEditForm.vue";
+import UserPasswordForm from "../../forms/UserPasswordForm.vue";
 import UserView from "../../views/UserView.vue";
 
-const {createUser, editUser, deleteUser, loading, userError, inputErrors} = useUser()
+const {createUser, editUser, changeUserPassword, deleteUser, loading, userError, inputErrors} = useUser()
 
 interface UserList {
   loadItems: () => void;
   items: IUser[];
 }
 
-type DialogMode = 'create' | 'edit' | 'delete' | null;
+type DialogMode = 'create' | 'edit' | 'delete' | 'changePassword' | null;
 
 
 let dialog = ref(false);
@@ -24,10 +25,11 @@ let dialogTitle = ref('');
 const userList = ref<UserList | null>(null);
 let createForm = ref<IUserCreate>({name: "", username: "", password: "", email: "", phone: "", role: "", active: true})
 let editForm = ref<IUserUpdate>({name: "", username: "", email: "", phone: "", role: "", active: true})
+let passwordForm = ref<IUserPassword>({ newPassword: ""})
 let target = ref<IUser>();
 let targetId = ref<string>('');
 
-function cancel(){
+function cancel() {
   dialog.value = false
   inputErrors.value = {}
   userError.value = '';
@@ -44,6 +46,9 @@ async function save() {
       await createUser(createForm.value)
     } else if (dialogMode.value === 'edit') {
       await editUser(targetId.value, editForm.value)
+    } else if (dialogMode.value === 'changePassword') {
+      console.log("passwordForm.value",passwordForm.value)
+      await changeUserPassword(targetId.value, passwordForm.value.newPassword)
     } else if (dialogMode.value === 'delete') {
       await deleteUser(targetId.value)
     }
@@ -102,6 +107,17 @@ function toDelete(item: IUser) {
   dialog.value = true;
 }
 
+function toChangePassword(item: IUser) {
+  console.log('toChangePassword', item)
+  dialogMode.value = 'changePassword';
+  dialogTitle.value = 'Cambiando password de Usuario';
+  target.value = item
+  const {id} = item;
+  targetId.value = id;
+  dialog.value = true;
+}
+
+
 </script>
 
 <template>
@@ -114,7 +130,7 @@ function toDelete(item: IUser) {
         <v-btn color="primary" @click="toCreate">Agregar</v-btn>
       </v-toolbar>
       <v-theme-provider with-background class="pa-2 rounded-b">
-        <UserList ref="userList" @toEdit="toEdit" @toDelete="toDelete"/>
+        <UserList ref="userList" @toEdit="toEdit" @toDelete="toDelete" @toChangePassword="toChangePassword"/>
       </v-theme-provider>
     </v-sheet>
 
@@ -128,10 +144,27 @@ function toDelete(item: IUser) {
             <v-alert type="error">{{ userError }}</v-alert>
           </v-card-text>
           <v-card-text>
-            <UserCreateForm v-if="dialogMode === 'create'" v-model="createForm"
-                            :inputErrors="inputErrors"></UserCreateForm>
-            <UserEditForm v-if="dialogMode === 'edit'" v-model="editForm" :inputErrors="inputErrors"></UserEditForm>
-            <UserView v-if="dialogMode === 'delete' && target" :user="target"></UserView>
+            <UserCreateForm
+                v-if="dialogMode === 'create'"
+                v-model="createForm"
+                :inputErrors="inputErrors"
+            />
+
+            <UserEditForm
+                v-if="dialogMode === 'edit'"
+                v-model="editForm"
+                :inputErrors="inputErrors"
+            />
+
+            <UserPasswordForm
+                v-if="dialogMode === 'changePassword'&& target"
+                v-model="passwordForm"
+                :inputErrors="inputErrors"
+            />
+
+            <UserView v-if="dialogMode === 'delete'
+            && target" :user="target"
+            />
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
