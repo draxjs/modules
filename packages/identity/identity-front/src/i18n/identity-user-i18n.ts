@@ -21,6 +21,9 @@ const messages = {
             deleting: "Deleting User",
             changingPassword: "Changing User Password",
             managing: 'Managing Users',
+            profile:'Profile',
+            login:'Login',
+            logout:'Logout'
         }
     },
     es: {
@@ -45,6 +48,9 @@ const messages = {
             deleting: "Eliminando Usuario",
             changingPassword: "Cambiando Clave de Usuario",
             managing: 'Administrando Usuarios',
+            profile:'Perfil',
+            login:'Iniciar Sesión',
+            logout:'Cerrar Sesión'
         }
     }
 }

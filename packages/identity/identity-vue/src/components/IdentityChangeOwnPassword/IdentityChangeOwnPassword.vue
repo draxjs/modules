@@ -4,7 +4,9 @@ import {useAuth} from "../../composables/useAuth.js";
 import {ClientError} from "@drax/common-front";
 import type {IClientInputError} from "@drax/common-front";
 import {useI18nValidation} from "../../composables/useI18nValidation.js";
+import {useI18n} from "vue-i18n";
 
+const {t} = useI18n()
 const {$ta} = useI18nValidation()
 
 const {changeOwnPassword} = useAuth()
@@ -25,11 +27,14 @@ const isFormValid = computed(() =>
     && newPassword.value.trim() === confirmPassword.value.trim()
 )
 
+function confirmPasswordRule(value: string) {
+  return newPassword.value.trim() === confirmPassword.value.trim() || t('validation.password.confirmed')
+}
 
 async function submitChangePassowrd() {
   try {
     loading.value = true
-    await changeOwnPassword(currentPassword.value, newPassword.value)
+    await changeOwnPassword(currentPassword.value.trim(), newPassword.value.trim())
     changed.value = true
   } catch (err) {
     if (err instanceof ClientError) {
@@ -59,7 +64,7 @@ async function submitChangePassowrd() {
     <template v-else>
 
           <v-form @submit.prevent="submitChangePassowrd">
-            <v-card variant="tonal" class="pa-4">
+            <v-card variant="outlined">
               <v-card-title class="pa-4 text-center">{{ $t('user.changeOwnPassword') }}</v-card-title>
               <v-card-text v-if="errorMsg">
                 <v-alert type="error">
@@ -105,6 +110,7 @@ async function submitChangePassowrd() {
                     @click:append-inner="newPasswordVisibility = !newPasswordVisibility"
                     autocomplete="new-password"
                     :error-messages="$ta(inputErrors.confirmPassword)"
+                    :rules="[confirmPasswordRule]"
                 ></v-text-field>
               </v-card-text>
               <v-card-actions>
@@ -119,7 +125,7 @@ async function submitChangePassowrd() {
                     block
                     :disabled="!isFormValid"
                 >
-                  {{ $t('common.sent') }}
+                  {{ $t('action.sent') }}
                 </v-btn>
               </v-card-actions>
             </v-card>

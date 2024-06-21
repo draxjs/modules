@@ -5,14 +5,10 @@ import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue"
 import IdentityChangeOwnPassword from "../../components/IdentityChangeOwnPassword/IdentityChangeOwnPassword.vue";
 
 const auth = useAuth()
-
 const valueModel = defineModel()
-
 const profile = ref(false)
+const changePassword = ref(false)
 
-function gotoLogin(){
-
-}
 
 </script>
 
@@ -32,13 +28,13 @@ function gotoLogin(){
         <v-list-item
             @click="profile = !profile"
             prepend-icon="mdi-account-cog"
-            title="Profile"
+            :title="$t('user.profile')"
         >
         </v-list-item>
         <v-list-item
             @click="auth.logout()"
             prepend-icon="mdi-logout"
-            title="Logout"
+            :title="$t('user.logout')"
         >
         </v-list-item>
       </v-list>
@@ -49,26 +45,30 @@ function gotoLogin(){
         <v-list-item
             href="/login"
             prepend-icon="mdi-login"
-            title="Login"
+            :title="$t('user.login')"
         >
         </v-list-item>
       </v-list>
     </template>
 
-    <v-dialog v-model="profile"  fullscreen>
+    <v-dialog v-model="profile"  fullscreen :on-after-leave="changePassword=false">
       <v-toolbar>
-        <v-toolbar-title>PROFILE</v-toolbar-title>
+        <v-toolbar-title>
+          {{$t('user.profile')}}
+        </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="profile = !profile">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
       <v-card >
-        <v-card-text>
+        <v-card-text class="flex-shrink-1 flex-grow-0">
           <identity-profile-view></identity-profile-view>
         </v-card-text>
-        <v-card-text>
-          <IdentityChangeOwnPassword></IdentityChangeOwnPassword>
+        <v-card-text class="text-center flex-grow-1">
+          <IdentityChangeOwnPassword v-if="changePassword"></IdentityChangeOwnPassword>
+          <v-btn v-else  color="blue" variant="tonal" @click="changePassword = true">{{$t('user.changeOwnPassword')}}</v-btn>
+
         </v-card-text>
       </v-card>
     </v-dialog>

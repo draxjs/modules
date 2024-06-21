@@ -65,7 +65,7 @@ function togglePasswordVisibility() {
       <v-row justify="center">
         <v-col cols="12" sm="8" md="6" lg="5" xl="4">
           <v-form @submit.prevent="submitLogin">
-            <v-card variant="tonal" class="pa-6">
+            <v-card variant="elevated" class="pa-6">
               <v-card-title class="pa-4 text-center">{{ props.title }}</v-card-title>
               <v-card-text v-if="authError">
                 <v-alert type="error">
@@ -80,6 +80,7 @@ function togglePasswordVisibility() {
                     v-model="username"
                     prepend-inner-icon="mdi-lock-outline"
                     required
+                    autocomplete="new-username"
                 ></v-text-field>
                 <div class="text-subtitle-1 text-medium-emphasis">{{ props.passwordLabel }}</div>
                 <v-text-field
@@ -91,6 +92,7 @@ function togglePasswordVisibility() {
                     prepend-inner-icon="mdi-lock-outline"
                     :append-inner-icon="passwordVisibility ? 'mdi-eye-off': 'mdi-eye'"
                     @click:append-inner="togglePasswordVisibility"
+                    autocomplete="new-password"
                 ></v-text-field>
               </v-card-text>
               <v-card-actions>
