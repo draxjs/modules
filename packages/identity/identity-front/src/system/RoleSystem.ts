@@ -21,8 +21,8 @@ class RoleSystem {
         return this._provider.fetchPermissions()
     }
 
-    async paginateRole(page:number = 1, perPage:number = 5):Promise<IPaginateClient> {
-        return this._provider.paginateRole(page, perPage)
+    async paginateRole(page:number = 1, perPage:number = 5, search:string=""):Promise<IPaginateClient> {
+        return this._provider.paginateRole(page, perPage,search)
     }
 
     async createRole(userPayload: IRole):Promise<IRole> {

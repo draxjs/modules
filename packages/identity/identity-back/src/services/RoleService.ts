@@ -65,8 +65,8 @@ class RoleService {
         return roles
     }
 
-    async paginate(page: number = 1, limit: number = 5, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
-        const pagination = await this._repository.paginate(page, limit, filters);
+    async paginate(page: number = 1, limit: number = 5, search?:string, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
+        const pagination = await this._repository.paginate(page, limit, search, filters);
         return pagination;
     }
 

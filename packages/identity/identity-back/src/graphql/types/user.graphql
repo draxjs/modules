@@ -20,7 +20,7 @@ type Query{
     me: User
     findUserByUsername(username: String!): User
     findUserById(id: ID!): User
-    paginateUser(page: Int, limit: Int): UserPaginated
+    paginateUser(page: Int, limit: Int, search: String): UserPaginated
 }
 
 input UserCreateInput{

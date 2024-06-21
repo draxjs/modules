@@ -7,7 +7,7 @@ interface IRoleRepository{
     delete(id: IID): Promise<boolean>;
     findById(id: IID): Promise<IRole | null>;
     fetchAll(): Promise<IRole[]>;
-    paginate(page?: number, limit?: number, filters?: IPaginateFilter[]): Promise<IPaginateResult>;
+    paginate(page?: number, limit?: number, search?:string, filters?: IPaginateFilter[]): Promise<IPaginateResult>;
     table?():void
 }
 

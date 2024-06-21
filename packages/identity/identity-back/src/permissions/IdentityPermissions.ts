@@ -2,13 +2,13 @@ enum IdentityPermissions {
 
 
     CreateUser = "user:create",
-    EditUser = "user:edit",
+    UpdateUser = "user:update",
     DeleteUser = "user:delete",
     ViewUser = "user:view",
     ManageUser = "user:manage",
 
     CreateRole = "role:create",
-    EditRole = "role:edit",
+    UpdateRole = "role:update",
     DeleteRole = "role:delete",
     ViewRole = "role:view",
     ManageRole = "role:manage",

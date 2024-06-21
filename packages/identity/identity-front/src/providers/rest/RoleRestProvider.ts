@@ -47,9 +47,9 @@ class RoleRestProvider implements IRoleProvider {
         return user
     }
 
-    async paginateRole(page: number = 1, limit: number = 5): Promise<IPaginateClient> {
+    async paginateRole(page: number = 1, limit: number = 5, search:string=""): Promise<IPaginateClient> {
         const url = '/api/roles'
-        const params = {page, limit}
+        const params = {page, limit, search}
         let paginatedRoles = await this.httpClient.get(url, {params})
         return paginatedRoles as IPaginateClient
 

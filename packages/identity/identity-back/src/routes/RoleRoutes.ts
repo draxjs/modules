@@ -51,7 +51,8 @@ async function RoleRoutes(fastify, options) {
             request.rbac.assertPermission(IdentityPermissions.ViewRole)
             const page = request.query.page
             const limit = request.query.limit
-            let paginateResult = await roleService.paginate(page, limit)
+            const search = request.query.search
+            let paginateResult = await roleService.paginate(page, limit, search)
             return paginateResult
         } catch (e) {
             console.error(e)
@@ -92,7 +93,7 @@ async function RoleRoutes(fastify, options) {
 
     fastify.put('/api/roles/:id', async (request, reply): Promise<IRole> => {
         try {
-            request.rbac.assertPermission(IdentityPermissions.EditRole)
+            request.rbac.assertPermission(IdentityPermissions.UpdateRole)
             const id = request.params.id
             const payload = request.body
             let role = await roleService.update(id, payload)

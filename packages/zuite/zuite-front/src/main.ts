@@ -18,7 +18,14 @@ app.use(i18n)
 
 //Core Systems Factories
 import {SystemFactory} from "./factories/SystemFactory";
-const {authSystem: AuthSystem, userSystem: UserSystem, roleSystem: RoleSystem} = SystemFactory('GRAPHQL')
+
+//const HttpClientType = 'GRAPHQL'
+const HttpClientType = 'REST'
+const {
+  authSystem: AuthSystem,
+  userSystem: UserSystem,
+  roleSystem: RoleSystem
+} = SystemFactory(HttpClientType)
 
 app
   .provide('AuthSystem', AuthSystem)

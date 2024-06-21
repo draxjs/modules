@@ -15,7 +15,12 @@ const messages = {
             newPassword: "New Password",
             confirmPassword: "Confirm Password",
             changeOwnPassword: "Change Password",
-            passwordChanged: "Password Changed"
+            passwordChanged: "Password Changed",
+            updating: "Updating User",
+            creating: "Creating User",
+            deleting: "Deleting User",
+            changingPassword: "Changing User Password",
+            managing: 'Managing Users',
         }
     },
     es: {
@@ -34,7 +39,12 @@ const messages = {
             newPassword: "Nueva Clave",
             confirmPassword: "Confirmar Clave",
             changeOwnPassword: "Cambiar Clave",
-            passwordChanged: "Clave Cambiada"
+            passwordChanged: "Clave Cambiada",
+            updating: "Actualizando Usuario",
+            creating: "Creando Usuario",
+            deleting: "Eliminando Usuario",
+            changingPassword: "Cambiando Clave de Usuario",
+            managing: 'Administrando Usuarios',
         }
     }
 }

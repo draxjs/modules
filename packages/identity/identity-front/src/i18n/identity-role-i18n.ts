@@ -4,6 +4,10 @@ const messages = {
             name: "Name",
             permissions: "Username",
             readonly: "Read Only",
+            updating: "Updating Role",
+            creating: "Creating Role",
+            deleting: "Deleting Role",
+            managing: 'Managing Role',
         }
     },
     es: {
@@ -11,6 +15,10 @@ const messages = {
             name: "Nombre",
             permissions: "Permisos",
             readonly: "Solo lectura",
+            updating: "Actualizando Rol",
+            creating: "Creando Rol",
+            deleting: "Eliminando Rol",
+            managing: 'Gestionando Rol',
         }
     }
 }

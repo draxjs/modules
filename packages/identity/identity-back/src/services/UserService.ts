@@ -115,9 +115,9 @@ class UserService {
         return user
     }
 
-    async paginate( page : number = 1, limit : number = 10, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
+    async paginate( page : number = 1, limit : number = 10, search?: string, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
 
-        const pagination = await this._repository.paginate( page, limit, filters);
+        const pagination = await this._repository.paginate( page, limit, search, filters);
         return pagination;
     }
 }

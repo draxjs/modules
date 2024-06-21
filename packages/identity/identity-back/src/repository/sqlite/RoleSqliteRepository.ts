@@ -121,10 +121,16 @@ class RoleSqliteRepository implements IRoleRepository{
         return roles
     }
 
-    async paginate(page = 1, limit = 5): Promise<IPaginateResult>{
+    async paginate(page = 1, limit = 5, search=""): Promise<IPaginateResult>{
         const offset = page > 1 ? (page - 1) * limit : 0
-        const rCount = this.db.prepare('SELECT COUNT(*) as count FROM roles').get();
-        const roles = this.db.prepare('SELECT * FROM roles LIMIT ? OFFSET ?').all([limit, offset]);
+
+        let where
+        if (search) {
+            where = ` WHERE name LIKE '%${search}%'`
+        }
+
+        const rCount = this.db.prepare('SELECT COUNT(*) as count FROM roles'+where).get();
+        const roles = this.db.prepare('SELECT * FROM roles LIMIT ? OFFSET ?'+where).all([limit, offset]);
 
         for (const role of roles) {
             role.permissions = role.permissions? role.permissions.split(",") : []

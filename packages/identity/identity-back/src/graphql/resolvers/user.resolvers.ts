@@ -35,10 +35,10 @@ export default {
             }
 
         },
-        paginateUser: async (_, {page, limit}, {rbac}) => {
+        paginateUser: async (_, {page, limit, search}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewUser)
-                return await userService.paginate(page, limit)
+                return await userService.paginate(page, limit, search)
             } catch (e) {
                 if (e instanceof UnauthorizedError) {
                     throw new GraphQLError(e.message)
@@ -78,7 +78,7 @@ export default {
         },
         updateUser: async (_, {id, input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.EditUser)
+                rbac.assertPermission(IdentityPermissions.UpdateUser)
 
                 const user = await userService.update(id, input)
                 return user
@@ -123,7 +123,7 @@ export default {
         },
         changeUserPassword: async (_, {userId, newPassword}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.EditUser)
+                rbac.assertPermission(IdentityPermissions.UpdateUser)
 
                 return await userService.changeUserPassword(userId, newPassword)
             } catch (e) {

@@ -59,7 +59,8 @@ async function UserRoutes(fastify, options) {
             request.rbac.assertPermission(IdentityPermissions.ViewUser)
             const page = request.query.page
             const limit = request.query.limit
-            let paginateResult = await userService.paginate(page, limit)
+            const search = request.query.search
+            let paginateResult = await userService.paginate(page, limit, search)
             return paginateResult
         } catch (e) {
             if (e instanceof ValidationError) {
@@ -98,7 +99,7 @@ async function UserRoutes(fastify, options) {
 
     fastify.put('/api/users/:id', async (request, reply): Promise<IUser> => {
         try {
-            request.rbac.assertPermission(IdentityPermissions.EditUser)
+            request.rbac.assertPermission(IdentityPermissions.UpdateUser)
             const id = request.params.id
             const payload = request.body
             let user = await userService.update(id, payload)
@@ -168,7 +169,7 @@ async function UserRoutes(fastify, options) {
 
     fastify.post('/api/password/:id', async (request, reply) => {
         try {
-            request.rbac.assertPermission(IdentityPermissions.EditUser)
+            request.rbac.assertPermission(IdentityPermissions.UpdateUser)
             const userId = request.params.id
             if(!userId){
                 throw new UnauthorizedError()

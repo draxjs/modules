@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {ref, defineProps} from "vue";
 import {useUser} from "../../composables/useUser";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
@@ -9,15 +9,23 @@ const {hasPermission} = useAuth()
 const {paginateUser} = useUser()
 const {t} = useI18n()
 
+const props = defineProps({
+  filterEnable: {
+    type: Boolean,
+    default: false,
+  }
+})
+
 const itemsPerPage = ref(5)
 const page = ref(1)
 const headers = ref([
   //{title: 'ID', align: 'start', sortable: false, key: 'id'},
   { title: t('user.name'), key: 'name', align: 'start' },
   { title: t('user.username'), key: 'username', align: 'start' },
+  { title: t('user.email'), key: 'email', align: 'start' },
   { title: t('user.role'), key: 'role.name', align: 'start' },
   { title: t('user.active'), key: 'active', align: 'start' },
-  { title: '', key: 'actions', align: 'start' },
+  { title: '', key: 'actions', align: 'start', fixed:true },
 ])
 
 const serverItems = ref([])
@@ -28,7 +36,7 @@ const search = ref('')
 async function loadItems(){
   try{
     loading.value = true
-    const r = await paginateUser(page.value,itemsPerPage.value)
+    const r = await paginateUser(page.value,itemsPerPage.value, search.value)
     serverItems.value = r.items
     totalItems.value = r.total
   }catch (e){
@@ -59,6 +67,19 @@ defineExpose({
       item-value="name"
       @update:options="loadItems"
   >
+    <template v-slot:top>
+      <v-toolbar border density="compact" v-if="filterEnable" class="grey-lighten-1">
+        <v-toolbar-title>{{ $t('action.filter') }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-text-field v-model="search" hide-details
+                      density="compact" class="mr-2"
+                      variant="outlined"
+                      append-inner-icon="mdi-magnify"
+                      :label="$t('action.search')"
+                      single-line clearable @click:clear="() => search = ''"
+        />
+      </v-toolbar>
+    </template>
     <template v-slot:item.active="{ value }" >
       <v-chip :color="value ? 'green':'red'" >
         {{ value ? 'Active' : 'Inactive' }}
@@ -66,8 +87,8 @@ defineExpose({
     </template>
 
     <template v-slot:item.actions="{item}" >
-      <v-btn v-if="hasPermission('user:edit')" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
-      <v-btn v-if="hasPermission('user:edit')" icon="mdi-lock"  variant="text" color="orange" @click="$emit('toChangePassword', item)"></v-btn>
+      <v-btn v-if="hasPermission('user:update')" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
+      <v-btn v-if="hasPermission('user:update')" icon="mdi-lock"  variant="text" color="orange" @click="$emit('toChangePassword', item)"></v-btn>
       <v-btn v-if="hasPermission('user:delete')" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
     </template>
 

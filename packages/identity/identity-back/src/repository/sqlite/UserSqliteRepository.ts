@@ -12,20 +12,34 @@ import {IID} from "../../interfaces/IID";
 const userTableSQL: string = `
     CREATE TABLE IF NOT EXISTS users
     (
-        id TEXT PRIMARY KEY,
-        name TEXT,
-        username TEXT UNIQUE,
-        active INTEGER,
-        password TEXT,
-        email TEXT UNIQUE,
-        phone TEXT,
-        role TEXT,
-        groups TEXT,
-        avatar TEXT
+        id
+        TEXT
+        PRIMARY
+        KEY,
+        name
+        TEXT,
+        username
+        TEXT
+        UNIQUE,
+        active
+        INTEGER,
+        password
+        TEXT,
+        email
+        TEXT
+        UNIQUE,
+        phone
+        TEXT,
+        role
+        TEXT,
+        groups
+        TEXT,
+        avatar
+        TEXT
     );
 `;
 
-class UserSqliteRepository implements IUserRepository{
+class UserSqliteRepository implements IUserRepository {
     private db: any;
     private roleRepository: RoleSqliteRepository;
 
@@ -39,25 +53,25 @@ class UserSqliteRepository implements IUserRepository{
         this.db.exec(userTableSQL);
     }
 
-    normalizeData(userData: IUserCreate | IUserUpdate): void{
-        if(userData.groups && Array.isArray(userData.groups)){
+    normalizeData(userData: IUserCreate | IUserUpdate): void {
+        if (userData.groups && Array.isArray(userData.groups)) {
             userData.groups = userData.groups.join(",")
         }
         userData.active = userData.active ? 1 : 0
     }
 
     async create(userData: IUserCreate): Promise<IUser> {
-        if(!userData.id){
+        if (!userData.id) {
             userData.id = randomUUID()
         }
 
-        if(!await this.findRoleById(userData.role)){
+        if (!await this.findRoleById(userData.role)) {
             throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
         }
 
         this.normalizeData(userData)
 
-        try{
+        try {
 
             const fields = Object.keys(userData)
                 .map(field => `${field}`)
@@ -71,10 +85,11 @@ class UserSqliteRepository implements IUserRepository{
             console.log("values",values)
             console.log("userData",userData)*/
 
-            const stmt = this.db.prepare(`INSERT INTO users (${fields}) VALUES (${values})`);
+            const stmt = this.db.prepare(`INSERT INTO users (${fields})
+                                          VALUES (${values})`);
             stmt.run(userData)
             return this.findById(userData.id as UUID)
-        }catch (e){
+        } catch (e) {
             throw SqliteErrorToValidationError(e, userData)
         }
 
@@ -82,7 +97,7 @@ class UserSqliteRepository implements IUserRepository{
 
     async update(id: UUID, userData: IUserUpdate): Promise<IUser> {
         try {
-            if(!await this.findRoleById(userData.role)){
+            if (!await this.findRoleById(userData.role)) {
                 throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
             }
 
@@ -92,9 +107,11 @@ class UserSqliteRepository implements IUserRepository{
                 .map(field => `${field} = @${field}`)
                 .join(', ');
             userData.id = id
-            const stmt = this.db.prepare( `UPDATE users SET ${setClauses} WHERE id = @id `);
+            const stmt = this.db.prepare(`UPDATE users
+                                          SET ${setClauses}
+                                          WHERE id = @id `);
             stmt.run(userData);
-        }catch (e){
+        } catch (e) {
             throw SqliteErrorToValidationError(e, userData)
         }
         return this.findById(id)
@@ -114,7 +131,7 @@ class UserSqliteRepository implements IUserRepository{
 
     async findById(id: UUID): Promise<IUser> {
         const user = this.db.prepare('SELECT * FROM users WHERE id = ?').get(id);
-        if(!user){
+        if (!user) {
             return null
         }
         user.role = await this.findRoleById(user.role)
@@ -123,23 +140,30 @@ class UserSqliteRepository implements IUserRepository{
 
     async findByUsername(username: string): Promise<IUser> {
         const user = this.db.prepare('SELECT * FROM users WHERE username = ?').get(username);
-        if(!user){
+        if (!user) {
             return null
         }
         user.role = await this.findRoleById(user.role)
         return user
     }
 
-    async paginate(page:number = 1, limit:number = 5): Promise<IPaginateResult> {
+    async paginate(page: number = 1, limit: number = 5, search?: string): Promise<IPaginateResult> {
+
         const offset = page > 1 ? (page - 1) * limit : 0
-        const rCount = this.db.prepare('SELECT COUNT(*) as count FROM users').get();
-        const users = this.db.prepare('SELECT * FROM users LIMIT ? OFFSET ?').all([limit, offset]);
+
+        let where
+        if (search) {
+            where = ` WHERE name LIKE '%${search}%' OR username LIKE '%${search}%'`
+        }
+
+        const rCount = this.db.prepare('SELECT COUNT(*) as count FROM users' + where).get();
+        const users = this.db.prepare('SELECT * FROM users LIMIT ? OFFSET ?' + where).all([limit, offset]);
 
         for (const user of users) {
             let role = await this.findRoleById(user.role)
-            if(role){
+            if (role) {
                 user.role = role
-            }else{
+            } else {
                 user.role = null
             }
 
@@ -154,13 +178,15 @@ class UserSqliteRepository implements IUserRepository{
         }
     }
 
-    async findRoleById(id : IID){
+    async findRoleById(id: IID) {
         return await this.roleRepository.findById(id)
     }
 
-    async changePassword(id: IID, password: string):Promise<boolean> {
-        const stmt = this.db.prepare( `UPDATE users SET password = @password WHERE id = @id `);
-        stmt.run({id: id, password:  password});
+    async changePassword(id: IID, password: string): Promise<boolean> {
+        const stmt = this.db.prepare(`UPDATE users
+                                      SET password = @password
+                                      WHERE id = @id `);
+        stmt.run({id: id, password: password});
         return true
     }
 }

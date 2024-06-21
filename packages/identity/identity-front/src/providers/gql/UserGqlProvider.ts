@@ -38,7 +38,7 @@ class UserGqlProvider implements IUserProvider {
         const query: string = `mutation changeUserPassword($userId: ID!, $newPassword: String!) { changeUserPassword(userId:$userId, newPassword: $newPassword)   }`
         const variables = {userId, newPassword}
         let data = await this.gqlClient.mutation(query, variables)
-        return data.createUser
+        return data.changeUserPassword
     }
 
     async deleteUser(id: string): Promise<any> {
@@ -48,9 +48,13 @@ class UserGqlProvider implements IUserProvider {
         return data.createUser
     }
 
-    async paginateUser(page: number, limit: number): Promise<IPaginateClient> {
-        const query: string = `query paginateUser { paginateUser { total, page, limit, items{id, name username, email, phone, active, role{id, name} } } }`
-        const variables = {page, limit}
+    async paginateUser(page: number, limit: number, search:string = ""): Promise<IPaginateClient> {
+        const query: string = `query paginateUser($page: Int, $limit: Int, $search:String) { 
+            paginateUser(page: $page, limit: $limit, search: $search) { 
+                total, page, limit, items{ id, name username, email, phone, active, role{id, name} } 
+            } 
+        }`
+        const variables = {page, limit, search}
         let data = await this.gqlClient.query(query, variables)
         return data.paginateUser
     }

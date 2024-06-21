@@ -33,9 +33,16 @@ class RoleMongoRepository implements IRoleRepository{
         return roles
     }
 
-    async paginate(page:number = 1, limit:number = 5): Promise<IPaginateResult>{
+    async paginate(page:number = 1, limit:number = 5, search:string): Promise<IPaginateResult>{
 
-        const query = {} as FilterQuery<IRole>
+        const query = {}
+
+        if(search){
+            query['$or'] = [
+                {name: new RegExp(search, 'i')},
+            ]
+        }
+
         const options = {page, limit} as PaginateOptions
         const roles: PaginateResult<IRole> = await RoleModel.paginate(query, options)
         return {

@@ -7,7 +7,7 @@ interface IUserRepository{
     delete(id: IID): Promise<boolean>;
     findById(id: IID): Promise<IUser | null>;
     findByUsername(username: string): Promise<IUser | null>;
-    paginate(page?: number, limit?: number, filters?: IPaginateFilter[]): Promise<IPaginateResult>;
+    paginate(page?: number, limit?: number, search?: string, filters?: IPaginateFilter[]): Promise<IPaginateResult>;
     changePassword(id: IID, password:string):Promise<Boolean>;
     table?():void
 

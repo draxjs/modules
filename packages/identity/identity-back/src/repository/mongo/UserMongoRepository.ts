@@ -66,9 +66,19 @@ class UserMongoRepository implements IUserRepository {
         return user
     }
 
-    async paginate(page: number = 1, limit: number = 5): Promise<IPaginateResult> {
+    async paginate(page: number = 1, limit: number = 5, search?:string): Promise<IPaginateResult> {
+
 
         const query = {}
+
+        if(search){
+            query['$or'] = [
+                {username: new RegExp(search, 'i')},
+                {email: new RegExp(search, 'i')},
+                {name: new RegExp(search, 'i')},
+            ]
+        }
+
         const options = {populate: ['role'], page: page, limit: limit }
 
         const userPaginated: PaginateResult<IUser> = await UserModel.paginate(query, options)

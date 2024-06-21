@@ -23,6 +23,7 @@ const roleList = ref<RoleList | null>(null);
 let form = ref<IRole>({name: "", permissions: [], readonly: false})
 let target = ref<IRole>();
 let targetId = ref<string>('');
+let filterEnable = ref(false);
 
 function cancel() {
   dialog.value = false
@@ -61,19 +62,19 @@ async function save() {
 let buttonText = computed(() => {
   switch (dialogMode.value) {
     case 'create':
-      return 'Crear'
+      return 'action.create'
     case 'edit':
-      return 'Guardar'
+      return 'action.update'
     case 'delete':
-      return 'Eliminar'
+      return 'action.delete'
     default:
-      return 'Enviar'
+      return 'action.sent'
   }
 })
 
 function toCreate() {
   dialogMode.value = 'create';
-  dialogTitle.value = 'Agregar Usuario';
+  dialogTitle.value = 'role.creating';
   form.value = {name: "", permissions: [], readonly: false}
   dialog.value = true;
 }
@@ -81,7 +82,7 @@ function toCreate() {
 function toEdit(item: IRole) {
   console.log('toEdit', item)
   dialogMode.value = 'edit';
-  dialogTitle.value = 'Editando Usuario';
+  dialogTitle.value = 'role.updating';
   const {id, ...rest} = item;
   targetId.value = id;
   form.value = {...rest}
@@ -91,7 +92,7 @@ function toEdit(item: IRole) {
 function toDelete(item: IRole) {
   console.log('toDelete', item)
   dialogMode.value = 'delete';
-  dialogTitle.value = 'Eliminando Usuario';
+  dialogTitle.value = 'role.deleting';
   target.value = item
   const {id} = item;
   targetId.value = id;
@@ -105,19 +106,29 @@ function toDelete(item: IRole) {
 
     <v-sheet border rounded>
       <v-toolbar>
-        <v-toolbar-title>Administración de Roles</v-toolbar-title>
+        <v-toolbar-title>{{$t('role.managing')}}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="toCreate">Agregar</v-btn>
+        <v-btn icon @click="filterEnable = !filterEnable">
+          <v-icon>{{ filterEnable ? 'mdi-filter' : 'mdi-filter-off' }}</v-icon>
+        </v-btn>
+        <v-btn color="primary" @click="toCreate">
+          {{$t('action.create') }}
+        </v-btn>
       </v-toolbar>
       <v-theme-provider with-background class="pa-2 rounded-b">
-        <RoleList ref="roleList" @toEdit="toEdit" @toDelete="toDelete"/>
+        <RoleList
+            ref="roleList"
+            @toEdit="toEdit"
+            @toDelete="toDelete"
+            :filterEnable="filterEnable"
+        />
       </v-theme-provider>
     </v-sheet>
 
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>
         <v-toolbar>
-          <v-toolbar-title>{{ dialogTitle }}</v-toolbar-title>
+          <v-toolbar-title>{{ $t(dialogTitle) }}</v-toolbar-title>
         </v-toolbar>
         <v-card class="pa-10">
           <v-card-text v-if="roleError">
@@ -138,7 +149,7 @@ function toDelete(item: IRole) {
                    @click="save"
                    :loading="loading"
             >
-              {{ buttonText }}
+              {{ $t(buttonText) }}
             </v-btn>
           </v-card-actions>
 

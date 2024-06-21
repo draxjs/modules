@@ -25,9 +25,12 @@ let dialogTitle = ref('');
 const userList = ref<UserList | null>(null);
 let createForm = ref<IUserCreate>({name: "", username: "", password: "", email: "", phone: "", role: "", active: true})
 let editForm = ref<IUserUpdate>({name: "", username: "", email: "", phone: "", role: "", active: true})
-let passwordForm = ref<IUserPassword>({ newPassword: ""})
+let passwordForm = ref<IUserPassword>({newPassword: "", confirmPassword: ""})
+let passwordChanged = ref(false);
 let target = ref<IUser>();
 let targetId = ref<string>('');
+let actionButtonEnable = ref(true);
+let filterEnable = ref(false);
 
 function cancel() {
   dialog.value = false
@@ -37,6 +40,7 @@ function cancel() {
   dialogTitle.value = ''
   targetId.value = ''
   target.value = undefined
+  actionButtonEnable.value = true
 }
 
 async function save() {
@@ -47,8 +51,13 @@ async function save() {
     } else if (dialogMode.value === 'edit') {
       await editUser(targetId.value, editForm.value)
     } else if (dialogMode.value === 'changePassword') {
-      console.log("passwordForm.value",passwordForm.value)
-      await changeUserPassword(targetId.value, passwordForm.value.newPassword)
+      if (passwordForm.value.newPassword === passwordForm.value.confirmPassword) {
+        passwordChanged.value = await changeUserPassword(targetId.value, passwordForm.value.newPassword)
+        actionButtonEnable.value = false
+        return
+      } else {
+        return
+      }
     } else if (dialogMode.value === 'delete') {
       await deleteUser(targetId.value)
     }
@@ -69,27 +78,28 @@ async function save() {
 let buttonText = computed(() => {
   switch (dialogMode.value) {
     case 'create':
-      return 'Crear'
+      return 'action.create'
     case 'edit':
-      return 'Guardar'
+      return 'action.update'
     case 'delete':
-      return 'Eliminar'
+      return 'action.delete'
     default:
-      return 'Enviar'
+      return 'action.sent'
   }
 })
 
 function toCreate() {
+  actionButtonEnable.value = true
   dialogMode.value = 'create';
-  dialogTitle.value = 'Agregar Usuario';
+  dialogTitle.value = 'user.creating';
   createForm.value = {name: "", username: "", password: "", email: "", phone: "", role: "", active: true}
   dialog.value = true;
 }
 
 function toEdit(item: IUser) {
-  console.log('toEdit', item)
+  actionButtonEnable.value = true
   dialogMode.value = 'edit';
-  dialogTitle.value = 'Editando Usuario';
+  dialogTitle.value = 'user.updating';
   const {id, ...rest} = item;
   targetId.value = id;
   rest.role = rest.role ? rest.role.id : null
@@ -98,9 +108,9 @@ function toEdit(item: IUser) {
 }
 
 function toDelete(item: IUser) {
-  console.log('toDelete', item)
+  actionButtonEnable.value = true
   dialogMode.value = 'delete';
-  dialogTitle.value = 'Eliminando Usuario';
+  dialogTitle.value = 'user.deleting';
   target.value = item
   const {id} = item;
   targetId.value = id;
@@ -108,9 +118,9 @@ function toDelete(item: IUser) {
 }
 
 function toChangePassword(item: IUser) {
-  console.log('toChangePassword', item)
+  actionButtonEnable.value = true
   dialogMode.value = 'changePassword';
-  dialogTitle.value = 'Cambiando password de Usuario';
+  dialogTitle.value = 'user.changingPassword';
   target.value = item
   const {id} = item;
   targetId.value = id;
@@ -125,19 +135,30 @@ function toChangePassword(item: IUser) {
 
     <v-sheet border rounded>
       <v-toolbar>
-        <v-toolbar-title>Administración de Usuarios</v-toolbar-title>
+        <v-toolbar-title>{{ $t('user.managing') }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="toCreate">Agregar</v-btn>
+        <v-btn icon @click="filterEnable = !filterEnable">
+          <v-icon>{{ filterEnable ? 'mdi-filter' : 'mdi-filter-off' }}</v-icon>
+        </v-btn>
+        <v-btn color="primary" @click="toCreate">
+          {{$t('action.create') }}
+        </v-btn>
       </v-toolbar>
       <v-theme-provider with-background class="pa-2 rounded-b">
-        <UserList ref="userList" @toEdit="toEdit" @toDelete="toDelete" @toChangePassword="toChangePassword"/>
+        <UserList
+            ref="userList"
+            @toEdit="toEdit"
+            @toDelete="toDelete"
+            @toChangePassword="toChangePassword"
+            :filterEnable="filterEnable"
+        />
       </v-theme-provider>
     </v-sheet>
 
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>
         <v-toolbar>
-          <v-toolbar-title>{{ dialogTitle }}</v-toolbar-title>
+          <v-toolbar-title>{{ $t(dialogTitle) }}</v-toolbar-title>
         </v-toolbar>
         <v-card class="pa-10">
           <v-card-text v-if="userError">
@@ -156,25 +177,36 @@ function toChangePassword(item: IUser) {
                 :inputErrors="inputErrors"
             />
 
+            <UserView v-if="dialogMode === 'delete'
+            && target" :user="target"
+            />
+
+
             <UserPasswordForm
                 v-if="dialogMode === 'changePassword'&& target"
                 v-model="passwordForm"
                 :inputErrors="inputErrors"
+                :passwordChanged="passwordChanged"
             />
 
-            <UserView v-if="dialogMode === 'delete'
-            && target" :user="target"
-            />
+
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn variant="text" @click="cancel" :loading="loading">Cancelar</v-btn>
-            <v-btn variant="flat"
-                   :color="dialogMode==='delete' ? 'red' : 'primary'"
-                   @click="save"
-                   :loading="loading"
+            <v-btn
+                variant="text"
+                @click="cancel"
+                :loading="loading">
+              {{ actionButtonEnable ? $t('action.cancel') : $t('action.close') }}
+            </v-btn>
+            <v-btn
+                v-if="actionButtonEnable"
+                variant="flat"
+                :color="dialogMode==='delete' ? 'red' : 'primary'"
+                @click="save"
+                :loading="loading"
             >
-              {{ buttonText }}
+              {{ $t(buttonText) }}
             </v-btn>
           </v-card-actions>
 

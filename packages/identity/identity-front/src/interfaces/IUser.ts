@@ -33,6 +33,7 @@ interface IUserUpdate {
 
 interface IUserPassword {
     newPassword: string
+    confirmPassword: string
 }
 
 export type {IUser, IUserCreate, IUserUpdate, IUserPassword}

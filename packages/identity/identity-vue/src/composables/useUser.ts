@@ -14,9 +14,9 @@ export function useUser() {
     let inputErrors = ref<IClientInputError>()
     let loading = ref(false);
 
-    async function paginateUser(page = 1, perPage = 5) {
+    async function paginateUser(page = 1, perPage = 5, search = "") {
         loading.value = true
-        let paginatedUser = userSystem.paginateUser(page, perPage)
+        let paginatedUser = userSystem.paginateUser(page, perPage, search)
         loading.value = false
         return paginatedUser
     }
@@ -42,7 +42,7 @@ export function useUser() {
     async function changeUserPassword(id: string, newPassword: string){
         try {
             loading.value = true
-            await userSystem.changeUserPassword(id, newPassword)
+            return await userSystem.changeUserPassword(id, newPassword)
         } catch (err) {
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors

@@ -26,9 +26,9 @@ export function useRole() {
         return roles
     }
 
-    async function paginateRole(page = 1, perPage = 5) {
+    async function paginateRole(page = 1, perPage = 5, string = "") {
         loading.value = true
-        let paginatedrole = roleSystem.paginateRole(page, perPage)
+        let paginatedrole = roleSystem.paginateRole(page, perPage,string)
         loading.value = false
         return paginatedrole
     }

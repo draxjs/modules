@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {defineProps, ref} from "vue";
 import {useRole} from "../../composables/useRole";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
@@ -8,6 +8,13 @@ import {useI18n} from "vue-i18n";
 const {hasPermission} = useAuth()
 const {paginateRole} = useRole()
 const {t} = useI18n()
+
+const props = defineProps({
+  filterEnable: {
+    type: Boolean,
+    default: false,
+  }
+})
 
 const itemsPerPage = ref(5)
 const page = ref(1)
@@ -27,7 +34,7 @@ const search = ref('')
 async function loadItems(){
   try{
     loading.value = true
-    const r = await paginateRole(page.value,itemsPerPage.value)
+    const r = await paginateRole(page.value,itemsPerPage.value, search.value)
     serverItems.value = r.items
     totalItems.value = r.total
   }catch (e){
@@ -58,7 +65,20 @@ defineExpose({
       item-value="name"
       @update:options="loadItems"
   >
+    <template v-slot:top>
+      <v-toolbar border density="compact" v-if="filterEnable" class="grey-lighten-1">
+        <v-toolbar-title>{{ $t('action.filter') }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-text-field v-model="search" hide-details
+                      density="compact" class="mr-2"
+                      variant="outlined"
+                      append-inner-icon="mdi-magnify"
+                      :label="$t('action.search')"
+                      single-line clearable @click:clear="() => search = ''"
+        />
 
+      </v-toolbar>
+    </template>
     <template v-slot:item.permissions="{ value }" >
           <v-chip v-for="permission in value"
                   :key="permission" color="green"
@@ -78,7 +98,7 @@ defineExpose({
     </template>
 
     <template v-slot:item.actions="{item}" >
-      <v-btn v-if="hasPermission('user:edit')" :disabled="item.readonly" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
+      <v-btn v-if="hasPermission('user:update')" :disabled="item.readonly" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
       <v-btn v-if="hasPermission('user:delete')" :disabled="item.readonly" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
     </template>
 
