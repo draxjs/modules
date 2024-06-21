@@ -4,6 +4,14 @@ import LoginPage from '../pages/user/login/index.vue'
 
 const routes = [
   {
+    name: 'Root',
+    path: '/',
+    component: HomePage,
+    meta: {
+      auth: false,
+    }
+  },
+  {
     name: 'Home',
     path: '/home',
     component: HomePage,

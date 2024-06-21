@@ -5,13 +5,12 @@ import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
 
-const userService = UserServiceFactory()
-
 async function UserRoutes(fastify, options) {
     fastify.post('/api/auth', async (request, reply) => {
         try {
             const username = request.body.username
             const password = request.body.password
+            const userService = UserServiceFactory()
             return await userService.auth(username, password)
         } catch (e) {
             console.error('/api/auth error', e)
@@ -30,6 +29,7 @@ async function UserRoutes(fastify, options) {
     fastify.get('/api/me', async (request, reply): Promise<IUser | null> => {
         try {
             if (request.authUser) {
+                const userService = UserServiceFactory()
                 let user = await userService.findById(request.authUser.id)
                 delete user.password
                 return user
@@ -60,6 +60,7 @@ async function UserRoutes(fastify, options) {
             const page = request.query.page
             const limit = request.query.limit
             const search = request.query.search
+            const userService = UserServiceFactory()
             let paginateResult = await userService.paginate(page, limit, search)
             return paginateResult
         } catch (e) {
@@ -80,6 +81,7 @@ async function UserRoutes(fastify, options) {
         try {
             request.rbac.assertPermission(IdentityPermissions.CreateUser)
             const payload = request.body
+            const userService = UserServiceFactory()
             let user = await userService.create(payload)
             return user
         } catch (e) {
@@ -102,6 +104,7 @@ async function UserRoutes(fastify, options) {
             request.rbac.assertPermission(IdentityPermissions.UpdateUser)
             const id = request.params.id
             const payload = request.body
+            const userService = UserServiceFactory()
             let user = await userService.update(id, payload)
             return user
         } catch (e) {
@@ -126,6 +129,7 @@ async function UserRoutes(fastify, options) {
         try {
             request.rbac.assertPermission(IdentityPermissions.DeleteUser)
             const id = request.params.id
+            const userService = UserServiceFactory()
             let r = await userService.delete(id)
             return r
         } catch (e) {
@@ -150,6 +154,7 @@ async function UserRoutes(fastify, options) {
             const userId = request.authUser.id
             const currentPassword = request.body.currentPassword
             const newPassword = request.body.newPassword
+            const userService = UserServiceFactory()
             return await userService.changeOwnPassword(userId, currentPassword, newPassword)
         } catch (e) {
             console.error('/api/password error', e)
@@ -175,7 +180,7 @@ async function UserRoutes(fastify, options) {
                 throw new UnauthorizedError()
             }
             const newPassword = request.body.newPassword
-
+            const userService = UserServiceFactory()
             return await userService.changeUserPassword(userId, newPassword)
         } catch (e) {
             console.error('/api/password error', e)

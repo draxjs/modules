@@ -5,7 +5,7 @@ import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import {PermissionService} from "../services/PermissionService.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 
-const roleService = RoleServiceFactory()
+
 
 async function RoleRoutes(fastify, options) {
 
@@ -30,6 +30,7 @@ async function RoleRoutes(fastify, options) {
         try {
             request.rbac.assertPermission(IdentityPermissions.ViewRole)
             const id = request.params.id
+            const roleService = RoleServiceFactory()
             let role = await roleService.findById(id)
             return role
         } catch (e) {
@@ -51,6 +52,7 @@ async function RoleRoutes(fastify, options) {
         try {
             request.rbac.assertPermission(IdentityPermissions.ViewRole)
             const name = request.params.name
+            const roleService = RoleServiceFactory()
             let role = await roleService.findByName(name)
             return role
         } catch (e) {
@@ -71,6 +73,7 @@ async function RoleRoutes(fastify, options) {
     fastify.get('/api/roles/all', async (request, reply): Promise<IRole[]> => {
         try {
             request.rbac.assertPermission(IdentityPermissions.ViewRole)
+            const roleService = RoleServiceFactory()
             let roles = await roleService.fetchAll()
             return roles
         } catch (e) {
@@ -94,6 +97,7 @@ async function RoleRoutes(fastify, options) {
             const page = request.query.page
             const limit = request.query.limit
             const search = request.query.search
+            const roleService = RoleServiceFactory()
             let paginateResult = await roleService.paginate(page, limit, search)
             return paginateResult
         } catch (e) {
@@ -115,6 +119,7 @@ async function RoleRoutes(fastify, options) {
         try {
             request.rbac.assertPermission(IdentityPermissions.CreateRole)
             const payload = request.body
+            const roleService = RoleServiceFactory()
             let role = await roleService.create(payload)
             return role
         } catch (e) {
@@ -138,7 +143,7 @@ async function RoleRoutes(fastify, options) {
             request.rbac.assertPermission(IdentityPermissions.UpdateRole)
             const id = request.params.id
             const payload = request.body
-
+            const roleService = RoleServiceFactory()
             const currentRole = await roleService.findById(id)
             if(currentRole.readonly){
                 throw new ValidationError([{field:'name', reason:"role.readonly", value:payload.name}])
@@ -166,6 +171,7 @@ async function RoleRoutes(fastify, options) {
         try {
             request.rbac.assertPermission(IdentityPermissions.DeleteRole)
             const id = request.params.id
+            const roleService = RoleServiceFactory()
             let r = await roleService.delete(id)
             return r
         } catch (e) {

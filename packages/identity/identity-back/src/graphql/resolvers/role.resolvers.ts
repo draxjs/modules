@@ -5,12 +5,13 @@ import {GraphQLError} from "graphql";
 import {PermissionService} from "../../services/PermissionService.js";
 import UnauthorizedError from "../../errors/UnauthorizedError.js";
 
-const roleService = RoleServiceFactory()
+
 export default {
     Query: {
         findRoleById: async (_, {id}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
+                const roleService = RoleServiceFactory()
                 return await roleService.findById(id)
             } catch (e) {
                 if (e instanceof UnauthorizedError) {
@@ -22,6 +23,7 @@ export default {
         findRoleByName: async (_, {name}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
+                const roleService = RoleServiceFactory()
                 return await roleService.findByName(name)
             } catch (e) {
                 if (e instanceof UnauthorizedError) {
@@ -33,6 +35,7 @@ export default {
         fetchRole: async (_, {}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
+                const roleService = RoleServiceFactory()
                 return await roleService.fetchAll()
             } catch (e) {
                 if (e instanceof UnauthorizedError) {
@@ -55,6 +58,7 @@ export default {
         paginateRole: async (_, {page, limit, seach}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
+                const roleService = RoleServiceFactory()
                 return await roleService.paginate(page, limit, seach)
             } catch (e) {
                 console.error("paginateRole",e)
@@ -69,6 +73,7 @@ export default {
         createRole: async (_, {input}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.CreateRole)
+                const roleService = RoleServiceFactory()
                 return await roleService.create(input)
             } catch (e) {
                 console.error("createRole",e)
@@ -85,7 +90,7 @@ export default {
         updateRole: async (_, {id, input}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.UpdateRole)
-
+                const roleService = RoleServiceFactory()
                 const currentRole = await roleService.findById(id)
                 if(currentRole.readonly){
                     throw new ValidationError([{field:'name', reason:"role.readonly", value:input.name}])
@@ -106,6 +111,7 @@ export default {
         deleteRole: async (_, {id}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.DeleteRole)
+                const roleService = RoleServiceFactory()
                 return await roleService.delete(id)
             } catch (e) {
                 console.error("deleteRole",e)
