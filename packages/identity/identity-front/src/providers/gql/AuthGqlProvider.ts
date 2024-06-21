@@ -34,7 +34,7 @@ class AuthGqlProvider implements IAuthProvider {
     }
 
     async me(): Promise<IAuthUser> {
-        const query: string = `query me { me {id,username, email, role {id, name}} }`
+        const query: string = `query me { me {id,username, email, role {id, name, permissions}} }`
         let data = await this.gqlClient.query(query)
         return data.me
     }

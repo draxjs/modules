@@ -1,6 +1,5 @@
 enum IdentityPermissions {
 
-    ManageIdentity = "identity:manage",
 
     CreateUser = "user:create",
     EditUser = "user:edit",

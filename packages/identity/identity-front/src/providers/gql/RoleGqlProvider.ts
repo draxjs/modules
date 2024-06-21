@@ -58,7 +58,7 @@ class RoleGqlProvider implements IRoleProvider {
     }
 
     async paginateRole(page: number, limit: number): Promise<IPaginateClient> {
-        const query: string = `query paginateRole { paginateRole { total, page, limit, items{id, name username, email, phone, active, role{id, name} } } }`
+        const query: string = `query paginateRole { paginateRole { total, page, limit, items{id, name , permissions, readonly } } }`
         const variables = {page, limit}
         let data = await this.gqlClient.query(query, variables)
         return data.paginateRole

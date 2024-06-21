@@ -58,9 +58,23 @@ defineExpose({
       item-value="name"
       @update:options="loadItems"
   >
-    <template v-slot:item.active="{ value }" >
-      <v-chip :color="value ? 'green':'red'" >
-        {{ value ? 'Active' : 'Inactive' }}
+
+    <template v-slot:item.permissions="{ value }" >
+
+          <v-chip v-for="permission in value"
+                  :key="permission" color="green"
+                  class="ma-1"
+          >
+            {{$t ? $t(`permission.${permission}`) : permission }}
+          </v-chip>
+    </template>
+
+    <template v-slot:item.readonly="{ value }" >
+      <v-chip v-if="value" color="grey" >
+        <v-icon class="mdi mdi-pencil-off-outline"></v-icon>
+      </v-chip>
+      <v-chip v-else color="green">
+        <v-icon class="mdi mdi-pencil-outline"></v-icon>
       </v-chip>
     </template>
 

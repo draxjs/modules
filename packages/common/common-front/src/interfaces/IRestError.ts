@@ -5,7 +5,7 @@ interface IRestError {
   statusCode: number;
   body?: {
     error ?: string
-    inputError?:  IInputError[]
+    inputErrors?:  IInputError[]
   }
 }
 

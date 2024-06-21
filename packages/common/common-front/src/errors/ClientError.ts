@@ -10,15 +10,15 @@ class ClientError extends Error {
 
   constructor(error: IRestError|IGqlError) {
     let inputErrors = ClientError.extractInputErrors(error)
-    let message = ClientError.extractErorMessage(error)
+    let message = ClientError.extractErrorMessage(error)
     super(message)
     this.name = 'ClientError'
     this.inputErrors = inputErrors
     this.error = error
   }
 
-  static extractErorMessage(error: IRestError|IGqlError): string {
-    if ('body' in error && error.body && error.body.inputError) {
+  static extractErrorMessage(error: IRestError|IGqlError): string {
+    if ('body' in error && error.body && error.body.inputErrors) {
       return 'error.validation'
     }
 
@@ -26,15 +26,20 @@ class ClientError extends Error {
       return error.body.error
     }
 
+    if ('message' in error && error.message ) {
+      return error.message
+    }
+
     return 'error.client'
   }
 
   static extractInputErrors(error: IRestError|IGqlError): IClientInputError|undefined {
-    if ('body' in error && error.body && error.body.inputError) {
-      return ClientError.convertToKeyValue(error.body.inputError)
+    if ('body' in error && error.body && error.body.inputErrors) {
+
+      return ClientError.convertToKeyValue(error.body.inputErrors)
     }
-    if ('extensions' in error && error.extensions && error.extensions.inputError) { // Corrected property name to inputError
-      return ClientError.convertToKeyValue(error.extensions.inputError) // Corrected property name to inputError
+    if ('extensions' in error && error.extensions && error.extensions.inputErrors) { // Corrected property name to inputError
+      return ClientError.convertToKeyValue(error.extensions.inputErrors) // Corrected property name to inputError
     }
 
     return undefined

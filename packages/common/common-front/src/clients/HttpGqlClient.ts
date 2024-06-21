@@ -36,10 +36,7 @@ class HttpGqlClient implements IGqlClient {
   errorHandler(error: Error): Error {
 
     if (error instanceof GqlError) {
-      if(error.isBadUserInput){
-        return new ClientError(error)
-      }
-      return new UnknownError(error);
+      return new ClientError(error)
     }else if (error instanceof GqlMultiError) {
       return error
     } else if (error instanceof HttpStatusError) {

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 
 import {ref, onMounted, defineModel} from 'vue'
-
+import type { PropType } from 'vue'
 const props = defineProps({
   errorMessages: {
-    type: String as propType<string | string[] | undefined>,
+    type: String as PropType<string | string[] | undefined>,
   }
 })
 

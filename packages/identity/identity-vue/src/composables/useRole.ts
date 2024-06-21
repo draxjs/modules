@@ -57,6 +57,7 @@ export function useRole() {
             let role: IRole = await roleSystem.editRole(id, roleData)
             return role
         } catch (err) {
+
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }

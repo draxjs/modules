@@ -1,6 +1,8 @@
 import {IRole} from "../interfaces/IRole";
 import {IRoleRepository} from "../interfaces/IRoleRepository";
-import {IPaginateFilter, IPaginateResult} from "@drax/common-back"
+import {IPaginateFilter, IPaginateResult, ZodErrorToValidationError} from "@drax/common-back"
+import {roleSchema} from "../zod/RoleZod.js";
+import {ZodError} from "zod";
 
 class RoleService {
 
@@ -12,13 +14,31 @@ class RoleService {
     }
 
     async create(roleData: IRole): Promise<IRole> {
-        const role = await this._repository.create(roleData)
-        return role
+        try {
+            roleData.name = roleData?.name?.trim()
+            await roleSchema.parseAsync(roleData)
+            const role = await this._repository.create(roleData)
+            return role
+        } catch (e) {
+            if (e instanceof ZodError) {
+                throw ZodErrorToValidationError(e, roleData)
+            }
+            throw e
+        }
     }
 
     async update(id: any, roleData: IRole) {
-        const role = await this._repository.update(id, roleData)
-        return role
+        try {
+            roleData.name = roleData?.name?.trim()
+            await roleSchema.parseAsync(roleData)
+            const role = await this._repository.update(id, roleData)
+            return role
+        } catch (e) {
+            if (e instanceof ZodError) {
+                throw ZodErrorToValidationError(e, roleData)
+            }
+            throw e
+        }
     }
 
     async delete(id: any): Promise<boolean> {
@@ -27,16 +47,16 @@ class RoleService {
     }
 
     async findById(id: any): Promise<IRole | null> {
-        const role : IRole =  await this._repository.findById(id);
+        const role: IRole = await this._repository.findById(id);
         return role
     }
 
     async fetchAll(): Promise<IRole[]> {
-        const roles : IRole[] =  await this._repository.fetchAll();
+        const roles: IRole[] = await this._repository.fetchAll();
         return roles
     }
 
-    async paginate( page: number = 1, limit: number = 1, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
+    async paginate(page: number = 1, limit: number = 5, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
         const pagination = await this._repository.paginate(page, limit, filters);
         return pagination;
     }

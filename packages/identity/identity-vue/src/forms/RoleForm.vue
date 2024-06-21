@@ -3,7 +3,7 @@ import {defineModel, type PropType} from "vue";
 import type {IRole} from "@drax/identity-front";
 import {useI18nValidation} from "../composables/useI18nValidation";
 import type {IClientInputError} from "@drax/common-front";
-import PermissionCombobox from "../combobox/PermissionCombobox.vue";
+import PermissionSelector from "../components/PermissionSelector/PermissionSelector.vue";
 
 const {$ta} = useI18nValidation()
 
@@ -23,7 +23,6 @@ const form = defineModel<IRole>({
 
 <template>
   <form>
-
     <v-text-field
         variant="outlined"
         id="name-input"
@@ -34,7 +33,8 @@ const form = defineModel<IRole>({
         :error-messages="$ta(inputErrors.name)"
     ></v-text-field>
 
-    <PermissionCombobox v-model="form.permissions"></PermissionCombobox>
+
+    <PermissionSelector v-model="form.permissions"></PermissionSelector>
 
   </form>
 </template>

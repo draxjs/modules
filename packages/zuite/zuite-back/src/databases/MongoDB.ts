@@ -9,7 +9,7 @@ const mongoConnect = async function(){
 
     const MONGO_URI : string = process.env.MONGO_URI
 
-    console.log("MONGO_URI",MONGO_URI)
+    //console.log("MONGO_URI",MONGO_URI)
 
     try{
         await connectToMongo(MONGO_URI)

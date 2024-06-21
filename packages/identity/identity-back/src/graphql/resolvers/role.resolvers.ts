@@ -5,7 +5,7 @@ import {GraphQLError} from "graphql";
 import {PermissionService} from "../../services/PermissionService.js";
 import UnauthorizedError from "../../errors/UnauthorizedError.js";
 
-const roleService = RoleServiceFactory()
+const roleService = RoleServiceFactory
 export default {
     Query: {
         findRoleById: async (_, {id}, {rbac}) => {
@@ -41,10 +41,10 @@ export default {
                 throw new GraphQLError('error.server')
             }
         },
-        paginateRole: async (_, {}, {rbac}) => {
+        paginateRole: async (_, {page, limit}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
-                return await roleService.paginate()
+                return await roleService.paginate(page, limit)
             } catch (e) {
                 console.error("paginateRole",e)
                 if (e instanceof UnauthorizedError) {

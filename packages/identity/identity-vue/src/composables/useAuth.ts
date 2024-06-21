@@ -31,7 +31,7 @@ export function useAuth() {
         if(tokenIsValid()){
             return true
         }else{
-            authStore.clearAuth()
+            logout()
             return false
         }
 

@@ -5,7 +5,7 @@ import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../../errors/UnauthorizedError.js";
 import BadCredentialsError from "../../errors/BadCredentialsError.js";
 
-const userService = UserServiceFactory()
+const userService = UserServiceFactory
 
 export default {
     Query: {
@@ -83,7 +83,6 @@ export default {
                 const user = await userService.update(id, input)
                 return user
             } catch (e) {
-                console.error("updateUser",e)
                 if (e instanceof ValidationError) {
                     throw ValidationErrorToGraphQLError(e)
                 } else if (e instanceof UnauthorizedError) {

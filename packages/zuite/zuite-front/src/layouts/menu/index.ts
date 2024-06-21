@@ -19,7 +19,7 @@ const menu: MenuItem[] = [
     icon: 'mdi-account-circle',
     text:'Admin',
     gallery: true,
-    permission: 'identity:manage',
+    permission: 'user:manage',
     children: [
       {
         icon: 'mdi-table-account',
@@ -29,7 +29,7 @@ const menu: MenuItem[] = [
         permission: 'user:manage'
       },
       {
-        icon: 'mdi-table-account',
+        icon: 'mdi-chair-rolling',
         text:'Roles',
         link: { name: "CrudRole" },
         gallery: true,

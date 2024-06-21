@@ -1,8 +1,8 @@
 import {UserModel} from "../../models/UserModel.js";
-import {mongoose, MongooseErrorToValidationError, ValidationError} from "@drax/common-back"
+import {mongoose, MongooseErrorToValidationError, MongoServerErrorToValidationError, ValidationError} from "@drax/common-back"
 import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
 import type {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
-import {DeleteResult} from "mongodb";
+import {DeleteResult, MongoServerError} from "mongodb";
 import type {IUserRepository} from "../../interfaces/IUserRepository";
 import {PaginateResult} from "mongoose";
 import RoleMongoRepository from "./RoleMongoRepository.js";
@@ -37,18 +37,23 @@ class UserMongoRepository implements IUserRepository {
 
     async update(id: mongoose.Types.ObjectId, userData: IUserUpdate): Promise<IUser> {
         try{
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOneAndUpdate(id, userData, {new: true}).populate('role').exec()
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOneAndUpdate({_id: id}, userData, {new: true}).populate('role').exec()
         return user
         }catch (e){
+            console.log("UserRepositoryUpdate e",typeof e, e.name, e, )
             if(e instanceof mongoose.Error.ValidationError){
                 throw MongooseErrorToValidationError(e)
+            }
+            if(e instanceof MongoServerError || e.name === 'MongoServerError'){
+                console.log("UserRepositoryUpdate e instanceof MongoServerError")
+                throw MongoServerErrorToValidationError(e)
             }
             throw e
         }
     }
 
     async delete(id: mongoose.Types.ObjectId): Promise<boolean> {
-        const result: DeleteResult = await UserModel.deleteOne(id).exec()
+        const result: DeleteResult = await UserModel.deleteOne({_id: id}).exec()
         return result.deletedCount == 1
     }
 

@@ -34,6 +34,7 @@ class UserService {
         try{
             userData.name = userData?.name?.trim()
             userData.username = userData.username.trim()
+            userData.password = userData.password.trim()
 
             await createUserSchema.parseAsync(userData)
 

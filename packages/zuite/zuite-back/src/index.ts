@@ -1,7 +1,10 @@
 import MongoDb from './databases/MongoDB.js'
 import YogaFastifyServerFactory from './factories/YogaFastifyServerFactory.js'
 
-MongoDb()
+if(process.env.DB_ENGINE === 'mongo'){
+    MongoDb()
+}
+
 
 import {PermissionService, IdentityPermissions} from "@drax/identity-back";
 

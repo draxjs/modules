@@ -5,7 +5,7 @@ interface IGqlError {
   path: Array<string>;
   extensions?: {
     code?: string;
-    inputError?:  IInputError[]
+    inputErrors?:  IInputError[]
   }
   isBadUserInput: boolean
 }

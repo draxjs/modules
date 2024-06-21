@@ -25,6 +25,12 @@ describe("RoleRepositoryTest",  function() {
         equal(roleCreated.name,roleData.name)
     })
 
+    it("Create a second role successfully.",  async function() {
+        let roleData = (await import("../../data-obj/roles/operator-sqlite-role")).default
+        let roleCreated: IRole = await roleReposirory.create(roleData)
+        equal(roleCreated.name,roleData.name)
+    })
+
     it("Find role by ID successfully.",  async function() {
         let roleData = (await import("../../data-obj/roles/admin-sqlite-role")).default
         let role: IRole = await roleReposirory.findById(roleData.id as UUID)
@@ -35,13 +41,14 @@ describe("RoleRepositoryTest",  function() {
 
     it("Retrieving all roles successfully.",  async function() {
         let roles: IRole[] = await roleReposirory.fetchAll()
-        equal(roles.length,1)
+        equal(roles.length,2)
     })
 
     it("Paginate roles successfully.",  async function() {
         let paginateRoles: IPaginateResult = await roleReposirory.paginate(1,5)
-        equal(paginateRoles.items.length,1)
-        equal(paginateRoles.total,1)
+        console.log(paginateRoles)
+        equal(paginateRoles.items.length,2)
+        equal(paginateRoles.total,2)
         equal(paginateRoles.page,1)
         equal(paginateRoles.limit,5)
     })

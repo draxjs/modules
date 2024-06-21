@@ -4,7 +4,10 @@ import jsonwebtoken, {SignOptions, VerifyOptions} from "jsonwebtoken";
 class AuthUtils{
 
     static verifyToken(token : string) {
-        const JWT_SECRET = process.env.JWT_SECRET? process.env.JWT_SECRET : 'KRgDV3CeR5lVhsFF'
+        const JWT_SECRET = process.env.JWT_SECRET
+        if(!JWT_SECRET){
+            throw new Error("JWT_SECRET ENV must be provided")
+        }
         const options : VerifyOptions = {
             algorithms: ['HS256'],
         }
@@ -37,14 +40,17 @@ class AuthUtils{
     static generateToken(userId : string, username: string, roleId: string,  session : string) {
         const payload = AuthUtils.tokenSignPayload(userId, username, roleId, session)
 
-        const JWT_SECRET = process.env.JWT_SECRET ? process.env.JWT_SECRET :'KRgDV3CeR5lVhsFF'
+        const JWT_SECRET = process.env.JWT_SECRET
+        if(!JWT_SECRET){
+            throw new Error("JWT_SECRET ENV must be provided")
+        }
 
         const options : SignOptions = {
-            expiresIn: process.env.JWT_LOGIN_EXPIRED_IN || '1h',
+            expiresIn: process.env.JWT_EXPIRATION || '1h',
             jwtid: userId,
             algorithm: 'HS256',
             audience: username,
-            issuer: process.env.ISSUER? process.env.ISSUER : 'drax'
+            issuer: process.env.JWT_ISSUER? process.env.JWT_ISSUER : 'drax'
         }
 
         let token = jsonwebtoken.sign(

@@ -131,7 +131,7 @@ class UserSqliteRepository implements IUserRepository{
     }
 
     async paginate(page:number = 1, limit:number = 5): Promise<IPaginateResult> {
-        const offset = (page - 1) * limit
+        const offset = page > 1 ? (page - 1) * limit : 0
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM users').get();
         const users = this.db.prepare('SELECT * FROM users LIMIT ? OFFSET ?').all([limit, offset]);
 

@@ -6,7 +6,7 @@ import Rbac from "../rbac/Rbac.js";
 
 const cacheTTL = process.env.RBAC_CACHE_TTL ? parseInt(process.env.RBAC_CACHE_TTL) : 10000;
 const draxCache = new DraxCache<IRoleBase>(cacheTTL);
-const roleService = RoleServiceFactory()
+const roleService = RoleServiceFactory
 
 async function roleLoader(k):Promise<IRoleBase | null> {
     const role: IRole = await roleService.findById(k)

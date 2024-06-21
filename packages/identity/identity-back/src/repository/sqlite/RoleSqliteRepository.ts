@@ -122,13 +122,14 @@ class RoleSqliteRepository implements IRoleRepository{
     }
 
     async paginate(page = 1, limit = 5): Promise<IPaginateResult>{
-        const offset = (page - 1) * limit
+        const offset = page > 1 ? (page - 1) * limit : 0
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM roles').get();
         const roles = this.db.prepare('SELECT * FROM roles LIMIT ? OFFSET ?').all([limit, offset]);
 
         for (const role of roles) {
             role.permissions = role.permissions? role.permissions.split(",") : []
         }
+
 
         return {
             page: page,

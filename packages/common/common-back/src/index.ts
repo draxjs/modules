@@ -9,11 +9,13 @@ import UniqueError from "./errors/UniqueError.js";
 import ValidationError from "./errors/ValidationError.js";
 import ValidationFieldError from "./errors/ValidationFieldError.js";
 import MongooseErrorToValidationError from "./errors/adapters/MongooseErrorToValidationError.js";
+import MongoServerErrorToValidationError from "./errors/adapters/MongoServerErrorToValidationError.js";
 import SqliteErrorToValidationError from "./errors/adapters/SqliteErrorToValidationError.js";
 import ZodErrorToValidationError from "./errors/adapters/ZodErrorToValidationError.js";
 import ValidationErrorToGraphQLError from "./errors/adapters/ValidationErrorToGraphQLError.js";
 import commonGraphql  from "./graphql/index.js"
 import DraxCache  from "./cache/DraxCache.js"
+
 
 const graphqlMergeResult = await commonGraphql()
 const commonTypeDefs : TypeSource = await graphqlMergeResult.typeDefs;
@@ -35,6 +37,7 @@ export {
 
     //Utils
     MongooseErrorToValidationError,
+    MongoServerErrorToValidationError,
     SqliteErrorToValidationError,
     ZodErrorToValidationError,
     ValidationErrorToGraphQLError,
