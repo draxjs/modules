@@ -1,12 +1,13 @@
 import type {IJwtUser} from "../interfaces/IJwtUser";
 import type {IRole, IRoleBase} from "../interfaces/IRole";
-import {DraxCache} from "@drax/common-back";
+import {DraxCache, DraxConfig} from "@drax/common-back";
 import RoleServiceFactory from "../factory/RoleServiceFactory.js";
 import Rbac from "../rbac/Rbac.js";
+import IdentityConfig from "../config/IdentityConfig.js";
 
-const cacheTTL = process.env.RBAC_CACHE_TTL ? parseInt(process.env.RBAC_CACHE_TTL) : 10000;
+const cacheTTL = DraxConfig.getOrLoad(IdentityConfig.RbacCacheTTL) ? parseInt(DraxConfig.getOrLoad(IdentityConfig.RbacCacheTTL)) : 10000;
 const draxCache = new DraxCache<IRoleBase>(cacheTTL);
-const roleService = RoleServiceFactory
+const roleService = RoleServiceFactory()
 
 async function roleLoader(k):Promise<IRoleBase | null> {
     const role: IRole = await roleService.findById(k)

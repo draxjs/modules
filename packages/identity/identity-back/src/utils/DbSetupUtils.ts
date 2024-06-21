@@ -1,3 +1,5 @@
+import IdentityConfig from "../config/IdentityConfig.js";
+import {DraxConfig} from "@drax/common-back";
 
 enum DbEngine{
     Sqlite = "sqlite",
@@ -9,24 +11,24 @@ class DbSetupUtils{
 
 
     static getDbEngine() {
-        if (!process.env.DB_ENGINE) {
-            throw new Error("process.env.DB_ENGINE is not defined");
+        if (!DraxConfig.getOrLoad(IdentityConfig.DbEngine)) {
+            throw new Error("DraxConfig.DB_ENGINE is not defined");
         }
-        const dbEngine = process.env.DB_ENGINE as DbEngine;
+        const dbEngine = DraxConfig.getOrLoad(IdentityConfig.DbEngine) as DbEngine;
         if (!Object.values(DbEngine).includes(dbEngine)) {
-            throw new Error("process.env.DB_ENGINE must be one of " + Object.values(DbEngine).join(", "));
+            throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(DbEngine).join(", "));
         }
         return dbEngine;
     }
 
-    static getDbUri(){
+    static getDbConfig(){
         switch (DbSetupUtils.getDbEngine()) {
             case DbEngine.Mongo:
-                return process.env.MONGO_URI;
+                return DraxConfig.getOrLoad(IdentityConfig.MongoDbUri);
             case DbEngine.Sqlite:
-                return process.env.SQLITE_DATABASE;
+                return DraxConfig.getOrLoad(IdentityConfig.SqliteDbFile);
             default:
-                throw new Error("process.env.DB_ENGINE must be one of " + Object.values(DbEngine).join(", "));
+                throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(DbEngine).join(", "));
         }
     }
 

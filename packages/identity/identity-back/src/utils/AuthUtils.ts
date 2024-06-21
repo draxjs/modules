@@ -1,12 +1,14 @@
 import bcryptjs from "bcryptjs";
 import jsonwebtoken, {SignOptions, VerifyOptions} from "jsonwebtoken";
+import {DraxConfig} from "@drax/common-back";
+import IdentityConfig from "../config/IdentityConfig.js";
 
 class AuthUtils{
 
     static verifyToken(token : string) {
-        const JWT_SECRET = process.env.JWT_SECRET
+        const JWT_SECRET = DraxConfig.getOrLoad(IdentityConfig.JwtSecret)
         if(!JWT_SECRET){
-            throw new Error("JWT_SECRET ENV must be provided")
+            throw new Error("DraxConfig.JWT_SECRET must be provided")
         }
         const options : VerifyOptions = {
             algorithms: ['HS256'],
@@ -40,17 +42,20 @@ class AuthUtils{
     static generateToken(userId : string, username: string, roleId: string,  session : string) {
         const payload = AuthUtils.tokenSignPayload(userId, username, roleId, session)
 
-        const JWT_SECRET = process.env.JWT_SECRET
+        const JWT_SECRET = DraxConfig.getOrLoad(IdentityConfig.JwtSecret)
         if(!JWT_SECRET){
             throw new Error("JWT_SECRET ENV must be provided")
         }
 
+        const JWT_EXPIRATION = DraxConfig.getOrLoad(IdentityConfig.JwtExpiration) || '1h'
+        const JWT_ISSUER = DraxConfig.getOrLoad(IdentityConfig.JwtIssuer) || 'DRAX'
+
         const options : SignOptions = {
-            expiresIn: process.env.JWT_EXPIRATION || '1h',
+            expiresIn: JWT_EXPIRATION,
             jwtid: userId,
             algorithm: 'HS256',
             audience: username,
-            issuer: process.env.JWT_ISSUER? process.env.JWT_ISSUER : 'drax'
+            issuer: JWT_ISSUER
         }
 
         let token = jsonwebtoken.sign(

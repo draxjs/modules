@@ -12,8 +12,15 @@ import {jwtMiddleware} from "./middleware/jwtMiddleware.js";
 import {rbacMiddleware} from "./middleware/rbacMiddleware.js";
 
 import IdentityPermissions from "./permissions/IdentityPermissions.js";
+import IdentityConfig from "./config/IdentityConfig.js";
 import UnauthorizedError from "./errors/UnauthorizedError.js";
 import BadCredentialsError from "./errors/BadCredentialsError.js";
+
+import CreateUserIfNotExist from "./setup/CreateUserIfNotExist.js";
+import CreateOrUpdateRole from "./setup/CreateOrUpdateRole.js";
+import LoadPermissions from "./setup/LoadPermissions.js";
+import LoadConfigFromEnv from "./setup/LoadConfigFromEnv.js";
+import RecoveryUserPassword from "./setup/RecoveryUserPassword.js";
 
 import type {IJwtUser} from "./interfaces/IJwtUser";
 import type {IRole, IRoleBase} from "./interfaces/IRole";
@@ -62,9 +69,19 @@ export {
     //Permissions
     IdentityPermissions,
 
+    //Config
+    IdentityConfig,
+
     //Errors
     UnauthorizedError,
-    BadCredentialsError
+    BadCredentialsError,
+
+    //Setup
+    LoadConfigFromEnv,
+    LoadPermissions,
+    CreateOrUpdateRole,
+    CreateUserIfNotExist,
+    RecoveryUserPassword
 }
 
 

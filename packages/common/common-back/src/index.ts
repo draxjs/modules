@@ -15,6 +15,7 @@ import ZodErrorToValidationError from "./errors/adapters/ZodErrorToValidationErr
 import ValidationErrorToGraphQLError from "./errors/adapters/ValidationErrorToGraphQLError.js";
 import commonGraphql  from "./graphql/index.js"
 import DraxCache  from "./cache/DraxCache.js"
+import DraxConfig  from "./config/DraxConfig.js"
 
 
 const graphqlMergeResult = await commonGraphql()
@@ -25,6 +26,9 @@ export {
 
     //Cache
     DraxCache,
+
+    //Config
+    DraxConfig,
 
     //Graphql
     GraphqlMerger,

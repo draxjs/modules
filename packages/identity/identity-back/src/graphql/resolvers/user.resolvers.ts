@@ -5,7 +5,7 @@ import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../../errors/UnauthorizedError.js";
 import BadCredentialsError from "../../errors/BadCredentialsError.js";
 
-const userService = UserServiceFactory
+const userService = UserServiceFactory()
 
 export default {
     Query: {

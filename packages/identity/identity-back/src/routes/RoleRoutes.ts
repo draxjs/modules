@@ -5,7 +5,7 @@ import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import {PermissionService} from "../services/PermissionService.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 
-const roleService = RoleServiceFactory
+const roleService = RoleServiceFactory()
 
 async function RoleRoutes(fastify, options) {
 

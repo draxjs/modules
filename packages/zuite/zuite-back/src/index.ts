@@ -1,18 +1,18 @@
+import {DraxConfig} from "@drax/common-back";
+import {IdentityConfig, LoadConfigFromEnv} from "@drax/identity-back";
+LoadConfigFromEnv()
+import InitializePermissions from "./setup/InitializePermissions.js";
+InitializePermissions()
+import CreateRootUserAndAdminRole from "./setup/CreateRootUserAndAdminRole.js";
 import MongoDb from './databases/MongoDB.js'
-import YogaFastifyServerFactory from './factories/YogaFastifyServerFactory.js'
-
-if(process.env.DB_ENGINE === 'mongo'){
+if(DraxConfig.get(IdentityConfig.DbEngine) === 'mongo'){
     MongoDb()
 }
+await CreateRootUserAndAdminRole()
 
 
-import {PermissionService, IdentityPermissions} from "@drax/identity-back";
 
-console.log("IdentityPermissions",Object.values(IdentityPermissions))
 
-for(const permission of Object.values(IdentityPermissions)){
-    PermissionService.addPermission(permission)
-}
-
+import YogaFastifyServerFactory from './factories/YogaFastifyServerFactory.js'
 const serverYogaFastify = YogaFastifyServerFactory()
 await serverYogaFastify.start(8082);

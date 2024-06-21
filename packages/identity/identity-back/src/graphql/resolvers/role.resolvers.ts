@@ -5,7 +5,7 @@ import {GraphQLError} from "graphql";
 import {PermissionService} from "../../services/PermissionService.js";
 import UnauthorizedError from "../../errors/UnauthorizedError.js";
 
-const roleService = RoleServiceFactory
+const roleService = RoleServiceFactory()
 export default {
     Query: {
         findRoleById: async (_, {id}, {rbac}) => {
