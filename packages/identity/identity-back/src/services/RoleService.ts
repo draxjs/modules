@@ -32,10 +32,6 @@ class RoleService {
         try {
             roleData.name = roleData?.name?.trim()
             await roleSchema.parseAsync(roleData)
-            const currentRole = await this.findById(id)
-            if(currentRole.readonly){
-                throw new ValidationError([{field:'name', reason:"role.readonly", value:roleData.name}])
-            }
             const role = await this._repository.update(id, roleData)
             return role
         } catch (e) {

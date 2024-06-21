@@ -138,6 +138,12 @@ async function RoleRoutes(fastify, options) {
             request.rbac.assertPermission(IdentityPermissions.UpdateRole)
             const id = request.params.id
             const payload = request.body
+
+            const currentRole = await roleService.findById(id)
+            if(currentRole.readonly){
+                throw new ValidationError([{field:'name', reason:"role.readonly", value:payload.name}])
+            }
+
             let role = await roleService.update(id, payload)
             return role
         } catch (e) {

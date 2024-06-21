@@ -85,6 +85,12 @@ export default {
         updateRole: async (_, {id, input}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.UpdateRole)
+
+                const currentRole = await roleService.findById(id)
+                if(currentRole.readonly){
+                    throw new ValidationError([{field:'name', reason:"role.readonly", value:input.name}])
+                }
+
                 return await roleService.update(id, input)
             } catch (e) {
                 console.error("updateRole",e)
