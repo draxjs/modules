@@ -1,5 +1,5 @@
 import {IRoleBase} from "../interfaces/IRole";
-import {IJwtUser} from "identity";
+import {IJwtUser} from "../interfaces/IJwtUser";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 
 class Rbac{
