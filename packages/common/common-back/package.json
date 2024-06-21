@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Common utils across modules",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -29,8 +29,8 @@
     "copyfiles": "^2.4.1",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5",
-    "tsc-alias": "^1.8.10"
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.4.5"
   },
   "gitHead": "0b6b01d1116714843b943a91cdf9d3fbb361623b"
 }

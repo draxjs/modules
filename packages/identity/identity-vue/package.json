@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.9",
+  "version": "0.0.10",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -24,7 +24,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/common-front": "^0.0.9",
+    "@drax/common-front": "^0.0.10",
     "vue-i18n": "^9.13.1"
   },
   "peerDependencies": {
@@ -33,7 +33,6 @@
     "vuetify": "^3.6.4"
   },
   "devDependencies": {
-    "pinia-plugin-persistedstate": "^3.2.1",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
     "@types/jsdom": "^21.1.7",
@@ -50,6 +49,7 @@
     "jsdom": "^24.0.0",
     "npm-run-all2": "^6.1.2",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "prettier": "^3.2.5",
     "start-server-and-test": "^2.0.3",
     "typescript": "~5.4.0",
