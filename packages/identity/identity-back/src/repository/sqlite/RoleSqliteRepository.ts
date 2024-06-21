@@ -84,6 +84,15 @@ class RoleSqliteRepository implements IRoleRepository{
         return undefined
     }
 
+    async findByName(name: string): Promise<IRole | null>{
+        const role = this.db.prepare('SELECT * FROM roles WHERE name = ?').get(name);
+        if(role){
+            role.permissions = role.permissions ? role.permissions.split(",") : []
+            return role
+        }
+        return undefined
+    }
+
     async update(id: IID, roleData: IRole): Promise<IRole> {
         try{
             this.normalizeData(roleData)

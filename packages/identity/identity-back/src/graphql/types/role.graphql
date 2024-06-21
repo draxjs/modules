@@ -18,6 +18,7 @@ type Query{
     fetchRole: [Role]
     fetchPermissions: [String]
     findRoleById(id: ID): Role
+    findRoleByName(name: String!): Role
 }
 
 input RoleInput{

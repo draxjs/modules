@@ -28,6 +28,11 @@ class RoleMongoRepository implements IRoleRepository{
         return role
     }
 
+    async findByName(name: string): Promise<IRole | null>{
+        const role: mongoose.HydratedDocument<IRole> | null = await RoleModel.findOne({name}).exec()
+        return role
+    }
+
     async fetchAll(): Promise<IRole[]>{
         const roles: mongoose.HydratedDocument<IRole>[] = await RoleModel.find().exec()
         return roles

@@ -60,6 +60,11 @@ class RoleService {
         return role
     }
 
+    async findByName(name: string): Promise<IRole | null> {
+        const role: IRole = await this._repository.findByName(name);
+        return role
+    }
+
     async fetchAll(): Promise<IRole[]> {
         const roles: IRole[] = await this._repository.fetchAll();
         return roles

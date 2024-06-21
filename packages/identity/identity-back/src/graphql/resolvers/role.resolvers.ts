@@ -19,6 +19,17 @@ export default {
                 throw new GraphQLError('error.server')
             }
         },
+        findRoleByName: async (_, {name}, {rbac}) => {
+            try {
+                rbac.assertPermission(IdentityPermissions.ViewRole)
+                return await roleService.findByName(name)
+            } catch (e) {
+                if (e instanceof UnauthorizedError) {
+                    throw new GraphQLError(e.message)
+                }
+                throw new GraphQLError('error.server')
+            }
+        },
         fetchRole: async (_, {}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)

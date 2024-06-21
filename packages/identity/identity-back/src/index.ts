@@ -17,7 +17,7 @@ import BadCredentialsError from "./errors/BadCredentialsError.js";
 
 import type {IJwtUser} from "./interfaces/IJwtUser";
 import type {IRole, IRoleBase} from "./interfaces/IRole";
-import type {IUser} from "./interfaces/IUser";
+import type {IUser, IUserCreate, IUserUpdate} from "./interfaces/IUser";
 import type {IUserRepository} from "./interfaces/IUserRepository";
 import type {IRoleRepository} from "./interfaces/IRoleRepository";
 
@@ -30,7 +30,7 @@ export type {
     IRole,
     IRoleBase,
     IRoleRepository,
-    IUser,
+    IUser, IUserCreate, IUserUpdate,
     IUserRepository
 }
 

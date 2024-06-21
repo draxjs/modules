@@ -26,6 +26,48 @@ async function RoleRoutes(fastify, options) {
         }
     })
 
+    fastify.get('/api/roles/:id', async (request, reply): Promise<IRole> => {
+        try {
+            request.rbac.assertPermission(IdentityPermissions.ViewRole)
+            const id = request.params.id
+            let role = await roleService.findById(id)
+            return role
+        } catch (e) {
+            console.error(e)
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+            }
+        }
+    })
+
+    fastify.get('/api/roles/name/:name', async (request, reply): Promise<IRole> => {
+        try {
+            request.rbac.assertPermission(IdentityPermissions.ViewRole)
+            const name = request.params.name
+            let role = await roleService.findByName(name)
+            return role
+        } catch (e) {
+            console.error(e)
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+            }
+        }
+    })
+
     fastify.get('/api/roles/all', async (request, reply): Promise<IRole[]> => {
         try {
             request.rbac.assertPermission(IdentityPermissions.ViewRole)
