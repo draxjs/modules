@@ -8,7 +8,6 @@ import UserCreateForm from "../../forms/UserCreateForm.vue";
 import UserEditForm from "../../forms/UserEditForm.vue";
 import UserPasswordForm from "../../forms/UserPasswordForm.vue";
 import UserView from "../../views/UserView.vue";
-import TenantForm from "@/forms/TenantForm.vue";
 
 const {createUser, editUser, changeUserPassword, deleteUser, loading, userError, inputErrors} = useUser()
 
@@ -160,7 +159,7 @@ function toChangePassword(item: IUser) {
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>
         <v-toolbar>
-          <v-toolbar-title>{{ $t(dialogTitle) }}</v-toolbar-title>
+          <v-toolbar-title>{{ dialogTitle ? $t(dialogTitle) : '-' }}</v-toolbar-title>
         </v-toolbar>
         <v-card class="pa-10">
           <v-card-text v-if="userError">

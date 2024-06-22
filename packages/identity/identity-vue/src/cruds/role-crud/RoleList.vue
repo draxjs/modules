@@ -24,7 +24,7 @@ const headers = ref([
   { title: t('role.childRoles'), key: 'childRoles', align: 'start' },
   { title: t('role.permissions'), key: 'permissions', align: 'start' },
   { title: t('role.readonly'), key: 'readonly', align: 'start' },
-  { title: '', key: 'actions', align: 'start', minWidth: '150px' },
+  { title: '', key: 'actions', align: 'end', minWidth: '150px' },
 ])
 
 const serverItems = ref([])
@@ -108,8 +108,8 @@ defineExpose({
     </template>
 
     <template v-slot:item.actions="{item}" >
-      <v-btn v-if="hasPermission('role:update')" :disabled="item.readonly" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
-      <v-btn v-if="hasPermission('role:delete')" :disabled="item.readonly" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
+      <v-btn v-if="hasPermission('role:update')" :disabled="!!item.readonly" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
+      <v-btn v-if="hasPermission('role:delete')" :disabled="!!item.readonly" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
     </template>
 
   </v-data-table-server>

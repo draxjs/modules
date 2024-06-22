@@ -26,7 +26,7 @@ const headers = ref([
   { title: t('user.role'), key: 'role.name', align: 'start' },
   { title: t('user.tenant'), key: 'tenant.name', align: 'start' },
   { title: t('user.active'), key: 'active', align: 'start' },
-  { title: '', key: 'actions', align: 'start', fixed:true },
+  { title: '', key: 'actions', align: 'end', fixed:true },
 ])
 
 const serverItems = ref([])

@@ -5,7 +5,6 @@ import {useRole} from "../../composables/useRole";
 import type {IRole} from "@drax/identity-front";
 import RoleForm from "../../forms/RoleForm.vue";
 import RoleView from "../../views/RoleView.vue";
-import TenantForm from "@/forms/TenantForm.vue";
 
 const {createRole, editRole, deleteRole, loading, roleError, inputErrors} = useRole()
 
@@ -81,7 +80,6 @@ function toCreate() {
 }
 
 function toEdit(item: IRole) {
-  console.log('toEdit', item)
   dialogMode.value = 'edit';
   dialogTitle.value = 'role.updating';
   const {id, ...rest} = item;
@@ -130,7 +128,7 @@ function toDelete(item: IRole) {
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>
         <v-toolbar>
-          <v-toolbar-title>{{ $t(dialogTitle) }}</v-toolbar-title>
+          <v-toolbar-title>{{ dialogTitle ? $t(dialogTitle) : '-' }}</v-toolbar-title>
         </v-toolbar>
         <v-card class="pa-10">
           <v-card-text v-if="roleError">

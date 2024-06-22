@@ -21,7 +21,7 @@ const page = ref(1)
 const headers = ref([
   //{title: 'ID', align: 'start', sortable: false, key: 'id'},
   { title: t('tenant.name'), key: 'name', align: 'start' },
-  { title: '', key: 'actions', align: 'start', minWidth: '150px' },
+  { title: '', key: 'actions', align: 'end', minWidth: '150px' },
 ])
 
 const serverItems = ref([])

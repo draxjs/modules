@@ -128,7 +128,7 @@ function toDelete(item: ITenant) {
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>
         <v-toolbar>
-          <v-toolbar-title>{{ $t(dialogTitle) }}</v-toolbar-title>
+          <v-toolbar-title>{{ dialogTitle ? $t(dialogTitle) : '-' }}</v-toolbar-title>
         </v-toolbar>
         <v-card class="pa-10">
           <v-card-text v-if="tenantError">
