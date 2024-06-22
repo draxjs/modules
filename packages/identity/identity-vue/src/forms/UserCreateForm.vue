@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref, defineModel, type PropType} from "vue";
 import RoleCombobox from "../combobox/RoleCombobox.vue";
+import TenantCombobox from "../combobox/TenantCombobox.vue";
 import type {IClientInputError} from "@drax/common-front";
 import type {IUserCreate} from "@drax/identity-front/src/interfaces/IUser";
 import {useI18nValidation} from "../composables/useI18nValidation";
@@ -10,21 +11,28 @@ const {$ta} = useI18nValidation()
 const props = defineProps({
   inputErrors: {
     type: Object as PropType<IClientInputError>,
-    default: () => ({name: "", username: "", password: "", email: "", phone: "", role: "", active: ""})
+    default: () => ({name: "", username: "", password: "", email: "", phone: "", role: "", tenant: "", active: ""})
   }
 })
 
 const form = defineModel<IUserCreate>({
   type: Object,
-  default: () => ({name: "", username: "", password: "", email: "", phone: "", role: "", active: true})
+  default: () => ({name: "", username: "", password: "", email: "", phone: "", role: "", tenant: "", active: true})
 })
 
 let passwordVisibility = ref(false)
 
+// Define emits
+const emits = defineEmits(['formSubmit'])
+
+// Function to call when form is attempted to be submitted
+const onSubmit = () => {
+  emits('formSubmit', form); // Emitting an event with the form data
+}
 </script>
 
 <template>
-  <form>
+  <form @submit.prevent="onSubmit">
 
     <v-text-field
         variant="outlined"
@@ -64,6 +72,11 @@ let passwordVisibility = ref(false)
         v-model="form.role"
         :error-messages="$ta(inputErrors.role)"
     ></RoleCombobox>
+
+    <TenantCombobox
+        v-model="form.tenant"
+        :error-messages="$ta(inputErrors.tenant)"
+    ></TenantCombobox>
 
     <v-text-field
         v-model="form.email"

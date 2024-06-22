@@ -3,50 +3,40 @@ import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {UUID} from "crypto";
 import {IUserRepository} from "../../interfaces/IUserRepository";
-import type {IPaginateResult} from "@drax/common-back";
-import {mongoose, SqliteErrorToValidationError, ValidationError} from "@drax/common-back";
+import type {IPaginateFilter, IPaginateResult} from "@drax/common-back";
+import { SqliteErrorToValidationError, ValidationError} from "@drax/common-back";
 import RoleSqliteRepository from "./RoleSqliteRepository.js";
+import TenantSqliteRepository from "./TenantSqliteRepository.js";
 import {IID} from "../../interfaces/IID";
 
 
 const userTableSQL: string = `
     CREATE TABLE IF NOT EXISTS users
     (
-        id
-        TEXT
-        PRIMARY
-        KEY,
-        name
-        TEXT,
-        username
-        TEXT
-        UNIQUE,
-        active
-        INTEGER,
-        password
-        TEXT,
-        email
-        TEXT
-        UNIQUE,
-        phone
-        TEXT,
-        role
-        TEXT,
-        groups
-        TEXT,
-        avatar
-        TEXT
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        username TEXT UNIQUE,
+        active INTEGER,
+        password TEXT,
+        email TEXT UNIQUE,
+        phone TEXT,
+        role TEXT,
+        tenant TEXT,
+        groups TEXT,
+        avatar TEXT
     );
 `;
 
 class UserSqliteRepository implements IUserRepository {
     private db: any;
     private roleRepository: RoleSqliteRepository;
+    private tenantRepository: TenantSqliteRepository;
 
     constructor(DATABASE: string, verbose: boolean = false) {
         this.db = new sqlite(DATABASE, {verbose: verbose ? console.log : null});
         this.roleRepository = new RoleSqliteRepository(DATABASE, verbose)
-
+        this.tenantRepository = new TenantSqliteRepository(DATABASE, verbose)
+        this.table()
     }
 
     table() {
@@ -80,10 +70,6 @@ class UserSqliteRepository implements IUserRepository {
             const values = Object.keys(userData)
                 .map(field => `@${field}`)
                 .join(', ');
-
-            /*console.log("fields", fields)
-            console.log("values",values)
-            console.log("userData",userData)*/
 
             const stmt = this.db.prepare(`INSERT INTO users (${fields})
                                           VALUES (${values})`);
@@ -135,6 +121,7 @@ class UserSqliteRepository implements IUserRepository {
             return null
         }
         user.role = await this.findRoleById(user.role)
+        user.tenant = await this.findTenantById(user.tenant)
         return user
     }
 
@@ -144,28 +131,49 @@ class UserSqliteRepository implements IUserRepository {
             return null
         }
         user.role = await this.findRoleById(user.role)
+        user.tenant = await this.findTenantById(user.tenant)
         return user
     }
 
-    async paginate(page: number = 1, limit: number = 5, search?: string): Promise<IPaginateResult> {
+    async paginate(page: number = 1, limit: number = 5, search: string = "", filters:IPaginateFilter[] = []): Promise<IPaginateResult> {
 
         const offset = page > 1 ? (page - 1) * limit : 0
 
-        let where
+        let where=""
         if (search) {
-            where = ` WHERE name LIKE '%${search}%' OR username LIKE '%${search}%'`
+            where = ` WHERE (name LIKE '%${search}%' OR username LIKE '%${search}%') `
         }
 
+        let whereFilters= []
+        if(filters && filters.length > 0 ){
+            where = where ? ` AND ` : ` WHERE `
+            for(const filter of filters){
+                if(filter.operator === '$eq'){
+                    whereFilters.push(` ${filter.field} = '${filter.value}' `)
+                }
+                if(filter.operator === '$ne'){
+                    whereFilters.push(` ${filter.field} != '${filter.value}' `)
+                }
+                if(filter.operator === '$in'){
+                    whereFilters.push(` ${filter.field} LIKE '%${filter.value}%' `)
+                }
+            }
+            where += whereFilters.join(" AND ")
+        }
+
+       // console.log("paginate where ", where, "search", search, "filters", filters, "whereFilters", whereFilters)
+
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM users' + where).get();
-        const users = this.db.prepare('SELECT * FROM users LIMIT ? OFFSET ?' + where).all([limit, offset]);
+
+        const users = this.db.prepare('SELECT * FROM users'  + where + ' LIMIT ? OFFSET ?').all([limit, offset]);
 
         for (const user of users) {
+
             let role = await this.findRoleById(user.role)
-            if (role) {
-                user.role = role
-            } else {
-                user.role = null
-            }
+            user.role = role ? role : null
+
+            let tenant = await this.findTenantById(user.tenant)
+            user.tenant = tenant ? tenant : null
 
             user.active = user.active === 1
         }
@@ -180,6 +188,10 @@ class UserSqliteRepository implements IUserRepository {
 
     async findRoleById(id: IID) {
         return await this.roleRepository.findById(id)
+    }
+
+    async findTenantById(id: IID) {
+        return await this.tenantRepository.findById(id)
     }
 
     async changePassword(id: IID, password: string): Promise<boolean> {

@@ -69,12 +69,15 @@ const permissionGroups = computed(() => {
               v-slot="{ isSelected, toggle }"
               :value="permission"
           >
-            <v-btn
+
+            <v-chip
                 :color="isSelected? 'green' : 'grey-darken-3'" class=""
                 @click="toggle" variant="flat" :rounded="false" border
             >
               {{ $t ? $t('permission.'+permission) : permission }}
-            </v-btn>
+            </v-chip>
+
+
           </v-item>
         </v-card-text>
       </v-card>

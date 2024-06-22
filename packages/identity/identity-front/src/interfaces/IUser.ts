@@ -1,4 +1,5 @@
 import type {IRole} from "@/interfaces/IRole";
+import type {ITenant} from "@/interfaces/ITenant";
 
 interface IUser {
     id: string
@@ -9,7 +10,7 @@ interface IUser {
     phone: string
     avatar: string
     role: IRole
-
+    tenant: ITenant
 }
 
 interface IUserCreate {
@@ -20,6 +21,7 @@ interface IUserCreate {
     active: boolean
     phone: string
     role: string
+    tenant: string
 }
 
 interface IUserUpdate {
@@ -29,6 +31,7 @@ interface IUserUpdate {
     active: boolean
     phone: string
     role: string
+    tenant: string
 }
 
 interface IUserPassword {

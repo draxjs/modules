@@ -14,6 +14,13 @@ enum IdentityPermissions {
     ManageRole = "role:manage",
     PermissionsRole = "role:permissions",
 
+
+    CreateTenant = "tenant:create",
+    UpdateTenant = "tenant:update",
+    DeleteTenant = "tenant:delete",
+    ViewTenant = "tenant:view",
+    ManageTenant = "tenant:manage",
+
 }
 
 export default IdentityPermissions;

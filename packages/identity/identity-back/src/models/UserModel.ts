@@ -54,6 +54,11 @@ const UserSchema = new mongoose.Schema<IUser>({
         ref: 'Role',
         required: true,
     },
+    tenant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tenant',
+        required: false,
+    },
     groups: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Group',

@@ -5,6 +5,7 @@ import {useRole} from "../../composables/useRole";
 import type {IRole} from "@drax/identity-front";
 import RoleForm from "../../forms/RoleForm.vue";
 import RoleView from "../../views/RoleView.vue";
+import TenantForm from "@/forms/TenantForm.vue";
 
 const {createRole, editRole, deleteRole, loading, roleError, inputErrors} = useRole()
 
@@ -20,7 +21,7 @@ let dialog = ref(false);
 let dialogMode = ref<DialogMode>(null);
 let dialogTitle = ref('');
 const roleList = ref<RoleList | null>(null);
-let form = ref<IRole>({name: "", permissions: [], readonly: false})
+let form = ref<IRole>({name: "", permissions: [], childRoles:[], readonly: false})
 let target = ref<IRole>();
 let targetId = ref<string>('');
 let filterEnable = ref(false);
@@ -75,7 +76,7 @@ let buttonText = computed(() => {
 function toCreate() {
   dialogMode.value = 'create';
   dialogTitle.value = 'role.creating';
-  form.value = {name: "", permissions: [], readonly: false}
+  form.value = {name: "", permissions: [], childRoles:[], readonly: false}
   dialog.value = true;
 }
 
@@ -84,6 +85,7 @@ function toEdit(item: IRole) {
   dialogMode.value = 'edit';
   dialogTitle.value = 'role.updating';
   const {id, ...rest} = item;
+  rest.childRoles = rest.childRoles ? rest.childRoles.map(c => c.id) : []
   targetId.value = id;
   form.value = {...rest}
   dialog.value = true;
@@ -102,7 +104,7 @@ function toDelete(item: IRole) {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid>
 
     <v-sheet border rounded>
       <v-toolbar>
@@ -138,6 +140,7 @@ function toDelete(item: IRole) {
             <RoleForm v-if="dialogMode === 'create' || dialogMode === 'edit'"
                       v-model="form"
                       :inputErrors="inputErrors"
+                      @formSubmit="save"
             />
             <RoleView v-if="dialogMode === 'delete' && target" :role="target"></RoleView>
           </v-card-text>

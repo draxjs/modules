@@ -131,6 +131,7 @@ class HttpRestClient implements IHttpClient {
 
     try {
       url = this.baseUrl + url;
+      data = data ? data : {}
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
       const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
       const response = await fetch(url, {

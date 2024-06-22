@@ -4,6 +4,7 @@ type User {
     name: String
     email: String
     role: Role
+    tenant: Tenant
     phone: String
     avatar: String
     active: Boolean
@@ -28,6 +29,7 @@ input UserCreateInput{
     username: String!
     password: String!
     role: ID
+    tenant: ID
     email: String!
     phone: String
     active: Boolean
@@ -37,6 +39,7 @@ input UserUpdateInput{
     name: String
     username: String!
     role: ID
+    tenant: ID
     email: String!
     phone: String
     active: Boolean

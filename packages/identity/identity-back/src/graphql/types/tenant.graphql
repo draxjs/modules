@@ -1,0 +1,28 @@
+type Tenant {
+    id: ID!
+    name: String
+}
+
+type TenantPaginated{
+    total: Int
+    page: Int
+    limit: Int
+    items: [Tenant]
+}
+
+type Query{
+    paginateTenant(page:Int, limit:Int, search:String): TenantPaginated
+    fetchTenant: [Tenant]
+    findTenantById(id: ID): Tenant
+    findTenantByName(name: String!): Tenant
+}
+
+input TenantInput{
+    name: String
+}
+
+type Mutation{
+    createTenant(input: TenantInput): Tenant
+    updateTenant(id: ID!, input: TenantInput): Tenant
+    deleteTenant(id: ID!): Boolean
+}

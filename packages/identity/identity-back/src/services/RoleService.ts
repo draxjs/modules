@@ -43,10 +43,7 @@ class RoleService {
     }
 
     async delete(id: any): Promise<boolean> {
-        const currentRole = await this.findById(id)
-        if(currentRole.readonly){
-            throw new UnauthorizedError()
-        }
+
         const deletedRole = await this._repository.delete(id);
         return deletedRole;
     }

@@ -30,17 +30,18 @@ class AuthUtils{
         return bcryptjs.compareSync(password, hashPassword);
     }
 
-    static tokenSignPayload(userId : string, username: string, roleId: string, session : string) {
+    static tokenSignPayload(userId : string, username: string, roleId: string, tenantId: string, session : string) {
         return {
             id: userId,
             username: username,
             roleId: roleId,
+            tenantId: tenantId,
             session: session
         };
     }
 
-    static generateToken(userId : string, username: string, roleId: string,  session : string) {
-        const payload = AuthUtils.tokenSignPayload(userId, username, roleId, session)
+    static generateToken(userId : string, username: string, roleId: string,  tenantId: string, session : string) {
+        const payload = AuthUtils.tokenSignPayload(userId, username, roleId, tenantId, session)
 
         const JWT_SECRET = DraxConfig.getOrLoad(IdentityConfig.JwtSecret)
         if(!JWT_SECRET){

@@ -8,6 +8,7 @@ import UserCreateForm from "../../forms/UserCreateForm.vue";
 import UserEditForm from "../../forms/UserEditForm.vue";
 import UserPasswordForm from "../../forms/UserPasswordForm.vue";
 import UserView from "../../views/UserView.vue";
+import TenantForm from "@/forms/TenantForm.vue";
 
 const {createUser, editUser, changeUserPassword, deleteUser, loading, userError, inputErrors} = useUser()
 
@@ -23,8 +24,8 @@ let dialog = ref(false);
 let dialogMode = ref<DialogMode>(null);
 let dialogTitle = ref('');
 const userList = ref<UserList | null>(null);
-let createForm = ref<IUserCreate>({name: "", username: "", password: "", email: "", phone: "", role: "", active: true})
-let editForm = ref<IUserUpdate>({name: "", username: "", email: "", phone: "", role: "", active: true})
+let createForm = ref<IUserCreate>({name: "", username: "", password: "", email: "", phone: "", role: "", tenant: "", active: true})
+let editForm = ref<IUserUpdate>({name: "", username: "", email: "", phone: "", role: "", tenant: "", active: true})
 let passwordForm = ref<IUserPassword>({newPassword: "", confirmPassword: ""})
 let passwordChanged = ref(false);
 let target = ref<IUser>();
@@ -92,7 +93,7 @@ function toCreate() {
   actionButtonEnable.value = true
   dialogMode.value = 'create';
   dialogTitle.value = 'user.creating';
-  createForm.value = {name: "", username: "", password: "", email: "", phone: "", role: "", active: true}
+  createForm.value = {name: "", username: "", password: "", email: "", phone: "", role: "", tenant: "", active: true}
   dialog.value = true;
 }
 
@@ -103,6 +104,7 @@ function toEdit(item: IUser) {
   const {id, ...rest} = item;
   targetId.value = id;
   rest.role = rest.role ? rest.role.id : null
+  rest.tenant = rest.tenant ? rest.tenant.id : null
   editForm.value = {...rest}
   dialog.value = true;
 }
@@ -131,7 +133,7 @@ function toChangePassword(item: IUser) {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid>
 
     <v-sheet border rounded>
       <v-toolbar>
@@ -169,12 +171,14 @@ function toChangePassword(item: IUser) {
                 v-if="dialogMode === 'create'"
                 v-model="createForm"
                 :inputErrors="inputErrors"
+                @formSubmit="save"
             />
 
             <UserEditForm
                 v-if="dialogMode === 'edit'"
                 v-model="editForm"
                 :inputErrors="inputErrors"
+                @formSubmit="save"
             />
 
             <UserView v-if="dialogMode === 'delete'
@@ -187,6 +191,7 @@ function toChangePassword(item: IUser) {
                 v-model="passwordForm"
                 :inputErrors="inputErrors"
                 :passwordChanged="passwordChanged"
+                @formSubmit="save"
             />
 
 

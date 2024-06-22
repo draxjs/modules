@@ -24,6 +24,7 @@ const headers = ref([
   { title: t('user.username'), key: 'username', align: 'start' },
   { title: t('user.email'), key: 'email', align: 'start' },
   { title: t('user.role'), key: 'role.name', align: 'start' },
+  { title: t('user.tenant'), key: 'tenant.name', align: 'start' },
   { title: t('user.active'), key: 'active', align: 'start' },
   { title: '', key: 'actions', align: 'start', fixed:true },
 ])

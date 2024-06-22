@@ -1,4 +1,4 @@
-import type {IRole} from "@/interfaces/IRole";
+import type {IRole} from "./IRole";
 import type {IPaginateClient} from "@drax/common-front";
 
 interface IRoleProvider {

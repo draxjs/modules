@@ -24,7 +24,7 @@ class UserMongoRepository implements IUserRepository {
 
             const user: mongoose.HydratedDocument<IUser> = new UserModel(userData)
             await user.save()
-            await user.populate('role')
+            await user.populate(['role','tenant'])
             return user
         }catch (e){
             if(e instanceof mongoose.Error.ValidationError){
@@ -37,7 +37,7 @@ class UserMongoRepository implements IUserRepository {
 
     async update(id: mongoose.Types.ObjectId, userData: IUserUpdate): Promise<IUser> {
         try{
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOneAndUpdate({_id: id}, userData, {new: true}).populate('role').exec()
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOneAndUpdate({_id: id}, userData, {new: true}).populate(['role','tenant']).exec()
         return user
         }catch (e){
             if(e instanceof mongoose.Error.ValidationError){
@@ -57,16 +57,16 @@ class UserMongoRepository implements IUserRepository {
 
 
     async findById(id: mongoose.Types.ObjectId): Promise<IUser> {
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findById(id).populate('role').exec()
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findById(id).populate(['role','tenant']).exec()
         return user
     }
 
     async findByUsername(username: string): Promise<IUser> {
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({username: username}).populate('role').exec()
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({username: username}).populate(['role','tenant']).exec()
         return user
     }
 
-    async paginate(page: number = 1, limit: number = 5, search?:string): Promise<IPaginateResult> {
+    async paginate(page: number = 1, limit: number = 5, search?:string, filters?:IPaginateFilter[]): Promise<IPaginateResult> {
 
 
         const query = {}
@@ -79,7 +79,21 @@ class UserMongoRepository implements IUserRepository {
             ]
         }
 
-        const options = {populate: ['role'], page: page, limit: limit }
+        if(filters){
+            for(const filter of filters){
+                if(filter.operator === '$eq'){
+                    query[filter.field] = {$eq: filter.value}
+                }
+                if(filter.operator === '$ne'){
+                    query[filter.field] = {$ne: filter.value}
+                }
+                if(filter.operator === '$in'){
+                    query[filter.field] = {$in: filter.value}
+                }
+            }
+        }
+
+        const options = {populate: ['role','tenant'], page: page, limit: limit }
 
         const userPaginated: PaginateResult<IUser> = await UserModel.paginate(query, options)
         return {

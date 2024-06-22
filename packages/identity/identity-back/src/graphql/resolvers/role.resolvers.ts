@@ -36,8 +36,15 @@ export default {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
                 const roleService = RoleServiceFactory()
-                return await roleService.fetchAll()
+                const roles = await roleService.fetchAll()
+                if(rbac.getRole?.childRoles?.length > 0) {
+                    return roles.filter(role => rbac.getRole.childRoles.some(childRole => childRole.id === role.id));
+                }else{
+                    return roles
+                }
+
             } catch (e) {
+                console.error("fetchRole",e)
                 if (e instanceof UnauthorizedError) {
                     throw new GraphQLError(e.message)
                 }
@@ -112,6 +119,11 @@ export default {
             try {
                 rbac.assertPermission(IdentityPermissions.DeleteRole)
                 const roleService = RoleServiceFactory()
+                const currentRole = await roleService.findById(id)
+                if(currentRole.readonly){
+                    throw new UnauthorizedError()
+                }
+
                 return await roleService.delete(id)
             } catch (e) {
                 console.error("deleteRole",e)

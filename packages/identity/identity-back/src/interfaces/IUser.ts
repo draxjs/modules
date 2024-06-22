@@ -1,7 +1,7 @@
-import {mongoose} from "@drax/common-back";
 import {IRole} from "./IRole";
 import {IUserGroup} from "./IUserGroup";
 import {IID} from "./IID";
+import {ITenant} from "./ITenant";
 
 interface IUser {
     id?: IID
@@ -14,6 +14,7 @@ interface IUser {
     avatar?: string
     code?: string
     role: IRole | IID
+    tenant?: ITenant | IID
     groups: IID[] | IUserGroup[] | string[] | string
     toObject(): IUser;
 }
@@ -27,6 +28,7 @@ interface IUserCreate {
     active: boolean | number
     phone: string
     role: IID
+    tenant?: IID
     groups: IID[] | string
 }
 
@@ -38,6 +40,7 @@ interface IUserUpdate {
     active: boolean
     phone: string
     role: IID
+    tenant?: IID
     groups: IID[]
     password?: string
 }

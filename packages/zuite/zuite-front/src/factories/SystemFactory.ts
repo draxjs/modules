@@ -1,10 +1,15 @@
-import {UserGqlProvider, UserRestProvider, UserSystem, IUserProvider} from "@drax/identity-front";
+import {
+  UserGqlProvider,
+  UserRestProvider,
+  UserSystem,
+  IUserProvider,
+  ITenantProvider,
+  TenantGqlProvider, TenantRestProvider, TenantSystem
+} from "@drax/identity-front";
 import {RoleGqlProvider, RoleRestProvider, RoleSystem, IRoleProvider} from "@drax/identity-front";
 import {AuthGqlProvider, AuthRestProvider, AuthSystem, IAuthProvider} from "@drax/identity-front";
 import {HttpGqlClient, HttpRestClient} from "@drax/common-front";
 
-// import {useAuthStore} from "@drax/identity-vue";
-// const authStore = useAuthStore()
 
 const REST = 'REST'
 const GRAPHQL = 'GRAPHQL'
@@ -20,6 +25,7 @@ export function SystemFactory(HttpClientType: string = REST) {
   let userProvider: IUserProvider
   let roleProvider: IRoleProvider
   let authProvider: IAuthProvider
+  let tenantProvider: ITenantProvider
   let HttpClient
 
 
@@ -29,11 +35,13 @@ export function SystemFactory(HttpClientType: string = REST) {
     userProvider = new UserGqlProvider(HttpClient)
     roleProvider = new RoleGqlProvider(HttpClient)
     authProvider = new AuthGqlProvider(HttpClient)
+    tenantProvider = new TenantGqlProvider(HttpClient)
   } else {
     HttpClient = new HttpRestClient(baseUrl)
     userProvider = new UserRestProvider(HttpClient)
     roleProvider = new RoleRestProvider(HttpClient)
     authProvider = new AuthRestProvider(HttpClient)
+    tenantProvider = new TenantRestProvider(HttpClient)
   }
 
   //AccessToken on start from authStore
@@ -44,7 +52,6 @@ export function SystemFactory(HttpClientType: string = REST) {
   */
 
   //AccessToken on start directly from local storage
-
   let accessToken:string|null = null
   const authStoreString = localStorage.getItem("AuthStore");
   if (authStoreString) {
@@ -58,6 +65,7 @@ export function SystemFactory(HttpClientType: string = REST) {
   const userSystem = new UserSystem(userProvider)
   const roleSystem = new RoleSystem(roleProvider)
   const authSystem = new AuthSystem(authProvider)
-  return {userSystem, roleSystem, authSystem, HttpClient}
+  const tenantSystem = new TenantSystem(tenantProvider)
+  return {userSystem, roleSystem, authSystem, tenantSystem, HttpClient}
 
 }

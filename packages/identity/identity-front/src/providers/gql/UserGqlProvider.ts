@@ -20,7 +20,7 @@ class UserGqlProvider implements IUserProvider {
 
     async createUser(payload: IUserCreate): Promise<IUser> {
         const query: string = `mutation createUser($input: UserCreateInput) { createUser(input: $input) {  
-        id username name email phone active role{id name}  } }`
+        id username name email phone active role{id name} tenant{id name}  } }`
         const variables = {input: payload}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createUser
@@ -28,7 +28,7 @@ class UserGqlProvider implements IUserProvider {
 
     async editUser(id: string, payload: IUserUpdate): Promise<IUser> {
         const query: string = `mutation updateUser($id: ID!, $input: UserUpdateInput) { updateUser(id: $id, input: $input) {  
-        id username name email phone active role{id name}  } }`
+        id username name email phone active role{id name} tenant{id name}  } }`
         const variables = {id, input: payload}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createUser
@@ -51,7 +51,7 @@ class UserGqlProvider implements IUserProvider {
     async paginateUser(page: number, limit: number, search:string = ""): Promise<IPaginateClient> {
         const query: string = `query paginateUser($page: Int, $limit: Int, $search:String) { 
             paginateUser(page: $page, limit: $limit, search: $search) { 
-                total, page, limit, items{ id, name username, email, phone, active, role{id, name} } 
+                total, page, limit, items{ id, name username, email, phone, active, role{id, name} tenant{id name} } 
             } 
         }`
         const variables = {page, limit, search}

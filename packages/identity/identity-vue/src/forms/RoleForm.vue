@@ -4,6 +4,7 @@ import type {IRole} from "@drax/identity-front";
 import {useI18nValidation} from "../composables/useI18nValidation";
 import type {IClientInputError} from "@drax/common-front";
 import PermissionSelector from "../components/PermissionSelector/PermissionSelector.vue";
+import RoleCombobox from "../combobox/RoleCombobox.vue";
 
 const {$ta} = useI18nValidation()
 
@@ -19,10 +20,17 @@ const form = defineModel<IRole>({
   default: () => ({name: "", permissions: [], readonly: false})
 })
 
+const emits = defineEmits(['formSubmit'])
+
+// Function to call when form is attempted to be submitted
+const onSubmit = () => {
+  emits('formSubmit', form); // Emitting an event with the form data
+}
+
 </script>
 
 <template>
-  <form>
+  <form @submit.prevent="onSubmit">
     <v-text-field
         variant="outlined"
         id="name-input"
@@ -33,6 +41,11 @@ const form = defineModel<IRole>({
         :error-messages="$ta(inputErrors.name)"
     ></v-text-field>
 
+    <RoleCombobox
+        v-model="form.childRoles"
+        :error-messages="$ta(inputErrors.role)"
+        multiple
+    ></RoleCombobox>
 
     <PermissionSelector v-model="form.permissions"></PermissionSelector>
 

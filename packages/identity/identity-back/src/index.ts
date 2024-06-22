@@ -1,12 +1,15 @@
 import GraphqlMerge from "./graphql/index.js"
 import UserServiceFactory from "./factory/UserServiceFactory.js";
 import RoleServiceFactory from "./factory/RoleServiceFactory.js";
+import TenantServiceFactory from "./factory/TenantServiceFactory.js";
 import RoleService from "./services/RoleService.js";
 import UserService from "./services/UserService.js";
+import TenantService from "./services/TenantService.js";
 import PermissionService from "./services/PermissionService.js";
 import Rbac from "./rbac/Rbac.js";
 import {UserRoutes} from "./routes/UserRoutes.js";
 import {RoleRoutes} from "./routes/RoleRoutes.js";
+import {TenantRoutes} from "./routes/TenantRoutes.js";
 import AuthUtils from "./utils/AuthUtils.js";
 import {jwtMiddleware} from "./middleware/jwtMiddleware.js";
 import {rbacMiddleware} from "./middleware/rbacMiddleware.js";
@@ -45,12 +48,14 @@ export {
     //Service
     UserService,
     RoleService,
+    TenantService,
     PermissionService,
     Rbac,
 
     //Factories
     UserServiceFactory,
     RoleServiceFactory,
+    TenantServiceFactory,
 
     //GQL
     identityTypeDefs,
@@ -59,6 +64,7 @@ export {
     //API REST
     UserRoutes,
     RoleRoutes,
+    TenantRoutes,
 
     AuthUtils,
 

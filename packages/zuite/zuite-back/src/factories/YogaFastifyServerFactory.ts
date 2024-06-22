@@ -1,5 +1,5 @@
 import YogaFastifyServer from "../servers/YogaFastifyServer.js";
-import {jwtMiddleware, rbacMiddleware, UserRoutes, RoleRoutes} from "@drax/identity-back"
+import {jwtMiddleware, rbacMiddleware, UserRoutes, RoleRoutes, TenantRoutes} from "@drax/identity-back"
 import ModuleMerger from "../utils/ModuleMerger.js";
 const {typeDefs, resolvers} = await ModuleMerger()
 
@@ -10,6 +10,7 @@ function YogaFastifyServerFactory() {
     server.fastifyHook('onRequest',rbacMiddleware)
     server.fastifyRegister(UserRoutes)
     server.fastifyRegister(RoleRoutes)
+    server.fastifyRegister(TenantRoutes)
     return server
 }
 

@@ -31,7 +31,13 @@ function confirmPasswordRule(value: string) {
   return form.value.newPassword === form.value.confirmPassword || t('validation.password.confirmed')
 }
 
+// Define emits
+const emits = defineEmits(['formSubmit'])
 
+// Function to call when form is attempted to be submitted
+const onSubmit = () => {
+  emits('formSubmit', form); // Emitting an event with the form data
+}
 </script>
 
 <template>
@@ -42,7 +48,7 @@ function confirmPasswordRule(value: string) {
     </v-alert>
   </v-sheet>
   <v-sheet v-else>
-    <form ref="changeUserPassword">
+    <form ref="changeUserPassword" @submit.prevent="onSubmit">
 
       <div class="text-subtitle-1 text-medium-emphasis">{{ $t('user.newPassword') }}</div>
       <v-text-field

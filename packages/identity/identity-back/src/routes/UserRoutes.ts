@@ -61,9 +61,14 @@ async function UserRoutes(fastify, options) {
             const limit = request.query.limit
             const search = request.query.search
             const userService = UserServiceFactory()
-            let paginateResult = await userService.paginate(page, limit, search)
+            const filters = []
+            if(request.rbac.getAuthUser.tenantId){
+                filters.push({field: 'tenant', operator: '$eq', value: request.rbac.getAuthUser.tenantId})
+            }
+            let paginateResult = await userService.paginate(page, limit, search, filters)
             return paginateResult
         } catch (e) {
+            console.log("/api/users",e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message, inputErrors: e.errors})

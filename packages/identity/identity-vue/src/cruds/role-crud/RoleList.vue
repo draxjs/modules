@@ -21,6 +21,7 @@ const page = ref(1)
 const headers = ref([
   //{title: 'ID', align: 'start', sortable: false, key: 'id'},
   { title: t('role.name'), key: 'name', align: 'start' },
+  { title: t('role.childRoles'), key: 'childRoles', align: 'start' },
   { title: t('role.permissions'), key: 'permissions', align: 'start' },
   { title: t('role.readonly'), key: 'readonly', align: 'start' },
   { title: '', key: 'actions', align: 'start', minWidth: '150px' },
@@ -88,6 +89,15 @@ defineExpose({
           </v-chip>
     </template>
 
+    <template v-slot:item.childRoles="{ value }" >
+      <v-chip v-for="role in value"
+              :key="role" color="blue"
+              class="ma-1"
+      >
+        {{role.name}}
+      </v-chip>
+    </template>
+
     <template v-slot:item.readonly="{ value }" >
       <v-chip v-if="value" color="red" >
         <v-icon class="mdi mdi-pencil-off-outline"></v-icon>
@@ -98,8 +108,8 @@ defineExpose({
     </template>
 
     <template v-slot:item.actions="{item}" >
-      <v-btn v-if="hasPermission('user:update')" :disabled="item.readonly" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
-      <v-btn v-if="hasPermission('user:delete')" :disabled="item.readonly" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
+      <v-btn v-if="hasPermission('role:update')" :disabled="item.readonly" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
+      <v-btn v-if="hasPermission('role:delete')" :disabled="item.readonly" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
     </template>
 
   </v-data-table-server>

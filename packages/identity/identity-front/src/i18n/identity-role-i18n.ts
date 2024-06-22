@@ -3,6 +3,7 @@ const messages = {
         role: {
             name: "Name",
             permissions: "Username",
+            childRoles: "ChildRoles",
             readonly: "Read Only",
             updating: "Updating Role",
             creating: "Creating Role",
@@ -14,6 +15,7 @@ const messages = {
         role:{
             name: "Nombre",
             permissions: "Permisos",
+            childRoles: "Roles gestionados",
             readonly: "Solo lectura",
             updating: "Actualizando Rol",
             creating: "Creando Rol",

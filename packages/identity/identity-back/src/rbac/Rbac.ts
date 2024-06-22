@@ -1,14 +1,22 @@
-import {IRoleBase} from "../interfaces/IRole";
+import {IRole} from "../interfaces/IRole";
 import {IJwtUser} from "../interfaces/IJwtUser";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 
 class Rbac{
-    private role: IRoleBase;
+    private role: IRole;
     private authUser: IJwtUser;
 
-    constructor(authUser: IJwtUser, role: IRoleBase) {
+    constructor(authUser: IJwtUser, role: IRole) {
         this.authUser = authUser;
         this.role = role;
+    }
+
+    get getRole() {
+        return this.role
+    }
+
+    get getAuthUser() {
+        return this.authUser
     }
 
     hasPermission(requiredPermission: string): boolean {

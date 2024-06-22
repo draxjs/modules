@@ -75,7 +75,11 @@ async function RoleRoutes(fastify, options) {
             request.rbac.assertPermission(IdentityPermissions.ViewRole)
             const roleService = RoleServiceFactory()
             let roles = await roleService.fetchAll()
-            return roles
+            if(request.rbac.getRole?.childRoles?.length > 0) {
+                return roles.filter(role => request.rbac.getRole.childRoles.some(childRole => childRole.id === role.id));
+            }else{
+                return roles
+            }
         } catch (e) {
             console.error(e)
             if (e instanceof ValidationError) {
@@ -172,6 +176,10 @@ async function RoleRoutes(fastify, options) {
             request.rbac.assertPermission(IdentityPermissions.DeleteRole)
             const id = request.params.id
             const roleService = RoleServiceFactory()
+            const currentRole = await roleService.findById(id)
+            if(currentRole.readonly){
+                throw new UnauthorizedError()
+            }
             let r = await roleService.delete(id)
             return r
         } catch (e) {

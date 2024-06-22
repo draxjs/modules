@@ -16,11 +16,11 @@ const menu: MenuItem[] = [
     permission: 'user:manage',
     children: [
       {
-        icon: 'mdi-table-account',
-        text:'Users',
-        link: { name: "CrudUser" },
+        icon: 'mdi-domain',
+        text:'Tenant',
+        link: { name: "CrudTenant" },
         gallery: true,
-        permission: 'user:manage'
+        permission: 'tenant:manage'
       },
       {
         icon: 'mdi-chair-rolling',
@@ -29,6 +29,15 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'role:manage'
       },
+
+      {
+        icon: 'mdi-table-account',
+        text:'Users',
+        link: { name: "CrudUser" },
+        gallery: true,
+        permission: 'user:manage'
+      },
+
     ]
   },
   {

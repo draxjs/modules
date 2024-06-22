@@ -27,7 +27,7 @@ class RoleGqlProvider implements IRoleProvider {
     }
 
     async fetchRole(): Promise<any> {
-        const query: string = `query fetchRole { fetchRole { id name permissions readonly } }`
+        const query: string = `query fetchRole { fetchRole { id name permissions childRoles{id name} readonly } }`
         const variables = {}
         let data = await this.gqlClient.query(query, variables)
         return data.fetchRole
@@ -35,7 +35,7 @@ class RoleGqlProvider implements IRoleProvider {
 
     async createRole(payload: IRole): Promise<any> {
         const query: string = `mutation createRole($input: RoleInput) { 
-        createRole(input: $input) {id name permissions readonly } 
+        createRole(input: $input) {id name permissions childRoles{id name} readonly } 
         }`
         const variables = {input: payload}
         let data = await this.gqlClient.mutation(query, variables)
@@ -44,7 +44,7 @@ class RoleGqlProvider implements IRoleProvider {
 
     async editRole(id: string, payload: IRole): Promise<IRole> {
         const query: string = `mutation updateRole($id: ID!, $input: RoleInput) { updateRole(id: $id, input: $input) {  
-        id name permissions readonly  } }`
+        id name permissions childRoles{id name} readonly  } }`
         const variables = {id, input: payload}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createRole
@@ -60,7 +60,7 @@ class RoleGqlProvider implements IRoleProvider {
     async paginateRole(page: number, limit: number, search:string = ""): Promise<IPaginateClient> {
         const query: string = `query paginateRole($page: Int, $limit: Int, $search:String) { 
             paginateRole(page: $page, limit: $limit, search: $search) { 
-                total, page, limit, items{id, name , permissions, readonly } 
+                total, page, limit, items{id name permissions childRoles{id name} readonly } 
             } 
         }`
         const variables = {page, limit,search}

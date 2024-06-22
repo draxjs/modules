@@ -25,6 +25,7 @@ class RoleSqliteRepository implements IRoleRepository{
 
     constructor(DATABASE:string, verbose:boolean = false) {
         this.db = new sqlite(DATABASE, {verbose: verbose ? console.log : null});
+        this.table()
     }
 
     table() {
@@ -78,7 +79,7 @@ class RoleSqliteRepository implements IRoleRepository{
     async findById(id: IID): Promise<IRole | null>{
         const role = this.db.prepare('SELECT * FROM roles WHERE id = ?').get(id);
         if(role){
-            role.permissions = role.permissions ? role.permissions.split(",") : []
+            await this.populateRole(role)
             return role
         }
         return undefined
@@ -87,7 +88,7 @@ class RoleSqliteRepository implements IRoleRepository{
     async findByName(name: string): Promise<IRole | null>{
         const role = this.db.prepare('SELECT * FROM roles WHERE name = ?').get(name);
         if(role){
-            role.permissions = role.permissions ? role.permissions.split(",") : []
+            await this.populateRole(role)
             return role
         }
         return undefined
@@ -125,7 +126,7 @@ class RoleSqliteRepository implements IRoleRepository{
     async fetchAll(): Promise<IRole[]>{
         const roles = this.db.prepare('SELECT * FROM roles').all();
         for (const role of roles) {
-            role.permissions = role.permissions? role.permissions.split(",") : []
+            await this.populateRole(role)
         }
         return roles
     }
@@ -133,7 +134,7 @@ class RoleSqliteRepository implements IRoleRepository{
     async paginate(page = 1, limit = 5, search=""): Promise<IPaginateResult>{
         const offset = page > 1 ? (page - 1) * limit : 0
 
-        let where
+        let where=""
         if (search) {
             where = ` WHERE name LIKE '%${search}%'`
         }
@@ -142,9 +143,8 @@ class RoleSqliteRepository implements IRoleRepository{
         const roles = this.db.prepare('SELECT * FROM roles LIMIT ? OFFSET ?'+where).all([limit, offset]);
 
         for (const role of roles) {
-            role.permissions = role.permissions? role.permissions.split(",") : []
+            await this.populateRole(role)
         }
-
 
         return {
             page: page,
@@ -152,6 +152,27 @@ class RoleSqliteRepository implements IRoleRepository{
             total: rCount.count,
             items: roles
         }
+    }
+
+    async findWithoutPopulateById(id: IID): Promise<IRole | null>{
+        const role = this.db.prepare('SELECT * FROM roles WHERE id = ?').get(id);
+        if(role){
+            return role
+        }
+        return undefined
+    }
+
+    async populateRole(role){
+        role.permissions = role.permissions? role.permissions.split(",") : []
+        role.childRoles = role.childRoles? role.childRoles.split(",") : []
+
+        const childRoles = []
+        for(const childRoleId of role.childRoles){
+            const childRole:IRole = await this.findWithoutPopulateById(childRoleId)
+            childRoles.push(childRole)
+        }
+        role.childRoles = childRoles
+        return role
     }
 
 
