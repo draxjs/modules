@@ -1,4 +1,4 @@
-import type {IUser, IUserCreate, IUserUpdate} from "@/interfaces/IUser";
+import type {IUser, IUserCreate, IUserUpdate} from "./IUser";
 import type {IPaginateClient} from "@drax/common-front";
 
 

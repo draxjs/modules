@@ -1,5 +1,5 @@
-import type {IRole} from "@/interfaces/IRole";
-import type {ITenant} from "@/interfaces/ITenant";
+import type {IRole} from "./IRole";
+import type {ITenant} from "./ITenant";
 
 interface IUser {
     id: string

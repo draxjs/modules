@@ -1,6 +1,6 @@
-import type {IAuthProvider} from "../interfaces/IAuthProvider.ts";
-import type {IAuthUser} from "@/interfaces/IAuthUser";
-import type {ILoginResponse} from "@/interfaces/ILoginResponse";
+import type {IAuthProvider} from "../interfaces/IAuthProvider";
+import type {IAuthUser} from "../interfaces/IAuthUser";
+import type {ILoginResponse} from "../interfaces/ILoginResponse";
 
 class AuthSystem {
 

@@ -1,4 +1,4 @@
-import type {IHttpHeader} from "@/interfaces/IHttpClient";
+import type {IHttpHeader} from "./IHttpClient";
 
 interface IGqlOptions {
   headers: IHttpHeader;

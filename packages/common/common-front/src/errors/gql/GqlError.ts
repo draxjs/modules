@@ -1,4 +1,4 @@
-import type {IGqlError} from "@/interfaces/IGqlError";
+import type {IGqlError} from "../../interfaces/IGqlError";
 
 class GqlError extends Error implements IGqlError{
   public path: Array<string>;

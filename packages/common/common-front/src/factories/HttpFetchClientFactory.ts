@@ -1,5 +1,5 @@
 import HttpRestClient from "../clients/HttpRestClient";
-import type {IHttpHeader} from "@/interfaces/IHttpClient";
+import type {IHttpHeader} from "../interfaces/IHttpClient";
 
 class HttpFetchClientFactory{
 

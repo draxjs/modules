@@ -1,4 +1,4 @@
-import type {IRestError} from "@/interfaces/IRestError";
+import type {IRestError} from "../../interfaces/IRestError";
 import HttpError from "./HttpError";
 
 class HttpStatusError extends HttpError implements IRestError{

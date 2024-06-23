@@ -1,4 +1,4 @@
-import type {IRole} from "@/interfaces/IRole";
+import type {IRole} from "./IRole";
 
 interface IAuthUser {
     id: string

@@ -1,5 +1,5 @@
-import type {IUserProvider} from "@/interfaces/IUserProvider";
-import type {IUser, IUserCreate, IUserUpdate} from "@/interfaces/IUser";
+import type {IUserProvider} from "../interfaces/IUserProvider";
+import type {IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser";
 import type {IPaginateClient} from "@drax/common-front";
 
 

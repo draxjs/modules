@@ -1,5 +1,5 @@
-import type {ITenantProvider} from "@/interfaces/ITenantProvider";
-import type {ITenant} from "@/interfaces/ITenant";
+import type {ITenantProvider} from "../interfaces/ITenantProvider";
+import type {ITenant} from "../interfaces/ITenant";
 import type {IPaginateClient} from "@drax/common-front";
 
 

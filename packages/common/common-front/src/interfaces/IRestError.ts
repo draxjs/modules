@@ -1,4 +1,4 @@
-import type {IInputError} from "@/interfaces/IInputError";
+import type {IInputError} from "./IInputError";
 
 interface IRestError {
   message: string;

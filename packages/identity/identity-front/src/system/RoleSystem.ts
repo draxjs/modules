@@ -1,5 +1,5 @@
-import type {IRoleProvider} from "@/interfaces/IRoleProvider";
-import type {IRole} from "@/interfaces/IRole";
+import type {IRoleProvider} from "../interfaces/IRoleProvider";
+import type {IRole} from "../interfaces/IRole";
 import type {IPaginateClient} from "@drax/common-front";
 
 
