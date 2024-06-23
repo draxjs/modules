@@ -6,8 +6,7 @@ import {IUserRepository} from "../interfaces/IUserRepository";
 
 let userService: UserService
 
-const UserServiceFactory = () : UserService => {
-
+const UserServiceFactory = (verbose:boolean = false) : UserService => {
     if(!userService){
         let userRepository: IUserRepository
         switch (DbSetupUtils.getDbEngine()) {
@@ -17,7 +16,7 @@ const UserServiceFactory = () : UserService => {
                 break;
             case DbEngine.Sqlite:
                 console.log("UserServiceFactory DB ENGINE SQLITE")
-                userRepository = new UserSqliteRepository(DbSetupUtils.getDbConfig(),true)
+                userRepository = new UserSqliteRepository(DbSetupUtils.getDbConfig(),verbose)
                 userRepository.table()
                 break;
         }

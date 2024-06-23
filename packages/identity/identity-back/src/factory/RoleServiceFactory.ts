@@ -7,7 +7,7 @@ import type {IRoleRepository} from "../interfaces/IRoleRepository";
 
 let roleService: RoleService
 
-const RoleServiceFactory = () : RoleService => {
+const RoleServiceFactory = (verbose: boolean = false) : RoleService => {
 
     if(!roleService){
         let roleRepository: IRoleRepository
@@ -19,7 +19,7 @@ const RoleServiceFactory = () : RoleService => {
                 break;
             case DbEngine.Sqlite:
                 console.log("RoleServiceFactory DB ENGINE SQLITE")
-                roleRepository = new RoleSqliteRepository(DbSetupUtils.getDbConfig(), false)
+                roleRepository = new RoleSqliteRepository(DbSetupUtils.getDbConfig(), verbose)
                 roleRepository.table()
                 break;
         }

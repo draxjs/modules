@@ -7,7 +7,7 @@ import type {ITenantRepository} from "../interfaces/ITenantRepository";
 
 let tenantService: TenantService
 
-const TenantServiceFactory = () : TenantService => {
+const TenantServiceFactory = (verbose: boolean = false) : TenantService => {
 
     if(!tenantService){
         let tenantRepository: ITenantRepository
@@ -19,7 +19,7 @@ const TenantServiceFactory = () : TenantService => {
                 break;
             case DbEngine.Sqlite:
                 console.log("TenantServiceFactory DB ENGINE SQLITE")
-                tenantRepository = new TenantSqliteRepository(DbSetupUtils.getDbConfig(), false)
+                tenantRepository = new TenantSqliteRepository(DbSetupUtils.getDbConfig(), verbose)
                 tenantRepository.table()
                 break;
         }
