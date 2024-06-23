@@ -22,7 +22,7 @@ import BadCredentialsError from "./errors/BadCredentialsError.js";
 import CreateUserIfNotExist from "./setup/CreateUserIfNotExist.js";
 import CreateOrUpdateRole from "./setup/CreateOrUpdateRole.js";
 import LoadPermissions from "./setup/LoadPermissions.js";
-import LoadConfigFromEnv from "./setup/LoadConfigFromEnv.js";
+import LoadIdentityConfigFromEnv from "./setup/LoadIdentityConfigFromEnv.js";
 import RecoveryUserPassword from "./setup/RecoveryUserPassword.js";
 
 import type {IJwtUser} from "./interfaces/IJwtUser";
@@ -83,7 +83,7 @@ export {
     BadCredentialsError,
 
     //Setup
-    LoadConfigFromEnv,
+    LoadIdentityConfigFromEnv,
     LoadPermissions,
     CreateOrUpdateRole,
     CreateUserIfNotExist,

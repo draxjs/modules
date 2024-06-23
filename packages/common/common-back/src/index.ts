@@ -1,5 +1,6 @@
 import GraphqlMerger from "./utils/GraphqlMerger.js";
 import MongooseSoftDelete from "./utils/MongooseSoftDelete.js";
+import MongooseConector from "./utils/MongooseConector.js";
 import mongoose from "mongoose"
 import type {IPaginateFilter} from './interfaces/IPaginateFilter'
 import type {IPaginateResult} from './interfaces/IPaginateResult'
@@ -38,6 +39,7 @@ export {
     //Mongoose
     mongoose,
     MongooseSoftDelete,
+    MongooseConector,
 
     //Utils
     MongooseErrorToValidationError,

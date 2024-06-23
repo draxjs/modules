@@ -1,7 +1,7 @@
 import {DraxConfig} from "@drax/common-back";
 import IdentityConfig from "../config/IdentityConfig.js";
 
-function LoadConfigFromEnv() {
+function LoadIdentityConfigFromEnv() {
     DraxConfig.set(IdentityConfig.DbEngine, process.env[IdentityConfig.DbEngine])
     DraxConfig.set(IdentityConfig.SqliteDbFile, process.env[IdentityConfig.SqliteDbFile])
     DraxConfig.set(IdentityConfig.MongoDbUri, process.env[IdentityConfig.MongoDbUri])
@@ -10,7 +10,7 @@ function LoadConfigFromEnv() {
     DraxConfig.set(IdentityConfig.JwtIssuer, process.env[IdentityConfig.JwtIssuer])
 }
 
-export default LoadConfigFromEnv
+export default LoadIdentityConfigFromEnv
 export {
-    LoadConfigFromEnv
+    LoadIdentityConfigFromEnv
 }
