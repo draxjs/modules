@@ -1,9 +1,15 @@
 {
-  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "module": "ESNext",
+    "target": "es2020",
+    "moduleResolution": "node",
     "rootDir": "src",
-    "outDir": "dist",
-    "declarationDir": "./types"
+    "outDir": "../../../dist",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": ["test", "types","dist"],
   "references": [{ "path": "../../common/common-back" }, { "path": "../../identity/identity-back" }],

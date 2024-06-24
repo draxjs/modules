@@ -57,20 +57,12 @@ class TenantSqliteRepository implements ITenantRepository{
 
     async findById(id: IID): Promise<ITenant | null>{
         const tenant = this.db.prepare('SELECT * FROM tenants WHERE id = ?').get(id);
-        if(tenant){
-            tenant.permissions = tenant.permissions ? tenant.permissions.split(",") : []
-            return tenant
-        }
-        return undefined
+        return tenant
     }
 
     async findByName(name: string): Promise<ITenant | null>{
         const tenant = this.db.prepare('SELECT * FROM tenants WHERE name = ?').get(name);
-        if(tenant){
-            tenant.permissions = tenant.permissions ? tenant.permissions.split(",") : []
-            return tenant
-        }
-        return undefined
+        return tenant
     }
 
     async update(id: IID, tenantData: ITenant): Promise<ITenant> {
@@ -119,11 +111,6 @@ class TenantSqliteRepository implements ITenantRepository{
 
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM tenants'+where).get();
         const tenants = this.db.prepare('SELECT * FROM tenants LIMIT ? OFFSET ?'+where).all([limit, offset]);
-
-        for (const tenant of tenants) {
-            tenant.permissions = tenant.permissions? tenant.permissions.split(",") : []
-        }
-
 
         return {
             page: page,

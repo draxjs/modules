@@ -69,6 +69,9 @@ export default {
             try {
                 rbac.assertPermission(IdentityPermissions.CreateUser)
                 let userService= UserServiceFactory()
+                if(rbac.getAuthUser.tenantId){
+                    input.tenant = rbac.getAuthUser.tenantId
+                }
                 const user = await userService.create(input)
                 return user
             } catch (e) {
@@ -86,6 +89,9 @@ export default {
             try {
                 rbac.assertPermission(IdentityPermissions.UpdateUser)
                 let userService= UserServiceFactory()
+                if(rbac.getAuthUser.tenantId){
+                    input.tenant = rbac.getAuthUser.tenantId
+                }
                 const user = await userService.update(id, input)
                 return user
             } catch (e) {

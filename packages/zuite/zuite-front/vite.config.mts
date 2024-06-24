@@ -20,6 +20,9 @@ export default defineConfig({
       '/graphql': 'http://localhost:8082',
     },
   },
+  build: {
+    outDir: '../../../dist/public',
+  },
   plugins: [
     VueRouter({
       dts: 'src/typed-router.d.ts',

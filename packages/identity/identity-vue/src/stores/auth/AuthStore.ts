@@ -1,7 +1,8 @@
 // Utilities
 import { defineStore } from 'pinia'
 import type {IAuthUser} from "@drax/identity-front";
-//import type from 'pinia-plugin-persistedstate'
+//@ts-ignore
+import type from 'pinia-plugin-persistedstate'
 import {AuthHelper} from "@drax/identity-front";
 
 export const useAuthStore = defineStore('AuthStore', {

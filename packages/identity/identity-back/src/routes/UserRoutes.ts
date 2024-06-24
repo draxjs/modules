@@ -87,6 +87,9 @@ async function UserRoutes(fastify, options) {
             request.rbac.assertPermission(IdentityPermissions.CreateUser)
             const payload = request.body
             const userService = UserServiceFactory()
+            if(request.rbac.getAuthUser.tenantId){
+                payload.tenant = request.rbac.getAuthUser.tenantId
+            }
             let user = await userService.create(payload)
             return user
         } catch (e) {
@@ -110,6 +113,9 @@ async function UserRoutes(fastify, options) {
             const id = request.params.id
             const payload = request.body
             const userService = UserServiceFactory()
+            if(request.rbac.getAuthUser.tenantId){
+                payload.tenant = request.rbac.getAuthUser.tenantId
+            }
             let user = await userService.update(id, payload)
             return user
         } catch (e) {

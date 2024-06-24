@@ -1,7 +1,0 @@
-type Mate{
-    name: String
-}
-
-type Query{
-    mate: Mate
-}
