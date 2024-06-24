@@ -3,7 +3,7 @@ interface Link {
 }
 
 interface MenuItem {
-  icon?: string;
+  icon: string;
   text: string;
   link?: Link;
   gallery: boolean;

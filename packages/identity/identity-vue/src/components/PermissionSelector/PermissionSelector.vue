@@ -3,7 +3,7 @@
 import {ref, onMounted, defineModel, computed} from 'vue'
 import type {PropType} from 'vue'
 
-const props = defineProps({
+defineProps({
   errorMessages: {
     type: String as PropType<string | string[] | undefined>,
   }
@@ -26,13 +26,12 @@ interface PermissionGroups {
 const permissionGroups = computed(() => {
   const groups = items.value.reduce((acc: PermissionGroups, permission: string) => {
     if (permission.includes(':')) {
-      const [entity, action] = permission.split(':');
+      const [entity] = permission.split(':');
       if (!acc[entity]) {
         acc[entity] = [];
       }
       acc[entity].push(permission);
     } else {
-      // Si el permiso no sigue el formato entidad:acción, lo asignamos al grupo 'general'
       const generalGroup = 'general';
       if (!acc[generalGroup]) {
         acc[generalGroup] = [];

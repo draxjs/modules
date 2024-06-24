@@ -1,15 +1,16 @@
 <script setup lang="ts">
 
-import {defineProps, ref} from "vue";
+import {defineProps, type Ref, ref} from "vue";
 import {useTenant} from "../../composables/useTenant";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
+import type {ITenant} from "@drax/identity-front";
 
 const {hasPermission} = useAuth()
 const {paginateTenant} = useTenant()
 const {t} = useI18n()
 
-const props = defineProps({
+defineProps({
   filterEnable: {
     type: Boolean,
     default: false,
@@ -18,13 +19,12 @@ const props = defineProps({
 
 const itemsPerPage = ref(5)
 const page = ref(1)
-const headers = ref([
-  //{title: 'ID', align: 'start', sortable: false, key: 'id'},
-  { title: t('tenant.name'), key: 'name', align: 'start' },
+const headers = ref<any>([
+  { title: t('tenant.name') as string, key: 'name', align: 'start' },
   { title: '', key: 'actions', align: 'end', minWidth: '150px' },
 ])
 
-const serverItems = ref([])
+const serverItems: Ref<ITenant[]> = ref([]);
 const totalItems = ref(0)
 const loading = ref(false)
 const search = ref('')
@@ -80,8 +80,8 @@ defineExpose({
 
 
     <template v-slot:item.actions="{item}" >
-      <v-btn v-if="hasPermission('tenant:update')" :disabled="item.readonly" icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
-      <v-btn v-if="hasPermission('tenant:delete')" :disabled="item.readonly" icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
+      <v-btn v-if="hasPermission('tenant:update')"  icon="mdi-pencil"  variant="text" color="primary" @click="$emit('toEdit', item)"></v-btn>
+      <v-btn v-if="hasPermission('tenant:delete')"  icon="mdi-delete" class="mr-1" variant="text" color="red" @click="$emit('toDelete', item)"></v-btn>
     </template>
 
   </v-data-table-server>

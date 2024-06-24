@@ -1,15 +1,16 @@
 <script setup lang="ts">
 
-import {defineProps, ref} from "vue";
+import {defineProps, type Ref, ref} from "vue";
 import {useRole} from "../../composables/useRole";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
+import type {IRole} from "@drax/identity-front";
 
 const {hasPermission} = useAuth()
 const {paginateRole} = useRole()
 const {t} = useI18n()
 
-const props = defineProps({
+defineProps({
   filterEnable: {
     type: Boolean,
     default: false,
@@ -18,16 +19,16 @@ const props = defineProps({
 
 const itemsPerPage = ref(5)
 const page = ref(1)
-const headers = ref([
+const headers = ref<any>([
   //{title: 'ID', align: 'start', sortable: false, key: 'id'},
-  { title: t('role.name'), key: 'name', align: 'start' },
-  { title: t('role.childRoles'), key: 'childRoles', align: 'start' },
-  { title: t('role.permissions'), key: 'permissions', align: 'start' },
-  { title: t('role.readonly'), key: 'readonly', align: 'start' },
+  { title: t('role.name') as string, key: 'name', align: 'start' },
+  { title: t('role.childRoles') as string, key: 'childRoles', align: 'start' },
+  { title: t('role.permissions') as string, key: 'permissions', align: 'start' },
+  { title: t('role.readonly') as string, key: 'readonly', align: 'start' },
   { title: '', key: 'actions', align: 'end', minWidth: '150px' },
 ])
 
-const serverItems = ref([])
+const serverItems: Ref<IRole[]> = ref([]);
 const totalItems = ref(0)
 const loading = ref(false)
 const search = ref('')

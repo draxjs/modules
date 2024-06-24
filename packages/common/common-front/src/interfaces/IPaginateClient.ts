@@ -1,9 +1,9 @@
 
-interface IPaginateClient {
+interface IPaginateClient<t> {
     page: number;
     limit: number;
     total: number;
-    items: any[];
+    items: t[];
 }
 
 export type {IPaginateClient}

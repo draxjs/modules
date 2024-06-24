@@ -2,7 +2,7 @@
 import type {PropType} from "vue";
 import type {IRole} from "@drax/identity-front";
 
-const props = defineProps({
+defineProps({
   role:{
     type: Object as PropType<IRole>,
     required: true,

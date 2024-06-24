@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {ref, defineModel, type PropType, computed} from "vue";
+import {ref, defineModel, type PropType} from "vue";
 import type {IClientInputError} from "@drax/common-front";
-import type {IUser, IUserPassword} from "@drax/identity-front";
+import type {IUserPassword} from "@drax/identity-front";
 import {useI18nValidation} from "../composables/useI18nValidation";
 import {useI18n} from "vue-i18n";
 
@@ -11,7 +11,7 @@ const {$ta} = useI18nValidation()
 let newPasswordVisibility = ref(false)
 
 
-const props = defineProps({
+defineProps({
   inputErrors: {
     type: Object as PropType<IClientInputError>,
     default: () => ({id: "", newPassword: ""})

@@ -29,8 +29,8 @@ import type {IRoleProvider} from "./interfaces/IRoleProvider"
 import type {ITenantProvider} from "./interfaces/ITenantProvider"
 import type {IAuthUser} from "./interfaces/IAuthUser"
 import type {IUser, IUserCreate, IUserUpdate, IUserPassword} from "./interfaces/IUser"
-import type {IRole} from "./interfaces/IRole"
-import type {ITenant} from "./interfaces/ITenant"
+import type {IRole, IRoleBase} from "./interfaces/IRole"
+import type {ITenant, ITenantBase} from "./interfaces/ITenant"
 import type {ILoginResponse} from "./interfaces/ILoginResponse"
 
 export type {
@@ -39,12 +39,10 @@ export type {
     IRoleProvider,
     ITenantProvider,
     IAuthUser,
-    IUser,
-    IUserCreate,
-    IUserUpdate,
+    IUser, IUserCreate, IUserUpdate,
+    IRole, IRoleBase,
+    ITenant, ITenantBase,
     IUserPassword,
-    IRole,
-    ITenant,
     ILoginResponse
 }
 

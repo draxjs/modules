@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useVuetifyStore } from '../../../stores/vuetify/VuetifyStore.js'
+import { useVuetifyStore } from '../../stores/vuetify/VuetifyStore.js'
 import { computed, onMounted } from 'vue'
 
 const vuetifyStore = useVuetifyStore()

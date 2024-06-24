@@ -13,7 +13,7 @@ class UserSystem {
         this.prototype = 'UserSystem'
     }
 
-    async paginateUser(page:number = 1, perPage:number = 5, search:string=""):Promise<IPaginateClient> {
+    async paginateUser(page:number = 1, perPage:number = 5, search:string=""):Promise<IPaginateClient<IUser>> {
         return this._provider.paginateUser(page, perPage, search)
     }
 

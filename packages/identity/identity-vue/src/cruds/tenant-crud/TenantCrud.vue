@@ -2,7 +2,7 @@
 import {computed, ref} from 'vue'
 import TenantList from "./TenantList.vue";
 import {useTenant} from "../../composables/useTenant";
-import type {ITenant} from "@drax/identity-front";
+import type {ITenant, ITenantBase} from "@drax/identity-front";
 import TenantForm from "../../forms/TenantForm.vue";
 import TenantView from "../../views/TenantView.vue";
 
@@ -20,7 +20,7 @@ let dialog = ref(false);
 let dialogMode = ref<DialogMode>(null);
 let dialogTitle = ref('');
 const tenantList = ref<TenantList | null>(null);
-let form = ref<ITenant>({name: ""})
+let form = ref<ITenantBase>({name: ""})
 let target = ref<ITenant>();
 let targetId = ref<string>('');
 let filterEnable = ref(false);
@@ -83,9 +83,10 @@ function toEdit(item: ITenant) {
   console.log('toEdit', item)
   dialogMode.value = 'edit';
   dialogTitle.value = 'tenant.updating';
-  const {id, ...rest} = item;
-  targetId.value = id;
-  form.value = {...rest}
+  targetId.value = item.id;
+  form.value = {
+    name: item.name
+  }
   dialog.value = true;
 }
 

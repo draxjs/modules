@@ -1,4 +1,4 @@
-import type {MenuItem} from '../../types/menu'
+import type {MenuItem} from '../types/menu'
 
 const menu: MenuItem[] = [
   {
@@ -8,7 +8,6 @@ const menu: MenuItem[] = [
     gallery: true,
     auth: false
   },
-
   {
     icon: 'mdi-account-circle',
     text:'Admin',

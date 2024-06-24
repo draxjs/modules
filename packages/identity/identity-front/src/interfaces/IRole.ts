@@ -1,10 +1,19 @@
-
-interface IRole{
-    id ?: string
+interface IRoleBase{
     name: string
     permissions: string[]
-    childRoles?: IRole[]
+    childRoles: string[]
     readonly: boolean
 }
 
-export type {IRole}
+interface IRole{
+    id : string
+    name: string
+    permissions: string[]
+    childRoles: IRole[]
+    readonly: boolean
+}
+
+
+
+
+export type {IRole, IRoleBase}

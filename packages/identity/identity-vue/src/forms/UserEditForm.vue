@@ -7,7 +7,7 @@ import type {IUserUpdate} from "@drax/identity-front/src/interfaces/IUser";
 import {useI18nValidation} from "../composables/useI18nValidation";
 const {$ta} = useI18nValidation()
 
-const props = defineProps({
+defineProps({
   inputErrors: {
     type: Object as PropType<IClientInputError>,
     default: () => ({name: "", username: "", email: "", phone: "", role: "", tenant: "", active: ""})

@@ -30,8 +30,8 @@ interface IUserUpdate {
     email: string
     active: boolean
     phone: string
-    role: string
-    tenant: string
+    role: string|undefined
+    tenant: string|undefined
 }
 
 interface IUserPassword {

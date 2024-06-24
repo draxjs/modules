@@ -100,11 +100,16 @@ function toEdit(item: IUser) {
   actionButtonEnable.value = true
   dialogMode.value = 'edit';
   dialogTitle.value = 'user.updating';
-  const {id, ...rest} = item;
-  targetId.value = id;
-  rest.role = rest.role ? rest.role.id : null
-  rest.tenant = rest.tenant ? rest.tenant.id : null
-  editForm.value = {...rest}
+  targetId.value = item.id;
+  editForm.value = {
+    name: item.name,
+    username: item.username,
+    email: item.email,
+    phone: item.phone,
+    role: item.role.id,
+    tenant: item.tenant.id,
+    active: item.active
+  };
   dialog.value = true;
 }
 

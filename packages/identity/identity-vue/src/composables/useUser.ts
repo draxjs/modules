@@ -1,5 +1,5 @@
 import {inject, ref} from "vue";
-import type {IUserPassword, UserSystem} from "@drax/identity-front";
+import type {UserSystem} from "@drax/identity-front";
 import type {IUser} from "@drax/identity-front";
 import type {IClientInputError} from "@drax/common-front";
 import {ClientError} from "@drax/common-front";

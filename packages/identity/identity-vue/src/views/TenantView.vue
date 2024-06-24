@@ -2,7 +2,7 @@
 import type {PropType} from "vue";
 import type {ITenant} from "@drax/identity-front";
 
-const props = defineProps({
+defineProps({
   tenant:{
     type: Object as PropType<ITenant>,
     required: true,

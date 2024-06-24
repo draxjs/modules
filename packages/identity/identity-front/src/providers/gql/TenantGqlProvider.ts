@@ -20,7 +20,7 @@ class TenantGqlProvider implements ITenantProvider {
     }
 
 
-    async fetchTenant(): Promise<any> {
+    async fetchTenant(): Promise<ITenant[]> {
         const query: string = `query fetchTenant { fetchTenant { id name } }`
         const variables = {}
         let data = await this.gqlClient.query(query, variables)
@@ -51,7 +51,7 @@ class TenantGqlProvider implements ITenantProvider {
         return data.createTenant
     }
 
-    async paginateTenant(page: number, limit: number, search:string = ""): Promise<IPaginateClient> {
+    async paginateTenant(page: number, limit: number, search:string = ""): Promise<IPaginateClient<ITenant>> {
         const query: string = `query paginateTenant($page: Int, $limit: Int, $search:String) { 
             paginateTenant(page: $page, limit: $limit, search: $search) { 
                 total, page, limit, items{id, name } 

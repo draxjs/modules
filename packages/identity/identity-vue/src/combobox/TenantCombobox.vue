@@ -2,13 +2,13 @@
 
 import {ref, onMounted, defineModel} from 'vue'
 import type { PropType } from 'vue'
-const props = defineProps({
+defineProps({
   errorMessages: {
     type: String as PropType<string | string[] | undefined>,
   }
 })
 
-const model = defineModel()
+const model = defineModel<any>()
 import {useTenant} from "../composables/useTenant";
 const {fetchTenant} = useTenant()
 let items = ref([])

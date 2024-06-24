@@ -83,7 +83,7 @@ async function submitChangePassowrd() {
                     :append-inner-icon="currentPasswordVisibility ? 'mdi-eye-off': 'mdi-eye'"
                     @click:append-inner="currentPasswordVisibility = !currentPasswordVisibility"
                     autocomplete="new-password"
-                    :error-messages="$ta(inputErrors.currentPassword)"
+                    :error-messages="$ta(inputErrors?.currentPassword)"
                 ></v-text-field>
                 <div class="text-subtitle-1 text-medium-emphasis">{{ $t('user.newPassword') }}</div>
                 <v-text-field
@@ -96,7 +96,7 @@ async function submitChangePassowrd() {
                     :append-inner-icon="newPasswordVisibility ? 'mdi-eye-off': 'mdi-eye'"
                     @click:append-inner="newPasswordVisibility = !newPasswordVisibility"
                     autocomplete="new-password"
-                    :error-messages="$ta(inputErrors.newPassword)"
+                    :error-messages="$ta(inputErrors?.newPassword)"
                 ></v-text-field>
                 <div class="text-subtitle-1 text-medium-emphasis">{{ $t('user.confirmPassword') }}</div>
                 <v-text-field
@@ -109,7 +109,7 @@ async function submitChangePassowrd() {
                     :append-inner-icon="newPasswordVisibility ? 'mdi-eye-off': 'mdi-eye'"
                     @click:append-inner="newPasswordVisibility = !newPasswordVisibility"
                     autocomplete="new-password"
-                    :error-messages="$ta(inputErrors.confirmPassword)"
+                    :error-messages="$ta(inputErrors?.confirmPassword)"
                     :rules="[confirmPasswordRule]"
                 ></v-text-field>
               </v-card-text>

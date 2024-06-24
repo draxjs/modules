@@ -36,11 +36,11 @@ class UserRestProvider implements IUserProvider {
             return user
     }
 
-    async paginateUser(page: number = 1, limit: number = 5, search:string = ""): Promise<IPaginateClient> {
+    async paginateUser(page: number = 1, limit: number = 5, search:string = ""): Promise<IPaginateClient<IUser>> {
             const url = '/api/users'
             const params = {page, limit, search}
             let paginatedUsers = await this.httpClient.get(url, {params})
-            return paginatedUsers as IPaginateClient
+            return paginatedUsers as IPaginateClient<IUser>
 
     }
 

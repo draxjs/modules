@@ -5,7 +5,7 @@ import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue"
 import IdentityChangeOwnPassword from "../../components/IdentityChangeOwnPassword/IdentityChangeOwnPassword.vue";
 
 const auth = useAuth()
-const valueModel = defineModel()
+const valueModel = defineModel<boolean>()
 const profile = ref(false)
 const changePassword = ref(false)
 
@@ -51,7 +51,7 @@ const changePassword = ref(false)
       </v-list>
     </template>
 
-    <v-dialog v-model="profile"  fullscreen :on-after-leave="changePassword=false">
+    <v-dialog v-model="profile"  fullscreen :on-after-leave="() => changePassword=false">
       <v-toolbar>
         <v-toolbar-title>
           {{$t('user.profile')}}

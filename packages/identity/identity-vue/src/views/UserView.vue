@@ -3,7 +3,7 @@ import type {PropType} from "vue";
 import type {IUser} from "@drax/identity-front";
 import IdentityProfileAvatar from "../components/IdentityProfileAvatar/IdentityProfileAvatar.vue";
 
-const props = defineProps({
+defineProps({
   user:{
     type: Object as PropType<IUser>,
     required: true,

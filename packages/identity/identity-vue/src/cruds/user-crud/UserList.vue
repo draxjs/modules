@@ -1,15 +1,16 @@
 <script setup lang="ts">
 
-import {ref, defineProps} from "vue";
+import {ref, defineProps, type Ref} from "vue";
 import {useUser} from "../../composables/useUser";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
+import type {IUser} from "@drax/identity-front";
 
 const {hasPermission} = useAuth()
 const {paginateUser} = useUser()
 const {t} = useI18n()
 
-const props = defineProps({
+defineProps({
   filterEnable: {
     type: Boolean,
     default: false,
@@ -18,18 +19,18 @@ const props = defineProps({
 
 const itemsPerPage = ref(5)
 const page = ref(1)
-const headers = ref([
+const headers = ref<any>([
   //{title: 'ID', align: 'start', sortable: false, key: 'id'},
-  { title: t('user.name'), key: 'name', align: 'start' },
-  { title: t('user.username'), key: 'username', align: 'start' },
-  { title: t('user.email'), key: 'email', align: 'start' },
-  { title: t('user.role'), key: 'role.name', align: 'start' },
-  { title: t('user.tenant'), key: 'tenant.name', align: 'start' },
-  { title: t('user.active'), key: 'active', align: 'start' },
+  { title: t('user.name') as string, key: 'name', align: 'start' },
+  { title: t('user.username') as string, key: 'username', align: 'start' },
+  { title: t('user.email') as string, key: 'email', align: 'start' },
+  { title: t('user.role') as string, key: 'role.name', align: 'start' },
+  { title: t('user.tenant') as string, key: 'tenant.name', align: 'start' },
+  { title: t('user.active') as string, key: 'active', align: 'start' },
   { title: '', key: 'actions', align: 'end', fixed:true },
 ])
 
-const serverItems = ref([])
+const serverItems: Ref<IUser[]> = ref([]);
 const totalItems = ref(0)
 const loading = ref(false)
 const search = ref('')

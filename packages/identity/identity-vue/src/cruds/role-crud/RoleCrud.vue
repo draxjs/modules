@@ -2,7 +2,7 @@
 import {computed, ref} from 'vue'
 import RoleList from "./RoleList.vue";
 import {useRole} from "../../composables/useRole";
-import type {IRole} from "@drax/identity-front";
+import type {IRole, IRoleBase} from "@drax/identity-front";
 import RoleForm from "../../forms/RoleForm.vue";
 import RoleView from "../../views/RoleView.vue";
 
@@ -20,7 +20,7 @@ let dialog = ref(false);
 let dialogMode = ref<DialogMode>(null);
 let dialogTitle = ref('');
 const roleList = ref<RoleList | null>(null);
-let form = ref<IRole>({name: "", permissions: [], childRoles:[], readonly: false})
+let form = ref<IRoleBase>({name: "", permissions: [], childRoles:[], readonly: false})
 let target = ref<IRole>();
 let targetId = ref<string>('');
 let filterEnable = ref(false);
@@ -82,10 +82,14 @@ function toCreate() {
 function toEdit(item: IRole) {
   dialogMode.value = 'edit';
   dialogTitle.value = 'role.updating';
-  const {id, ...rest} = item;
-  rest.childRoles = rest.childRoles ? rest.childRoles.map(c => c.id) : []
-  targetId.value = id;
-  form.value = {...rest}
+  targetId.value = item.id;
+  form.value = {
+    name: item.name,
+    permissions: item.permissions,
+    childRoles: item.childRoles ? item.childRoles.map(c => c.id) : [],
+    readonly: item.readonly
+
+  }
   dialog.value = true;
 }
 

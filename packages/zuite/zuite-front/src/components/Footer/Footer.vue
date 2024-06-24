@@ -8,7 +8,6 @@
         height="60px"
     >
       <div style="position: absolute; top:0%; right: 3%">
-        <dark-mode></dark-mode>
       </div>
       <v-card-text>
         {{ new Date().getFullYear() }} <strong>@PerfilIT</strong>
@@ -19,11 +18,9 @@
 </template>
 
 <script>
-import {DarkMode} from "@dracul/customize-frontend";
 
 export default {
   name: "Footer",
-  components: {DarkMode}
 }
 </script>
 

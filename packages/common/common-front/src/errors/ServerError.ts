@@ -1,5 +1,5 @@
 class ServerError extends Error {
-  private error: Error;
+  public error: Error;
 
   constructor(error: Error) {
     super('error.server')

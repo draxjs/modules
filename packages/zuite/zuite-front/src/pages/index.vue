@@ -4,5 +4,4 @@
 </template>
 
 <script lang="ts" setup>
-  import {IdentityLogin} from "@drax/identity-front"
 </script>

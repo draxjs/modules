@@ -2,7 +2,7 @@
 
 import {ref, onMounted, defineModel} from 'vue'
 import type { PropType } from 'vue'
-const props = defineProps({
+defineProps({
   errorMessages: {
     type: String as PropType<string | string[] | undefined>,
   },
@@ -16,7 +16,7 @@ const props = defineProps({
   }
 })
 
-const model = defineModel()
+const model = defineModel<any>()
 import {useRole} from "../composables/useRole";
 const {fetchRole} = useRole()
 let items = ref([])

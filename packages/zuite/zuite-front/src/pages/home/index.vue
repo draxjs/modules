@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import GalleryMenu from "@/components/GalleryMenu/GalleryMenu.vue";
+import menu from '../../menu'
 
 </script>
 
 <template>
-  <h1>HOME</h1>
-  {{$t('main.home')}}
+  <GalleryMenu :menu="menu" />
 </template>
 
 <style scoped>

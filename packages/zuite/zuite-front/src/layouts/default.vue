@@ -1,11 +1,15 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
-import menu from './menu'
+import menu from '../menu'
 import {IdentityProfileAvatar, IdentityProfileDrawer} from "@drax/identity-vue";
-import DarkMode from "./components/DarkMode/index.vue";
-import SidebarMenu from "./components/SidebarMenu/SidebarMenu.vue";
+import DarkMode from "../components/DarkMode/index.vue";
+import SidebarMenu from "../components/SidebarMenu/SidebarMenu.vue";
+import {useRouter} from "vue-router";
 let profileDrawer = ref(false)
 let drawer = ref(false)
+
+const {push} = useRouter()
+
 </script>
 
 <template>
@@ -15,7 +19,11 @@ let drawer = ref(false)
     </v-navigation-drawer>
     <v-app-bar  >
       <v-app-bar-nav-icon v-model="menu" @click="drawer=!drawer"/>
-      <slot name="toolbar-left"></slot>
+      <slot name="toolbar-left">
+        <v-btn icon @click="push({name:'Root'})">
+          <v-icon>mdi-home</v-icon>
+        </v-btn>
+      </slot>
       <v-spacer></v-spacer>
       <slot name="toolbar-right"></slot>
       <dark-mode></dark-mode>

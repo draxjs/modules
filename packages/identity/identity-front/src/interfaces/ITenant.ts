@@ -1,7 +1,11 @@
-
-interface ITenant{
-    id ?: string
+interface ITenantBase{
     name: string
 }
 
-export type {ITenant}
+interface ITenant extends ITenantBase{
+    id: string
+    name: string
+}
+
+
+export type {ITenant, ITenantBase}

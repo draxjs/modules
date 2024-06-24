@@ -3,7 +3,7 @@ import {useAuthStore} from "../../stores/auth/AuthStore.js";
 
 const emit = defineEmits(['click'])
 
-const props = defineProps({
+defineProps({
   avatarSize: {
     type: Number,
     default: 54

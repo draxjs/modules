@@ -1,6 +1,6 @@
 import type {IGqlClient, IPaginateClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider";
-import type {IRole} from "../../interfaces/IRole";
+import type {IRole, IRoleBase} from "../../interfaces/IRole";
 
 
 class RoleGqlProvider implements IRoleProvider {
@@ -26,14 +26,14 @@ class RoleGqlProvider implements IRoleProvider {
         return data.fetchPermissions
     }
 
-    async fetchRole(): Promise<any> {
+    async fetchRole(): Promise<IRole[]> {
         const query: string = `query fetchRole { fetchRole { id name permissions childRoles{id name} readonly } }`
         const variables = {}
         let data = await this.gqlClient.query(query, variables)
         return data.fetchRole
     }
 
-    async createRole(payload: IRole): Promise<any> {
+    async createRole(payload: IRoleBase): Promise<IRole> {
         const query: string = `mutation createRole($input: RoleInput) { 
         createRole(input: $input) {id name permissions childRoles{id name} readonly } 
         }`
@@ -42,7 +42,7 @@ class RoleGqlProvider implements IRoleProvider {
         return data.createRole
     }
 
-    async editRole(id: string, payload: IRole): Promise<IRole> {
+    async editRole(id: string, payload: IRoleBase): Promise<IRole> {
         const query: string = `mutation updateRole($id: ID!, $input: RoleInput) { updateRole(id: $id, input: $input) {  
         id name permissions childRoles{id name} readonly  } }`
         const variables = {id, input: payload}
@@ -57,7 +57,7 @@ class RoleGqlProvider implements IRoleProvider {
         return data.createRole
     }
 
-    async paginateRole(page: number, limit: number, search:string = ""): Promise<IPaginateClient> {
+    async paginateRole(page: number, limit: number, search:string = ""): Promise<IPaginateClient<IRole>> {
         const query: string = `query paginateRole($page: Int, $limit: Int, $search:String) { 
             paginateRole(page: $page, limit: $limit, search: $search) { 
                 total, page, limit, items{id name permissions childRoles{id name} readonly } 

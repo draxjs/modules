@@ -42,11 +42,11 @@ class TenantRestProvider implements ITenantProvider {
         return user
     }
 
-    async paginateTenant(page: number = 1, limit: number = 5, search:string=""): Promise<IPaginateClient> {
+    async paginateTenant(page: number = 1, limit: number = 5, search:string=""): Promise<IPaginateClient<ITenant>> {
         const url = '/api/tenants'
         const params = {page, limit, search}
         let paginatedTenants = await this.httpClient.get(url, {params})
-        return paginatedTenants as IPaginateClient
+        return paginatedTenants as IPaginateClient<ITenant>
 
     }
 

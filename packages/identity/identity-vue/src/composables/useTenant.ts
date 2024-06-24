@@ -1,5 +1,5 @@
 import {inject, ref} from "vue";
-import type {ITenant, TenantSystem} from "@drax/identity-front";
+import type {ITenant, ITenantBase, TenantSystem} from "@drax/identity-front";
 import {ClientError} from "@drax/common-front";
 import type { IClientInputError} from "@drax/common-front";
 
@@ -26,7 +26,7 @@ export function useTenant() {
         return paginatedtenant
     }
 
-    async function createTenant(tenantData: ITenant) {
+    async function createTenant(tenantData: ITenantBase) {
         try {
             loading.value = true
             let tenant: ITenant =  await tenantSystem.createTenant(tenantData)
@@ -44,7 +44,7 @@ export function useTenant() {
 
     }
 
-    async function editTenant(id: string, tenantData: ITenant) {
+    async function editTenant(id: string, tenantData: ITenantBase) {
         try {
             loading.value = true
             let tenant: ITenant = await tenantSystem.editTenant(id, tenantData)

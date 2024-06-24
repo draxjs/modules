@@ -1,5 +1,6 @@
 import {inject, ref} from "vue";
-import type {IRole, RoleSystem} from "@drax/identity-front";
+import  {RoleSystem} from "@drax/identity-front";
+import type {IRole, IRoleBase} from "@drax/identity-front";
 import {ClientError} from "@drax/common-front";
 import type { IClientInputError} from "@drax/common-front";
 
@@ -33,7 +34,7 @@ export function useRole() {
         return paginatedrole
     }
 
-    async function createRole(roleData: IRole) {
+    async function createRole(roleData: IRoleBase) {
         try {
             loading.value = true
             let role: IRole =  await roleSystem.createRole(roleData)
@@ -51,7 +52,7 @@ export function useRole() {
 
     }
 
-    async function editRole(id: string, roleData: IRole) {
+    async function editRole(id: string, roleData: IRoleBase) {
         try {
             loading.value = true
             let role: IRole = await roleSystem.editRole(id, roleData)

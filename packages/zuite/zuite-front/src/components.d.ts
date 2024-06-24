@@ -7,15 +7,12 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AppBarLogo: typeof import('./components/layout/AppBarLogo/AppBarLogo.vue')['default']
-    AppBarTitle: typeof import('./components/layout/AppBarTitle/AppBarTitle.vue')['default']
-    DarkMode: typeof import('./components/layout/DarkMode/index.vue')['default']
-    Footer: typeof import('./components/layout/Footer/Footer.vue')['default']
-    GalleryMenu: typeof import('./components/layout/GalleryMenu/GalleryMenu.vue')['default']
-    HelloWorld: typeof import('./components/HelloWorld.vue')['default']
-    MenuCard: typeof import('./components/layout/MenuCard/MenuCard.vue')['default']
+    DarkMode: typeof import('./components/DarkMode/index.vue')['default']
+    Footer: typeof import('./components/Footer/Footer.vue')['default']
+    GalleryMenu: typeof import('./components/GalleryMenu/GalleryMenu.vue')['default']
+    MenuCard: typeof import('./components/MenuCard/MenuCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SidebarMenu: typeof import('./components/layout/SidebarMenu/SidebarMenu.vue')['default']
+    SidebarMenu: typeof import('./components/SidebarMenu/SidebarMenu.vue')['default']
   }
 }

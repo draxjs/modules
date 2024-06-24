@@ -3,9 +3,7 @@ import {useAuthStore} from "../../stores/auth/AuthStore.js";
 import IdentityProfileAvatar from "../IdentityProfileAvatar/IdentityProfileAvatar.vue";
 const emit = defineEmits(['click'])
 const authStore = useAuthStore()
-const onClick = () => {
-  emit('click')
-}
+
 </script>
 
 <template>

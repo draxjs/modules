@@ -1,3 +1,27 @@
+<script setup lang="ts">
+
+defineProps({
+  title: {
+    type: String,
+    required: true
+  },
+  to: {
+    type: Object,
+    required: false
+  },
+  subtitle: {
+    type: String,
+    required: false
+  },
+  icon: {
+    type: String,
+    required: false
+  }
+
+})
+
+</script>
+
 <template>
   <v-card :to="to">
     <v-card-title class="primary--text">{{title}}</v-card-title>
@@ -8,17 +32,7 @@
   </v-card>
 </template>
 
-<script>
-export default {
-  name: "MenuCard",
-  props: {
-    title: String,
-    subtitle: String,
-    icon: String,
-    to: Object
-  }
-}
-</script>
+
 
 <style scoped>
 

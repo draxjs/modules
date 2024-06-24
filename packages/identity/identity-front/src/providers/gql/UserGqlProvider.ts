@@ -1,6 +1,6 @@
 import type {IGqlClient, IPaginateClient} from '@drax/common-front'
 import type {IUserProvider} from "../../interfaces/IUserProvider";
-import type {IUser, IUserCreate, IUserPassword, IUserUpdate} from "../../interfaces/IUser";
+import type {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
 
 class UserGqlProvider implements IUserProvider {
 
@@ -48,7 +48,7 @@ class UserGqlProvider implements IUserProvider {
         return data.createUser
     }
 
-    async paginateUser(page: number, limit: number, search:string = ""): Promise<IPaginateClient> {
+    async paginateUser(page: number, limit: number, search:string = ""): Promise<IPaginateClient<IUser>> {
         const query: string = `query paginateUser($page: Int, $limit: Int, $search:String) { 
             paginateUser(page: $page, limit: $limit, search: $search) { 
                 total, page, limit, items{ id, name username, email, phone, active, role{id, name} tenant{id name} } 
