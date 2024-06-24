@@ -64,6 +64,7 @@ class UserService {
             userData.name = userData?.name?.trim()
             userData.username = userData.username.trim()
             userData.password = userData.password.trim()
+            userData.tenant = userData.tenant === "" ? null : userData.tenant
 
             await createUserSchema.parseAsync(userData)
 
@@ -86,6 +87,7 @@ class UserService {
         userData.name = userData.name.trim()
         userData.username = userData.username.trim()
         delete userData.password
+        userData.tenant = userData.tenant === "" ? null : userData.tenant
 
         await editUserSchema.parseAsync(userData)
 

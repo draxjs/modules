@@ -33,13 +33,14 @@ const UserSchema = new mongoose.Schema<IUser>({
             message: "Invalid email format"
         }
     },
-    password: {type: String, required: true},
-    code: {type: String, required: false},
-    name: {type: String, required: false},
-    active: {type: Boolean, required: true, default: false},
+    password: {type: String, required: true,  index: false},
+    code: {type: String, required: false,  index: false},
+    name: {type: String, required: false,  index: false},
+    active: {type: Boolean, required: true, default: false,  index: false},
     phone: {
         type: String,
         required: false,
+        index: false,
         validate: {
             validator: function (value: string) {
                 let r = /[0-9]+/;
@@ -48,33 +49,25 @@ const UserSchema = new mongoose.Schema<IUser>({
             message: "Invalid Phone format"
         }
     },
-    avatar: {type: String, required: false},
+    avatar: {type: String, required: false, index:false},
     role: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role',
         required: true,
+        index: false
     },
     tenant: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Tenant',
         required: false,
+        index: false
     },
     groups: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Group',
         required: false,
+        index: false
     }],
-  /*  refreshToken: {
-        type: [
-            {
-                id: {type: String},
-                expiryDate: {type: Date},
-                sessionId: {type: String},
-            }
-        ],
-        default: [],
-        id: false
-    }*/
 }, {timestamps: true});
 
 UserSchema.set('toJSON', {getters: true});
