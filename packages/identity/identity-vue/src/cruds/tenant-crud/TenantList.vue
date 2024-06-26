@@ -4,7 +4,7 @@ import {defineProps, type Ref, ref} from "vue";
 import {useTenant} from "../../composables/useTenant";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
-import type {ITenant} from "@drax/identity-front";
+import type {ITenant} from "@drax/identity-share";
 
 const {hasPermission} = useAuth()
 const {paginateTenant} = useTenant()
@@ -19,20 +19,22 @@ defineProps({
 
 const itemsPerPage = ref(5)
 const page = ref(1)
+const serverItems: Ref<ITenant[]> = ref([]);
+const totalItems = ref(0)
+const loading = ref(false)
+const search = ref('')
 const headers = ref<any>([
   { title: t('tenant.name') as string, key: 'name', align: 'start' },
   { title: '', key: 'actions', align: 'end', minWidth: '150px' },
 ])
 
-const serverItems: Ref<ITenant[]> = ref([]);
-const totalItems = ref(0)
-const loading = ref(false)
-const search = ref('')
-
 async function loadItems(){
   try{
     loading.value = true
-    const r = await paginateTenant(page.value,itemsPerPage.value, search.value)
+    const r = await paginateTenant({
+      page: page.value,
+      limit: itemsPerPage.value,
+      search: search.value})
     serverItems.value = r.items
     totalItems.value = r.total
   }catch (e){

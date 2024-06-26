@@ -1,5 +1,5 @@
 import {mongoose, MongooseSoftDelete} from '@drax/common-back';
-import {IUser} from "../interfaces/IUser";
+import {IUser} from "@drax/identity-share";
 import uniqueValidator from 'mongoose-unique-validator';
 import mongoosePaginate from 'mongoose-paginate-v2'
 import {PaginateModel} from "mongoose";
@@ -34,7 +34,6 @@ const UserSchema = new mongoose.Schema<IUser>({
         }
     },
     password: {type: String, required: true,  index: false},
-    code: {type: String, required: false,  index: false},
     name: {type: String, required: false,  index: false},
     active: {type: Boolean, required: true, default: false,  index: false},
     phone: {

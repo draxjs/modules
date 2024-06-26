@@ -1,5 +1,5 @@
 import RoleService from "../../src/services/RoleService";
-import {IRole} from "../../src/interfaces/IRole";
+import {IRole} from "../../../identity-share/src/interfaces/IRole";
 import RoleSqliteRepository from "../../src/repository/sqlite/RoleSqliteRepository";
 import {UUID} from "crypto";
 

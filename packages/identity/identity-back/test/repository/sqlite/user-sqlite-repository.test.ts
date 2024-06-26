@@ -1,8 +1,8 @@
 import  {before, after, describe, it, test} from "node:test"
 import assert, {equal} from "assert";
 import UserSqliteRepository from "../../../src/repository/sqlite/UserSqliteRepository";
-import {IUser} from "../../../src/interfaces/IUser";
-import {IRole} from "../../../src/interfaces/IRole";
+import {IUser} from "../../../../identity-share/src/interfaces/IUser";
+import {IRole} from "../../../../identity-share/src/interfaces/IRole";
 
 import {ValidationError} from "@drax/common-back";
 import {UUID} from "crypto";

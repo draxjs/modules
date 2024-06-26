@@ -1,11 +1,11 @@
 import {UserModel} from "../../models/UserModel.js";
 import {mongoose, MongooseErrorToValidationError, MongoServerErrorToValidationError, ValidationError} from "@drax/common-back"
-import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
-import type {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
+import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import {DeleteResult, MongoServerError} from "mongodb";
 import type {IUserRepository} from "../../interfaces/IUserRepository";
 import {PaginateResult} from "mongoose";
 import RoleMongoRepository from "./RoleMongoRepository.js";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 class UserMongoRepository implements IUserRepository {
     private roleRepository: RoleMongoRepository;
@@ -18,7 +18,7 @@ class UserMongoRepository implements IUserRepository {
     async create(userData: IUserCreate): Promise<IUser> {
         try{
 
-            if(!await this.roleRepository.findById(userData.role as mongoose.Types.ObjectId)){
+            if(!await this.roleRepository.findById(userData.role)){
                 throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
             }
 
@@ -35,7 +35,7 @@ class UserMongoRepository implements IUserRepository {
 
     }
 
-    async update(id: mongoose.Types.ObjectId, userData: IUserUpdate): Promise<IUser> {
+    async update(id: string, userData: IUserUpdate): Promise<IUser> {
         try{
         const user: mongoose.HydratedDocument<IUser> = await UserModel.findOneAndUpdate({_id: id}, userData, {new: true}).populate(['role','tenant']).exec()
         return user
@@ -50,13 +50,13 @@ class UserMongoRepository implements IUserRepository {
         }
     }
 
-    async delete(id: mongoose.Types.ObjectId): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         const result: DeleteResult = await UserModel.deleteOne({_id: id}).exec()
         return result.deletedCount == 1
     }
 
 
-    async findById(id: mongoose.Types.ObjectId): Promise<IUser> {
+    async findById(id:string): Promise<IUser> {
         const user: mongoose.HydratedDocument<IUser> = await UserModel.findById(id).populate(['role','tenant']).exec()
         return user
     }
@@ -66,8 +66,13 @@ class UserMongoRepository implements IUserRepository {
         return user
     }
 
-    async paginate(page: number = 1, limit: number = 5, search?:string, filters?:IPaginateFilter[]): Promise<IPaginateResult> {
-
+    async paginate({
+                       page= 1,
+                       limit= 5,
+                       orderBy= '',
+                       orderDesc= false,
+                       search= '',
+                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
 
         const query = {}
 
@@ -104,7 +109,7 @@ class UserMongoRepository implements IUserRepository {
         }
     }
 
-    async changePassword(id: mongoose.Types.ObjectId, password: string):Promise<boolean> {
+    async changePassword(id: string, password: string):Promise<boolean> {
         try{
         await UserModel.findOneAndUpdate({_id: id}, {password}).exec()
         return true

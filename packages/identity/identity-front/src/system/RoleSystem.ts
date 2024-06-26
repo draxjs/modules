@@ -1,9 +1,9 @@
 import type {IRoleProvider} from "../interfaces/IRoleProvider";
-import type {IRole, IRoleBase} from "../interfaces/IRole";
-import type {IPaginateClient} from "@drax/common-front";
+import type {IRole, IRoleBase} from "@drax/identity-share";
+import type {IDraxPaginateResult} from "@drax/common-share";
 
 
-class RoleSystem {
+class RoleSystem implements IRoleProvider {
 
     _provider: IRoleProvider
     prototype: string;
@@ -21,20 +21,20 @@ class RoleSystem {
         return this._provider.fetchPermissions()
     }
 
-    async paginateRole(page:number = 1, perPage:number = 5, search:string=""):Promise<IPaginateClient<IRole>> {
-        return this._provider.paginateRole(page, perPage,search)
+    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<IRole>> {
+        return this._provider.paginate({page, limit, orderBy, orderDesc, search})
     }
 
-    async createRole(userPayload: IRoleBase):Promise<IRole> {
-        return this._provider.createRole(userPayload)
+    async create(userPayload: IRoleBase):Promise<IRole> {
+        return this._provider.create(userPayload)
     }
 
-    async editRole(id:string, userPayload: IRoleBase):Promise<IRole> {
-        return this._provider.editRole(id, userPayload)
+    async update(id:string, userPayload: IRoleBase):Promise<IRole> {
+        return this._provider.update(id, userPayload)
     }
 
-    async deleteRole(id: string):Promise<any> {
-        return this._provider.deleteRole(id)
+    async delete(id: string):Promise<any> {
+        return this._provider.delete(id)
     }
 
 }

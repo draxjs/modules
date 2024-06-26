@@ -1,6 +1,8 @@
-import type {IHttpClient, IPaginateClient} from '@drax/common-front'
+import type {IHttpClient} from '@drax/common-front'
 import type {IUserProvider} from "../../interfaces/IUserProvider.ts";
-import type {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser.ts";
+import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
+import type {IDraxPaginateResult} from "@drax/common-share";
+
 
 class UserRestProvider implements IUserProvider {
 
@@ -18,29 +20,29 @@ class UserRestProvider implements IUserProvider {
         this.httpClient.removeHeader('Authorization')
     }
 
-    async createUser(data: IUserCreate): Promise<IUser> {
+    async create(data: IUserCreate): Promise<IUser> {
             const url = '/api/users'
             let user = await this.httpClient.post(url, data)
             return user as IUser
     }
 
-    async editUser(id: string, data: IUserUpdate): Promise<IUser> {
+    async update(id: string, data: IUserUpdate): Promise<IUser> {
             const url = '/api/users/' + id
             let user = await this.httpClient.put(url, data)
             return user as IUser
     }
 
-    async deleteUser(id: string): Promise<any> {
+    async delete(id: string): Promise<any> {
             const url = '/api/users/' + id
             let user = await this.httpClient.delete(url)
             return user
     }
 
-    async paginateUser(page: number = 1, limit: number = 5, search:string = ""): Promise<IPaginateClient<IUser>> {
-            const url = '/api/users'
-            const params = {page, limit, search}
+    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<IUser>> {
+        const url = '/api/users'
+        const params = {page, limit, orderBy, orderDesc, search}
             let paginatedUsers = await this.httpClient.get(url, {params})
-            return paginatedUsers as IPaginateClient<IUser>
+            return paginatedUsers as IDraxPaginateResult<IUser>
 
     }
 

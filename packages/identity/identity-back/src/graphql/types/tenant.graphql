@@ -11,7 +11,7 @@ type TenantPaginated{
 }
 
 type Query{
-    paginateTenant(page:Int, limit:Int, search:String): TenantPaginated
+    paginateTenant(options: PaginateOptions): TenantPaginated
     fetchTenant: [Tenant]
     findTenantById(id: ID): Tenant
     findTenantByName(name: String!): Tenant

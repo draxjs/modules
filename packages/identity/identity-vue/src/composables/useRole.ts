@@ -1,6 +1,6 @@
 import {inject, ref} from "vue";
 import  {RoleSystem} from "@drax/identity-front";
-import type {IRole, IRoleBase} from "@drax/identity-front";
+import type {IRole, IRoleBase} from "@drax/identity-share";
 import {ClientError} from "@drax/common-front";
 import type { IClientInputError} from "@drax/common-front";
 
@@ -27,9 +27,9 @@ export function useRole() {
         return roles
     }
 
-    async function paginateRole(page = 1, perPage = 5, string = "") {
+    async function paginateRole({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}) {
         loading.value = true
-        let paginatedrole = roleSystem.paginateRole(page, perPage,string)
+        let paginatedrole = roleSystem.paginate({page, limit, orderBy, orderDesc, search})
         loading.value = false
         return paginatedrole
     }
@@ -37,7 +37,7 @@ export function useRole() {
     async function createRole(roleData: IRoleBase) {
         try {
             loading.value = true
-            let role: IRole =  await roleSystem.createRole(roleData)
+            let role: IRole =  await roleSystem.create(roleData)
             return role
         } catch (err) {
             if (err instanceof ClientError) {
@@ -55,7 +55,7 @@ export function useRole() {
     async function editRole(id: string, roleData: IRoleBase) {
         try {
             loading.value = true
-            let role: IRole = await roleSystem.editRole(id, roleData)
+            let role: IRole = await roleSystem.update(id, roleData)
             return role
         } catch (err) {
 
@@ -74,9 +74,9 @@ export function useRole() {
     async function deleteRole(id: string) {
         try {
             loading.value = true
-            await roleSystem.deleteRole(id)
+            await roleSystem.delete(id)
         } catch (err) {
-            console.log("composable deleteRole error: ", err, )
+            console.log("composable delete error: ", err, )
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }

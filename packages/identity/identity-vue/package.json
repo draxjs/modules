@@ -24,6 +24,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@drax/identity-share": "^0.0.22",
+    "@drax/common-share": "^0.0.22",
     "@drax/common-front": "^0.0.22",
     "vue-i18n": "^9.13.1"
   },

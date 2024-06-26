@@ -1,5 +1,5 @@
 import {mongoose} from "@drax/common-back"
-import {IRole} from "../../../src/interfaces/IRole"
+import {IRole} from "../../../../identity-share/src/interfaces/IRole"
 
 
 const role = {

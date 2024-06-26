@@ -2,7 +2,7 @@
 import {computed, ref} from 'vue'
 import TenantList from "./TenantList.vue";
 import {useTenant} from "../../composables/useTenant";
-import type {ITenant, ITenantBase} from "@drax/identity-front";
+import type {ITenant, ITenantBase} from "@drax/identity-share";
 import TenantForm from "../../forms/TenantForm.vue";
 import TenantView from "../../views/TenantView.vue";
 

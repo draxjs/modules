@@ -1,9 +1,9 @@
-import {IPaginateResult, ValidationError} from "@drax/common-back";
+import { ValidationError} from "@drax/common-back";
 import TenantServiceFactory from "../factory/TenantServiceFactory.js";
-import {ITenant} from "../interfaces/ITenant";
+import {ITenant} from "@drax/identity-share";
 import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
-import {PermissionService} from "../services/PermissionService.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
+import {IDraxPaginateResult} from "@drax/common-share";
 
 
 
@@ -78,14 +78,16 @@ async function TenantRoutes(fastify, options) {
         }
     })
 
-    fastify.get('/api/tenants', async (request, reply): Promise<IPaginateResult> => {
+    fastify.get('/api/tenants', async (request, reply): Promise<IDraxPaginateResult<ITenant>> => {
         try {
             request.rbac.assertPermission(IdentityPermissions.ViewTenant)
             const page = request.query.page
             const limit = request.query.limit
+            const orderBy = request.query.orderBy
+            const orderDesc = request.query.orderDesc
             const search = request.query.search
             const tenantService = TenantServiceFactory()
-            let paginateResult = await tenantService.paginate(page, limit, search)
+            let paginateResult = await tenantService.paginate({page, limit,orderBy, orderDesc, search})
             return paginateResult
         } catch (e) {
             console.error(e)

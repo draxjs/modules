@@ -24,6 +24,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@drax/common-share": "^0.0.22",
+    "@drax/identity-share": "^0.0.22",
     "@drax/common-front": "^0.0.22"
   },
   "devDependencies": {

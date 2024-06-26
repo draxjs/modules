@@ -20,7 +20,6 @@ const RoleServiceFactory = (verbose: boolean = false) : RoleService => {
             case DbEngine.Sqlite:
                 console.log("RoleServiceFactory DB ENGINE SQLITE")
                 roleRepository = new RoleSqliteRepository(DbSetupUtils.getDbConfig(), verbose)
-                roleRepository.table()
                 break;
         }
 

@@ -1,9 +1,9 @@
 
-interface IPaginateClient<t> {
+interface IDraxPaginateResult<t> {
     page: number;
     limit: number;
     total: number;
     items: t[];
 }
 
-export type {IPaginateClient}
+export type {IDraxPaginateResult}

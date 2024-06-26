@@ -1,11 +1,10 @@
-import {IRole} from '../../interfaces/IRole'
 import {IRoleRepository} from '../../interfaces/IRoleRepository'
 import {UUID} from "crypto";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
-import {IPaginateFilter, IPaginateResult, ValidationError} from "@drax/common-back";
+import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
+import {IRole, IRoleBase} from "@drax/identity-share";
 import {SqliteErrorToValidationError} from "@drax/common-back";
-import {IID} from "../../interfaces/IID";
 
 const roleTableSQL: string = `
     CREATE TABLE IF NOT EXISTS roles
@@ -32,7 +31,7 @@ class RoleSqliteRepository implements IRoleRepository{
         this.db.exec(roleTableSQL);
     }
 
-    normalizeData(roleData: IRole){
+    normalizeData(roleData: IRoleBase){
 
         roleData.readonly = roleData.readonly ? 1 : 0
 
@@ -45,7 +44,7 @@ class RoleSqliteRepository implements IRoleRepository{
         }
     }
 
-    async create(roleData: IRole): Promise<IRole> {
+    async create(roleData: IRoleBase): Promise<IRole> {
         try{
 
             if(!roleData.id){
@@ -76,25 +75,9 @@ class RoleSqliteRepository implements IRoleRepository{
         }
     }
 
-    async findById(id: IID): Promise<IRole | null>{
-        const role = this.db.prepare('SELECT * FROM roles WHERE id = ?').get(id);
-        if(role){
-            await this.populateRole(role)
-            return role
-        }
-        return undefined
-    }
 
-    async findByName(name: string): Promise<IRole | null>{
-        const role = this.db.prepare('SELECT * FROM roles WHERE name = ?').get(name);
-        if(role){
-            await this.populateRole(role)
-            return role
-        }
-        return undefined
-    }
 
-    async update(id: IID, roleData: IRole): Promise<IRole> {
+    async update(id: string, roleData: IRoleBase): Promise<IRole> {
         try{
             this.normalizeData(roleData)
             const setClauses = Object.keys(roleData)
@@ -111,27 +94,13 @@ class RoleSqliteRepository implements IRoleRepository{
 
     }
 
-    async delete(id: IID): Promise<boolean> {
-        const stmt = this.db.prepare('DELETE FROM roles WHERE id = ?');
-        stmt.run(id);
-        return true
-    }
-
-    async deleteAll(): Promise<boolean> {
-        const stmt = this.db.prepare('DELETE FROM roles');
-        stmt.run();
-        return true
-    }
-
-    async fetchAll(): Promise<IRole[]>{
-        const roles = this.db.prepare('SELECT * FROM roles').all();
-        for (const role of roles) {
-            await this.populateRole(role)
-        }
-        return roles
-    }
-
-    async paginate(page = 1, limit = 5, search=""): Promise<IPaginateResult>{
+    async paginate({
+                       page= 1,
+                       limit= 5,
+                       orderBy= '',
+                       orderDesc= false,
+                       search= '',
+                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>>{
         const offset = page > 1 ? (page - 1) * limit : 0
 
         let where=""
@@ -154,7 +123,47 @@ class RoleSqliteRepository implements IRoleRepository{
         }
     }
 
-    async findWithoutPopulateById(id: IID): Promise<IRole | null>{
+    async delete(id: string): Promise<boolean> {
+        const stmt = this.db.prepare('DELETE FROM roles WHERE id = ?');
+        stmt.run(id);
+        return true
+    }
+
+    async deleteAll(): Promise<boolean> {
+        const stmt = this.db.prepare('DELETE FROM roles');
+        stmt.run();
+        return true
+    }
+
+    async findById(id: string): Promise<IRole | null>{
+        const role = this.db.prepare('SELECT * FROM roles WHERE id = ?').get(id);
+        if(role){
+            await this.populateRole(role)
+            return role
+        }
+        return undefined
+    }
+
+    async findByName(name: string): Promise<IRole | null>{
+        const role = this.db.prepare('SELECT * FROM roles WHERE name = ?').get(name);
+        if(role){
+            await this.populateRole(role)
+            return role
+        }
+        return undefined
+    }
+
+    async fetchAll(): Promise<IRole[]>{
+        const roles = this.db.prepare('SELECT * FROM roles').all();
+        for (const role of roles) {
+            await this.populateRole(role)
+        }
+        return roles
+    }
+
+
+
+    async findWithoutPopulateById(id: string): Promise<IRole | null>{
         const role = this.db.prepare('SELECT * FROM roles WHERE id = ?').get(id);
         if(role){
             return role

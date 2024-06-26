@@ -1,11 +1,10 @@
-import {ITenant} from '../../interfaces/ITenant'
+import {ITenant, ITenantBase} from '@drax/identity-share'
 import {ITenantRepository} from '../../interfaces/ITenantRepository'
 import {UUID} from "crypto";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
-import {IPaginateFilter, IPaginateResult, ValidationError} from "@drax/common-back";
+import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
 import {SqliteErrorToValidationError} from "@drax/common-back";
-import {IID} from "../../interfaces/IID";
 
 const tenantTableSQL: string = `
     CREATE TABLE IF NOT EXISTS tenants
@@ -30,7 +29,7 @@ class TenantSqliteRepository implements ITenantRepository{
 
 
 
-    async create(tenantData: ITenant): Promise<ITenant> {
+    async create(tenantData: ITenantBase): Promise<ITenant> {
         try{
 
             if(!tenantData.id){
@@ -55,7 +54,7 @@ class TenantSqliteRepository implements ITenantRepository{
         }
     }
 
-    async findById(id: IID): Promise<ITenant | null>{
+    async findById(id: string): Promise<ITenant | null>{
         const tenant = this.db.prepare('SELECT * FROM tenants WHERE id = ?').get(id);
         return tenant
     }
@@ -65,7 +64,7 @@ class TenantSqliteRepository implements ITenantRepository{
         return tenant
     }
 
-    async update(id: IID, tenantData: ITenant): Promise<ITenant> {
+    async update(id: string, tenantData: ITenantBase): Promise<ITenant> {
         try{
             const setClauses = Object.keys(tenantData)
                 .map(field => `${field} = @${field}`)
@@ -81,7 +80,7 @@ class TenantSqliteRepository implements ITenantRepository{
 
     }
 
-    async delete(id: IID): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         const stmt = this.db.prepare('DELETE FROM tenants WHERE id = ?');
         stmt.run(id);
         return true
@@ -101,7 +100,13 @@ class TenantSqliteRepository implements ITenantRepository{
         return tenants
     }
 
-    async paginate(page = 1, limit = 5, search=""): Promise<IPaginateResult>{
+    async paginate({
+                       page= 1,
+                       limit= 5,
+                       orderBy= '',
+                       orderDesc= false,
+                       search= '',
+                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>>{
         const offset = page > 1 ? (page - 1) * limit : 0
 
         let where=""

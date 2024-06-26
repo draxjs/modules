@@ -1,6 +1,6 @@
 import type {IUserProvider} from "../interfaces/IUserProvider";
-import type {IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser";
-import type {IPaginateClient} from "@drax/common-front";
+import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
+import type {IDraxPaginateResult} from "@drax/common-share";
 
 
 class UserSystem {
@@ -13,16 +13,16 @@ class UserSystem {
         this.prototype = 'UserSystem'
     }
 
-    async paginateUser(page:number = 1, perPage:number = 5, search:string=""):Promise<IPaginateClient<IUser>> {
-        return this._provider.paginateUser(page, perPage, search)
+    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}):Promise<IDraxPaginateResult<IUser>> {
+        return this._provider.paginate({page, limit, orderBy, orderDesc, search})
     }
 
-    async createUser(userPayload: IUserCreate):Promise<IUser> {
-        return this._provider.createUser(userPayload)
+    async create(userPayload: IUserCreate):Promise<IUser> {
+        return this._provider.create(userPayload)
     }
 
-    async editUser(id:string, userPayload: IUserUpdate):Promise<IUser> {
-        return this._provider.editUser(id, userPayload)
+    async update(id:string, userPayload: IUserUpdate):Promise<IUser> {
+        return this._provider.update(id, userPayload)
     }
 
     async changeUserPassword(userId:string, newPassword:string):Promise<boolean> {
@@ -31,8 +31,8 @@ class UserSystem {
         return result
     }
 
-    async deleteUser(id: string):Promise<any> {
-        return this._provider.deleteUser(id)
+    async delete(id: string):Promise<any> {
+        return this._provider.delete(id)
     }
 
 }

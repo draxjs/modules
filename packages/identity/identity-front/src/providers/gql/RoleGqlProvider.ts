@@ -1,6 +1,7 @@
-import type {IGqlClient, IPaginateClient} from '@drax/common-front'
+import type {IGqlClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider";
-import type {IRole, IRoleBase} from "../../interfaces/IRole";
+import type {IRole, IRoleBase} from "@drax/identity-share";
+import type {IDraxPaginateResult} from "@drax/common-share";
 
 
 class RoleGqlProvider implements IRoleProvider {
@@ -33,7 +34,7 @@ class RoleGqlProvider implements IRoleProvider {
         return data.fetchRole
     }
 
-    async createRole(payload: IRoleBase): Promise<IRole> {
+    async create(payload: IRoleBase): Promise<IRole> {
         const query: string = `mutation createRole($input: RoleInput) { 
         createRole(input: $input) {id name permissions childRoles{id name} readonly } 
         }`
@@ -42,7 +43,7 @@ class RoleGqlProvider implements IRoleProvider {
         return data.createRole
     }
 
-    async editRole(id: string, payload: IRoleBase): Promise<IRole> {
+    async update(id: string, payload: IRoleBase): Promise<IRole> {
         const query: string = `mutation updateRole($id: ID!, $input: RoleInput) { updateRole(id: $id, input: $input) {  
         id name permissions childRoles{id name} readonly  } }`
         const variables = {id, input: payload}
@@ -50,20 +51,20 @@ class RoleGqlProvider implements IRoleProvider {
         return data.createRole
     }
 
-    async deleteRole(id: string): Promise<any> {
+    async delete(id: string): Promise<any> {
         const query: string = `mutation deleteRole($id: ID!) { deleteRole(id: $id) }`
         const variables = {id: id}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createRole
     }
 
-    async paginateRole(page: number, limit: number, search:string = ""): Promise<IPaginateClient<IRole>> {
-        const query: string = `query paginateRole($page: Int, $limit: Int, $search:String) { 
+    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<IRole>> {
+        const query: string = `query paginateRole($options: PaginateOptions) { 
             paginateRole(page: $page, limit: $limit, search: $search) { 
                 total, page, limit, items{id name permissions childRoles{id name} readonly } 
             } 
         }`
-        const variables = {page, limit,search}
+        const variables = {options: {page, limit, orderBy, orderDesc, search}}
         let data = await this.gqlClient.query(query, variables)
         return data.paginateRole
     }

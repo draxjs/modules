@@ -3,7 +3,7 @@ import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttp
 import express, {Express, Request, Response} from 'express'
 import {expressMiddleware} from '@apollo/server/express4';
 import * as http from "http";
-import {IJwtUser} from "@drax/identity-back";
+import {IJwtUser} from "@drax/identity-share";
 
 interface ApolloContext {
     request: Request

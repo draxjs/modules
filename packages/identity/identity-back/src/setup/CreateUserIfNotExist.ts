@@ -1,6 +1,6 @@
 import RoleServiceFactory from "../factory/RoleServiceFactory.js"
 import UserServiceFactory from "../factory/UserServiceFactory.js"
-import {IUserCreate} from "../interfaces/IUser";
+import {IUserCreate} from "@drax/identity-share";
 
 async function CreateUserIfNotExist(userData: IUserCreate) {
     const userService = UserServiceFactory()

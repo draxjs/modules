@@ -1,8 +1,8 @@
 
-interface IPaginateFilter {
+interface IDraxFieldFilter {
     field: string;
     operator: string;
     value: any;
 }
 
-export {IPaginateFilter}
+export {IDraxFieldFilter}

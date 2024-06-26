@@ -1,13 +1,12 @@
-import {IUser, IUserCreate, IUserUpdate} from "../../interfaces/IUser";
+import {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {UUID} from "crypto";
 import {IUserRepository} from "../../interfaces/IUserRepository";
-import type {IPaginateFilter, IPaginateResult} from "@drax/common-back";
+import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
 import { SqliteErrorToValidationError, ValidationError} from "@drax/common-back";
 import RoleSqliteRepository from "./RoleSqliteRepository.js";
 import TenantSqliteRepository from "./TenantSqliteRepository.js";
-import {IID} from "../../interfaces/IID";
 
 
 const userTableSQL: string = `
@@ -81,7 +80,7 @@ class UserSqliteRepository implements IUserRepository {
 
     }
 
-    async update(id: UUID, userData: IUserUpdate): Promise<IUser> {
+    async update(id: string, userData: IUserUpdate): Promise<IUser> {
         try {
             if (!await this.findRoleById(userData.role)) {
                 throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
@@ -103,7 +102,7 @@ class UserSqliteRepository implements IUserRepository {
         return this.findById(id)
     }
 
-    async delete(id: UUID): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         const stmt = this.db.prepare('DELETE FROM users WHERE id = ?');
         stmt.run(id);
         return true
@@ -115,7 +114,7 @@ class UserSqliteRepository implements IUserRepository {
         return true
     }
 
-    async findById(id: UUID): Promise<IUser> {
+    async findById(id: string): Promise<IUser> {
         const user = this.db.prepare('SELECT * FROM users WHERE id = ?').get(id);
         if (!user) {
             return null
@@ -135,7 +134,13 @@ class UserSqliteRepository implements IUserRepository {
         return user
     }
 
-    async paginate(page: number = 1, limit: number = 5, search: string = "", filters:IPaginateFilter[] = []): Promise<IPaginateResult> {
+    async paginate({
+                       page= 1,
+                       limit= 5,
+                       orderBy= '',
+                       orderDesc= false,
+                       search= '',
+                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
 
         const offset = page > 1 ? (page - 1) * limit : 0
 
@@ -186,15 +191,15 @@ class UserSqliteRepository implements IUserRepository {
         }
     }
 
-    async findRoleById(id: IID) {
+    async findRoleById(id: string) {
         return await this.roleRepository.findById(id)
     }
 
-    async findTenantById(id: IID) {
+    async findTenantById(id: string) {
         return await this.tenantRepository.findById(id)
     }
 
-    async changePassword(id: IID, password: string): Promise<boolean> {
+    async changePassword(id: string, password: string): Promise<boolean> {
         const stmt = this.db.prepare(`UPDATE users
                                       SET password = @password
                                       WHERE id = @id `);

@@ -1,12 +1,12 @@
 import AuthUtils from "../utils/AuthUtils.js";
-import {IJwtUser} from "../interfaces/IJwtUser";
+import {IJWTUser} from "@drax/identity-share";
 
 function jwtMiddleware (request, reply, done) {
         try{
             const token = request.headers?.authorization?.replace(/Bearer /i, "")
 
             if(token){
-                const authUser = AuthUtils.verifyToken(token) as IJwtUser
+                const authUser = AuthUtils.verifyToken(token) as IJWTUser
                 if(authUser){
                     request.authUser = authUser
                 }

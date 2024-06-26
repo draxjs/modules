@@ -4,7 +4,7 @@ import {defineProps, type Ref, ref} from "vue";
 import {useRole} from "../../composables/useRole";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
-import type {IRole} from "@drax/identity-front";
+import type {IRole} from "@drax/identity-share";
 
 const {hasPermission} = useAuth()
 const {paginateRole} = useRole()
@@ -36,7 +36,10 @@ const search = ref('')
 async function loadItems(){
   try{
     loading.value = true
-    const r = await paginateRole(page.value,itemsPerPage.value, search.value)
+    const r = await paginateRole({
+      page: page.value,
+      limit: itemsPerPage.value,
+      search: search.value})
     serverItems.value = r.items
     totalItems.value = r.total
   }catch (e){

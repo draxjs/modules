@@ -18,8 +18,8 @@ describe("MockTest", function () {
     })
 
 
-    it("should createUser MOCK", function () {
-        console.log("should createUser mock")
+    it("should create MOCK", function () {
+        console.log("should create mock")
 
     })
 })

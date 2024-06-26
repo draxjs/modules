@@ -17,7 +17,6 @@ const UserServiceFactory = (verbose:boolean = false) : UserService => {
             case DbEngine.Sqlite:
                 console.log("UserServiceFactory DB ENGINE SQLITE")
                 userRepository = new UserSqliteRepository(DbSetupUtils.getDbConfig(),verbose)
-                userRepository.table()
                 break;
         }
 

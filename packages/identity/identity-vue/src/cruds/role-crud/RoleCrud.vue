@@ -2,7 +2,7 @@
 import {computed, ref} from 'vue'
 import RoleList from "./RoleList.vue";
 import {useRole} from "../../composables/useRole";
-import type {IRole, IRoleBase} from "@drax/identity-front";
+import type {IRole, IRoleBase} from "@drax/identity-share";
 import RoleForm from "../../forms/RoleForm.vue";
 import RoleView from "../../views/RoleView.vue";
 

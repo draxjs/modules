@@ -25,23 +25,20 @@ import LoadPermissions from "./setup/LoadPermissions.js";
 import LoadIdentityConfigFromEnv from "./setup/LoadIdentityConfigFromEnv.js";
 import RecoveryUserPassword from "./setup/RecoveryUserPassword.js";
 
-import type {IJwtUser} from "./interfaces/IJwtUser";
-import type {IRole, IRoleBase} from "./interfaces/IRole";
-import type {IUser, IUserCreate, IUserUpdate} from "./interfaces/IUser";
-import type {IUserRepository} from "./interfaces/IUserRepository";
 import type {IRoleRepository} from "./interfaces/IRoleRepository";
+import type {ITenantRepository} from "./interfaces/ITenantRepository";
+import type {IUserRepository} from "./interfaces/IUserRepository";
+
 
 const graphqlMergeResult = await GraphqlMerge()
 const identityTypeDefs = await graphqlMergeResult.typeDefs;
 const identityResolvers = await graphqlMergeResult.resolvers;
 
+
 export type {
-    IJwtUser,
-    IRole,
-    IRoleBase,
     IRoleRepository,
-    IUser, IUserCreate, IUserUpdate,
-    IUserRepository
+    ITenantRepository,
+    IUserRepository,
 }
 
 export {

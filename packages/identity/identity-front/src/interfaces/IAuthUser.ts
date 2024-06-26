@@ -1,4 +1,4 @@
-import type {IRole} from "./IRole";
+import type {IRole} from "@drax/identity-share";
 
 interface IAuthUser {
     id: string

@@ -1,5 +1,5 @@
 import {mongoose, MongooseSoftDelete} from '@drax/common-back';
-import {IUserGroup} from "../interfaces/IUserGroup";
+import {IUserGroup} from "@drax/identity-share";
 import uniqueValidator from 'mongoose-unique-validator';
 import mongoosePaginate from 'mongoose-paginate-v2'
 import {PaginateModel} from "mongoose";

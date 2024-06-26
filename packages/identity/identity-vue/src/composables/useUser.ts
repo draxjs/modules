@@ -1,9 +1,8 @@
 import {inject, ref} from "vue";
 import type {UserSystem} from "@drax/identity-front";
-import type {IUser} from "@drax/identity-front";
 import type {IClientInputError} from "@drax/common-front";
 import {ClientError} from "@drax/common-front";
-import type {IUserCreate, IUserUpdate} from "@drax/identity-front";
+import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 
 
 export function useUser() {
@@ -14,9 +13,9 @@ export function useUser() {
     let inputErrors = ref<IClientInputError>()
     let loading = ref(false);
 
-    async function paginateUser(page = 1, perPage = 5, search = "") {
+    async function paginateUser({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}) {
         loading.value = true
-        let paginatedUser = userSystem.paginateUser(page, perPage, search)
+        let paginatedUser = userSystem.paginate({page, limit, orderBy, orderDesc, search})
         loading.value = false
         return paginatedUser
     }
@@ -24,7 +23,7 @@ export function useUser() {
     async function createUser(userData: IUserCreate) {
         try {
             loading.value = true
-            let user: IUser =  await userSystem.createUser(userData)
+            let user: IUser =  await userSystem.create(userData)
             return user
         } catch (err) {
             if (err instanceof ClientError) {
@@ -59,7 +58,7 @@ export function useUser() {
     async function editUser(id: string, userData: IUserUpdate) {
         try {
             loading.value = true
-            let user: IUser = await userSystem.editUser(id, userData)
+            let user: IUser = await userSystem.update(id, userData)
             return user
         } catch (err) {
             if (err instanceof ClientError) {
@@ -77,9 +76,9 @@ export function useUser() {
     async function deleteUser(id: string) {
         try {
             loading.value = true
-            await userSystem.deleteUser(id)
+            await userSystem.delete(id)
         } catch (err) {
-            console.log("composable deleteUser error: ", err, )
+            console.log("composable delete error: ", err, )
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }

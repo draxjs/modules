@@ -1,7 +1,7 @@
 import {mongoose, MongooseSoftDelete} from '@drax/common-back';
 import uniqueValidator from 'mongoose-unique-validator';
 import mongoosePaginate from 'mongoose-paginate-v2'
-import {IRole} from '../interfaces/IRole'
+import {IRole} from '@drax/identity-share'
 const Schema = mongoose.Schema
 import {PaginateModel} from "mongoose";
 

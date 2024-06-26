@@ -3,7 +3,7 @@ import assert, {equal} from "assert";
 import UserMongoRepository from "../../../src/repository/mongo/UserMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
 import RoleMongoInitializer from "../../initializers/RoleMongoInitializer";
-import {IUser} from "../../../src/interfaces/IUser";
+import {IUser} from "../../../../identity-share/src/interfaces/IUser";
 import type {IPaginateResult} from "@drax/common-back";
 import {mongoose, ValidationError} from "@drax/common-back";
 

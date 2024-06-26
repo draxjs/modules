@@ -2,6 +2,21 @@ type CommonModule{
     name: String
 }
 
+input fieldFilters{
+    name: String
+    operator: String
+    value: String
+}
+
+input PaginateOptions{
+    page: Int
+    limit: Int
+    orderBy: String
+    orderDesc: Boolean
+    search: String
+    filters: [fieldFilters]
+}
+
 type Query{
     commonModule: CommonModule
 }

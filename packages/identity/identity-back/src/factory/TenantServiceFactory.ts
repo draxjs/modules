@@ -20,7 +20,6 @@ const TenantServiceFactory = (verbose: boolean = false) : TenantService => {
             case DbEngine.Sqlite:
                 console.log("TenantServiceFactory DB ENGINE SQLITE")
                 tenantRepository = new TenantSqliteRepository(DbSetupUtils.getDbConfig(), verbose)
-                tenantRepository.table()
                 break;
         }
 

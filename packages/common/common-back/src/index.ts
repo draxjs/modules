@@ -2,10 +2,7 @@ import GraphqlMerger from "./utils/GraphqlMerger.js";
 import MongooseSoftDelete from "./utils/MongooseSoftDelete.js";
 import MongooseConector from "./utils/MongooseConector.js";
 import mongoose from "mongoose"
-import type {IPaginateFilter} from './interfaces/IPaginateFilter'
-import type {IPaginateResult} from './interfaces/IPaginateResult'
-import type {IValidationFieldError} from './interfaces/IValidationFieldError'
-import type {IResolvers, TypeSource} from "@graphql-tools/utils";
+
 import UniqueError from "./errors/UniqueError.js";
 import ValidationError from "./errors/ValidationError.js";
 import ValidationFieldError from "./errors/ValidationFieldError.js";
@@ -17,6 +14,10 @@ import ValidationErrorToGraphQLError from "./errors/adapters/ValidationErrorToGr
 import commonGraphql  from "./graphql/index.js"
 import DraxCache  from "./cache/DraxCache.js"
 import DraxConfig  from "./config/DraxConfig.js"
+
+import type {IValidationFieldError} from './interfaces/IValidationFieldError'
+import type {IDraxConfig} from './interfaces/IDraxConfig'
+import type {IResolvers, TypeSource} from "@graphql-tools/utils";
 
 
 const graphqlMergeResult = await commonGraphql()
@@ -56,8 +57,7 @@ export {
 }
 
 export type{
-    IPaginateFilter,
-    IPaginateResult,
-    IValidationFieldError
+    IValidationFieldError,
+    IDraxConfig
 }
 

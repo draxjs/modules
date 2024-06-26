@@ -1,30 +1,31 @@
 import {RoleModel} from "../../models/RoleModel.js";
-import {IRole} from '../../interfaces/IRole'
 import {IRoleRepository} from '../../interfaces/IRoleRepository'
-import {IPaginateFilter, IPaginateResult, mongoose} from "@drax/common-back";
+import { mongoose} from "@drax/common-back";
 import {FilterQuery, PaginateOptions, PaginateResult} from "mongoose";
 import {DeleteResult} from "mongodb";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IRoleBase, IRole} from "@drax/identity-share";
 
 class RoleMongoRepository implements IRoleRepository{
 
-    async create(roleData: IRole): Promise<IRole> {
+    async create(roleData: IRoleBase): Promise<IRole> {
         const role : mongoose.HydratedDocument<IRole> = new RoleModel(roleData)
         await role.save()
         await role.populate('childRoles')
         return role
     }
 
-    async update(id: mongoose.Types.ObjectId | string, roleData: IRole): Promise<IRole> {
+    async update(id: string, roleData: IRoleBase): Promise<IRole> {
         const role : mongoose.HydratedDocument<IRole> = await RoleModel.findOneAndUpdate({_id: id}, roleData, {new: true}).populate('childRoles').exec()
         return role
     }
 
-    async delete(id: mongoose.Types.ObjectId): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         const result : DeleteResult = await RoleModel.deleteOne({_id: id}).exec()
         return result.deletedCount == 1
     }
 
-    async findById(id: mongoose.Types.ObjectId): Promise<IRole | null>{
+    async findById(id: string): Promise<IRole | null>{
         const role: mongoose.HydratedDocument<IRole> | null = await RoleModel.findById(id).populate('childRoles').exec()
         return role
     }
@@ -39,8 +40,13 @@ class RoleMongoRepository implements IRoleRepository{
         return roles
     }
 
-    async paginate(page:number = 1, limit:number = 5, search:string): Promise<IPaginateResult>{
-
+    async paginate({
+                       page= 1,
+                       limit= 5,
+                       orderBy= '',
+                       orderDesc= false,
+                       search= '',
+                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         const query = {}
 
         if(search){

@@ -2,8 +2,8 @@
 import {computed, ref} from 'vue'
 import UserList from "./UserList.vue";
 import {useUser} from "../../composables/useUser";
-import type {IUser} from "@drax/identity-front";
-import type {IUserCreate, IUserUpdate, IUserPassword} from "@drax/identity-front/src/interfaces/IUser";
+import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
+import type {IUserPassword} from "@drax/identity-front";
 import UserCreateForm from "../../forms/UserCreateForm.vue";
 import UserEditForm from "../../forms/UserEditForm.vue";
 import UserPasswordForm from "../../forms/UserPasswordForm.vue";
@@ -107,7 +107,7 @@ function toEdit(item: IUser) {
     email: item.email,
     phone: item.phone,
     role: item.role.id,
-    tenant: item.tenant.id,
+    tenant: item?.tenant?.id,
     active: item.active
   };
   dialog.value = true;

@@ -1,6 +1,7 @@
-import type {IHttpClient, IPaginateClient} from '@drax/common-front'
+import type {IHttpClient} from '@drax/common-front'
 import type {ITenantProvider} from "../../interfaces/ITenantProvider.ts";
-import type {ITenant} from "../../interfaces/ITenant";
+import type {ITenant, ITenantBase} from "@drax/identity-share";
+import type {IDraxPaginateResult} from "@drax/common-share";
 
 class TenantRestProvider implements ITenantProvider {
 
@@ -25,28 +26,28 @@ class TenantRestProvider implements ITenantProvider {
         return tenant
     }
 
-    async createTenant(data: ITenant): Promise<any> {
+    async create(data: ITenantBase): Promise<any> {
             const url = '/api/tenants'
             let tenant = await this.httpClient.post(url, data)
             return tenant
     }
-    async editTenant(id: string, data: ITenant): Promise<ITenant> {
+    async update(id: string, data: ITenantBase): Promise<ITenant> {
         const url = '/api/tenants/' + id
         let user = await this.httpClient.put(url, data)
         return user as ITenant
     }
 
-    async deleteTenant(id: string): Promise<any> {
+    async delete(id: string): Promise<any> {
         const url = '/api/tenants/' + id
         let user = await this.httpClient.delete(url)
         return user
     }
 
-    async paginateTenant(page: number = 1, limit: number = 5, search:string=""): Promise<IPaginateClient<ITenant>> {
+    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<ITenant>> {
         const url = '/api/tenants'
-        const params = {page, limit, search}
+        const params = {page, limit, orderBy, orderDesc, search}
         let paginatedTenants = await this.httpClient.get(url, {params})
-        return paginatedTenants as IPaginateClient<ITenant>
+        return paginatedTenants as IDraxPaginateResult<ITenant>
 
     }
 

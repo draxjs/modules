@@ -62,11 +62,11 @@ export default {
                 throw new GraphQLError('error.server')
             }
         },
-        paginateRole: async (_, {page, limit, seach}, {rbac}) => {
+        paginateRole: async (_, {page, limit, orderBy, orderDesc, search}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
                 const roleService = RoleServiceFactory()
-                return await roleService.paginate(page, limit, seach)
+                return await roleService.paginate({page, limit, orderBy, orderDesc, search})
             } catch (e) {
                 console.error("paginateRole",e)
                 if (e instanceof UnauthorizedError) {

@@ -2,7 +2,7 @@ import  {describe,it, before, after} from "node:test"
 import {equal} from "assert";
 import RoleMongoRepository from "../../../src/repository/mongo/RoleMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
-import {IRole} from "../../../src/interfaces/IRole";
+import {IRole} from "../../../../identity-share/src/interfaces/IRole";
 import {PaginateResult} from "mongoose";
 import {IPaginateResult} from "@drax/common-back";
 

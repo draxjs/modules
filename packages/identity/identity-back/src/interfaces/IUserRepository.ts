@@ -1,16 +1,10 @@
-import {IUser, IUserCreate, IUserUpdate} from './IUser'
-import {IPaginateFilter, IPaginateResult} from "@drax/common-back";
-import {IID} from "./IID";
-interface IUserRepository{
-    create(role: IUserCreate): Promise<IUser>;
-    update(id: IID, updatedRole: IUserUpdate): Promise<IUser | null>;
-    delete(id: IID): Promise<boolean>;
-    findById(id: IID): Promise<IUser | null>;
-    findByUsername(username: string): Promise<IUser | null>;
-    paginate(page?: number, limit?: number, search?: string, filters?: IPaginateFilter[]): Promise<IPaginateResult>;
-    changePassword(id: IID, password:string):Promise<Boolean>;
-    table?():void
+import {IUser, IUserCreate, IUserUpdate} from '@drax/identity-share'
+import {IDraxCrud} from "@drax/common-share";
 
+interface IUserRepository extends IDraxCrud<IUser, IUserCreate, IUserUpdate>{
+    findById(id: string): Promise<IUser | null>;
+    findByUsername(username: string): Promise<IUser | null>;
+    changePassword(id: string, password:string):Promise<Boolean>;
 }
 
 export {IUserRepository}

@@ -1,11 +1,11 @@
-import type {IUser, IUserCreate, IUserUpdate} from "../interfaces/IUser";
+import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import type {IUserRepository} from "../interfaces/IUserRepository";
-import type {IPaginateFilter, IPaginateResult} from "@drax/common-back"
 import {ZodError} from "zod";
 import {ValidationError, ZodErrorToValidationError} from "@drax/common-back";
 import AuthUtils from "../utils/AuthUtils.js";
 import {createUserSchema, editUserSchema,} from "../zod/UserZod.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 class UserService {
 
@@ -82,7 +82,7 @@ class UserService {
 
     }
 
-    async update(id: any, userData: IUserUpdate) {
+    async update(id: string, userData: IUserUpdate) {
         try{
         userData.name = userData.name.trim()
         userData.username = userData.username.trim()
@@ -102,12 +102,12 @@ class UserService {
         }
     }
 
-    async delete(id: any): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         const deletedRole: boolean = await this._repository.delete(id);
         return deletedRole;
     }
 
-    async findById(id: any): Promise<IUser> {
+    async findById(id: string): Promise<IUser> {
         const user: IUser = await this._repository.findById(id);
         return user
     }
@@ -117,9 +117,15 @@ class UserService {
         return user
     }
 
-    async paginate( page : number = 1, limit : number = 10, search?: string, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
+    async paginate({
+                       page= 1,
+                       limit= 5,
+                       orderBy= '',
+                       orderDesc= false,
+                       search= '',
+                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>>{
 
-        const pagination = await this._repository.paginate( page, limit, search, filters);
+        const pagination = await this._repository.paginate( {page, limit, orderBy, orderDesc, search, filters});
         return pagination;
     }
 }

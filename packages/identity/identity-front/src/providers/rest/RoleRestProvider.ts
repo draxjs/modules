@@ -1,6 +1,7 @@
-import type {IHttpClient, IPaginateClient} from '@drax/common-front'
+import type {IHttpClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider.ts";
-import type {IRole, IRoleBase} from "../../interfaces/IRole";
+import type {IRole, IRoleBase} from "@drax/identity-share";
+import type {IDraxPaginateResult} from "@drax/common-share";
 
 class RoleRestProvider implements IRoleProvider {
 
@@ -30,28 +31,28 @@ class RoleRestProvider implements IRoleProvider {
         return role
     }
 
-    async createRole(data: IRoleBase): Promise<any> {
+    async create(data: IRoleBase): Promise<any> {
             const url = '/api/roles'
             let role = await this.httpClient.post(url, data)
             return role
     }
-    async editRole(id: string, data: IRoleBase): Promise<IRole> {
+    async update(id: string, data: IRoleBase): Promise<IRole> {
         const url = '/api/roles/' + id
         let user = await this.httpClient.put(url, data)
         return user as IRole
     }
 
-    async deleteRole(id: string): Promise<any> {
+    async delete(id: string): Promise<any> {
         const url = '/api/roles/' + id
         let user = await this.httpClient.delete(url)
         return user
     }
 
-    async paginateRole(page: number = 1, limit: number = 5, search:string=""): Promise<IPaginateClient<IRole>> {
+    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<IRole>> {
         const url = '/api/roles'
-        const params = {page, limit, search}
+        const params = {page, limit, orderBy, orderDesc, search}
         let paginatedRoles = await this.httpClient.get(url, {params})
-        return paginatedRoles as IPaginateClient<IRole>
+        return paginatedRoles as IDraxPaginateResult<IRole>
 
     }
 

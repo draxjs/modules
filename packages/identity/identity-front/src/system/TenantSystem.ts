@@ -1,6 +1,6 @@
 import type {ITenantProvider} from "../interfaces/ITenantProvider";
-import type {ITenant, ITenantBase} from "../interfaces/ITenant";
-import type {IPaginateClient} from "@drax/common-front";
+import type {ITenant, ITenantBase} from "@drax/identity-share";
+import type {IDraxPaginateResult} from "@drax/common-share";
 
 
 class TenantSystem {
@@ -17,20 +17,20 @@ class TenantSystem {
         return this._provider.fetchTenant()
     }
 
-    async paginateTenant(page:number = 1, perPage:number = 5, search:string=""):Promise<IPaginateClient<ITenant>> {
-        return this._provider.paginateTenant(page, perPage,search)
+    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}):Promise<IDraxPaginateResult<ITenant>> {
+        return this._provider.paginate({page, limit, orderBy, orderDesc, search})
     }
 
-    async createTenant(userPayload: ITenantBase):Promise<ITenant> {
-        return this._provider.createTenant(userPayload)
+    async create(userPayload: ITenantBase):Promise<ITenant> {
+        return this._provider.create(userPayload)
     }
 
-    async editTenant(id:string, userPayload: ITenantBase):Promise<ITenant> {
-        return this._provider.editTenant(id, userPayload)
+    async update(id:string, userPayload: ITenantBase):Promise<ITenant> {
+        return this._provider.update(id, userPayload)
     }
 
-    async deleteTenant(id: string):Promise<any> {
-        return this._provider.deleteTenant(id)
+    async delete(id: string):Promise<any> {
+        return this._provider.delete(id)
     }
 
 }

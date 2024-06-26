@@ -3,7 +3,7 @@ interface IHttpHeader {
 }
 
 interface IHttpParam {
-  [paramName: string]: string | number;
+  [paramName: string]: string | number | boolean;
 }
 
 interface IHttpOptions {

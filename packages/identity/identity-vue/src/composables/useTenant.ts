@@ -1,5 +1,6 @@
 import {inject, ref} from "vue";
-import type {ITenant, ITenantBase, TenantSystem} from "@drax/identity-front";
+import type {ITenant, ITenantBase} from "@drax/identity-share";
+import type { TenantSystem} from "@drax/identity-front";
 import {ClientError} from "@drax/common-front";
 import type { IClientInputError} from "@drax/common-front";
 
@@ -19,9 +20,9 @@ export function useTenant() {
         return tenants
     }
 
-    async function paginateTenant(page = 1, perPage = 5, string = "") {
+    async function paginateTenant({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}) {
         loading.value = true
-        let paginatedtenant = tenantSystem.paginateTenant(page, perPage,string)
+        let paginatedtenant = tenantSystem.paginate({page, limit, orderBy, orderDesc, search})
         loading.value = false
         return paginatedtenant
     }
@@ -29,7 +30,7 @@ export function useTenant() {
     async function createTenant(tenantData: ITenantBase) {
         try {
             loading.value = true
-            let tenant: ITenant =  await tenantSystem.createTenant(tenantData)
+            let tenant: ITenant =  await tenantSystem.create(tenantData)
             return tenant
         } catch (err) {
             if (err instanceof ClientError) {
@@ -47,7 +48,7 @@ export function useTenant() {
     async function editTenant(id: string, tenantData: ITenantBase) {
         try {
             loading.value = true
-            let tenant: ITenant = await tenantSystem.editTenant(id, tenantData)
+            let tenant: ITenant = await tenantSystem.update(id, tenantData)
             return tenant
         } catch (err) {
 
@@ -66,9 +67,9 @@ export function useTenant() {
     async function deleteTenant(id: string) {
         try {
             loading.value = true
-            await tenantSystem.deleteTenant(id)
+            await tenantSystem.delete(id)
         } catch (err) {
-            console.log("composable deleteTenant error: ", err, )
+            console.log("composable delete error: ", err, )
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }

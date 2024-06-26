@@ -1,13 +1,8 @@
-import type {IUser, IUserCreate, IUserUpdate} from "./IUser";
-import type {IPaginateClient} from "@drax/common-front";
+import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
+import type {IDraxCrud} from "@drax/common-share";
 
 
-
-interface IUserProvider {
-    paginateUser(page: number, limit: number, search?:string): Promise<IPaginateClient<IUser>>
-    createUser(input: IUserCreate): Promise<IUser>
-    editUser(id: string, input: IUserUpdate): Promise<IUser>
-    deleteUser(id: string): Promise<any>
+interface IUserProvider extends IDraxCrud<IUser, IUserCreate, IUserUpdate>{
     changeUserPassword(id: string, newPassword: string): Promise<boolean>
 }
 

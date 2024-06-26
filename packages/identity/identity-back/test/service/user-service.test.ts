@@ -3,7 +3,7 @@ import assert from "assert";
 import UserService from "../../src/services/UserService";
 import MongoInMemory from "../db/MongoInMemory";
 import RoleMongoInitializer from "../initializers/RoleMongoInitializer";
-import {IRole} from "../../src/interfaces/IRole";
+import {IRole} from "../../../identity-share/src/interfaces/IRole";
 import UserMongoRepository from "../../src/repository/mongo/UserMongoRepository";
 import {IUserRepository} from "../../src/interfaces/IUserRepository";
 import {ValidationError} from "@drax/common-back";
@@ -28,7 +28,7 @@ describe("UserServiceTest", function () {
         return
     })
 
-    it("should createUser user", async function () {
+    it("should create user", async function () {
         const user = {...userAdminData}
         let userCreated = await userService.create(user)
         assert.equal(userCreated.username, userAdminData.username)
@@ -49,7 +49,7 @@ describe("UserServiceTest", function () {
         assert.equal(passwordChangedResult, true)
     })
 
-    it("should fail createUser user with short password", async function () {
+    it("should fail create user with short password", async function () {
         let userData = {...userAdminData, password: "123"}
         await assert.rejects(
             async () => {

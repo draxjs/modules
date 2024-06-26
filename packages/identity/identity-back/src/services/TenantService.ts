@@ -1,9 +1,9 @@
-import {ITenant} from "../interfaces/ITenant";
 import {ITenantRepository} from "../interfaces/ITenantRepository";
-import {IPaginateFilter, IPaginateResult, ValidationError, ZodErrorToValidationError} from "@drax/common-back"
+import {ValidationError, ZodErrorToValidationError} from "@drax/common-back"
 import {tenantSchema} from "../zod/TenantZod.js";
 import {ZodError} from "zod";
-import UnauthorizedError from "../errors/UnauthorizedError.js";
+import {ITenantBase, ITenant} from "@drax/identity-share";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 class TenantService {
 
@@ -14,7 +14,7 @@ class TenantService {
         console.log("TenantService constructor")
     }
 
-    async create(tenantData: ITenant): Promise<ITenant> {
+    async create(tenantData: ITenantBase): Promise<ITenant> {
         try {
             tenantData.name = tenantData?.name?.trim()
             await tenantSchema.parseAsync(tenantData)
@@ -28,7 +28,7 @@ class TenantService {
         }
     }
 
-    async update(id: any, tenantData: ITenant) {
+    async update(id: string, tenantData: ITenantBase) {
         try {
             tenantData.name = tenantData?.name?.trim()
             await tenantSchema.parseAsync(tenantData)
@@ -42,13 +42,13 @@ class TenantService {
         }
     }
 
-    async delete(id: any): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         const currentTenant = await this.findById(id)
         const deletedTenant = await this._repository.delete(id);
         return deletedTenant;
     }
 
-    async findById(id: any): Promise<ITenant | null> {
+    async findById(id: string): Promise<ITenant | null> {
         const tenant: ITenant = await this._repository.findById(id);
         return tenant
     }
@@ -63,8 +63,14 @@ class TenantService {
         return tenants
     }
 
-    async paginate(page: number = 1, limit: number = 5, search?:string, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
-        const pagination = await this._repository.paginate(page, limit, search, filters);
+    async paginate({
+                       page= 1,
+                       limit= 5,
+                       orderBy= '',
+                       orderDesc= false,
+                       search= '',
+                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>>{
+        const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
         return pagination;
     }
 

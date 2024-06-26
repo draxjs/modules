@@ -1,12 +1,8 @@
-import type {ITenant, ITenantBase} from "./ITenant";
-import type {IPaginateClient} from "@drax/common-front";
+import type {ITenant, ITenantBase} from "@drax/identity-share";
+import type {IDraxCrud} from "@drax/common-share";
 
-interface ITenantProvider {
+interface ITenantProvider extends IDraxCrud<ITenant, ITenantBase, ITenantBase> {
     fetchTenant(): Promise<ITenant[]>
-    paginateTenant(page: number, limit: number, search:string): Promise<IPaginateClient<ITenant>>
-    createTenant(input: ITenantBase): Promise<ITenant>
-    editTenant(id: string, input: ITenantBase): Promise<ITenant>
-    deleteTenant(id: string): Promise<any>
 }
 
 export type {ITenantProvider}

@@ -1,6 +1,6 @@
 import  {describe,it, before, after} from "node:test"
 import {equal} from "assert";
-import {IRole} from "../../../src/interfaces/IRole";
+import {IRole} from "../../../../identity-share/src/interfaces/IRole";
 import {IPaginateResult} from "@drax/common-back";
 import RoleSqliteRepository from "../../../src/repository/sqlite/RoleSqliteRepository";
 import {UUID} from "crypto";

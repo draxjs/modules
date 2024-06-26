@@ -35,14 +35,14 @@ export default {
             }
 
         },
-        paginateUser: async (_, {page, limit, search, filters = []}, {rbac}) => {
+        paginateUser: async (_, {page, limit, orderBy, orderDesc, search, filters = []}, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewUser)
                 let userService= UserServiceFactory()
                 if(rbac.getAuthUser.tenantId){
                     filters.push({field: 'tenant', operator: '$eq', value: rbac.getAuthUser.tenantId})
                 }
-                return await userService.paginate(page, limit, search, filters)
+                return await userService.paginate({page, limit, orderBy, orderDesc, search, filters})
             } catch (e) {
                 if (e instanceof UnauthorizedError) {
                     throw new GraphQLError(e.message)

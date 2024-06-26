@@ -3,7 +3,7 @@ import Fastify, {FastifyInstance, FastifyRequest} from "fastify";
 import fastifyApollo, {fastifyApolloDrainPlugin, fastifyApolloHandler} from "@as-integrations/fastify";
 import type {ApolloFastifyContextFunction} from "@as-integrations/fastify";
 import ApolloErrorPlugin from "./ApolloPlugins/ApolloErrorPlugin.js";
-import {IJwtUser} from "@drax/identity-back";
+import {IJwtUser} from "@drax/identity-share";
 
 
 declare module 'fastify' {

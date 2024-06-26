@@ -1,9 +1,10 @@
-import {IRole} from "../interfaces/IRole";
 import {IRoleRepository} from "../interfaces/IRoleRepository";
-import {IPaginateFilter, IPaginateResult, ValidationError, ZodErrorToValidationError} from "@drax/common-back"
+import { ValidationError, ZodErrorToValidationError} from "@drax/common-back"
 import {roleSchema} from "../zod/RoleZod.js";
 import {ZodError} from "zod";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IRoleBase, IRole} from "@drax/identity-share";
 
 class RoleService {
 
@@ -14,7 +15,7 @@ class RoleService {
         console.log("RoleService constructor")
     }
 
-    async create(roleData: IRole): Promise<IRole> {
+    async create(roleData: IRoleBase): Promise<IRole> {
         try {
             roleData.name = roleData?.name?.trim()
             await roleSchema.parseAsync(roleData)
@@ -28,7 +29,7 @@ class RoleService {
         }
     }
 
-    async update(id: any, roleData: IRole) {
+    async update(id: string, roleData: IRoleBase) {
         try {
             roleData.name = roleData?.name?.trim()
             await roleSchema.parseAsync(roleData)
@@ -42,13 +43,13 @@ class RoleService {
         }
     }
 
-    async delete(id: any): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
 
         const deletedRole = await this._repository.delete(id);
         return deletedRole;
     }
 
-    async findById(id: any): Promise<IRole | null> {
+    async findById(id: string): Promise<IRole | null> {
         const role: IRole = await this._repository.findById(id);
         return role
     }
@@ -63,8 +64,14 @@ class RoleService {
         return roles
     }
 
-    async paginate(page: number = 1, limit: number = 5, search?:string, filters ?: IPaginateFilter[]): Promise<IPaginateResult> {
-        const pagination = await this._repository.paginate(page, limit, search, filters);
+    async paginate({
+                       page= 1,
+                       limit= 5,
+                       orderBy= '',
+                       orderDesc= false,
+                       search= '',
+                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>>{
+        const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
         return pagination;
     }
 

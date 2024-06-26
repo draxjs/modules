@@ -18,7 +18,6 @@ import type {IRestError} from './interfaces/IRestError';
 import type {IGqlError} from './interfaces/IGqlError';
 import type {IInputError} from './interfaces/IInputError';
 import type {IClientInputError} from './interfaces/IClientInputError';
-import type {IPaginateClient} from './interfaces/IPaginateClient';
 
 
 
@@ -54,7 +53,6 @@ export type {
   IGqlError,
   IInputError,
   IClientInputError,
-  IPaginateClient
 }
 
 

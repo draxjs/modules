@@ -1,9 +1,10 @@
 import UserServiceFactory from "../factory/UserServiceFactory.js";
-import {IUser} from "../interfaces/IUser";
-import {IPaginateResult, ValidationError} from "@drax/common-back";
+import {IUser} from "@drax/identity-share";
+import {ValidationError} from "@drax/common-back";
 import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
+import {IDraxPaginateResult} from "@drax/common-share";
 
 async function UserRoutes(fastify, options) {
     fastify.post('/api/auth', async (request, reply) => {
@@ -53,19 +54,21 @@ async function UserRoutes(fastify, options) {
 
     })
 
-    fastify.get('/api/users', async (request, reply): Promise<IPaginateResult> => {
+    fastify.get('/api/users', async (request, reply): Promise<IDraxPaginateResult<IUser>> => {
 
         try {
             request.rbac.assertPermission(IdentityPermissions.ViewUser)
             const page = request.query.page
             const limit = request.query.limit
+            const orderBy = request.query.orderBy
+            const orderDesc = request.query.orderDesc
             const search = request.query.search
             const userService = UserServiceFactory()
             const filters = []
             if(request.rbac.getAuthUser.tenantId){
                 filters.push({field: 'tenant', operator: '$eq', value: request.rbac.getAuthUser.tenantId})
             }
-            let paginateResult = await userService.paginate(page, limit, search, filters)
+            let paginateResult = await userService.paginate({page, limit, orderBy, orderDesc, search, filters})
             return paginateResult
         } catch (e) {
             console.log("/api/users",e)

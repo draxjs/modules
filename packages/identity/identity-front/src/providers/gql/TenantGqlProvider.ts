@@ -1,6 +1,7 @@
-import type {IGqlClient, IPaginateClient} from '@drax/common-front'
+import type {IGqlClient} from '@drax/common-front'
 import type {ITenantProvider} from "../../interfaces/ITenantProvider";
-import type {ITenant} from "../../interfaces/ITenant";
+import type {ITenant, ITenantBase} from "@drax/identity-share";
+import type {IDraxPaginateResult} from "@drax/common-share";
 
 
 class TenantGqlProvider implements ITenantProvider {
@@ -27,7 +28,7 @@ class TenantGqlProvider implements ITenantProvider {
         return data.fetchTenant
     }
 
-    async createTenant(payload: ITenant): Promise<any> {
+    async create(payload: ITenantBase): Promise<any> {
         const query: string = `mutation createTenant($input: TenantInput) { 
         createTenant(input: $input) {id name } 
         }`
@@ -36,7 +37,7 @@ class TenantGqlProvider implements ITenantProvider {
         return data.createTenant
     }
 
-    async editTenant(id: string, payload: ITenant): Promise<ITenant> {
+    async update(id: string, payload: ITenantBase): Promise<ITenant> {
         const query: string = `mutation updateTenant($id: ID!, $input: TenantInput) { updateTenant(id: $id, input: $input) {  
         id name  } }`
         const variables = {id, input: payload}
@@ -44,20 +45,20 @@ class TenantGqlProvider implements ITenantProvider {
         return data.createTenant
     }
 
-    async deleteTenant(id: string): Promise<any> {
+    async delete(id: string): Promise<any> {
         const query: string = `mutation deleteTenant($id: ID!) { deleteTenant(id: $id) }`
         const variables = {id: id}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createTenant
     }
 
-    async paginateTenant(page: number, limit: number, search:string = ""): Promise<IPaginateClient<ITenant>> {
-        const query: string = `query paginateTenant($page: Int, $limit: Int, $search:String) { 
+    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<ITenant>> {
+        const query: string = `query paginateTenant($options: PaginateOptions) { 
             paginateTenant(page: $page, limit: $limit, search: $search) { 
                 total, page, limit, items{id, name } 
             } 
         }`
-        const variables = {page, limit,search}
+        const variables = {options: {page, limit, orderBy, orderDesc, search}}
         let data = await this.gqlClient.query(query, variables)
         return data.paginateTenant
     }
