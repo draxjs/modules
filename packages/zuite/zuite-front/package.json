@@ -14,6 +14,7 @@
     "@drax/common-front": "^0.0.25",
     "@drax/i18n-share": "^0.0.25",
     "@drax/identity-front": "^0.0.25",
+    "@drax/common-vue": "^0.0.25",
     "@drax/identity-vue": "^0.0.25",
     "@mdi/font": "7.4.47",
     "core-js": "^3.34.0",

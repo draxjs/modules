@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {defineModel, type PropType} from "vue";
-import type {IRoleBase} from "@drax/identity-front";
-import {useI18nValidation} from "../composables/useI18nValidation";
+import type {IRoleBase} from "@drax/identity-share";
+import {useI18nValidation} from "@drax/common-vue";
 import type {IClientInputError} from "@drax/common-front";
 import PermissionSelector from "../components/PermissionSelector/PermissionSelector.vue";
 import RoleCombobox from "../combobox/RoleCombobox.vue";

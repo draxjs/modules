@@ -3,8 +3,8 @@ import {ref, defineModel, type PropType} from "vue";
 import RoleCombobox from "../combobox/RoleCombobox.vue";
 import TenantCombobox from "../combobox/TenantCombobox.vue";
 import type {IClientInputError} from "@drax/common-front";
-import type {IUserCreate} from "@drax/identity-front/src/interfaces/IUser";
-import {useI18nValidation} from "../composables/useI18nValidation";
+import type {IUserCreate} from "@drax/identity-share";
+import {useI18nValidation} from "@drax/common-vue";
 
 const {$ta} = useI18nValidation()
 

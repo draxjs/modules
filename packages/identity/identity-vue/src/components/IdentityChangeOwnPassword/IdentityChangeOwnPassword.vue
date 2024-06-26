@@ -3,7 +3,7 @@ import {computed, ref} from 'vue'
 import {useAuth} from "../../composables/useAuth.js";
 import {ClientError} from "@drax/common-front";
 import type {IClientInputError} from "@drax/common-front";
-import {useI18nValidation} from "../../composables/useI18nValidation.js";
+import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
 
 const {t} = useI18n()

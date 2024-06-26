@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {defineModel, type PropType} from "vue";
-import type {ITenantBase} from "@drax/identity-front";
-import {useI18nValidation} from "../composables/useI18nValidation";
+import type {ITenantBase} from "@drax/identity-share";
+import {useI18nValidation} from "@drax/common-vue";
 import type {IClientInputError} from "@drax/common-front";
 
 const {$ta} = useI18nValidation()

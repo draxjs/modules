@@ -27,16 +27,11 @@ import {useAuth} from "./composables/useAuth.js";
 import {useUser} from "./composables/useUser.js";
 import {useRole} from "./composables/useRole.js";
 import {useTenant} from "./composables/useTenant.js";
-import {useI18nValidation} from "./composables/useI18nValidation.js";
-import {useCopy} from "./composables/useCopy.js";
+
 
 import {useAuthStore} from "./stores/auth/AuthStore.js";
 
 export {
-
-    //General purpose composables
-    useI18nValidation,
-    useCopy,
 
     //Vue Components
     IdentityLogin,

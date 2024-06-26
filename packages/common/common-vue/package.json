@@ -1,5 +1,5 @@
 {
-  "name": "@drax/identity-vue",
+  "name": "@drax/common-vue",
   "publishConfig": {
     "access": "public"
   },
@@ -26,8 +26,6 @@
   "dependencies": {
     "@drax/common-front": "^0.0.25",
     "@drax/common-share": "^0.0.25",
-    "@drax/common-vue": "^0.0.25",
-    "@drax/identity-share": "^0.0.25",
     "vue-i18n": "^9.13.1"
   },
   "peerDependencies": {
@@ -63,6 +61,5 @@
     "vue": "^3.4.21",
     "vue-tsc": "^2.0.11",
     "vuetify": "^3.6.4"
-  },
-  "gitHead": "ba1855cb55f67db2537dc65092dfa582e2df03cd"
+  }
 }

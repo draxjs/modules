@@ -2,7 +2,7 @@
 import {ref, defineModel, type PropType} from "vue";
 import type {IClientInputError} from "@drax/common-front";
 import type {IUserPassword} from "@drax/identity-front";
-import {useI18nValidation} from "../composables/useI18nValidation";
+import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
 
 const {t} = useI18n()
