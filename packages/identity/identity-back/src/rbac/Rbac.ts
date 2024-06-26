@@ -1,11 +1,11 @@
-import {IJWTUser, IRole} from "@drax/identity-share";
+import {IJwtUser, IRole} from "@drax/identity-share";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 
 class Rbac{
     private role: IRole;
-    private authUser: IJWTUser;
+    private authUser: IJwtUser;
 
-    constructor(authUser: IJWTUser, role: IRole) {
+    constructor(authUser: IJwtUser, role: IRole) {
         this.authUser = authUser;
         this.role = role;
     }

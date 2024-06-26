@@ -1,4 +1,4 @@
-import {IJWTUser, IRole} from "@drax/identity-share";
+import {IJwtUser, IRole} from "@drax/identity-share";
 import {DraxCache, DraxConfig} from "@drax/common-back";
 import RoleServiceFactory from "../factory/RoleServiceFactory.js";
 import Rbac from "../rbac/Rbac.js";
@@ -17,7 +17,7 @@ async function roleLoader(k):Promise<IRole | null> {
 async function rbacMiddleware (request, reply) {
         try{
             //console.log("rbacMiddleware authUser",request.authUser)
-            if(request.authUser as IJWTUser){
+            if(request.authUser as IJwtUser){
                 const authUser = request.authUser
                 const cacheKey= authUser.roleId
                 const role = await draxCache.getOrLoad(cacheKey, roleLoader)
