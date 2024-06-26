@@ -11,13 +11,6 @@ class RoleRestProvider implements IRoleProvider {
         this.httpClient = httpClient
     }
 
-    setHttpClientToken(token: string): void {
-        this.httpClient.addHeader('Authorization', `Bearer ${token}`)
-    }
-
-    removeHttpClientToken(): void {
-        this.httpClient.removeHeader('Authorization')
-    }
 
     async fetchPermissions(): Promise<any> {
         const url = '/api/permissions'

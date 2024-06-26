@@ -11,13 +11,6 @@ class TenantRestProvider implements ITenantProvider {
         this.httpClient = httpClient
     }
 
-    setHttpClientToken(token: string): void {
-        this.httpClient.addHeader('Authorization', `Bearer ${token}`)
-    }
-
-    removeHttpClientToken(): void {
-        this.httpClient.removeHeader('Authorization')
-    }
 
 
     async fetchTenant(): Promise<any> {

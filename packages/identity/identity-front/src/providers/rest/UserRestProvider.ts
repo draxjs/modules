@@ -12,13 +12,6 @@ class UserRestProvider implements IUserProvider {
         this.httpClient = httpClient
     }
 
-    setHttpClientToken(token: string): void {
-        this.httpClient.addHeader('Authorization', `Bearer ${token}`)
-    }
-
-    removeHttpClientToken(): void {
-        this.httpClient.removeHeader('Authorization')
-    }
 
     async create(data: IUserCreate): Promise<IUser> {
             const url = '/api/users'
