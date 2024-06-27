@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.26",
+  "version": "0.0.27",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -24,9 +24,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/common-front": "^0.0.26",
-    "@drax/common-share": "^0.0.26",
-    "@drax/identity-share": "^0.0.26"
+    "@drax/common-front": "^0.0.27",
+    "@drax/common-share": "^0.0.27",
+    "@drax/identity-share": "^0.0.27"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
