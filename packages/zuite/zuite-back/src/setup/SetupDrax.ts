@@ -2,6 +2,7 @@ import {DraxConfig, MongooseConector} from "@drax/common-back";
 import {IdentityConfig, LoadIdentityConfigFromEnv} from "@drax/identity-back";
 import InitializePermissions from "./InitializePermissions.js";
 import CreateRootUserAndAdminRole from "./CreateRootUserAndAdminRole.js";
+import CreateSystemRoles from "./CreateSystemRoles.js";
 
 
 async function SetupDrax(){
@@ -21,6 +22,8 @@ async function SetupDrax(){
 
     //Create Root User and Admin Role
     await CreateRootUserAndAdminRole()
+
+    await CreateSystemRoles()
 }
 
 export default SetupDrax

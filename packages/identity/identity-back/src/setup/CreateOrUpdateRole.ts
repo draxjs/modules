@@ -4,6 +4,19 @@ import RoleServiceFactory from "../factory/RoleServiceFactory.js"
 async function CreateOrUpdateRole(roleData: IRoleBase) {
     const roleService = RoleServiceFactory()
     const role = await roleService.findByName(roleData.name)
+
+    //Find child roles by name
+    if(Array.isArray(roleData.childRoles) && roleData.childRoles.length > 0){
+        roleData.childRoles = await Promise.all(roleData.childRoles.map(async (childRole) => {
+            const role = await roleService.findByName(childRole)
+            if(role){
+                return role.id
+            }else{
+                return childRole
+            }
+        }))
+    }
+
     if(role){
         const r = await roleService.update(role.id, roleData)
         console.log("Role Updated. Name: "+ roleData.name)
