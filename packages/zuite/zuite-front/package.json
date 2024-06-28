@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-front",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "private": true,
   "scripts": {
     "front": "vite",
@@ -11,11 +11,11 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@drax/common-front": "^0.0.27",
-    "@drax/common-vue": "^0.0.27",
-    "@drax/i18n-share": "^0.0.27",
-    "@drax/identity-front": "^0.0.27",
-    "@drax/identity-vue": "^0.0.27",
+    "@drax/common-front": "^0.0.28",
+    "@drax/common-vue": "^0.0.28",
+    "@drax/i18n-share": "^0.0.28",
+    "@drax/identity-front": "^0.0.28",
+    "@drax/identity-vue": "^0.0.28",
     "@mdi/font": "7.4.47",
     "core-js": "^3.34.0",
     "deepmerge": "^4.3.1",
