@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import type {IUser} from "@drax/identity-front";
+import type {IUser} from "@drax/identity-share";
 import IdentityProfileAvatar from "../components/IdentityProfileAvatar/IdentityProfileAvatar.vue";
 
 defineProps({

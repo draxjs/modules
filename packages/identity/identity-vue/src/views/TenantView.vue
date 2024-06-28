@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import type {ITenant} from "@drax/identity-front";
+import type {ITenant} from "@drax/identity-share";
 
 defineProps({
   tenant:{

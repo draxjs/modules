@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import type {IRole} from "@drax/identity-front";
+import type {IRole} from "@drax/identity-share";
 
 defineProps({
   role:{
