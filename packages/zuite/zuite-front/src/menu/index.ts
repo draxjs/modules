@@ -5,7 +5,7 @@ const menu: MenuItem[] = [
     icon: 'mdi-home',
     text:'HOME',
     link: { name: "Home" },
-    gallery: true,
+    gallery: false,
     auth: false
   },
   {

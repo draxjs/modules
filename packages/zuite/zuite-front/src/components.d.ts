@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AnimatedBackground: typeof import('./components/AnimatedBackground/AnimatedBackground.vue')['default']
     DarkMode: typeof import('./components/DarkMode/index.vue')['default']
     Footer: typeof import('./components/Footer/Footer.vue')['default']
     GalleryMenu: typeof import('./components/GalleryMenu/GalleryMenu.vue')['default']

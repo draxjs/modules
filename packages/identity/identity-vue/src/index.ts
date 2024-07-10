@@ -31,6 +31,8 @@ import {useTenant} from "./composables/useTenant.js";
 
 import {useAuthStore} from "./stores/auth/AuthStore.js";
 
+import IdentityRoutes from "./routes/IdentityRoutes.js";
+
 export {
 
     //Vue Components
@@ -67,5 +69,8 @@ export {
 
 
     //Stores
-    useAuthStore
+    useAuthStore,
+
+    //Routes
+    IdentityRoutes
 }

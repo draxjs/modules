@@ -1,14 +1,17 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
 import menu from '../menu'
-import {IdentityProfileAvatar, IdentityProfileDrawer} from "@drax/identity-vue";
+import {IdentityProfileAvatar, IdentityProfileDrawer, useAuth} from "@drax/identity-vue";
 import DarkMode from "../components/DarkMode/index.vue";
 import SidebarMenu from "../components/SidebarMenu/SidebarMenu.vue";
+import AnimatedBackground from "../components/AnimatedBackground/AnimatedBackground.vue";
 import {useRouter} from "vue-router";
 let profileDrawer = ref(false)
 let drawer = ref(false)
 
 const {push} = useRouter()
+
+const {isAuthenticated} = useAuth()
 
 </script>
 
@@ -17,7 +20,7 @@ const {push} = useRouter()
     <v-navigation-drawer v-model="drawer" temporary>
       <sidebar-menu :menu="menu"></sidebar-menu>
     </v-navigation-drawer>
-    <v-app-bar  >
+    <v-app-bar v-if="isAuthenticated()" >
       <v-app-bar-nav-icon v-model="menu" @click="drawer=!drawer"/>
       <slot name="toolbar-left">
         <v-btn icon @click="push({name:'Root'})">
@@ -33,6 +36,7 @@ const {push} = useRouter()
 
     <identity-profile-drawer v-model="profileDrawer" ></identity-profile-drawer>
 
+    <animated-background></animated-background>
 
     <v-main>
       <router-view/>

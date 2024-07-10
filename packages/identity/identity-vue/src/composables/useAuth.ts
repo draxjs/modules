@@ -1,10 +1,12 @@
 import {useAuthStore} from "../stores/auth/AuthStore";
 import {AuthHelper, AuthSystem} from "@drax/identity-front";
 import {inject} from "vue";
+import { useRouter} from 'vue-router'
 
 export function useAuth() {
 
     const authStore = useAuthStore()
+    const router = useRouter()
 
     const authSystem = inject('AuthSystem') as AuthSystem
 
@@ -28,6 +30,7 @@ export function useAuth() {
     function logout(){
         authSystem.logout()
         authStore.clearAuth()
+        router.push({name: 'Login'})
     }
 
     function hasPermission(permission:string) {

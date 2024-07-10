@@ -12,7 +12,7 @@
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -p tsconfig.json",
     "test": "test",
-    "recoveryAdmin": " node --env-file .env --loader ts-node/esm src/scripts/RecoverAdminPassword.ts"
+    "recoveryAdmin": " node --env-file .env --loader ts-node/esm src/setup/scripts/RecoverAdminPassword.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",

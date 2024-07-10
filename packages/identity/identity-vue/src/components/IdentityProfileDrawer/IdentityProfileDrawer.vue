@@ -4,6 +4,8 @@ import {defineModel, ref} from "vue";
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 import IdentityChangeOwnPassword from "../../components/IdentityChangeOwnPassword/IdentityChangeOwnPassword.vue";
 
+
+
 const auth = useAuth()
 const valueModel = defineModel<boolean>()
 const profile = ref(false)

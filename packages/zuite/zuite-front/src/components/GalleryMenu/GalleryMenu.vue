@@ -31,7 +31,7 @@ defineProps({
           <v-divider class="mb-3"></v-divider>
 
           <v-row>
-            <v-col cols="12" sm="4" md="4"
+            <v-col cols="12" sm="4" md="4" lg="3"  xl="2"
                    v-for="child in childActives(item.children)"
                    :key="child.text"
             >
@@ -47,7 +47,7 @@ defineProps({
 
         <v-col
           v-else-if="isGranted(item) && item.gallery"
-          cols="12" sm="4" md="4"
+          cols="12" sm="4" md="4" lg="3" xl="2"
           :key="'e'+item.text"
         >
           <menu-card
