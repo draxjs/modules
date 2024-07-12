@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useAuthStore} from "../../stores/auth/AuthStore.js";
-import IdentityProfileAvatar from "../IdentityProfileAvatar/IdentityProfileAvatar.vue";
+import IdentityProfileAvatarEdit from "../IdentityProfileAvatarEdit/IdentityProfileAvatarEdit.vue";
 const emit = defineEmits(['click'])
 const authStore = useAuthStore()
 
@@ -10,7 +10,7 @@ const authStore = useAuthStore()
   <v-sheet class="position-relative d-flex justify-center align-center" height="150">
     <v-sheet class="position-absolute bg-surface-light w-100 top-0" height="65"></v-sheet>
     <v-sheet class="text-center">
-      <identity-profile-avatar :avatar-size="70"></identity-profile-avatar>
+      <identity-profile-avatar-edit :avatar-size="90"></identity-profile-avatar-edit>
       <h6 class="text-h6">{{ authStore.authUser?.username }}</h6>
     </v-sheet>
   </v-sheet>

@@ -1,0 +1,42 @@
+{
+  "name": "@drax/media-back",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.28",
+  "description": "Media files",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prepublish": "tsc && npm run copygql",
+    "tscrun": "tsc",
+    "clean": "rm -rf dist",
+    "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
+    "tsc": "tsc -b tsconfig.json",
+    "test": "node --import tsx --test test/**/*.ts",
+    "testCache": "node --import tsx --test test/cache/*"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "dependencies": {
+    "@drax/common-back": "^0.0.28",
+    "@drax/identity-back": "^0.0.28"
+  },
+  "peerDependencies": {
+    "better-sqlite3": "^11.0.0",
+    "mongoose": "^8.3.4",
+    "mongoose-paginate-v2": "^1.8.0",
+    "mongoose-unique-validator": "^5.0.0",
+    "@fastify/static": "^7.0.4",
+    "@fastify/multipart": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.10",
+    "copyfiles": "^2.4.1",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.4.5"
+  }
+}

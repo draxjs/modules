@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, defineProps, ref} from 'vue'
+import {computed, ref, defineEmits} from 'vue'
 import {useAuth} from '../../composables/useAuth.js'
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 
@@ -12,10 +12,13 @@ const loading = ref(false)
 
 const isFormValid = computed(() => username.value.trim() !== '' && password.value.trim() !== '')
 
+const emit = defineEmits(['loginSuccess'])
+
 async function submitLogin() {
   try {
     loading.value = true
     await login(username.value, password.value)
+    emit('loginSuccess')
   } catch (e) {
     const error = e as Error
     authError.value = error.message
@@ -24,25 +27,6 @@ async function submitLogin() {
   }
 }
 
-// Define props for customizing labels, title, and button text
-const props = defineProps({
-  title: {
-    type: String,
-    default: 'Login'
-  },
-  usernameLabel: {
-    type: String,
-    default: 'Username'
-  },
-  passwordLabel: {
-    type: String,
-    default: 'Password'
-  },
-  buttonText: {
-    type: String,
-    default: 'Login'
-  }
-})
 
 let passwordVisibility = ref(false)
 
@@ -55,30 +39,25 @@ function togglePasswordVisibility() {
 <template>
 
   <template v-if="isAuthenticated()">
-    <v-row justify="center" align="center">
-      <v-col cols="12" sm="8" md="6" lg="5">
         <v-card>
-          <identity-profile-view></identity-profile-view>
+          <v-card-text>
+            <identity-profile-view></identity-profile-view>
+          </v-card-text>
         </v-card>
-      </v-col>
-    </v-row>
   </template>
 
   <template v-else>
-    <v-row justify="center" align="center">
-      <v-col cols="12" sm="8" md="6" lg="5">
-
 
         <v-form @submit.prevent="submitLogin">
           <v-card variant="elevated" class="pa-6">
-            <v-card-title class="pa-4 text-center">{{ props.title }}</v-card-title>
+            <v-card-title class="pa-4 text-center">{{ $t ? $t('auth.signIn') : 'Sign In' }}</v-card-title>
             <v-card-text v-if="authError">
               <v-alert type="error">
                 {{ $t ? $t(authError) : authError }}
               </v-alert>
             </v-card-text>
             <v-card-text>
-              <div class="text-subtitle-1 text-medium-emphasis">{{ props.usernameLabel }}</div>
+              <div class="text-subtitle-1 text-medium-emphasis">{{ $t ? $t('auth.username') : 'Username' }}</div>
               <v-text-field
                   variant="outlined"
                   id="username-input"
@@ -87,7 +66,7 @@ function togglePasswordVisibility() {
                   required
                   autocomplete="new-username"
               ></v-text-field>
-              <div class="text-subtitle-1 text-medium-emphasis">{{ props.passwordLabel }}</div>
+              <div class="text-subtitle-1 text-medium-emphasis">{{ $t ? $t('auth.password') : 'Password' }}</div>
               <v-text-field
                   variant="outlined"
                   id="password-input"
@@ -113,18 +92,13 @@ function togglePasswordVisibility() {
                   :disabled="!isFormValid"
                   :loading="loading"
               >
-                {{ props.buttonText }}
+                {{ $t ? $t('auth.login') : 'Login' }}
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-form>
-
-
-      </v-col>
-    </v-row>
   </template>
 </template>
 
-<style scoped lang="sass">
-// Your styles here
+<style scoped>
 </style>

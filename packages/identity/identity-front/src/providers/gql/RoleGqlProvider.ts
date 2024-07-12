@@ -60,7 +60,7 @@ class RoleGqlProvider implements IRoleProvider {
 
     async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<IRole>> {
         const query: string = `query paginateRole($options: PaginateOptions) { 
-            paginateRole(page: $page, limit: $limit, search: $search) { 
+            paginateRole(options: $options) { 
                 total, page, limit, items{id name permissions childRoles{id name} readonly } 
             } 
         }`

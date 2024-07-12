@@ -45,6 +45,14 @@ class AuthRestProvider implements IAuthProvider {
         let r = await this.httpClient.post(url, data)
         return /true/i.test(r as string)
     }
+
+    async changeAvatar(file: File): Promise<boolean> {
+        const url = '/api/user/avatar'
+        const data = new FormData()
+        data.append('file', file)
+        let r = await this.httpClient.post(url, data, {removeHeaders: ['content-type']})
+        return /true/i.test(r as string)
+    }
 }
 
 export default AuthRestProvider

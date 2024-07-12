@@ -139,8 +139,8 @@ function toChangePassword(item: IUser) {
 <template>
   <v-container fluid>
 
-    <v-sheet border rounded>
-      <v-toolbar>
+    <v-card border rounded>
+      <v-toolbar class="bg-toolbar">
         <v-toolbar-title>{{ $t('user.managing') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="filterEnable = !filterEnable">
@@ -159,7 +159,7 @@ function toChangePassword(item: IUser) {
             :filterEnable="filterEnable"
         />
       </v-theme-provider>
-    </v-sheet>
+    </v-card>
 
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>

@@ -71,8 +71,8 @@ defineExpose({
       @update:options="loadItems"
   >
     <template v-slot:top>
-      <v-toolbar border density="compact" v-if="filterEnable" class="grey-lighten-1">
-        <v-toolbar-title>{{ $t('action.filter') }}</v-toolbar-title>
+      <v-toolbar  density="compact" v-if="filterEnable">
+        <v-toolbar-title>{{ $t('action.filters') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-text-field v-model="search" hide-details
                       density="compact" class="mr-2"

@@ -45,6 +45,8 @@ class UserRestProvider implements IUserProvider {
         let r = await this.httpClient.post(url, data)
         return /true/i.test(r as string)
     }
+
+
 }
 
 export default UserRestProvider

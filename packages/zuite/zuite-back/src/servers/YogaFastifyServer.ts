@@ -3,6 +3,7 @@ import {createSchema, createYoga} from 'graphql-yoga'
 import {Rbac} from "@drax/identity-back";
 import {IJwtUser} from "@drax/identity-share";
 import fastifyStatic from '@fastify/static';
+import fastifyMultipart from '@fastify/multipart';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,10 +23,12 @@ class YogaFastifyServer {
     yoga: any
     typeDefs: any
     resolvers: any
+    rootDir: string;
 
-    constructor(typeDefs: any, resolvers: any, middlewares: any[]) {
+    constructor(typeDefs: any, resolvers: any, rootDir: string) {
         this.typeDefs = typeDefs
         this.resolvers = resolvers
+        this.rootDir = rootDir ? rootDir : path.join(__dirname, '..');
         this.setup()
     }
 
@@ -40,7 +43,7 @@ class YogaFastifyServer {
 
     setupPublicFiles() {
         this.fastifyServer.register(fastifyStatic, {
-            root: path.join(__dirname, '..', 'public'),
+            root: path.join(this.rootDir, 'public'),
             prefix: '/',
             index: 'index.html'
         });
@@ -96,7 +99,8 @@ class YogaFastifyServer {
     }
 
     setupMultipart() {
-        this.fastifyServer.addContentTypeParser('multipart/form-data', {}, (req, payload, done) => done(null))
+        this.fastifyServer.register(fastifyMultipart)
+        //this.fastifyServer.addContentTypeParser('multipart/form-data', {}, (req, payload, done) => done(null))
     }
 
     fastifyDecorateRequest(prop: string, defaultValue: any) {

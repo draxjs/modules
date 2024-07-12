@@ -6,7 +6,7 @@ interface IAuthProvider {
     me(): Promise<IAuthUser>
     logout(): void
     changeOwnPassword(currentPassword:string, newPassword:string):Promise<boolean>
-
+    changeAvatar(file: File): Promise<boolean>
 }
 
 export type {IAuthProvider}

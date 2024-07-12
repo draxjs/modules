@@ -16,6 +16,10 @@ import RoleCrud from "./cruds/role-crud/RoleCrud.vue";
 import RoleList from "./cruds/role-crud/RoleList.vue";
 import RoleCrudPage from "./pages/RoleCrudPage.vue";
 
+import LoginPage from "./pages/LoginPage.vue";
+import ProfilePage from "./pages/ProfilePage.vue";
+import PasswordPage from "./pages/PasswordPage.vue";
+
 
 import TenantForm from "./forms/TenantForm.vue";
 import TenantView from "./views/TenantView.vue";
@@ -40,6 +44,11 @@ export {
     IdentityProfileAvatar,
     IdentityProfileView,
     IdentityProfileDrawer,
+
+    //Pages
+    LoginPage,
+    ProfilePage,
+    PasswordPage,
 
     //User
     UserView,

@@ -32,6 +32,12 @@ class Rbac{
         }
     }
 
+    assertAuthenticated() {
+        if (!this.authUser) {
+            throw new UnauthorizedError()
+        }
+    }
+
 }
 
 export default Rbac;

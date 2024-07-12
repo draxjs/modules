@@ -118,6 +118,16 @@ class UserMongoRepository implements IUserRepository {
             return false
         }
     }
+
+    async changeAvatar(id: string, avatar: string):Promise<boolean> {
+        try{
+            await UserModel.findOneAndUpdate({_id: id}, {avatar}).exec()
+            return true
+        }catch (e){
+            console.error(e)
+            return false
+        }
+    }
 }
 
 export default UserMongoRepository

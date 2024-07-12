@@ -94,7 +94,40 @@ class HttpGqlClient implements IGqlClient {
     return this.exec( query, variables, options)
   }
 
+  async upload(data: FormData, options: IGqlOptions): Promise<object> {
+    try {
+      const url = this.url;
+      const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
+      delete headers['content-type']
+      const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: data,
+        signal: this.signal,
+      });
+      clearTimeout(timeoutId);
 
+      if (!response.ok) {
+        const body: string = await response.json();
+        throw new HttpStatusError(response.status, body);
+      }
+
+      const result = await response.json();
+
+      if (result.errors) {
+        const gqlErrors: Array<IGqlError> = result.errors
+        if (result.errors.length === 1) {
+          throw new GqlError(gqlErrors[0])
+        } else if (result.errors.length > 1) {
+          throw new GqlMultiError(gqlErrors.map(e => new GqlError(e)))
+        }
+      }
+      return result.data
+    } catch (error) {
+      throw this.errorHandler(error as Error)
+    }
+  }
 }
 
 export default HttpGqlClient

@@ -57,7 +57,9 @@ class HttpRestClient implements IHttpClient {
       const queryParams = new URLSearchParams(options?.params as any).toString();
       url = this.baseUrl + url + (queryParams ? `?${queryParams}` : '');
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
-
+      if(options?.removeHeaders){
+        options?.removeHeaders.forEach(header => delete headers[header]);
+      }
       const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
       const response = await fetch(url, {
         method: 'GET',
@@ -81,12 +83,16 @@ class HttpRestClient implements IHttpClient {
     try {
       url = this.baseUrl + url;
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
+      if(options?.removeHeaders){
+        options?.removeHeaders.forEach(header => delete headers[header]);
+      }
       console.log("this.defaultTimeout",this.timeout)
       const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
+      data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'POST',
         headers: headers,
-        body: JSON.stringify(data),
+        body:  data,
         signal: this.signal,
       });
       clearTimeout(timeoutId);
@@ -107,11 +113,15 @@ class HttpRestClient implements IHttpClient {
     try {
       url = this.baseUrl + url;
       const headers = {...this.baseHeaders, ...options?.headers};
+      if(options?.removeHeaders){
+        options?.removeHeaders.forEach(header => delete headers[header]);
+      }
       const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
+      data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'PUT',
         headers: headers,
-        body: JSON.stringify(data),
+        body: data,
         signal: this.signal,
       });
       clearTimeout(timeoutId);
@@ -133,11 +143,15 @@ class HttpRestClient implements IHttpClient {
       url = this.baseUrl + url;
       data = data ? data : {}
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
+      if(options?.removeHeaders){
+        options?.removeHeaders.forEach(header => delete headers[header]);
+      }
       const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
+      data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'DELETE',
         headers: headers,
-        body: JSON.stringify(data),
+        body: data,
         signal: this.signal,
       });
       clearTimeout(timeoutId);

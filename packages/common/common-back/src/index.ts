@@ -1,11 +1,13 @@
 import GraphqlMerger from "./utils/GraphqlMerger.js";
-import MongooseSoftDelete from "./utils/MongooseSoftDelete.js";
-import MongooseConector from "./utils/MongooseConector.js";
+import MongooseSoftDelete from "./mongoose/MongooseSoftDelete.js";
+import MongooseConector from "./mongoose/MongooseConector.js";
 import mongoose from "mongoose"
 
 import UniqueError from "./errors/UniqueError.js";
 import ValidationError from "./errors/ValidationError.js";
 import ValidationFieldError from "./errors/ValidationFieldError.js";
+import {UploadFileError} from "./errors/UploadFileError.js";
+
 import MongooseErrorToValidationError from "./errors/adapters/MongooseErrorToValidationError.js";
 import MongoServerErrorToValidationError from "./errors/adapters/MongoServerErrorToValidationError.js";
 import SqliteErrorToValidationError from "./errors/adapters/SqliteErrorToValidationError.js";
@@ -15,8 +17,15 @@ import commonGraphql  from "./graphql/index.js"
 import DraxCache  from "./cache/DraxCache.js"
 import DraxConfig  from "./config/DraxConfig.js"
 
+//File
+import {StoreManager} from "./utils/StoreManager.js";
+import {StreamFileStore} from "./utils/StreamFileStore.js";
+import {StreamSizeValidator} from "./utils/StreamSizeValidator.js";
+
+
 import type {IValidationFieldError} from './interfaces/IValidationFieldError'
 import type {IDraxConfig} from './interfaces/IDraxConfig'
+import type {IUploadFile, IUploadFileResult, IUploadFileOptions} from './interfaces/IUploadFile'
 import type {IResolvers, TypeSource} from "@graphql-tools/utils";
 
 
@@ -43,6 +52,11 @@ export {
     MongooseConector,
 
     //Utils
+    StoreManager,
+    StreamFileStore,
+    StreamSizeValidator,
+
+    //Adapters
     MongooseErrorToValidationError,
     MongoServerErrorToValidationError,
     SqliteErrorToValidationError,
@@ -53,11 +67,16 @@ export {
     UniqueError,
     ValidationError,
     ValidationFieldError,
+    UploadFileError,
 
 }
 
 export type{
     IValidationFieldError,
-    IDraxConfig
+    IDraxConfig,
+
+    IUploadFile,
+    IUploadFileResult,
+    IUploadFileOptions
 }
 

@@ -114,7 +114,7 @@ test.describe("UserRepositoryTest", function () {
     })
 
     test("Paginate users successfully.",  async function() {
-        let paginateUsers = await userRepository.paginate()
+        let paginateUsers = await userRepository.paginate({page: 1, limit:5})
 
         equal(paginateUsers.total,1)
         equal(paginateUsers.page,1)

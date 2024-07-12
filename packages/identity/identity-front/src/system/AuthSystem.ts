@@ -29,6 +29,11 @@ class AuthSystem {
         const result: boolean = await this._provider.changeOwnPassword(currentPassword,newPassword)
         return result
     }
+
+    async changeAvatar(file: File):Promise<boolean> {
+        const result: boolean = await this._provider.changeAvatar(file)
+        return result
+    }
 }
 
 export default AuthSystem

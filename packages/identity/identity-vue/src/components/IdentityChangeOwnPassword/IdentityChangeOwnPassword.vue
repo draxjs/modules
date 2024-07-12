@@ -64,7 +64,7 @@ async function submitChangePassowrd() {
     <template v-else>
 
           <v-form @submit.prevent="submitChangePassowrd">
-            <v-card variant="outlined">
+            <v-card variant="elevated">
               <v-card-title class="pa-4 text-center">{{ $t('user.changeOwnPassword') }}</v-card-title>
               <v-card-text v-if="errorMsg">
                 <v-alert type="error">

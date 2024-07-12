@@ -108,8 +108,8 @@ function toDelete(item: IRole) {
 <template>
   <v-container fluid>
 
-    <v-sheet border rounded>
-      <v-toolbar>
+    <v-card border rounded>
+      <v-toolbar class="bg-toolbar">
         <v-toolbar-title>{{$t('role.managing')}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="filterEnable = !filterEnable">
@@ -127,7 +127,7 @@ function toDelete(item: IRole) {
             :filterEnable="filterEnable"
         />
       </v-theme-provider>
-    </v-sheet>
+    </v-card>
 
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>

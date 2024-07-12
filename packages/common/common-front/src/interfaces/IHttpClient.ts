@@ -8,6 +8,7 @@ interface IHttpParam {
 
 interface IHttpOptions {
   headers?: IHttpHeader;
+  removeHeaders?: string[]
   params?: IHttpParam
 }
 

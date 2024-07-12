@@ -1,4 +1,6 @@
 import LoginPage from '../pages/LoginPage.vue'
+import ProfilePage from '../pages/ProfilePage.vue'
+import PasswordPage from '../pages/PasswordPage.vue'
 import UserCrudPage from '../pages/UserCrudPage.vue'
 import RoleCrudPage from '../pages/RoleCrudPage.vue'
 import TenantCrudPage from '../pages/TenantCrudPage.vue'
@@ -10,6 +12,22 @@ const routes = [
     component: LoginPage,
     meta: {
       auth: false,
+    }
+  },
+  {
+    name: 'Profile',
+    path: '/profile',
+    component: ProfilePage,
+    meta: {
+      auth: true,
+    }
+  },
+  {
+    name: 'Password',
+    path: '/password',
+    component: PasswordPage,
+    meta: {
+      auth: true,
     }
   },
   {

@@ -3,8 +3,7 @@ import {equal} from "assert";
 import RoleMongoRepository from "../../../src/repository/mongo/RoleMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
 import {IRole} from "../../../../identity-share/src/interfaces/IRole";
-import {PaginateResult} from "mongoose";
-import {IPaginateResult} from "@drax/common-back";
+import {IDraxPaginateResult} from "@drax/common-share";
 
 describe("RoleRepositoryTest",  function() {
 
@@ -48,7 +47,7 @@ describe("RoleRepositoryTest",  function() {
     })
 
     it("Paginate roles successfully.",  async function() {
-        let paginateRoles: IPaginateResult = await roleReposirory.paginate(1,5)
+        let paginateRoles: IDraxPaginateResult<IRole> = await roleReposirory.paginate({page: 1, limit: 5})
         equal(paginateRoles.items.length,1)
         equal(paginateRoles.total,1)
         equal(paginateRoles.page,1)

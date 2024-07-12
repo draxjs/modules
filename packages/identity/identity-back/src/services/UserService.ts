@@ -44,7 +44,14 @@ class UserService {
 
     async changeOwnPassword(userId : string, currentPassword : string, newPassword : string){
         const user = await this.findById(userId)
+
+
         if(user && user.active){
+
+            if(currentPassword === newPassword){
+                throw new ValidationError([{field: 'newPassword', reason: 'validation.password.currentDifferent'}])
+            }
+
             if (AuthUtils.checkPassword(currentPassword, user.password)) {
                 newPassword =  AuthUtils.hashPassword(newPassword)
                 await this._repository.changePassword(userId, newPassword)
@@ -53,6 +60,16 @@ class UserService {
                 throw new ValidationError([{field: 'currentPassword', reason: 'validation.notMatch'}])
             }
 
+        }else{
+            throw new BadCredentialsError()
+        }
+    }
+
+    async changeAvatar(userId : string, avatar: string){
+        const user = await this.findById(userId)
+        if(user && user.active){
+                await this._repository.changeAvatar(userId, avatar)
+                return true
         }else{
             throw new BadCredentialsError()
         }

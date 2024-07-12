@@ -206,6 +206,14 @@ class UserSqliteRepository implements IUserRepository {
         stmt.run({id: id, password: password});
         return true
     }
+
+    async changeAvatar(id: string, avatar: string): Promise<boolean> {
+        const stmt = this.db.prepare(`UPDATE users
+                                      SET avatar = @avatar
+                                      WHERE id = @id `);
+        stmt.run({id: id, avatar: avatar});
+        return true
+    }
 }
 
 export default UserSqliteRepository

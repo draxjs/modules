@@ -5,8 +5,8 @@ const {typeDefs, resolvers} = await ModuleMerger()
 
 
 
-function ApolloFastifyServerFactory() {
-    const server = new ApolloFastifyServer(typeDefs,resolvers);
+function ApolloFastifyServerFactory(rootDir:string) {
+    const server = new ApolloFastifyServer(typeDefs,resolvers, rootDir);
     server.fastifyDecorateRequest('authUser',null)
     server.fastifyHook('onRequest',jwtMiddleware)
     server.fastifyHook('onRequest',rbacMiddleware)

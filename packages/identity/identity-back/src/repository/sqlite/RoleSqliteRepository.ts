@@ -109,7 +109,7 @@ class RoleSqliteRepository implements IRoleRepository{
         }
 
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM roles'+where).get();
-        const roles = this.db.prepare('SELECT * FROM roles LIMIT ? OFFSET ?'+where).all([limit, offset]);
+        const roles = this.db.prepare('SELECT * FROM roles '  + where + ' LIMIT ? OFFSET ?').all([limit, offset]);
 
         for (const role of roles) {
             await this.populateRole(role)

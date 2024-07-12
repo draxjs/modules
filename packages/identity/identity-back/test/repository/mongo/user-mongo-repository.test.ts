@@ -4,7 +4,7 @@ import UserMongoRepository from "../../../src/repository/mongo/UserMongoReposito
 import MongoInMemory from "../../db/MongoInMemory";
 import RoleMongoInitializer from "../../initializers/RoleMongoInitializer";
 import {IUser} from "../../../../identity-share/src/interfaces/IUser";
-import type {IPaginateResult} from "@drax/common-back";
+import type {IDraxPaginateResult} from "@drax/common-share";
 import {mongoose, ValidationError} from "@drax/common-back";
 
 
@@ -113,7 +113,7 @@ test.describe("UserRepositoryTest", function () {
 
 
     test("Paginate mongo users successfully.",  async function() {
-        let paginateUsers: IPaginateResult = await userRepository.paginate()
+        let paginateUsers: IDraxPaginateResult<IUser> = await userRepository.paginate({page: 1, limit: 5})
         equal(paginateUsers.items.length,1)
         equal(paginateUsers.total,1)
         equal(paginateUsers.page,1)

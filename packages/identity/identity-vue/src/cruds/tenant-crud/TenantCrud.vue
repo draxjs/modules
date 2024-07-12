@@ -105,14 +105,14 @@ function toDelete(item: ITenant) {
 <template>
   <v-container fluid>
 
-    <v-sheet border rounded>
-      <v-toolbar>
+    <v-card border rounded >
+      <v-toolbar class="bg-toolbar">
         <v-toolbar-title>{{ $t('tenant.managing') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="filterEnable = !filterEnable">
           <v-icon>{{ filterEnable ? 'mdi-filter' : 'mdi-filter-off' }}</v-icon>
         </v-btn>
-        <v-btn color="primary" @click="toCreate">
+        <v-btn class="font-weight-bold" color="primary" @click="toCreate">
           {{ $t('action.create') }}
         </v-btn>
       </v-toolbar>
@@ -124,7 +124,7 @@ function toDelete(item: ITenant) {
             :filterEnable="filterEnable"
         />
       </v-theme-provider>
-    </v-sheet>
+    </v-card>
 
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>

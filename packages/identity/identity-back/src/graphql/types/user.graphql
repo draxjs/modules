@@ -54,6 +54,7 @@ input AuthInput{
     password: String!
 }
 
+
 type Mutation{
     auth(input: AuthInput): Auth
     createUser(input: UserCreateInput): User
@@ -61,4 +62,5 @@ type Mutation{
     deleteUser(id: ID!): Boolean
     changeOwnPassword(currentPassword:String!, newPassword: String!): Boolean
     changeUserPassword(userId:ID!, newPassword:String!): Boolean
+    changeAvatar(file: File!): Boolean
 }

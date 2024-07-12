@@ -8,6 +8,7 @@ import TenantService from "./services/TenantService.js";
 import PermissionService from "./services/PermissionService.js";
 import Rbac from "./rbac/Rbac.js";
 import {UserRoutes} from "./routes/UserRoutes.js";
+import {UserAvatarRoutes} from "./routes/UserAvatarRoutes.js";
 import {RoleRoutes} from "./routes/RoleRoutes.js";
 import {TenantRoutes} from "./routes/TenantRoutes.js";
 import AuthUtils from "./utils/AuthUtils.js";
@@ -62,6 +63,7 @@ export {
     UserRoutes,
     RoleRoutes,
     TenantRoutes,
+    UserAvatarRoutes,
 
     AuthUtils,
 
@@ -88,4 +90,3 @@ export {
 }
 
 
-/// <reference types="index.d.ts" />

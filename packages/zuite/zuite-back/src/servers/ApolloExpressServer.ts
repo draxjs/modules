@@ -4,6 +4,9 @@ import express, {Express, Request, Response} from 'express'
 import {expressMiddleware} from '@apollo/server/express4';
 import * as http from "http";
 import {IJwtUser} from "@drax/identity-share";
+import path from "path";
+import {fileURLToPath} from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface ApolloContext {
     request: Request
@@ -22,10 +25,12 @@ class ApolloExpressServer {
     apolloServer: any;
     typeDefs: any;
     resolvers: any;
+    rootDir: string;
 
-    constructor(typeDefs: any, resolvers: any) {
+    constructor(typeDefs: any, resolvers: any, rootDir: string) {
         this.typeDefs = typeDefs;
         this.resolvers = resolvers;
+        this.rootDir = rootDir ? rootDir : path.join(__dirname, '..');
         this.setup()
 
     }

@@ -50,11 +50,11 @@ export default {
                 throw new GraphQLError('error.server')
             }
         },
-        paginateTenant: async (_, {page, limit, orderBy, orderDesc, search}, {rbac}) => {
+        paginateTenant: async (_, {options= {page:1, limit:5, orderBy:"", orderDesc:false, search:"", filters: []} }, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewTenant)
                 const tenantService = TenantServiceFactory()
-                return await tenantService.paginate({page, limit, orderBy, orderDesc, search})
+                return await tenantService.paginate(options)
             } catch (e) {
                 console.error("paginateTenant",e)
                 if (e instanceof UnauthorizedError) {

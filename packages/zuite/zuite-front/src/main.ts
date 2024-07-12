@@ -19,7 +19,7 @@ app.use(i18n)
 //Core Systems Factories
 import {SystemFactory} from "./factories/SystemFactory";
 
-const HttpClientType = 'REST' // 'GRAPHQL' 'REST'
+const HttpClientType = 'GRAPHQL' // 'GRAPHQL' 'REST'
 const {
   authSystem: AuthSystem,
   userSystem: UserSystem,

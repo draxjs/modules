@@ -54,7 +54,7 @@ class TenantGqlProvider implements ITenantProvider {
 
     async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<ITenant>> {
         const query: string = `query paginateTenant($options: PaginateOptions) { 
-            paginateTenant(page: $page, limit: $limit, search: $search) { 
+            paginateTenant(options: $options) { 
                 total, page, limit, items{id, name } 
             } 
         }`

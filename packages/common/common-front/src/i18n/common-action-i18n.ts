@@ -10,6 +10,7 @@ const messages = {
       close: 'Close',
       cancel: 'Cancel',
       filter:'Filter',
+      filters:'Filters',
       search: 'Search',
       reset: 'Reset'
     }
@@ -25,6 +26,7 @@ const messages = {
       close: 'Cerrar',
       cancel: 'Cancelar',
       filter:'Filtrar',
+      filters:'Filtros',
       search: 'Buscar',
       reset: 'Reiniciar'
     }

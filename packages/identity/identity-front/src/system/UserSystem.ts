@@ -31,6 +31,8 @@ class UserSystem {
         return result
     }
 
+
+
     async delete(id: string):Promise<any> {
         return this._provider.delete(id)
     }

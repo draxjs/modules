@@ -115,7 +115,7 @@ class TenantSqliteRepository implements ITenantRepository{
         }
 
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM tenants'+where).get();
-        const tenants = this.db.prepare('SELECT * FROM tenants LIMIT ? OFFSET ?'+where).all([limit, offset]);
+        const tenants = this.db.prepare('SELECT * FROM tenants '  + where + ' LIMIT ? OFFSET ?').all([limit, offset]);
 
         return {
             page: page,

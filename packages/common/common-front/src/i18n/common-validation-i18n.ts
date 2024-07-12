@@ -7,6 +7,7 @@ const messages = {
       startWithUpperCase: 'Field must start with uppercase',
       notFound: 'Not found',
       notMatch: 'Field must match',
+      invalid: 'Invalid value',
     }
   },
   es: {
@@ -17,6 +18,7 @@ const messages = {
       startWithUpperCase: 'El campo debe empezar con mayúscula',
       notFound: 'No se encontró',
       notMatch: 'El campo debe coincidir',
+      invalid: 'Valor inválido',
     }
   }
 }

@@ -34,7 +34,7 @@ class AuthGqlProvider implements IAuthProvider {
     }
 
     async me(): Promise<IAuthUser> {
-        const query: string = `query me { me {id,username, email, role {id, name, permissions}} }`
+        const query: string = `query me { me {id, username, email, phone, role {id, name, permissions}, avatar} }`
         let data = await this.gqlClient.query(query)
         return data.me
     }
@@ -52,6 +52,18 @@ class AuthGqlProvider implements IAuthProvider {
         { changeUserPassword(userId: $userId, newPassword: $newPassword) }`
         const variables = {currentPassword, newPassword}
         let r = await this.gqlClient.mutation(query, variables)
+        return /true/i.test(r as string)
+    }
+
+    async changeAvatar(file: File): Promise<boolean> {
+        //const query: string = `mutation changeAvatar( $file: File!) { changeAvatar }`
+        const operations = `{ "query": "mutation ($file: File!) { changeAvatar(file: $file) }", "variables": { "file": null } }`
+        const data = new FormData()
+        data.append("operations", operations)
+        const map = `{"0": ["variables.file"]}`
+        data.append("map", map)
+        data.append("0", file)
+        let r = await this.gqlClient.upload(data)
         return /true/i.test(r as string)
     }
 }

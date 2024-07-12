@@ -5,8 +5,8 @@ const {typeDefs, resolvers} = await ModuleMerger()
 
 
 
-function ApolloExpressServerFactory() {
-    const server = new ApolloExpressServer(typeDefs,resolvers);
+function ApolloExpressServerFactory(rootDir:string) {
+    const server = new ApolloExpressServer(typeDefs, resolvers, rootDir);
     server.expressUse(jwtMiddleware)
     server.expressUse(rbacMiddleware)
     server.expressUse(UserRoutes)

@@ -1,4 +1,5 @@
-import {commonValidationI18n, identityValidationI18n} from "@drax/i18n-share"
+import {CommonI18nMessages} from "@drax/common-front"
+import {IdentityI18nMessages} from "@drax/identity-front"
 import merge from 'deepmerge'
 
 const mainMsg = {
@@ -14,7 +15,7 @@ const mainMsg = {
   }
 }
 
-const messages = merge.all([mainMsg,commonValidationI18n, identityValidationI18n])
+const messages = merge.all([mainMsg,IdentityI18nMessages, CommonI18nMessages])
 
 console.log("messages",messages)
 
