@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "Media files",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -20,16 +20,16 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "@drax/common-back": "^0.0.28",
-    "@drax/identity-back": "^0.0.28"
+    "@drax/common-back": "^0.0.29",
+    "@drax/identity-back": "^0.0.29"
   },
   "peerDependencies": {
+    "@fastify/multipart": "^8.3.0",
+    "@fastify/static": "^7.0.4",
     "better-sqlite3": "^11.0.0",
     "mongoose": "^8.3.4",
     "mongoose-paginate-v2": "^1.8.0",
-    "mongoose-unique-validator": "^5.0.0",
-    "@fastify/static": "^7.0.4",
-    "@fastify/multipart": "^8.3.0"
+    "mongoose-unique-validator": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.10",
