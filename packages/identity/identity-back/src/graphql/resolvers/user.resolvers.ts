@@ -1,10 +1,17 @@
 import UserServiceFactory from "../../factory/UserServiceFactory.js";
 import {GraphQLError} from "graphql";
-import {ValidationErrorToGraphQLError, ValidationError, StoreManager} from "@drax/common-back";
+import {
+    ValidationErrorToGraphQLError,
+    ValidationError,
+    StoreManager,
+    DraxConfig,
+    CommonConfig
+} from "@drax/common-back";
 import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../../errors/UnauthorizedError.js";
 import BadCredentialsError from "../../errors/BadCredentialsError.js";
 import {join} from "path";
+import IdentityConfig from "../../config/IdentityConfig.js";
 
 export default {
     Query: {
@@ -155,8 +162,8 @@ export default {
                 rbac.assertAuthenticated()
                 const userId = authUser.id
 
-                const FILE_DIR = process.env.DRAX_AVATAR_DIR || 'avatars';
-                const BASE_URL = process.env.DRAX_BASE_URL.replace(/\/$/, '') || ''
+                const FILE_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatars';
+                const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
 
                 //console.log("FILE:", file)
 

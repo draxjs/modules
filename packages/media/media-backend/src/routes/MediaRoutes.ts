@@ -1,10 +1,10 @@
 import {join} from "path";
 import {UnauthorizedError} from "@drax/identity-back";
 import {MediaPermissions} from "../permissions/MediaPermissions.js";
-import {StoreManager, UploadFileError} from "@drax/common-back";
+import {StoreManager, UploadFileError, DraxConfig, CommonConfig} from "@drax/common-back";
 
-const FILE_DIR = process.env.DRAX_FILE_DIR || 'uploads';
-const BASE_URL = process.env.DRAX_BASE_URL.replace(/\/$/, '') || ''
+const FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'uploads';
+const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
 
 async function MediaRoutes(fastify, options) {
 

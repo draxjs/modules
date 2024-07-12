@@ -6,6 +6,7 @@ import UploadFileError from "../errors/UploadFileError.js";
 import createDirIfNotExist from "./CreateDirIfNotExist.js";
 import StreamFileStore from "./StreamFileStore.js";
 import {Readable} from "stream";
+import DraxConfig from "../config/DraxConfig.js";
 
 class StoreManager {
 
@@ -47,7 +48,7 @@ class StoreManager {
         const destinationFile = join(destinationPath, filename);
 
         // Validate file size before saving
-        const maxSizeEnv = process.env.DRAX_MAX_UPLOAD_SIZE ? parseInt(process.env.DRAX_MAX_UPLOAD_SIZE) : 1;
+        const maxSizeEnv = DraxConfig.getOrLoad('DRAX_MAX_UPLOAD_SIZE') ? parseInt(DraxConfig.get('DRAX_MAX_UPLOAD_SIZE')) : 1;
         const maxSize = options?.maxSize || maxSizeEnv;
 
         const {bytesWritten} = await StreamFileStore(file.fileStream, maxSize, destinationFile)

@@ -1,10 +1,12 @@
 import {join} from "path";
 import {UnauthorizedError} from "@drax/identity-back";
-import {StoreManager, UploadFileError} from "@drax/common-back";
+import {StoreManager, UploadFileError, DraxConfig, CommonConfig} from "@drax/common-back";
 import UserServiceFactory from "../factory/UserServiceFactory.js";
+import IdentityConfig from "../config/IdentityConfig.js";
 
-const FILE_DIR = process.env.DRAX_AVATAR_DIR || 'avatars';
-const BASE_URL = process.env.DRAX_BASE_URL.replace(/\/$/, '') || ''
+const FILE_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatars';
+const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
+
 
 async function UserAvatarRoutes(fastify, options) {
 
@@ -58,7 +60,7 @@ async function UserAvatarRoutes(fastify, options) {
             const filename = request.params.filename
             const [year, month] = filename.split('-')
             const fileDir = join(FILE_DIR, year, month)
-            console.log("FILE_DIR: ",fileDir, " FILENAME:", filename)
+            //console.log("FILE_DIR: ",fileDir, " FILENAME:", filename)
             return reply.sendFile(filename, fileDir)
         } catch (e) {
             console.error(e)

@@ -1,5 +1,5 @@
 import {IdentityPermissions} from "@drax/identity-back"
-import vendedorRole from "./vendedor-role.js";
+import operatorRole from "./operator-role.js";
 
 const role = {
   name: "Supervisor",
@@ -13,7 +13,7 @@ const role = {
 
   ],
   childRoles: [
-    vendedorRole.name
+    operatorRole.name
   ],
   readonly: true
 }

@@ -10,6 +10,8 @@ enum IdentityConfig {
 
     RbacCacheTTL = "DRAX_RBAC_CACHE_TTL",
 
+    AvatarDir = "DRAX_AVATAR_DIR",
+
 
 }
 

@@ -16,6 +16,8 @@ import ValidationErrorToGraphQLError from "./errors/adapters/ValidationErrorToGr
 import commonGraphql  from "./graphql/index.js"
 import DraxCache  from "./cache/DraxCache.js"
 import DraxConfig  from "./config/DraxConfig.js"
+import CommonConfig  from "./config/CommonConfig.js"
+import LoadCommonConfigFromEnv  from "./setup/LoadCommonConfigFromEnv.js"
 
 //File
 import {StoreManager} from "./utils/StoreManager.js";
@@ -29,6 +31,7 @@ import type {IUploadFile, IUploadFileResult, IUploadFileOptions} from './interfa
 import type {IResolvers, TypeSource} from "@graphql-tools/utils";
 
 
+
 const graphqlMergeResult = await commonGraphql()
 const commonTypeDefs : TypeSource = await graphqlMergeResult.typeDefs;
 const commonResolvers: IResolvers = await graphqlMergeResult.resolvers;
@@ -40,6 +43,8 @@ export {
 
     //Config
     DraxConfig,
+    CommonConfig,
+    LoadCommonConfigFromEnv,
 
     //Graphql
     GraphqlMerger,

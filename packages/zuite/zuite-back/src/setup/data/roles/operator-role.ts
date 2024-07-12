@@ -1,9 +1,9 @@
 import {IdentityPermissions} from "@drax/identity-back"
 
 const role = {
-  name: "Vendedor",
+  name: "Operator",
   permissions: [
-    IdentityPermissions.ViewUser,
+
   ],
   childRoles: [
   ],
