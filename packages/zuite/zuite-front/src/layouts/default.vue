@@ -6,6 +6,14 @@ import DarkMode from "../components/DarkMode/index.vue";
 import SidebarMenu from "../components/SidebarMenu/SidebarMenu.vue";
 import AnimatedBackground from "../components/AnimatedBackground/AnimatedBackground.vue";
 import {useRouter} from "vue-router";
+import { useDarkMode } from '../composables/useDarkMode.js'
+
+const {loadDarkMode} = useDarkMode()
+
+onMounted(() => {
+  loadDarkMode()
+})
+
 let profileDrawer = ref(false)
 let drawer = ref(false)
 

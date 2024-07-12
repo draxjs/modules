@@ -1,21 +1,8 @@
 <script setup lang="ts">
-import { useVuetifyStore } from '../../stores/vuetify/VuetifyStore.js'
-import { computed, onMounted } from 'vue'
+import { useDarkMode } from '../../composables/useDarkMode.js'
 
-const vuetifyStore = useVuetifyStore()
+const { darkMode } = useDarkMode()
 
-const darkMode = computed({
-  get () {
-    return vuetifyStore.getDarkMode
-  },
-  set (val) {
-    vuetifyStore.setDarkMode(val)
-  }
-})
-
-onMounted(() => {
-  vuetifyStore.loadDarkMode()
-})
 </script>
 
 <template>
