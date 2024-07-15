@@ -7,10 +7,8 @@ import {PaginateModel} from "mongoose";
 
 
 const TenantSchema = new Schema<ITenant>({
-    name: {
-        type: String, unique: true, required: true, index: true,
-    },
-});
+    name: {type: String, unique: true, required: true, index: true,},
+}, {timestamps: true});
 
 TenantSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 TenantSchema.plugin(MongooseSoftDelete);

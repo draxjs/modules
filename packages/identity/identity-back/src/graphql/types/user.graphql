@@ -8,6 +8,8 @@ type User {
     phone: String
     avatar: String
     active: Boolean
+    createdAt: Date
+    updatedAt: Date
 }
 
 type UserPaginated{

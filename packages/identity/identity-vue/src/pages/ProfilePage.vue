@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import IdentityProfileView from "../components/IdentityProfileView/IdentityProfileView.vue";
 import {useRouter} from "vue-router";
-import IdentityProfileAvatarChanger from "@/components/IdentityProfileAvatarEdit/IdentityProfileAvatarEdit.vue";
 const router = useRouter();
 
 </script>

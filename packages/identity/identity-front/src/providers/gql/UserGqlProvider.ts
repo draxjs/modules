@@ -52,7 +52,7 @@ class UserGqlProvider implements IUserProvider {
     async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<IUser>> {
         const query: string = `query paginateUser($options: PaginateOptions) { 
             paginateUser(options: $options) { 
-                total, page, limit, items{ id, name username, email, phone, active, role{id, name} tenant{id name} } 
+                total page limit items{ id name username email phone active role{id, name} tenant{id name} createdAt updatedAt } 
             } 
         }`
         const variables = {options: {page, limit, orderBy, orderDesc, search}}

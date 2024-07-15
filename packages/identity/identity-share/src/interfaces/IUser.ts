@@ -12,6 +12,8 @@ interface IUser{
     phone: string
     avatar: string
     role: IRole
+    createdAt?: Date
+    updatedAt?: Date
     tenant?: ITenant
     groups?: IUserGroup[]
 }
