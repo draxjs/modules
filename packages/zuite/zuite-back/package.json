@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-back",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -17,9 +17,9 @@
   "dependencies": {
     "@apollo/server": "^4.10.4",
     "@as-integrations/fastify": "^2.0.0",
-    "@drax/common-back": "^0.0.30",
-    "@drax/identity-back": "^0.0.30",
-    "@drax/media-back": "^0.0.30",
+    "@drax/common-back": "^0.0.31",
+    "@drax/identity-back": "^0.0.31",
+    "@drax/media-back": "^0.0.31",
     "@fastify/multipart": "^8.3.0",
     "@fastify/static": "^7.0.4",
     "@graphql-tools/load-files": "^7.0.0",
