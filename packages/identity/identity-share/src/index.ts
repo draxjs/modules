@@ -3,6 +3,7 @@ import type {IUser, IUserCreate, IUserUpdate} from "./interfaces/IUser";
 import type {IRole, IRoleBase, IRolePermissions} from "./interfaces/IRole";
 import type {ITenant, ITenantBase} from "./interfaces/ITenant";
 import type {IUserGroup, IUserGroupBase} from "./interfaces/IUserGroup";
+import type {IUserApiKey, IUserApiKeyBase, IUserApiKeySoftDelete} from "./interfaces/IUserApiKey";
 
 
 export type {
@@ -11,5 +12,5 @@ export type {
     IUserGroup, IUserGroupBase,
     IRole, IRoleBase, IRolePermissions,
     ITenant, ITenantBase,
-
+    IUserApiKey, IUserApiKeyBase, IUserApiKeySoftDelete
 }

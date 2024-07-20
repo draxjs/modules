@@ -2,6 +2,7 @@ import bcryptjs from "bcryptjs";
 import jsonwebtoken, {SignOptions, VerifyOptions} from "jsonwebtoken";
 import {DraxConfig} from "@drax/common-back";
 import IdentityConfig from "../config/IdentityConfig.js";
+import crypto from "crypto";
 
 class AuthUtils{
 
@@ -67,6 +68,16 @@ class AuthUtils{
 
         return token
     }
+
+    static generateHMAC(secret: string, apikey: string) {
+        // Crear un objeto HMAC utilizando el algoritmo SHA-256 y el secreto
+        const hmac = crypto.createHmac('sha256', secret);
+        // Actualizar el HMAC con la apikey
+        hmac.update(apikey);
+        // Generar el hash en formato hexadecimal
+        return hmac.digest('hex');
+    }
 }
 
 export default AuthUtils
+export {AuthUtils}

@@ -10,6 +10,11 @@ import UserRestProvider from "./providers/rest/UserRestProvider.js";
 import UserGqlProvider from "./providers/gql/UserGqlProvider.js";
 import UserSystem from "./system/UserSystem.js"
 
+import UserApiKeyRestProvider from "./providers/rest/UserApiKeyRestProvider.js";
+import UserApiKeyGqlProvider from "./providers/gql/UserApiKeyGqlProvider.js";
+import UserApiKeySystem from "./system/UserApiKeySystem.js"
+
+
 
 import RoleRestProvider from "./providers/rest/RoleRestProvider.js";
 import RoleGqlProvider from "./providers/gql/RoleGqlProvider.js";
@@ -27,6 +32,7 @@ import type {IAuthProvider} from "./interfaces/IAuthProvider"
 import type {IUserProvider} from "./interfaces/IUserProvider"
 import type {IRoleProvider} from "./interfaces/IRoleProvider"
 import type {ITenantProvider} from "./interfaces/ITenantProvider"
+import type {IUserApiKeyProvider} from "./interfaces/IUserApiKeyProvider"
 import type {IAuthUser} from "./interfaces/IAuthUser"
 import type {IUserPassword} from "./interfaces/IUserPassword"
 import type {ILoginResponse} from "./interfaces/ILoginResponse"
@@ -36,6 +42,7 @@ export type {
     IUserProvider,
     IRoleProvider,
     ITenantProvider,
+    IUserApiKeyProvider,
     IAuthUser,
     IUserPassword,
     ILoginResponse
@@ -55,11 +62,16 @@ export {
     TenantGqlProvider,
     TenantRestProvider,
 
+
+    UserApiKeyRestProvider,
+    UserApiKeyGqlProvider,
+
     //Systems
     AuthSystem,
     UserSystem,
     RoleSystem,
     TenantSystem,
+    UserApiKeySystem,
 
     //Helpers
     AuthHelper,

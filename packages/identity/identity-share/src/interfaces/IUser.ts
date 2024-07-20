@@ -12,8 +12,8 @@ interface IUser{
     phone: string
     avatar: string
     role: IRole
-    createdAt?: Date
-    updatedAt?: Date
+    createdAt?: string
+    updatedAt?: string
     tenant?: ITenant
     groups?: IUserGroup[]
 }
@@ -29,6 +29,7 @@ interface IUserCreate {
     role: string
     tenant?: string
     groups?: string[] | string
+    createdAt?: string
 }
 
 interface IUserUpdate {
@@ -42,6 +43,7 @@ interface IUserUpdate {
     tenant?: string
     groups?: string[] | string
     password?: string
+    updatedAt?: string
 }
 
 export {IUser, IUserCreate, IUserUpdate}

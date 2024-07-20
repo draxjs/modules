@@ -4,31 +4,36 @@ import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
 import {IRole, IRoleBase} from "@drax/identity-share";
-import {SqliteErrorToValidationError} from "@drax/common-back";
+import {SqliteErrorToValidationError, SqliteTableBuilder, SqliteTableField} from "@drax/common-back";
 
-const roleTableSQL: string = `
-    CREATE TABLE IF NOT EXISTS roles
-    (
-        id TEXT PRIMARY KEY,
-        name TEXT,
-        permissions TEXT,
-        readonly INTEGER,
-        childRoles TEXT
-        
-    );
-`;
+const tableFields: SqliteTableField[] = [
+    {name: "name", type: "TEXT", unique: true, primary: false},
+    {name: "permissions", type: "TEXT", unique: false, primary: false},
+    {name: "childRoles", type: "TEXT", unique: false, primary: false},
+    {name: "readonly", type: "INTEGER", unique: false, primary: false},
+    {name: "createdAt", type: "TEXT", unique: false, primary: false},
+    {name: "updatedAt", type: "TEXT", unique: false, primary: false},
+]
+
 
 class RoleSqliteRepository implements IRoleRepository{
 
     private db: any;
+    private dataBaseFile: string;
 
-    constructor(DATABASE:string, verbose:boolean = false) {
-        this.db = new sqlite(DATABASE, {verbose: verbose ? console.log : null});
+    constructor(dataBaseFile:string, verbose:boolean = false) {
+        this.dataBaseFile = dataBaseFile;
+        this.db = new sqlite(dataBaseFile, {verbose: verbose ? console.log : null});
         this.table()
     }
 
     table() {
-        this.db.exec(roleTableSQL);
+        const builder = new SqliteTableBuilder(
+            this.dataBaseFile,
+            'roles',
+            tableFields,
+            false);
+        builder.build('id')
     }
 
     normalizeData(roleData: IRoleBase){
@@ -52,7 +57,7 @@ class RoleSqliteRepository implements IRoleRepository{
             }
 
             this.normalizeData(roleData)
-
+            roleData.createdAt = (new Date().toISOString())
 
             const fields = Object.keys(roleData)
                 .map(field => `${field}`)
@@ -62,9 +67,6 @@ class RoleSqliteRepository implements IRoleRepository{
                 .map(field => `@${field}`)
                 .join(', ');
 
-           /* console.log("fields", fields)
-            console.log("values",values)
-            console.log("userData",roleData)*/
 
         const stmt = this.db.prepare(`INSERT INTO roles (${fields}) VALUES (${values})`);
         stmt.run(roleData)
@@ -80,12 +82,18 @@ class RoleSqliteRepository implements IRoleRepository{
     async update(id: string, roleData: IRoleBase): Promise<IRole> {
         try{
             this.normalizeData(roleData)
+            roleData.updatedAt = (new Date().toISOString())
+
             const setClauses = Object.keys(roleData)
                 .map(field => `${field} = @${field}`)
                 .join(', ');
+
             roleData.id = id
+
             const stmt = this.db.prepare( `UPDATE roles SET ${setClauses} WHERE id = @id `);
+
             stmt.run(roleData);
+
             return this.findById(id)
         }catch (e){
             console.log(e)

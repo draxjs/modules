@@ -1,4 +1,4 @@
-import {mongoose} from '@drax/common-back'
+import {mongoose, DraxConfig, CommonConfig} from '@drax/common-back'
 
 const mongoConnect = async function(){
 
@@ -7,7 +7,7 @@ const mongoConnect = async function(){
         throw new Error("process.env.MONGO_URI not found")
     }
 
-    const MONGO_URI : string = process.env.MONGO_URI
+    const MONGO_URI : string = DraxConfig.getOrLoad(CommonConfig.MongoDbUri)
 
     //console.log("MONGO_URI",MONGO_URI)
 

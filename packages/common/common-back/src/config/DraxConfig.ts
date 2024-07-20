@@ -5,6 +5,7 @@ const config: IDraxConfig = {}
 
 class DraxConfig {
 
+
     static get(key: string): any {
         return config[key]
     }

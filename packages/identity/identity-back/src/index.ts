@@ -2,18 +2,24 @@ import GraphqlMerge from "./graphql/index.js"
 import UserServiceFactory from "./factory/UserServiceFactory.js";
 import RoleServiceFactory from "./factory/RoleServiceFactory.js";
 import TenantServiceFactory from "./factory/TenantServiceFactory.js";
+
 import RoleService from "./services/RoleService.js";
 import UserService from "./services/UserService.js";
 import TenantService from "./services/TenantService.js";
 import PermissionService from "./services/PermissionService.js";
+
 import Rbac from "./rbac/Rbac.js";
+
 import {UserRoutes} from "./routes/UserRoutes.js";
 import {UserAvatarRoutes} from "./routes/UserAvatarRoutes.js";
 import {RoleRoutes} from "./routes/RoleRoutes.js";
 import {TenantRoutes} from "./routes/TenantRoutes.js";
+import {UserApiKeyRoutes} from "./routes/UserApiKeyRoutes.js";
+
 import AuthUtils from "./utils/AuthUtils.js";
 import {jwtMiddleware} from "./middleware/jwtMiddleware.js";
 import {rbacMiddleware} from "./middleware/rbacMiddleware.js";
+import {apiKeyMiddleware} from "./middleware/apiKeyMiddleware.js";
 
 import IdentityPermissions from "./permissions/IdentityPermissions.js";
 import IdentityConfig from "./config/IdentityConfig.js";
@@ -29,6 +35,7 @@ import RecoveryUserPassword from "./setup/RecoveryUserPassword.js";
 import type {IRoleRepository} from "./interfaces/IRoleRepository";
 import type {ITenantRepository} from "./interfaces/ITenantRepository";
 import type {IUserRepository} from "./interfaces/IUserRepository";
+import type {IUserApiKeyRepository} from "./interfaces/IUserApiKeyRepository";
 
 
 const graphqlMergeResult = await GraphqlMerge()
@@ -40,6 +47,7 @@ export type {
     IRoleRepository,
     ITenantRepository,
     IUserRepository,
+    IUserApiKeyRepository
 }
 
 export {
@@ -64,12 +72,14 @@ export {
     RoleRoutes,
     TenantRoutes,
     UserAvatarRoutes,
+    UserApiKeyRoutes,
 
     AuthUtils,
 
     //API MIDDLEWARE
     jwtMiddleware,
     rbacMiddleware,
+    apiKeyMiddleware,
 
     //Permissions
     IdentityPermissions,

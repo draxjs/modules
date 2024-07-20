@@ -4,42 +4,48 @@ import {randomUUID} from "node:crypto";
 import {UUID} from "crypto";
 import {IUserRepository} from "../../interfaces/IUserRepository";
 import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
-import { SqliteErrorToValidationError, ValidationError} from "@drax/common-back";
+import {SqliteErrorToValidationError, SqliteTableBuilder, ValidationError} from "@drax/common-back";
+import type {SqliteTableField} from "@drax/common-back";
 import RoleSqliteRepository from "./RoleSqliteRepository.js";
 import TenantSqliteRepository from "./TenantSqliteRepository.js";
 
-
-const userTableSQL: string = `
-    CREATE TABLE IF NOT EXISTS users
-    (
-        id TEXT PRIMARY KEY,
-        name TEXT,
-        username TEXT UNIQUE,
-        active INTEGER,
-        password TEXT,
-        email TEXT UNIQUE,
-        phone TEXT,
-        role TEXT,
-        tenant TEXT,
-        groups TEXT,
-        avatar TEXT
-    );
-`;
+const tableFields: SqliteTableField[] = [
+    {name: "name", type: "TEXT", unique: false, primary: false},
+    {name: "username", type: "TEXT", unique: true, primary: false},
+    {name: "active", type: "INTEGER", unique: false, primary: false},
+    {name: "active", type: "INTEGER", unique: false, primary: false},
+    {name: "password", type: "TEXT", unique: false, primary: false},
+    {name: "email", type: "TEXT", unique: true, primary: false},
+    {name: "phone", type: "TEXT", unique: false, primary: false},
+    {name: "role", type: "TEXT", unique: false, primary: false},
+    {name: "tenant", type: "TEXT", unique: false, primary: false},
+    {name: "groups", type: "TEXT", unique: false, primary: false},
+    {name: "avatar", type: "TEXT", unique: false, primary: false},
+    {name: "createdAt", type: "TEXT", unique: false, primary: false},
+    {name: "updatedAt", type: "TEXT", unique: false, primary: false}
+]
 
 class UserSqliteRepository implements IUserRepository {
     private db: any;
     private roleRepository: RoleSqliteRepository;
     private tenantRepository: TenantSqliteRepository;
+    private dataBaseFile: string;
 
-    constructor(DATABASE: string, verbose: boolean = false) {
-        this.db = new sqlite(DATABASE, {verbose: verbose ? console.log : null});
-        this.roleRepository = new RoleSqliteRepository(DATABASE, verbose)
-        this.tenantRepository = new TenantSqliteRepository(DATABASE, verbose)
+    constructor(dataBaseFile: string, verbose: boolean = false) {
+        this.dataBaseFile = dataBaseFile
+        this.db = new sqlite(dataBaseFile, {verbose: verbose ? console.log : null});
+        this.roleRepository = new RoleSqliteRepository(dataBaseFile, verbose)
+        this.tenantRepository = new TenantSqliteRepository(dataBaseFile, verbose)
         this.table()
     }
 
     table() {
-        this.db.exec(userTableSQL);
+        const builder = new SqliteTableBuilder(
+            this.dataBaseFile,
+            'users',
+            tableFields,
+            false);
+        builder.build('id')
     }
 
     normalizeData(userData: IUserCreate | IUserUpdate): void {
@@ -57,6 +63,8 @@ class UserSqliteRepository implements IUserRepository {
         if (!await this.findRoleById(userData.role)) {
             throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
         }
+
+        userData.createdAt = (new Date().toISOString())
 
         this.normalizeData(userData)
 
@@ -85,6 +93,8 @@ class UserSqliteRepository implements IUserRepository {
             if (!await this.findRoleById(userData.role)) {
                 throw new ValidationError([{field: 'role', reason: 'validation.notfound', value: userData.role}])
             }
+
+            userData.updatedAt = (new Date().toISOString())
 
             this.normalizeData(userData)
 

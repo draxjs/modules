@@ -1,7 +1,16 @@
-import {Schema} from "mongoose"
-export default function(schema : any) {
-    schema.add({ deleted: Boolean });
-    schema.add({ deletedAt: Date });
+    import {Schema} from "mongoose"
+export default function(schema : Schema) {
+    schema.add({
+        deleted: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+        deletedAt: {
+            type: Date,
+            default: null,
+        },
+    });
 
     schema.pre('save', function (next : Function) {
         // @ts-ignore
@@ -18,18 +27,19 @@ export default function(schema : any) {
         next();
     });
 
-    schema.methods.softdelete = function(callback : Function) {
+    schema.methods.softDelete = function(callback : Function) {
         this.deleted = true;
         this.deletedAt = new Date();
         this.save(callback);
     };
 
-    schema.methods.restore = function(callback : Function) {
+    schema.methods.softRestore = function(callback : Function) {
         this.deleted = false;
         this.deletedAt = null;
         this.save(callback);
     };
 
+    // @ts-ignore
     schema.query.isDeleted = function(cond : boolean) {
         if (typeof cond === 'undefined') {
             cond = true;

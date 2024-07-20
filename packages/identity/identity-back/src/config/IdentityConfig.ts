@@ -1,12 +1,13 @@
 enum IdentityConfig {
 
-    DbEngine = "DRAX_DB_ENGINE",
-    SqliteDbFile = "DRAX_SQLITE_FILE",
-    MongoDbUri = "DRAX_MONGO_URI",
+
 
     JwtSecret = "DRAX_JWT_SECRET",
     JwtExpiration = "DRAX_JWT_EXPIRATION",
     JwtIssuer = "DRAX_JWT_ISSUER",
+
+    ApiKeySecret = "DRAX_APIKEY_SECRET",
+    ApiKeyCacheTTL = "DRAX_APIKEY_CACHE_TTL",
 
     RbacCacheTTL = "DRAX_RBAC_CACHE_TTL",
 

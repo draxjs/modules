@@ -1,4 +1,5 @@
 import GraphqlMerger from "./utils/GraphqlMerger.js";
+
 import MongooseSoftDelete from "./mongoose/MongooseSoftDelete.js";
 import MongooseConector from "./mongoose/MongooseConector.js";
 import mongoose from "mongoose"
@@ -18,12 +19,16 @@ import DraxCache  from "./cache/DraxCache.js"
 import DraxConfig  from "./config/DraxConfig.js"
 import CommonConfig  from "./config/CommonConfig.js"
 import LoadCommonConfigFromEnv  from "./setup/LoadCommonConfigFromEnv.js"
+import {COMMON} from "./constants/CommonConstants.js"
 
 //File
 import {StoreManager} from "./utils/StoreManager.js";
 import {StreamFileStore} from "./utils/StreamFileStore.js";
 import {StreamSizeValidator} from "./utils/StreamSizeValidator.js";
 
+
+import {SqliteTableBuilder} from "./utils/SqliteTableBuilder.js";
+import type {SqliteTableField} from "./utils/SqliteTableBuilder.js";
 
 import type {IValidationFieldError} from './interfaces/IValidationFieldError'
 import type {IDraxConfig} from './interfaces/IDraxConfig'
@@ -37,6 +42,9 @@ const commonTypeDefs : TypeSource = await graphqlMergeResult.typeDefs;
 const commonResolvers: IResolvers = await graphqlMergeResult.resolvers;
 
 export {
+
+    //Constants
+    COMMON,
 
     //Cache
     DraxCache,
@@ -60,6 +68,7 @@ export {
     StoreManager,
     StreamFileStore,
     StreamSizeValidator,
+    SqliteTableBuilder,
 
     //Adapters
     MongooseErrorToValidationError,
@@ -82,6 +91,8 @@ export type{
 
     IUploadFile,
     IUploadFileResult,
-    IUploadFileOptions
+    IUploadFileOptions,
+
+    SqliteTableField
 }
 

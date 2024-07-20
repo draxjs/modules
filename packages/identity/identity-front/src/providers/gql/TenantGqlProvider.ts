@@ -42,14 +42,14 @@ class TenantGqlProvider implements ITenantProvider {
         id name  } }`
         const variables = {id, input: payload}
         let data = await this.gqlClient.mutation(query, variables)
-        return data.createTenant
+        return data.updateTenant
     }
 
     async delete(id: string): Promise<any> {
         const query: string = `mutation deleteTenant($id: ID!) { deleteTenant(id: $id) }`
         const variables = {id: id}
         let data = await this.gqlClient.mutation(query, variables)
-        return data.createTenant
+        return data.deleteTenant
     }
 
     async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<ITenant>> {

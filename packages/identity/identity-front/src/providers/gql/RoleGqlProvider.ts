@@ -48,14 +48,14 @@ class RoleGqlProvider implements IRoleProvider {
         id name permissions childRoles{id name} readonly  } }`
         const variables = {id, input: payload}
         let data = await this.gqlClient.mutation(query, variables)
-        return data.createRole
+        return data.updateRole
     }
 
     async delete(id: string): Promise<any> {
         const query: string = `mutation deleteRole($id: ID!) { deleteRole(id: $id) }`
         const variables = {id: id}
         let data = await this.gqlClient.mutation(query, variables)
-        return data.createRole
+        return data.deleteRole
     }
 
     async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<IRole>> {

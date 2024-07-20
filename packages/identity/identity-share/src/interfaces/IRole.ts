@@ -7,6 +7,8 @@ interface IRoleBase{
     permissions: string[] | string
     childRoles?: string[] | string
     readonly: boolean | number
+    createdAt?: string
+    updatedAt?: string
 }
 
 interface IRole{
@@ -15,6 +17,8 @@ interface IRole{
     permissions: IRolePermissions
     childRoles?: IRole[]
     readonly: boolean | number
+    createdAt?: string
+    updatedAt?: string
 }
 
 

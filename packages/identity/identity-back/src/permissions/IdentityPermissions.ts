@@ -7,6 +7,13 @@ enum IdentityPermissions {
     ViewUser = "user:view",
     ManageUser = "user:manage",
 
+    CreateUserApiKey = "userApiKey:create",
+    UpdateUserApiKey = "userApiKey:update",
+    DeleteUserApiKey = "userApiKey:delete",
+    ViewUserApiKey = "userApiKey:view",
+    ViewMyUserApiKey = "userApiKey:myView",
+    ManageUserApiKey = "userApiKey:manage",
+
     CreateRole = "role:create",
     UpdateRole = "role:update",
     DeleteRole = "role:delete",

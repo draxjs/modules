@@ -1,26 +1,26 @@
-import {DraxConfig} from "@drax/common-back"
+import {DraxConfig, CommonConfig, COMMON} from "@drax/common-back"
 import RoleService from "../services/RoleService.js";
 import RoleMongoRepository from "../repository/mongo/RoleMongoRepository.js";
 import RoleSqliteRepository from "../repository/sqlite/RoleSqliteRepository.js";
-import {DbSetupUtils, DbEngine} from "../utils/DbSetupUtils.js";
 import type {IRoleRepository} from "../interfaces/IRoleRepository";
 
 let roleService: RoleService
 
-const RoleServiceFactory = (verbose: boolean = false) : RoleService => {
+const RoleServiceFactory = (verbose: boolean = false): RoleService => {
 
-    if(!roleService){
+    if (!roleService) {
         let roleRepository: IRoleRepository
 
-        switch (DbSetupUtils.getDbEngine()) {
-            case DbEngine.Mongo:
-                console.log("RoleServiceFactory DB ENGINE MONGODB")
+        switch (DraxConfig.getOrLoad(CommonConfig.DbEngine)) {
+            case COMMON.DB_ENGINES.MONGODB:
                 roleRepository = new RoleMongoRepository()
                 break;
-            case DbEngine.Sqlite:
-                console.log("RoleServiceFactory DB ENGINE SQLITE")
-                roleRepository = new RoleSqliteRepository(DbSetupUtils.getDbConfig(), verbose)
+            case COMMON.DB_ENGINES.SQLITE:
+                const dbFile = DraxConfig.getOrLoad(CommonConfig.SqliteDbFile)
+                roleRepository = new RoleSqliteRepository(dbFile, verbose)
                 break;
+            default:
+                throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
         }
 
         roleService = new RoleService(roleRepository)
@@ -29,4 +29,4 @@ const RoleServiceFactory = (verbose: boolean = false) : RoleService => {
     return roleService
 }
 
- export default RoleServiceFactory
+export default RoleServiceFactory

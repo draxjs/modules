@@ -4,6 +4,7 @@ import PasswordPage from '../pages/PasswordPage.vue'
 import UserCrudPage from '../pages/UserCrudPage.vue'
 import RoleCrudPage from '../pages/RoleCrudPage.vue'
 import TenantCrudPage from '../pages/TenantCrudPage.vue'
+import UserApiKeyCrudPage from '../pages/UserApiKeyCrudPage.vue'
 
 const routes = [
   {
@@ -57,7 +58,15 @@ const routes = [
       permission: 'user:manage'
     }
   },
-
+  {
+    name: 'CrudUserApiKey',
+    path: '/crud/user-api-key',
+    component: UserApiKeyCrudPage,
+    meta: {
+      auth: true,
+      permission: 'userApiKey:manage'
+    }
+  },
 ]
 
 

@@ -1,10 +1,13 @@
 import {DraxConfig} from "../config/DraxConfig.js";
-import IdentityConfig from "../config/CommonConfig.js";
+import CommonConfig from "../config/CommonConfig.js";
 
 function LoadCommonConfigFromEnv() {
-    DraxConfig.set(IdentityConfig.BaseUrl, process.env[IdentityConfig.BaseUrl])
-    DraxConfig.set(IdentityConfig.FileDir, process.env[IdentityConfig.FileDir])
-    DraxConfig.set(IdentityConfig.MaxUploadSize, process.env[IdentityConfig.MaxUploadSize])
+    DraxConfig.set(CommonConfig.DbEngine, process.env[CommonConfig.DbEngine])
+    DraxConfig.set(CommonConfig.SqliteDbFile, process.env[CommonConfig.SqliteDbFile])
+    DraxConfig.set(CommonConfig.MongoDbUri, process.env[CommonConfig.MongoDbUri])
+    DraxConfig.set(CommonConfig.BaseUrl, process.env[CommonConfig.BaseUrl])
+    DraxConfig.set(CommonConfig.FileDir, process.env[CommonConfig.FileDir])
+    DraxConfig.set(CommonConfig.MaxUploadSize, process.env[CommonConfig.MaxUploadSize])
 
 }
 

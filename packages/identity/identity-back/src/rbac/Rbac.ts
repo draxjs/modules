@@ -1,7 +1,7 @@
 import {IJwtUser, IRole} from "@drax/identity-share";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 
-class Rbac{
+class Rbac {
     private role: IRole;
     private authUser: IJwtUser;
 
@@ -27,9 +27,20 @@ class Rbac{
     }
 
     assertPermission(requiredPermission: string) {
-        if(!this.hasPermission(requiredPermission)){
+        if (!this.hasPermission(requiredPermission)) {
             throw new UnauthorizedError()
         }
+    }
+
+    assertOrPermissions(requiredPermissions: string[]) {
+
+        for(let requiredPermission of requiredPermissions){
+            if (this.hasPermission(requiredPermission)) {
+                return true
+            }
+        }
+
+        throw new UnauthorizedError()
     }
 
     assertAuthenticated() {

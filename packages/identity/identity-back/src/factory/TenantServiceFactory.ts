@@ -1,26 +1,26 @@
-import {DraxConfig} from "@drax/common-back"
+import {COMMON, CommonConfig, DraxConfig} from "@drax/common-back"
 import TenantService from "../services/TenantService.js";
 import TenantMongoRepository from "../repository/mongo/TenantMongoRepository.js";
 import TenantSqliteRepository from "../repository/sqlite/TenantSqliteRepository.js";
-import {DbSetupUtils, DbEngine} from "../utils/DbSetupUtils.js";
 import type {ITenantRepository} from "../interfaces/ITenantRepository";
 
 let tenantService: TenantService
 
-const TenantServiceFactory = (verbose: boolean = false) : TenantService => {
+const TenantServiceFactory = (verbose: boolean = false): TenantService => {
 
-    if(!tenantService){
+    if (!tenantService) {
         let tenantRepository: ITenantRepository
 
-        switch (DbSetupUtils.getDbEngine()) {
-            case DbEngine.Mongo:
-                console.log("TenantServiceFactory DB ENGINE MONGODB")
+        switch (DraxConfig.getOrLoad(CommonConfig.DbEngine)) {
+            case COMMON.DB_ENGINES.MONGODB:
                 tenantRepository = new TenantMongoRepository()
                 break;
-            case DbEngine.Sqlite:
-                console.log("TenantServiceFactory DB ENGINE SQLITE")
-                tenantRepository = new TenantSqliteRepository(DbSetupUtils.getDbConfig(), verbose)
+            case COMMON.DB_ENGINES.SQLITE:
+                const dbFile = DraxConfig.getOrLoad(CommonConfig.SqliteDbFile)
+                tenantRepository = new TenantSqliteRepository(dbFile, verbose)
                 break;
+            default:
+                throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
         }
 
         tenantService = new TenantService(tenantRepository)
@@ -29,4 +29,4 @@ const TenantServiceFactory = (verbose: boolean = false) : TenantService => {
     return tenantService
 }
 
- export default TenantServiceFactory
+export default TenantServiceFactory

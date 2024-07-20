@@ -4,27 +4,35 @@ import {UUID} from "crypto";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
-import {SqliteErrorToValidationError} from "@drax/common-back";
+import {SqliteErrorToValidationError, SqliteTableBuilder} from "@drax/common-back";
+import type {SqliteTableField} from "@drax/common-back";
 
-const tenantTableSQL: string = `
-    CREATE TABLE IF NOT EXISTS tenants
-    (
-        id TEXT PRIMARY KEY,
-        name TEXT
-    );
-`;
+
+const tableFields: SqliteTableField[] = [
+    {name: "name", type: "TEXT", unique: false, primary: false},
+    {name: "createdAt", type: "TEXT", unique: false, primary: false},
+    {name: "updatedAt", type: "TEXT", unique: false, primary: false},
+]
+
 
 class TenantSqliteRepository implements ITenantRepository{
 
     private db: any;
+    private dataBaseFile: string;
 
-    constructor(DATABASE:string, verbose:boolean = false) {
-        this.db = new sqlite(DATABASE, {verbose: verbose ? console.log : null});
+    constructor(dataBaseFile:string, verbose:boolean = false) {
+        this.dataBaseFile = dataBaseFile;
+        this.db = new sqlite(this.dataBaseFile, {verbose: verbose ? console.log : null});
         this.table()
     }
 
     table() {
-        this.db.exec(tenantTableSQL);
+        const builder = new SqliteTableBuilder(
+            this.dataBaseFile,
+            'tenants',
+            tableFields,
+            false);
+        builder.build('id')
     }
 
 
@@ -36,6 +44,7 @@ class TenantSqliteRepository implements ITenantRepository{
                 tenantData.id = randomUUID()
             }
 
+            tenantData.createdAt = (new Date().toISOString())
 
             const fields = Object.keys(tenantData)
                 .map(field => `${field}`)
@@ -66,10 +75,15 @@ class TenantSqliteRepository implements ITenantRepository{
 
     async update(id: string, tenantData: ITenantBase): Promise<ITenant> {
         try{
+
+            tenantData.updatedAt = (new Date().toISOString())
+
             const setClauses = Object.keys(tenantData)
                 .map(field => `${field} = @${field}`)
                 .join(', ');
+
             tenantData.id = id
+
             const stmt = this.db.prepare( `UPDATE tenants SET ${setClauses} WHERE id = @id `);
             stmt.run(tenantData);
             return this.findById(id)

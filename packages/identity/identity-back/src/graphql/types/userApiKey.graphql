@@ -1,0 +1,28 @@
+type UserApiKey {
+    id: ID!
+    name: String
+    secret: String
+    createdAt: Date
+    updatedAt: Date
+}
+
+type UserApiKeyPaginated{
+    total: Int
+    page: Int
+    limit: Int
+    items: [UserApiKey]
+}
+
+type Query{
+    paginateUserApiKey(options: PaginateOptions): UserApiKeyPaginated
+}
+
+input UserApiKeyInput{
+    name: String
+}
+
+type Mutation{
+    createUserApiKey(input: UserApiKeyInput): UserApiKey
+    updateUserApiKey(id: ID!, input: UserApiKeyInput): UserApiKey
+    deleteUserApiKey(id: ID!): Boolean
+}

@@ -25,6 +25,7 @@ const {
   userSystem: UserSystem,
   roleSystem: RoleSystem,
   tenantSystem: TenantSystem,
+  userApiKeySystem: UserApiKeySystem,
 } = SystemFactory(HttpClientType)
 
 app
@@ -32,4 +33,5 @@ app
   .provide('UserSystem', UserSystem)
   .provide('RoleSystem', RoleSystem)
   .provide('TenantSystem', TenantSystem)
+  .provide('UserApiKeySystem', UserApiKeySystem)
   .mount('#app')

@@ -1,13 +1,17 @@
 import {
-  UserGqlProvider,
-  UserRestProvider,
-  UserSystem,
-  IUserProvider,
-  ITenantProvider,
-  TenantGqlProvider, TenantRestProvider, TenantSystem
+  UserGqlProvider, UserRestProvider, UserSystem,
+
+  TenantGqlProvider, TenantRestProvider, TenantSystem,
+
+  AuthGqlProvider, AuthRestProvider, AuthSystem,
+
+  RoleGqlProvider, RoleRestProvider, RoleSystem,
+
+  UserApiKeyGqlProvider, UserApiKeyRestProvider, UserApiKeySystem
+
 } from "@drax/identity-front";
-import {RoleGqlProvider, RoleRestProvider, RoleSystem, IRoleProvider} from "@drax/identity-front";
-import {AuthGqlProvider, AuthRestProvider, AuthSystem, IAuthProvider} from "@drax/identity-front";
+
+import type { IRoleProvider, IUserProvider, ITenantProvider, IAuthProvider, IUserApiKeyProvider} from "@drax/identity-front";
 import {HttpGqlClient, HttpRestClient} from "@drax/common-front";
 
 
@@ -26,6 +30,7 @@ export function SystemFactory(HttpClientType: string = REST) {
   let roleProvider: IRoleProvider
   let authProvider: IAuthProvider
   let tenantProvider: ITenantProvider
+  let userApiKeyProvider: IUserApiKeyProvider
   let HttpClient
 
 
@@ -36,12 +41,14 @@ export function SystemFactory(HttpClientType: string = REST) {
     roleProvider = new RoleGqlProvider(HttpClient)
     authProvider = new AuthGqlProvider(HttpClient)
     tenantProvider = new TenantGqlProvider(HttpClient)
+    userApiKeyProvider = new UserApiKeyGqlProvider(HttpClient)
   } else {
     HttpClient = new HttpRestClient(baseUrl)
     userProvider = new UserRestProvider(HttpClient)
     roleProvider = new RoleRestProvider(HttpClient)
     authProvider = new AuthRestProvider(HttpClient)
     tenantProvider = new TenantRestProvider(HttpClient)
+    userApiKeyProvider = new UserApiKeyRestProvider(HttpClient)
   }
 
   //AccessToken on start from authStore
@@ -66,6 +73,7 @@ export function SystemFactory(HttpClientType: string = REST) {
   const roleSystem = new RoleSystem(roleProvider)
   const authSystem = new AuthSystem(authProvider)
   const tenantSystem = new TenantSystem(tenantProvider)
-  return {userSystem, roleSystem, authSystem, tenantSystem, HttpClient}
+  const userApiKeySystem = new UserApiKeySystem(userApiKeyProvider)
+  return {userSystem, roleSystem, authSystem, tenantSystem, userApiKeySystem, HttpClient}
 
 }
