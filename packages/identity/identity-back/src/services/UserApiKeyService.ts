@@ -28,6 +28,7 @@ class UserApiKeyService {
             userApiKey.secret = secret
             return userApiKey
         } catch (e) {
+            console.error("Error creating userApiKey", e)
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, userApiKeyData)
             }
@@ -43,6 +44,7 @@ class UserApiKeyService {
             const userApiKey = await this._repository.update(id, userApiKeyData)
             return userApiKey
         } catch (e) {
+            console.error("Error updating userApiKey", e)
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, userApiKeyData)
             }
@@ -51,33 +53,56 @@ class UserApiKeyService {
     }
 
     async delete(id: string): Promise<boolean> {
-        const currentUserApiKey = await this.findById(id)
-        const deletedUserApiKey = await this._repository.delete(id);
-        return deletedUserApiKey;
+        try {
+            const deletedUserApiKey = await this._repository.delete(id);
+            return deletedUserApiKey;
+        } catch (e) {
+            console.error("Error deleting userApiKey", e)
+            throw e
+        }
+
     }
 
     async findById(id: string): Promise<IUserApiKey | null> {
-        const userApiKey: IUserApiKey = await this._repository.findById(id);
-        return userApiKey
+        try{
+            const userApiKey: IUserApiKey = await this._repository.findById(id);
+            return userApiKey
+        }catch (e){
+            console.error("Error finding userApiKey by id", e)
+            throw e
+        }
+
     }
 
     async findBySecret(secret: string): Promise<IUserApiKey | null> {
-        const APIKEY_SECRET = DraxConfig.getOrLoad(IdentityConfig.ApiKeySecret)
-        const hashedSecret = AuthUtils.generateHMAC(APIKEY_SECRET, secret)
-        const userApiKey: IUserApiKey = await this._repository.findBySecret(hashedSecret);
-        return userApiKey
+        try{
+            const APIKEY_SECRET = DraxConfig.getOrLoad(IdentityConfig.ApiKeySecret)
+            const hashedSecret = AuthUtils.generateHMAC(APIKEY_SECRET, secret)
+            const userApiKey: IUserApiKey = await this._repository.findBySecret(hashedSecret);
+            return userApiKey
+        }catch (e){
+            console.error("Error finding userApiKey by secret", e)
+            throw e
+        }
+
     }
 
 
     async paginate({
-                       page= 1,
-                       limit= 5,
-                       orderBy= '',
-                       orderDesc= false,
-                       search= '',
-                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>>{
-        const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
-        return pagination;
+                       page = 1,
+                       limit = 5,
+                       orderBy = '',
+                       orderDesc = false,
+                       search = '',
+                       filters = []
+                   }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
+        try {
+            const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
+            return pagination;
+        } catch (e) {
+            console.error("Error paginating userApiKeys", e)
+            throw e
+        }
     }
 
 

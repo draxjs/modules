@@ -16,68 +16,68 @@ class UserService {
         console.log("UserService constructor")
     }
 
-    async auth(username : string, password : string){
+    async auth(username: string, password: string) {
         let user = null
-        console.log("auth username",username)
+        console.log("auth username", username)
         user = await this.findByUsername(username)
         if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
             //TODO: Generar Sesion
             const session = '123'
             const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, user.role.id, user.tenant?.id, session)
             return {accessToken: accessToken}
-        }else{
+        } else {
             throw new BadCredentialsError()
         }
     }
 
-    async changeUserPassword(userId : string, newPassword : string){
+    async changeUserPassword(userId: string, newPassword: string) {
         const user = await this.findById(userId)
-        if(user){
-            newPassword =  AuthUtils.hashPassword(newPassword)
+        if (user) {
+            newPassword = AuthUtils.hashPassword(newPassword)
             await this._repository.changePassword(userId, newPassword)
             return true
-        }else{
+        } else {
             throw new ValidationError([{field: 'userId', reason: 'validation.notFound'}])
         }
     }
 
 
-    async changeOwnPassword(userId : string, currentPassword : string, newPassword : string){
+    async changeOwnPassword(userId: string, currentPassword: string, newPassword: string) {
         const user = await this.findById(userId)
 
 
-        if(user && user.active){
+        if (user && user.active) {
 
-            if(currentPassword === newPassword){
+            if (currentPassword === newPassword) {
                 throw new ValidationError([{field: 'newPassword', reason: 'validation.password.currentDifferent'}])
             }
 
             if (AuthUtils.checkPassword(currentPassword, user.password)) {
-                newPassword =  AuthUtils.hashPassword(newPassword)
+                newPassword = AuthUtils.hashPassword(newPassword)
                 await this._repository.changePassword(userId, newPassword)
                 return true
-            }else{
+            } else {
                 throw new ValidationError([{field: 'currentPassword', reason: 'validation.notMatch'}])
             }
 
-        }else{
+        } else {
             throw new BadCredentialsError()
         }
     }
 
-    async changeAvatar(userId : string, avatar: string){
+    async changeAvatar(userId: string, avatar: string) {
         const user = await this.findById(userId)
-        if(user && user.active){
-                await this._repository.changeAvatar(userId, avatar)
-                return true
-        }else{
+        if (user && user.active) {
+            await this._repository.changeAvatar(userId, avatar)
+            return true
+        } else {
             throw new BadCredentialsError()
         }
     }
 
 
     async create(userData: IUserCreate): Promise<IUser> {
-        try{
+        try {
             userData.name = userData?.name?.trim()
             userData.username = userData.username.trim()
             userData.password = userData.password.trim()
@@ -89,9 +89,10 @@ class UserService {
 
             const user: IUser = await this._repository.create(userData)
             return user
-        }catch (e){
-            if(e instanceof ZodError){
-                throw ZodErrorToValidationError(e,userData)
+        } catch (e) {
+            console.error("Error creating user", e)
+            if (e instanceof ZodError) {
+                throw ZodErrorToValidationError(e, userData)
             }
             throw e
         }
@@ -100,50 +101,75 @@ class UserService {
     }
 
     async update(id: string, userData: IUserUpdate) {
-        try{
-        userData.name = userData.name.trim()
-        userData.username = userData.username.trim()
-        delete userData.password
-        userData.tenant = userData.tenant === "" ? null : userData.tenant
+        try {
+            userData.name = userData.name.trim()
+            userData.username = userData.username.trim()
+            delete userData.password
+            userData.tenant = userData.tenant === "" ? null : userData.tenant
 
-        await editUserSchema.parseAsync(userData)
+            await editUserSchema.parseAsync(userData)
 
 
-        const user: IUser = await this._repository.update(id, userData)
-        return user
-        }catch (e){
-            if(e instanceof ZodError){
-                throw ZodErrorToValidationError(e,userData)
+            const user: IUser = await this._repository.update(id, userData)
+            return user
+        } catch (e) {
+            console.error("Error updating user", e)
+            if (e instanceof ZodError) {
+                throw ZodErrorToValidationError(e, userData)
             }
             throw e
         }
     }
 
     async delete(id: string): Promise<boolean> {
-        const deletedRole: boolean = await this._repository.delete(id);
-        return deletedRole;
+        try {
+            const deletedRole: boolean = await this._repository.delete(id);
+            return deletedRole;
+        } catch (e) {
+            console.error("Error deleting user", e)
+            throw e
+        }
+
     }
 
     async findById(id: string): Promise<IUser> {
-        const user: IUser = await this._repository.findById(id);
-        return user
+        try {
+            const user: IUser = await this._repository.findById(id);
+            return user
+        } catch (e) {
+            console.error("Error finding user by id", e)
+            throw e
+        }
+
     }
 
     async findByUsername(username: string): Promise<IUser | null> {
-        const user: IUser = await this._repository.findByUsername(username);
-        return user
+        try {
+            const user: IUser = await this._repository.findByUsername(username);
+            return user
+        } catch (e) {
+            console.error("Error finding user by username", e)
+            throw e
+        }
+
     }
 
     async paginate({
-                       page= 1,
-                       limit= 5,
-                       orderBy= '',
-                       orderDesc= false,
-                       search= '',
-                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>>{
+                       page = 1,
+                       limit = 5,
+                       orderBy = '',
+                       orderDesc = false,
+                       search = '',
+                       filters = []
+                   }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
+        try {
+            const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
+            return pagination;
+        } catch (e) {
+            console.error("Error paginating users", e)
+            throw e;
+        }
 
-        const pagination = await this._repository.paginate( {page, limit, orderBy, orderDesc, search, filters});
-        return pagination;
     }
 }
 
