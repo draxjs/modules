@@ -51,7 +51,7 @@ async function UserApiKeyRoutes(fastify, options) {
 
     fastify.post('/api/user-api-keys', async (request, reply): Promise<IUserApiKey> => {
         try {
-            request.rbac.assertPermission(IdentityPermissions.CreateUser)
+            request.rbac.assertPermission(IdentityPermissions.CreateUserApiKey)
             const payload = request.body
             payload.user = request.rbac.authUser.id
 
@@ -76,7 +76,7 @@ async function UserApiKeyRoutes(fastify, options) {
 
     fastify.put('/api/user-api-keys/:id', async (request, reply): Promise<IUserApiKey> => {
         try {
-            request.rbac.assertPermission(IdentityPermissions.UpdateUser)
+            request.rbac.assertPermission(IdentityPermissions.UpdateUserApiKey)
             const id = request.params.id
             const payload = request.body
             const userApiKeyService = UserApiKeyServiceFactory()
@@ -102,7 +102,7 @@ async function UserApiKeyRoutes(fastify, options) {
 
     fastify.delete('/api/user-api-keys/:id', async (request, reply): Promise<any> => {
         try {
-            request.rbac.assertPermission(IdentityPermissions.DeleteUser)
+            request.rbac.assertPermission(IdentityPermissions.DeleteUserApiKey)
             const id = request.params.id
             const userApiKeyService = UserApiKeyServiceFactory()
             let r = await userApiKeyService.delete(id)
