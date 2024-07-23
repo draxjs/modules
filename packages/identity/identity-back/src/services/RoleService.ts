@@ -1,5 +1,5 @@
 import {IRoleRepository} from "../interfaces/IRoleRepository";
-import { ValidationError, ZodErrorToValidationError} from "@drax/common-back"
+import {ValidationError, ZodErrorToValidationError} from "@drax/common-back"
 import {roleSchema} from "../zod/RoleZod.js";
 import {ZodError} from "zod";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
@@ -22,6 +22,7 @@ class RoleService {
             const role = await this._repository.create(roleData)
             return role
         } catch (e) {
+            console.error("Error creating role", e)
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, roleData)
             }
@@ -36,6 +37,7 @@ class RoleService {
             const role = await this._repository.update(id, roleData)
             return role
         } catch (e) {
+            console.error("Error updating role", e)
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, roleData)
             }
@@ -44,19 +46,35 @@ class RoleService {
     }
 
     async delete(id: string): Promise<boolean> {
-
-        const deletedRole = await this._repository.delete(id);
-        return deletedRole;
+        try {
+            const deletedRole = await this._repository.delete(id);
+            return deletedRole;
+        } catch (e) {
+            console.error("Error deleting role", e)
+            throw e
+        }
     }
 
     async findById(id: string): Promise<IRole | null> {
-        const role: IRole = await this._repository.findById(id);
-        return role
+        try{
+            const role: IRole = await this._repository.findById(id);
+            return role
+        }catch (e){
+            console.error("Error finding role by id", e)
+            throw e;
+        }
+
     }
 
     async findByName(name: string): Promise<IRole | null> {
-        const role: IRole = await this._repository.findByName(name);
-        return role
+        try{
+            const role: IRole = await this._repository.findByName(name);
+            return role
+        }catch (e){
+            console.error("Error finding role by name", e)
+            throw e;
+        }
+
     }
 
     async fetchAll(): Promise<IRole[]> {
@@ -65,14 +83,21 @@ class RoleService {
     }
 
     async paginate({
-                       page= 1,
-                       limit= 5,
-                       orderBy= '',
-                       orderDesc= false,
-                       search= '',
-                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>>{
-        const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
-        return pagination;
+                       page = 1,
+                       limit = 5,
+                       orderBy = '',
+                       orderDesc = false,
+                       search = '',
+                       filters = []
+                   }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
+        try{
+            const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
+            return pagination;
+        }catch (e){
+            console.error("Error paginating roles", e)
+            throw e;
+        }
+
     }
 
 
