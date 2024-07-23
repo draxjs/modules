@@ -4,6 +4,8 @@ const messages = {
             'user':'User',
             'role':'Role',
             'tenant':'Tenant',
+            'userApiKey':'ApiKey',
+
             'permissions': 'Permissions',
 
             'user:view': 'View User',
@@ -39,6 +41,8 @@ const messages = {
             'user':'Usuario',
             'role':'Rol',
             'tenant':'Tenant',
+            'userApiKey':'ApiKey',
+
             'permissions': 'Permisos',
 
             'user:view': 'Ver Usuario',

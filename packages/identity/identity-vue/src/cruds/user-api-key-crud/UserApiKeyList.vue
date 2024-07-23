@@ -61,7 +61,7 @@ defineExpose({
 <template>
   <v-data-table-server
       class="border"
-      v-if="hasPermission('user:manage')"
+      v-if="hasPermission('userApiKey:manage')"
       v-model:items-per-page="itemsPerPage"
       v-model:page="page"
       :headers="headers"
