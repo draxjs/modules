@@ -23,6 +23,18 @@ const UserApiKeySchema = new mongoose.Schema<IUserApiKey>({
         ref: 'User',
         required: true,
     },
+    ipv4: [{
+        type: String,
+        unique: false,
+        required: false,
+        index: false,
+    }],
+    ipv6: [{
+        type: String,
+        unique: false,
+        required: false,
+        index: false,
+    }],
 }, {timestamps: true});
 
 UserApiKeySchema.set('toJSON', {getters: true});

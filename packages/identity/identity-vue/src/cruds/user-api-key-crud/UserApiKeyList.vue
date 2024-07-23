@@ -5,6 +5,7 @@ import {useUserApiKey} from "../../composables/useUserApiKey";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
 import type {IUserApiKey} from "@drax/identity-share";
+import dayjs from "dayjs";
 
 const {hasPermission} = useAuth()
 const {paginateUserApiKey} = useUserApiKey()
@@ -23,8 +24,13 @@ const serverItems: Ref<IUserApiKey[]> = ref([]);
 const totalItems = ref(0)
 const loading = ref(false)
 const search = ref('')
+
 const headers = ref<any>([
+    ...( hasPermission('userApiKey:view') ? [{ title: t('userApiKey.user') as string, key: 'user.username', align: 'start' }] : []),
   { title: t('userApiKey.name') as string, key: 'name', align: 'start' },
+  { title: t('userApiKey.ipv4') as string, key: 'ipv4', align: 'start' },
+  { title: t('userApiKey.ipv6') as string, key: 'ipv6', align: 'start' },
+  { title: t('userApiKey.createdAt') as string, key: 'createdAt', align: 'start' },
   { title: '', key: 'actions', align: 'end', minWidth: '150px' },
 ])
 
@@ -35,7 +41,6 @@ async function loadItems(){
       page: page.value,
       limit: itemsPerPage.value,
       search: search.value})
-    console.log('loadItems', r)
     serverItems.value = r.items
     totalItems.value = r.total
   }catch (e){
@@ -80,6 +85,18 @@ defineExpose({
         />
 
       </v-toolbar>
+    </template>
+
+    <template v-slot:item.ipv4="{ value }" >
+      <v-chip v-for="(ip,index) in value" :key="index">{{ip}}</v-chip>
+    </template>
+
+    <template v-slot:item.ipv6="{ value }" >
+      <v-chip v-for="(ip,index) in value" :key="index">{{ip}}</v-chip>
+    </template>
+
+    <template v-slot:item.createdAt="{ value }" >
+      {{value ? dayjs(value).format('YYYY-MM-DD') : '' }}
     </template>
 
 

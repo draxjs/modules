@@ -1,5 +1,5 @@
-import UserServiceFactory from "../factory/UserServiceFactory.js";
-import {IUser} from "@drax/identity-share";
+import UserApiKeyServiceFactory from "../factory/UserApiKeyServiceFactory.js";
+import type {IUserApiKey} from "@drax/identity-share";
 import {ValidationError} from "@drax/common-back";
 import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
@@ -8,7 +8,7 @@ import {IDraxPaginateResult} from "@drax/common-share";
 
 async function UserApiKeyRoutes(fastify, options) {
 
-    fastify.get('/api/user_api_keys', async (request, reply): Promise<IDraxPaginateResult<IUser>> => {
+    fastify.get('/api/user-api-keys', async (request, reply): Promise<IDraxPaginateResult<IUserApiKey>> => {
 
         try {
             request.rbac.assertAuthenticated()
@@ -29,13 +29,13 @@ async function UserApiKeyRoutes(fastify, options) {
             const orderBy = request.query.orderBy
             const orderDesc = request.query.orderDesc
             const search = request.query.search
-            const userApiKeyService = UserServiceFactory()
+            const userApiKeyService = UserApiKeyServiceFactory()
 
 
             let paginateResult = await userApiKeyService.paginate({page, limit, orderBy, orderDesc, search, filters})
             return paginateResult
         } catch (e) {
-            console.log("/api/user_api_keys",e)
+            console.log("/api/user-api-keys",e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message, inputErrors: e.errors})
@@ -49,16 +49,16 @@ async function UserApiKeyRoutes(fastify, options) {
         }
     })
 
-    fastify.post('/api/user_api_keys', async (request, reply): Promise<IUser> => {
+    fastify.post('/api/user-api-keys', async (request, reply): Promise<IUserApiKey> => {
         try {
             request.rbac.assertPermission(IdentityPermissions.CreateUser)
             const payload = request.body
             payload.user = request.rbac.authUser.id
 
-            const userApiKeyService = UserServiceFactory()
+            const userApiKeyService = UserApiKeyServiceFactory()
 
-            let user = await userApiKeyService.create(payload)
-            return user
+            let userApiKey = await userApiKeyService.create(payload)
+            return userApiKey
         } catch (e) {
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
@@ -74,17 +74,14 @@ async function UserApiKeyRoutes(fastify, options) {
 
     })
 
-    fastify.put('/api/user_api_keys/:id', async (request, reply): Promise<IUser> => {
+    fastify.put('/api/user-api-keys/:id', async (request, reply): Promise<IUserApiKey> => {
         try {
             request.rbac.assertPermission(IdentityPermissions.UpdateUser)
             const id = request.params.id
             const payload = request.body
-            const userApiKeyService = UserServiceFactory()
-            if(request.rbac.getAuthUser.tenantId){
-                payload.tenant = request.rbac.getAuthUser.tenantId
-            }
-            let user = await userApiKeyService.update(id, payload)
-            return user
+            const userApiKeyService = UserApiKeyServiceFactory()
+            let userApiKey = await userApiKeyService.update(id, payload)
+            return userApiKey
         } catch (e) {
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
@@ -103,11 +100,11 @@ async function UserApiKeyRoutes(fastify, options) {
         }
     })
 
-    fastify.delete('/api/user_api_keys/:id', async (request, reply): Promise<any> => {
+    fastify.delete('/api/user-api-keys/:id', async (request, reply): Promise<any> => {
         try {
             request.rbac.assertPermission(IdentityPermissions.DeleteUser)
             const id = request.params.id
-            const userApiKeyService = UserServiceFactory()
+            const userApiKeyService = UserApiKeyServiceFactory()
             let r = await userApiKeyService.delete(id)
             return r
         } catch (e) {

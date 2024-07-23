@@ -12,7 +12,8 @@ const messages = {
       filter:'Filter',
       filters:'Filters',
       search: 'Search',
-      reset: 'Reset'
+      reset: 'Reset',
+      success: 'Operation Success',
     }
   },
   es: {
@@ -28,7 +29,8 @@ const messages = {
       filter:'Filtrar',
       filters:'Filtros',
       search: 'Buscar',
-      reset: 'Reiniciar'
+      reset: 'Reiniciar',
+      success: 'Operación exitosa',
     }
   }
 }

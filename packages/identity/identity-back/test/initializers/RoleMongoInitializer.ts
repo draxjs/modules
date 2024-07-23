@@ -13,3 +13,4 @@ class RoleMongoInitializer {
 }
 
 export default RoleMongoInitializer
+export {RoleMongoInitializer}

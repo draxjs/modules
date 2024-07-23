@@ -5,11 +5,19 @@ const messages = {
             'role':'Role',
             'tenant':'Tenant',
             'permissions': 'Permissions',
+
             'user:view': 'View User',
             'user:create': 'Create User',
             'user:update': 'Edit User',
             'user:delete': 'Delete User',
             'user:manage': 'Manage User',
+
+            'userApiKey:view': 'View ApiKey',
+            'userApiKey:myView': 'View My ApiKey',
+            'userApiKey:create': 'Create ApiKey',
+            'userApiKey:update': 'Edit ApiKey',
+            'userApiKey:delete': 'Delete ApiKey',
+            'userApiKey:manage': 'Manage ApiKey',
 
             'role:view': 'View Role',
             'role:create': 'Create Role',
@@ -32,11 +40,19 @@ const messages = {
             'role':'Rol',
             'tenant':'Tenant',
             'permissions': 'Permisos',
+
             'user:view': 'Ver Usuario',
             'user:create': 'Crear Usuario',
             'user:update': 'Editar Usuario',
             'user:delete': 'Eliminar Usuario',
             'user:manage': 'Administrar Usuario',
+
+            'userApiKey:view': 'Ver ApiKey',
+            'userApiKey:myView': 'Ver mis ApiKey',
+            'userApiKey:create': 'Crear ApiKey',
+            'userApiKey:update': 'Editar ApiKey',
+            'userApiKey:delete': 'Eliminar ApiKey',
+            'userApiKey:manage': 'Administrar ApiKey',
 
             'role:view': 'Ver Rol',
             'role:create': 'Crear Rol',

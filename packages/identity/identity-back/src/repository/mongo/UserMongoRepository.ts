@@ -86,13 +86,13 @@ class UserMongoRepository implements IUserRepository {
 
         if(filters){
             for(const filter of filters){
-                if(filter.operator === '$eq'){
+                if(['eq','$eq'].includes(filter.operator)){
                     query[filter.field] = {$eq: filter.value}
                 }
-                if(filter.operator === '$ne'){
+                if(['ne','$ne'].includes(filter.operator)){
                     query[filter.field] = {$ne: filter.value}
                 }
-                if(filter.operator === '$in'){
+                if(['in','$in'].includes(filter.operator)){
                     query[filter.field] = {$in: filter.value}
                 }
             }

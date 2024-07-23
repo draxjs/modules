@@ -16,3 +16,4 @@ async function RoleSqliteInitializer(): Promise<IRole> {
 }
 
 export default RoleSqliteInitializer
+export {RoleSqliteInitializer}

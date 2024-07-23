@@ -8,6 +8,8 @@ const messages = {
       notFound: 'Not found',
       notMatch: 'Field must match',
       invalid: 'Invalid value',
+      invalidIpv4: 'Invalid IPv4 address',
+      invalidIpv6: 'Invalid IPv6 address',
     }
   },
   es: {
@@ -19,6 +21,8 @@ const messages = {
       notFound: 'No se encontró',
       notMatch: 'El campo debe coincidir',
       invalid: 'Valor inválido',
+      invalidIpv4: 'Dirección IPv4 inválida',
+      invalidIpv6: 'Dirección IPv6 inválida',
     }
   }
 }

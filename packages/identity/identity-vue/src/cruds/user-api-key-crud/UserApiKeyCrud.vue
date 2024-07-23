@@ -3,10 +3,14 @@ import {computed, ref} from 'vue'
 import UserApiKeyList from "./UserApiKeyList.vue";
 import {useUserApiKey} from "../../composables/useUserApiKey";
 import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
+import {useCopy} from "@drax/common-vue";
 import UserApiKeyForm from "../../forms/UserApiKeyForm.vue";
 import UserApiKeyView from "../../views/UserApiKeyView.vue";
 
 const {createUserApiKey, editUserApiKey, deleteUserApiKey, loading, userApiKeyError, inputErrors} = useUserApiKey()
+
+
+const {copy} = useCopy()
 
 interface UserApiKeyList {
   loadItems: () => void;
@@ -17,10 +21,11 @@ type DialogMode = 'create' | 'edit' | 'delete' | null;
 
 
 let dialog = ref(false);
+let success = ref(false);
 let dialogMode = ref<DialogMode>(null);
 let dialogTitle = ref('');
 const userApiKeyList = ref<UserApiKeyList | null>(null);
-let form = ref<IUserApiKeyBase>({name: ""})
+let form = ref<IUserApiKeyBase>({name: "", ipv4: [], ipv6: []})
 let target = ref<IUserApiKey>();
 let targetId = ref<string>('');
 let filterEnable = ref(false);
@@ -30,6 +35,8 @@ let userApiKeyCreated = ref<IUserApiKey>();
 
 function cancel() {
   dialog.value = false
+  userApiKeyCreated.value = undefined
+  success.value = false
   inputErrors.value = {}
   userApiKeyError.value = '';
   dialogMode.value = null
@@ -49,11 +56,7 @@ async function save() {
     } else if (dialogMode.value === 'delete') {
       await deleteUserApiKey(targetId.value)
     }
-
-    if(!userApiKeyCreated.value){
-      dialog.value = false
-    }
-
+    success.value = true
     inputErrors.value = {}
     userApiKeyError.value = '';
     if (userApiKeyList.value !== null) {
@@ -83,7 +86,7 @@ let buttonText = computed(() => {
 function toCreate() {
   dialogMode.value = 'create';
   dialogTitle.value = 'userApiKey.creating';
-  form.value = {name: ""}
+  form.value = {name: "", ipv4: [], ipv6: []}
   dialog.value = true;
 }
 
@@ -93,7 +96,9 @@ function toEdit(item: IUserApiKey) {
   dialogTitle.value = 'userApiKey.updating';
   targetId.value = item.id;
   form.value = {
-    name: item.name
+    name: item.name,
+    ipv4: item.ipv4 ? item.ipv4 : [],
+    ipv6: item.ipv6 ? item.ipv6 : [],
   }
   dialog.value = true;
 }
@@ -113,7 +118,7 @@ function toDelete(item: IUserApiKey) {
 <template>
   <v-container fluid>
 
-    <v-card border rounded >
+    <v-card border rounded>
       <v-toolbar class="bg-toolbar">
         <v-toolbar-title>{{ $t('userApiKey.managing') }}</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -143,22 +148,44 @@ function toDelete(item: IUserApiKey) {
           <v-card-text v-if="userApiKeyError">
             <v-alert type="error">{{ userApiKeyError }}</v-alert>
           </v-card-text>
+          <v-card-text v-if="success">
+            <v-alert type="success">{{ $t('action.success') }}</v-alert>
+          </v-card-text>
           <v-card-text>
             <UserApiKeyForm v-if="dialogMode === 'create' || dialogMode === 'edit'"
-                        v-model="form"
-                        :inputErrors="inputErrors"
-                        @formSubmit="save"
+                            v-model="form"
+                            :inputErrors="inputErrors"
+                            @formSubmit="save"
             />
-            userApiKeyCreated:  {{userApiKeyCreated}}
+            <v-text-field
+                v-if="userApiKeyCreated"
+                label="API KEY"
+                v-model="userApiKeyCreated.secret"
+                color="success"
+                base-color="success"
+                variant="outlined"
+                @click:append="copy(userApiKeyCreated.secret)"
+                :hint="$t('userApiKey.secretWarning')"
+                persistent-hint
+            >
+              <template v-slot:append>
+                <v-btn icon class="text-success" @click="copy(userApiKeyCreated.secret)"><v-icon>mdi mdi-content-copy</v-icon></v-btn>
+              </template>
+
+            </v-text-field>
             <UserApiKeyView v-if="dialogMode === 'delete' && target" :userApiKey="target"></UserApiKeyView>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn variant="text" @click="cancel" :loading="loading">Cancelar</v-btn>
-            <v-btn variant="flat"
-                   :color="dialogMode==='delete' ? 'red' : 'primary'"
-                   @click="save"
-                   :loading="loading"
+            <v-btn variant="text" @click="cancel" :loading="loading">
+              {{success ? $t('action.close') : $t('action.cancel')}}
+            </v-btn>
+            <v-btn
+                v-if="!success"
+                variant="flat"
+                :color="dialogMode==='delete' ? 'red' : 'primary'"
+                @click="save"
+                :loading="loading"
             >
               {{ $t(buttonText) }}
             </v-btn>

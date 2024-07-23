@@ -26,7 +26,7 @@ class UserApiKeyRestProvider implements IUserApiKeyProvider {
     }
 
     async delete(id: string): Promise<any> {
-            const url = '/api/users/' + id
+            const url = '/api/user-api-keys/' + id
             let user = await this.httpClient.delete(url)
             return user
     }

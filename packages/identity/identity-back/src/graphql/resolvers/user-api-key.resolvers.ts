@@ -43,7 +43,7 @@ export default {
                 rbac.assertPermission(IdentityPermissions.CreateUserApiKey)
                 input.user = rbac.authUser.id
                 input.secret = crypto.randomUUID()
-                const userApiKeyService = UserApiKeyServiceFactory()
+                const userApiKeyService = UserApiKeyServiceFactory(true)
                 return await userApiKeyService.create(input)
             } catch (e) {
                 console.error("createUserApiKey",e)

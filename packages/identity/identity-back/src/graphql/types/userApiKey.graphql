@@ -2,6 +2,9 @@ type UserApiKey {
     id: ID!
     name: String
     secret: String
+    ipv4: [String]
+    ipv6: [String]
+    user: User
     createdAt: Date
     updatedAt: Date
 }
@@ -19,6 +22,8 @@ type Query{
 
 input UserApiKeyInput{
     name: String
+    ipv4: [String]
+    ipv6: [String]
 }
 
 type Mutation{

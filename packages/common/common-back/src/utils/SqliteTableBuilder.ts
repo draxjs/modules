@@ -31,14 +31,31 @@ class SqliteTableBuilder {
         this.tableFields = tableFields
     }
 
+    get getUniqueColumns(){
+        return this.tableFields.filter(field => field.unique)
+    }
 
     build(identifier:string = 'id') {
 
-        let createSql = `CREATE TABLE IF NOT EXISTS ${this.tableName} (${identifier} TEXT PRIMARY KEY)`
+        let createSql = `CREATE TABLE IF NOT EXISTS ${this.tableName} (${identifier} TEXT PRIMARY KEY`
+
+        let columns = []
+        for (const field of this.tableFields) {
+            columns.push(`${field.name} ${field.type} ${field.unique ? "UNIQUE" : ""} ${field.custom ? field.custom : ""}`)
+        }
+
+        if(columns.length > 0){
+            createSql += ", " + columns.join(', ');
+        }
+
+        createSql += ')'
+
+        console.log("createSql",createSql)
+
         this.db.exec(createSql);
 
         for (const field of this.tableFields) {
-            if(!this.columnExist(field.name)){
+            if(!this.columnExist(field.name) && field.unique === false){
                 this.createColumn(field)
             }
 

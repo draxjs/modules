@@ -16,13 +16,12 @@ async function userApiKeyLoader(k):Promise<IUserApiKey | null> {
 async function apiKeyMiddleware (request, reply) {
         try{
             const apiKey = request.headers['x-api-key']
-            console.log("ApiKey",apiKey)
             if(apiKey){
                 const userApiKey = await draxCache.getOrLoad(apiKey, userApiKeyLoader)
-                console.log("userApiKey",userApiKey)
                 if(userApiKey && userApiKey.user){
-                    console.log("userApiKey.user",userApiKey.user)
                     request.authUser = userApiKey.user
+                    request.authUser.roleId = userApiKey.user.role.id
+                    request.authUser.tenantId = userApiKey.user.tenant.id
                 }
             }
             return

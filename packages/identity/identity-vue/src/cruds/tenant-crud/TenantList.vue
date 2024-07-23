@@ -5,6 +5,7 @@ import {useTenant} from "../../composables/useTenant";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
 import type {ITenant} from "@drax/identity-share";
+import dayjs from "dayjs";
 
 const {hasPermission} = useAuth()
 const {paginateTenant} = useTenant()
@@ -25,6 +26,7 @@ const loading = ref(false)
 const search = ref('')
 const headers = ref<any>([
   { title: t('tenant.name') as string, key: 'name', align: 'start' },
+  { title: t('tenant.createdAt') as string, key: 'createdAt', align: 'start' },
   { title: '', key: 'actions', align: 'end', minWidth: '150px' },
 ])
 
@@ -79,6 +81,10 @@ defineExpose({
         />
 
       </v-toolbar>
+    </template>
+
+    <template v-slot:item.createdAt="{ value }" >
+      {{value ? dayjs(value).format('YYYY-MM-DD') : '' }}
     </template>
 
 

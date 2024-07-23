@@ -163,20 +163,20 @@ class UserSqliteRepository implements IUserRepository {
         if(filters && filters.length > 0 ){
             where = where ? ` AND ` : ` WHERE `
             for(const filter of filters){
-                if(filter.operator === '$eq'){
+                if(['eq','$eq'].includes(filter.operator)){
                     whereFilters.push(` ${filter.field} = '${filter.value}' `)
                 }
-                if(filter.operator === '$ne'){
+                if(['ne','$ne'].includes(filter.operator)){
                     whereFilters.push(` ${filter.field} != '${filter.value}' `)
                 }
-                if(filter.operator === '$in'){
+                if(['in','$in'].includes(filter.operator)){
                     whereFilters.push(` ${filter.field} LIKE '%${filter.value}%' `)
                 }
             }
             where += whereFilters.join(" AND ")
         }
 
-       // console.log("paginate where ", where, "search", search, "filters", filters, "whereFilters", whereFilters)
+        console.log("paginate where ", where, "search", search, "filters", filters, "whereFilters", whereFilters)
 
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM users' + where).get();
 

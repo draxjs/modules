@@ -32,6 +32,7 @@ async function UserRoutes(fastify, options) {
             if (request.authUser) {
                 const userService = UserServiceFactory()
                 let user = await userService.findById(request.authUser.id)
+                user.password = undefined
                 delete user.password
                 return user
             } else {
@@ -69,9 +70,12 @@ async function UserRoutes(fastify, options) {
                 filters.push({field: 'tenant', operator: '$eq', value: request.rbac.getAuthUser.tenantId})
             }
             let paginateResult = await userService.paginate({page, limit, orderBy, orderDesc, search, filters})
+            for(let item of paginateResult.items){
+                item.password = undefined
+                delete item.password
+            }
             return paginateResult
         } catch (e) {
-            console.log("/api/users",e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message, inputErrors: e.errors})

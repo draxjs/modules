@@ -22,7 +22,7 @@ class UserMongoRepository implements IUserApiKeyRepository {
 
             const userApiKey: mongoose.HydratedDocument<IUserApiKey> = new UserApiKeyModel(data)
             await userApiKey.save()
-            await userApiKey.populate(['user', 'user.tenant'])
+            await userApiKey.populate({path: 'user', populate: {path: 'tenant role'} })
             return userApiKey
         } catch (e) {
             if (e instanceof mongoose.Error.ValidationError) {
@@ -36,7 +36,7 @@ class UserMongoRepository implements IUserApiKeyRepository {
     async update(id: string, data: IUserApiKeyBase): Promise<IUserApiKey> {
         try {
             delete data.secret
-            const userApiKey: mongoose.HydratedDocument<IUserApiKey> = await UserApiKeyModel.findOneAndUpdate({_id: id}, data, {new: true}).populate(['user', 'user.tenant']).exec()
+            const userApiKey: mongoose.HydratedDocument<IUserApiKey> = await UserApiKeyModel.findOneAndUpdate({_id: id}, data, {new: true}).populate({path: 'user', populate: {path: 'tenant role'} }).exec()
             return userApiKey
         } catch (e) {
             if (e instanceof mongoose.Error.ValidationError) {
@@ -56,12 +56,12 @@ class UserMongoRepository implements IUserApiKeyRepository {
     }
 
     async findById(id: string): Promise<IUserApiKey> {
-        const userApiKey: mongoose.HydratedDocument<IUserApiKey> = await UserApiKeyModel.findById(id).populate(['user', 'user.tenant']).exec()
+        const userApiKey: mongoose.HydratedDocument<IUserApiKey> = await UserApiKeyModel.findById(id).populate({path: 'user', populate: {path: 'tenant role'} }).exec()
         return userApiKey
     }
 
     async findBySecret(secret: string): Promise<IUserApiKey> {
-        const userApiKey: mongoose.HydratedDocument<IUserApiKey> = await UserApiKeyModel.findOne({secret: secret}).populate(['user', 'user.tenant']).exec()
+        const userApiKey: mongoose.HydratedDocument<IUserApiKey> = await UserApiKeyModel.findOne({secret: secret}).populate({path: 'user', populate: {path: 'tenant role'}}).exec()
         return userApiKey
     }
 
@@ -84,23 +84,21 @@ class UserMongoRepository implements IUserApiKeyRepository {
             ]
         }
 
-        if (filters) {
-            for (const filter of filters) {
-                if (filter.operator === '$eq') {
+        if(filters){
+            for(const filter of filters){
+                if(['eq','$eq'].includes(filter.operator)){
                     query[filter.field] = {$eq: filter.value}
                 }
-                if (filter.operator === '$ne') {
+                if(['ne','$ne'].includes(filter.operator)){
                     query[filter.field] = {$ne: filter.value}
                 }
-                if (filter.operator === '$in') {
+                if(['in','$in'].includes(filter.operator)){
                     query[filter.field] = {$in: filter.value}
                 }
             }
         }
 
-
-
-        const options = {populate: ['user', 'user.tenant'], page: page, limit: limit}
+        const options = {populate: ['user', 'user.tenant', 'user.role'], page: page, limit: limit}
 
         const userApiKeyPaginated: PaginateResult<IUserApiKey> = await UserApiKeyModel.paginate(query, options)
         return {

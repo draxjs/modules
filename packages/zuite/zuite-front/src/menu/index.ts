@@ -37,7 +37,7 @@ const menu: MenuItem[] = [
         permission: 'user:manage'
       },
       {
-        icon: 'mdi-table-account',
+        icon: 'mdi mdi-table-key',
         text:'Api Keys',
         link: { name: "CrudUserApiKey" },
         gallery: true,

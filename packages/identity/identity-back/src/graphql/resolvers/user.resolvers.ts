@@ -20,7 +20,7 @@ export default {
                 if (authUser) {
                     let userService = UserServiceFactory()
                     let user = await userService.findById(authUser.id)
-                    delete user.password
+                    user.password = undefined
                     return user
                 }
                 throw new UnauthorizedError()
@@ -34,7 +34,9 @@ export default {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewUser)
                 let userService = UserServiceFactory()
-                return await userService.findById(id)
+                let user =  await userService.findById(id)
+                user.password = undefined
+                return user
             } catch (e) {
                 if (e instanceof UnauthorizedError) {
                     throw new GraphQLError(e.message)
@@ -47,6 +49,11 @@ export default {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewUser)
                 let userService = UserServiceFactory()
+
+                if(!options.filters){
+                    options.filters = []
+                }
+
                 if (rbac.getAuthUser.tenantId) {
                     options.filters.push({field: 'tenant', operator: '$eq', value: rbac.getAuthUser.tenantId})
                 }
