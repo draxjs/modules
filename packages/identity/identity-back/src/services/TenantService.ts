@@ -21,6 +21,7 @@ class TenantService {
             const tenant = await this._repository.create(tenantData)
             return tenant
         } catch (e) {
+            console.error("Error creating tenant", e)
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, tenantData)
             }
@@ -35,6 +36,7 @@ class TenantService {
             const tenant = await this._repository.update(id, tenantData)
             return tenant
         } catch (e) {
+            console.error("Error updating tenant", e)
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, tenantData)
             }
@@ -43,35 +45,65 @@ class TenantService {
     }
 
     async delete(id: string): Promise<boolean> {
-        const currentTenant = await this.findById(id)
-        const deletedTenant = await this._repository.delete(id);
-        return deletedTenant;
+        try {
+            const deletedTenant = await this._repository.delete(id);
+            return deletedTenant;
+        } catch (e) {
+            console.error("Error deleting tenant", e)
+            throw e;
+        }
+
     }
 
     async findById(id: string): Promise<ITenant | null> {
-        const tenant: ITenant = await this._repository.findById(id);
-        return tenant
+        try {
+            const tenant: ITenant = await this._repository.findById(id);
+            return tenant
+        } catch (e) {
+            console.error("Error finding tenant by id", e)
+            throw e;
+        }
+
     }
 
     async findByName(name: string): Promise<ITenant | null> {
-        const tenant: ITenant = await this._repository.findByName(name);
-        return tenant
+        try {
+            const tenant: ITenant = await this._repository.findByName(name);
+            return tenant
+        } catch (e) {
+            console.error("Error finding tenant by name", e)
+            throw e;
+        }
+
     }
 
     async fetchAll(): Promise<ITenant[]> {
-        const tenants: ITenant[] = await this._repository.fetchAll();
-        return tenants
+        try {
+            const tenants: ITenant[] = await this._repository.fetchAll();
+            return tenants
+        } catch (e) {
+            console.error("Error fetching all tenants", e)
+            throw e;
+        }
+
     }
 
     async paginate({
-                       page= 1,
-                       limit= 5,
-                       orderBy= '',
-                       orderDesc= false,
-                       search= '',
-                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>>{
-        const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
-        return pagination;
+                       page = 1,
+                       limit = 5,
+                       orderBy = '',
+                       orderDesc = false,
+                       search = '',
+                       filters = []
+                   }: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
+        try {
+            const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
+            return pagination;
+        } catch (e) {
+            console.error("Error paginating tenants", e)
+            throw e;
+        }
+
     }
 
 

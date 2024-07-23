@@ -38,5 +38,6 @@
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.4.5"
-  }
+  },
+  "gitHead": "10c4131190e7f7e7b9f779b4ea2af87e372d9672"
 }
