@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.5",
+  "version": "0.1.6",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -27,7 +27,7 @@
     "@drax/common-front": "^0.1.0",
     "@drax/common-share": "^0.1.0",
     "@drax/common-vue": "^0.1.0",
-    "@drax/identity-share": "^0.1.0",
+    "@drax/identity-share": "^0.1.6",
     "vue-i18n": "^9.13.1"
   },
   "peerDependencies": {
