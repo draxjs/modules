@@ -18,6 +18,7 @@ interface IUserApiKey {
     ipv4?: string[]
     ipv6?: string[]
     createdAt?: string
+    deleted?: boolean
 }
 
 interface IUserApiKeySoftDelete extends IUserApiKey {

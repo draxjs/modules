@@ -61,7 +61,7 @@ class UserMongoRepository implements IUserApiKeyRepository {
     }
 
     async findBySecret(secret: string): Promise<IUserApiKey> {
-        const userApiKey: mongoose.HydratedDocument<IUserApiKey> = await UserApiKeyModel.findOne({secret: secret}).populate({path: 'user', populate: {path: 'tenant role'}}).exec()
+        const userApiKey: mongoose.HydratedDocument<IUserApiKey> = await UserApiKeyModel.findOne({secret: {$eq: secret}, deleted: {$ne: true} }).populate({path: 'user', populate: {path: 'tenant role'}}).exec()
         return userApiKey
     }
 

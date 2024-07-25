@@ -9,7 +9,6 @@
   "types": "types/index.d.ts",
   "type": "module",
   "scripts": {
-    "serve": "nodemon --exec node --loader ts-node/esm src/index.ts",
     "prepublish": "tsc && npm run copygql",
     "clean": "rm -rf dist",
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",

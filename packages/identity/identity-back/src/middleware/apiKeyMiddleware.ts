@@ -21,7 +21,7 @@ async function apiKeyMiddleware (request, reply) {
                 if(userApiKey && userApiKey.user){
                     request.authUser = userApiKey.user
                     request.authUser.roleId = userApiKey.user.role.id
-                    request.authUser.tenantId = userApiKey.user.tenant.id
+                    request.authUser.tenantId = userApiKey.user?.tenant?.id
                 }
             }
             return
