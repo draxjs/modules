@@ -5,7 +5,7 @@
     "outDir": "dist",
     "declarationDir": "./types",
   },
-  "exclude": ["test", "types","dist"],
+  "exclude": ["types", "test", "dist","node_modules"],
   "ts-node": {
     "esm": true
   },

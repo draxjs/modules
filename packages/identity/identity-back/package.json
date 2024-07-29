@@ -13,6 +13,8 @@
     "clean": "rm -rf dist",
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -b tsconfig.json",
+    "tsclistFiles": "tsc --listFiles",
+    "tscexplain": "tsc --explainFiles",
     "test": "node --import tsx --test test/**/*",
     "testMongoRepositoryRole": "node --import tsx --test test/repository/mongo/role*",
     "testMongoRepositoryUser": "node --import tsx --test test/repository/mongo/user-mongo*",

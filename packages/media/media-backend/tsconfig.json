@@ -12,11 +12,7 @@
     "dist",
     "**/*.jpg"
   ],
-  "references": [
-    {
-      "path": "../../common/common-back"
-    }
-  ],
+
   "ts-node": {
     "esm": true
   },
