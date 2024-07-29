@@ -1,6 +1,7 @@
 const messages = {
     en: {
         tenant: {
+            entity: "Tenant",
             name: "Name",
             createdAt: 'Created At',
             updating: "Updating Tenant",
@@ -11,6 +12,7 @@ const messages = {
     },
     es: {
         tenant:{
+            entity: "Tenant",
             name: "Nombre",
             createdAt: 'Creado',
             updating: "Actualizando Tenant",

@@ -23,7 +23,7 @@ onMounted(async () => {
 <template>
   <v-select
       v-model="model"
-      label="Tenant"
+      :label="$t ? $t('tenant.entity') : 'Tenant'"
       :items="items"
       item-title="name"
       item-value="id"
