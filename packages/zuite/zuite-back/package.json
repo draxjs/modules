@@ -15,11 +15,11 @@
     "recoveryAdmin": " node --env-file .env --loader ts-node/esm src/setup/scripts/RecoverAdminPassword.ts"
   },
   "dependencies": {
-    "@apollo/server": "^4.10.4",
-    "@as-integrations/fastify": "^2.0.0",
     "@drax/common-back": "^0.1.0",
     "@drax/identity-back": "^0.1.8",
     "@drax/media-back": "^0.1.8",
+    "@apollo/server": "^4.10.4",
+    "@as-integrations/fastify": "^2.0.0",
     "@fastify/multipart": "^8.3.0",
     "@fastify/static": "^7.0.4",
     "@graphql-tools/load-files": "^7.0.0",
