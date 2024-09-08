@@ -32,6 +32,7 @@ const serverItems: Ref<IRole[]> = ref([]);
 const totalItems = ref(0)
 const loading = ref(false)
 const search = ref('')
+const sortBy : Ref<any> = ref([])
 
 async function loadItems(){
   try{
@@ -39,6 +40,8 @@ async function loadItems(){
     const r = await paginateRole({
       page: page.value,
       limit: itemsPerPage.value,
+      orderBy: sortBy.value[0]?.key,
+      order: sortBy.value[0]?.order,
       search: search.value})
     serverItems.value = r.items
     totalItems.value = r.total
@@ -61,7 +64,9 @@ defineExpose({
   <v-data-table-server
       v-if="hasPermission('user:manage')"
       v-model:items-per-page="itemsPerPage"
+      :items-per-page-options="[5, 10, 20, 50]"
       v-model:page="page"
+      v-model:sort-by="sortBy"
       :headers="headers"
       :items="serverItems"
       :items-length="totalItems"

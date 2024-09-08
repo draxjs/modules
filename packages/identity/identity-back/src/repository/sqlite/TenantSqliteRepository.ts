@@ -4,7 +4,7 @@ import {UUID} from "crypto";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
-import {SqliteErrorToValidationError, SqliteTableBuilder} from "@drax/common-back";
+import {SqliteErrorToValidationError, SqliteTableBuilder, SqlQueryFilter, SqlSort} from "@drax/common-back";
 import type {SqliteTableField} from "@drax/common-back";
 
 
@@ -118,7 +118,7 @@ class TenantSqliteRepository implements ITenantRepository{
                        page= 1,
                        limit= 5,
                        orderBy= '',
-                       orderDesc= false,
+                       order= false,
                        search= '',
                        filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>>{
         const offset = page > 1 ? (page - 1) * limit : 0
@@ -128,7 +128,11 @@ class TenantSqliteRepository implements ITenantRepository{
             where = ` WHERE name LIKE '%${search}%'`
         }
 
+        where = SqlQueryFilter.applyFilters(where, filters)
+        const sort = SqlSort.applySort(orderBy, order)
+
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM tenants'+where).get();
+        where += sort
         const tenants = this.db.prepare('SELECT * FROM tenants '  + where + ' LIMIT ? OFFSET ?').all([limit, offset]);
 
         return {

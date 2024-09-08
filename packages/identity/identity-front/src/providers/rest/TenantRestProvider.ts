@@ -36,9 +36,9 @@ class TenantRestProvider implements ITenantProvider {
         return user
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}): Promise<IDraxPaginateResult<ITenant>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<ITenant>> {
         const url = '/api/tenants'
-        const params = {page, limit, orderBy, orderDesc, search}
+        const params = {page, limit, orderBy, order, search}
         let paginatedTenants = await this.httpClient.get(url, {params})
         return paginatedTenants as IDraxPaginateResult<ITenant>
 

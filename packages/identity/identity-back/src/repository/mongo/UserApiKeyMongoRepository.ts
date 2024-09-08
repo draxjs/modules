@@ -1,7 +1,7 @@
 import {UserApiKeyModel} from "../../models/UserApiKeyModel.js";
 import {
     mongoose,
-    MongooseErrorToValidationError,
+    MongooseErrorToValidationError, MongooseQueryFilter, MongooseSort,
     MongoServerErrorToValidationError,
     ValidationError
 } from "@drax/common-back"
@@ -69,7 +69,7 @@ class UserMongoRepository implements IUserApiKeyRepository {
                        page = 1,
                        limit = 5,
                        orderBy = '',
-                       orderDesc = false,
+                       order = false,
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
@@ -84,21 +84,11 @@ class UserMongoRepository implements IUserApiKeyRepository {
             ]
         }
 
-        if(filters){
-            for(const filter of filters){
-                if(['eq','$eq'].includes(filter.operator)){
-                    query[filter.field] = {$eq: filter.value}
-                }
-                if(['ne','$ne'].includes(filter.operator)){
-                    query[filter.field] = {$ne: filter.value}
-                }
-                if(['in','$in'].includes(filter.operator)){
-                    query[filter.field] = {$in: filter.value}
-                }
-            }
-        }
+        MongooseQueryFilter.applyFilters(query, filters)
 
-        const options = {populate: ['user', 'user.tenant', 'user.role'], page: page, limit: limit}
+        const sort = MongooseSort.applySort(orderBy, order)
+
+        const options = {populate: ['user', 'user.tenant', 'user.role'], page, limit, sort}
 
         const userApiKeyPaginated: PaginateResult<IUserApiKey> = await UserApiKeyModel.paginate(query, options)
         return {

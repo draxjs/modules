@@ -1,5 +1,5 @@
 import {jwtMiddleware, rbacMiddleware, UserRoutes, RoleRoutes, TenantRoutes} from "@drax/identity-back"
-import ModuleMerger from "../utils/ModuleMerger.js";
+import ModuleMerger from "../merge/ModuleMerger.js";
 import ApolloExpressServer from "../servers/ApolloExpressServer.js";
 const {typeDefs, resolvers} = await ModuleMerger()
 

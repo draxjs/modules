@@ -13,9 +13,9 @@ export function useUser() {
     let inputErrors = ref<IClientInputError>()
     let loading = ref(false);
 
-    async function paginateUser({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}) {
+    async function paginateUser({page= 1, limit= 5, orderBy="", order=false, search = ""}) {
         loading.value = true
-        let paginatedUser = userSystem.paginate({page, limit, orderBy, orderDesc, search})
+        let paginatedUser = userSystem.paginate({page, limit, orderBy, order, search})
         loading.value = false
         return paginatedUser
     }

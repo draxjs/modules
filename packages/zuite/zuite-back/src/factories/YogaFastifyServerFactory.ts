@@ -1,7 +1,7 @@
 import YogaFastifyServer from "../servers/YogaFastifyServer.js";
 import {jwtMiddleware, rbacMiddleware, apiKeyMiddleware, UserRoutes, RoleRoutes, TenantRoutes, UserAvatarRoutes, UserApiKeyRoutes} from "@drax/identity-back"
 import {MediaRoutes} from "@drax/media-back"
-import ModuleMerger from "../utils/ModuleMerger.js";
+import ModuleMerger from "../merge/ModuleMerger.js";
 const {typeDefs, resolvers} = await ModuleMerger()
 
 function YogaFastifyServerFactory(rootDir:string) {

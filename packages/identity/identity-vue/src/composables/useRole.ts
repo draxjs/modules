@@ -27,9 +27,9 @@ export function useRole() {
         return roles
     }
 
-    async function paginateRole({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}) {
+    async function paginateRole({page= 1, limit= 5, orderBy="", order=false, search = ""}) {
         loading.value = true
-        let paginatedrole = roleSystem.paginate({page, limit, orderBy, orderDesc, search})
+        let paginatedrole = roleSystem.paginate({page, limit, orderBy, order, search})
         loading.value = false
         return paginatedrole
     }

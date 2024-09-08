@@ -4,7 +4,13 @@ import {randomUUID} from "node:crypto";
 import {UUID} from "crypto";
 import {IUserRepository} from "../../interfaces/IUserRepository";
 import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
-import {SqliteErrorToValidationError, SqliteTableBuilder, ValidationError} from "@drax/common-back";
+import {
+    SqliteErrorToValidationError,
+    SqliteTableBuilder,
+    SqlQueryFilter,
+    SqlSort,
+    ValidationError
+} from "@drax/common-back";
 import type {SqliteTableField} from "@drax/common-back";
 import RoleSqliteRepository from "./RoleSqliteRepository.js";
 import TenantSqliteRepository from "./TenantSqliteRepository.js";
@@ -148,7 +154,7 @@ class UserSqliteRepository implements IUserRepository {
                        page= 1,
                        limit= 5,
                        orderBy= '',
-                       orderDesc= false,
+                       order= false,
                        search= '',
                        filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
 
@@ -159,27 +165,14 @@ class UserSqliteRepository implements IUserRepository {
             where = ` WHERE (name LIKE '%${search}%' OR username LIKE '%${search}%') `
         }
 
-        let whereFilters= []
-        if(filters && filters.length > 0 ){
-            where = where ? ` AND ` : ` WHERE `
-            for(const filter of filters){
-                if(['eq','$eq'].includes(filter.operator)){
-                    whereFilters.push(` ${filter.field} = '${filter.value}' `)
-                }
-                if(['ne','$ne'].includes(filter.operator)){
-                    whereFilters.push(` ${filter.field} != '${filter.value}' `)
-                }
-                if(['in','$in'].includes(filter.operator)){
-                    whereFilters.push(` ${filter.field} LIKE '%${filter.value}%' `)
-                }
-            }
-            where += whereFilters.join(" AND ")
-        }
+        where = SqlQueryFilter.applyFilters(where, filters)
+        const sort = SqlSort.applySort(orderBy, order)
 
-        console.log("paginate where ", where, "search", search, "filters", filters, "whereFilters", whereFilters)
+
+        console.log("paginate where ", where, "search", search, "filters", filters)
 
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM users' + where).get();
-
+        where += sort
         const users = this.db.prepare('SELECT * FROM users'  + where + ' LIMIT ? OFFSET ?').all([limit, offset]);
 
         for (const user of users) {

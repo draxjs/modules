@@ -15,7 +15,8 @@
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -b tsconfig.json",
     "test": "node --import tsx --test test/**/*",
-    "testCache": "node --import tsx --test test/cache/*"
+    "testCache": "node --import tsx --test test/cache/*",
+    "testMongoose": "node --import tsx --test test/mongoose/*"
   },
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",

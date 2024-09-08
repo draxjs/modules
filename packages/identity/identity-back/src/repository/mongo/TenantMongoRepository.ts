@@ -1,7 +1,7 @@
 import {TenantModel} from "../../models/TenantModel.js";
 import {ITenantRepository} from '../../interfaces/ITenantRepository'
-import { mongoose} from "@drax/common-back";
-import {FilterQuery, PaginateOptions, PaginateResult} from "mongoose";
+import {mongoose, MongooseSort, MongooseQueryFilter} from "@drax/common-back";
+import { PaginateOptions, PaginateResult} from "mongoose";
 import {DeleteResult} from "mongodb";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 import {ITenant, ITenantBase} from "@drax/identity-share";
@@ -43,7 +43,7 @@ class TenantMongoRepository implements ITenantRepository{
                        page= 1,
                        limit= 5,
                        orderBy= '',
-                       orderDesc= false,
+                       order= false,
                        search= '',
                        filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
 
@@ -55,7 +55,11 @@ class TenantMongoRepository implements ITenantRepository{
             ]
         }
 
-        const options = {page, limit} as PaginateOptions
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const sort = MongooseSort.applySort(orderBy, order)
+
+        const options = {page, limit, sort} as PaginateOptions
         const tenants: PaginateResult<ITenant> = await TenantModel.paginate(query, options)
         return {
             page: page,

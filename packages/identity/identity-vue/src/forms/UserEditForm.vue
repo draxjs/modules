@@ -62,6 +62,7 @@ const onSubmit = () => {
     <TenantCombobox
         v-model="form.tenant"
         :error-messages="$ta(inputErrors.tenant)"
+        clearable
     ></TenantCombobox>
 
     <v-text-field

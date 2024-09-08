@@ -34,6 +34,7 @@ const serverItems: Ref<IUser[]> = ref([]);
 const totalItems = ref(0)
 const loading = ref(false)
 const search = ref('')
+const sortBy : Ref<any> = ref([])
 
 async function loadItems(){
   try{
@@ -41,6 +42,8 @@ async function loadItems(){
     const r = await paginateUser({
       page: page.value,
       limit: itemsPerPage.value,
+      orderBy: sortBy.value[0]?.key,
+      order: sortBy.value[0]?.order,
       search: search.value})
     serverItems.value = r.items
     totalItems.value = r.total
@@ -64,6 +67,8 @@ defineExpose({
       v-if="hasPermission('user:manage')"
       v-model:items-per-page="itemsPerPage"
       v-model:page="page"
+      v-model:sort-by="sortBy"
+      :items-per-page-options="[5, 10, 20, 50]"
       :headers="headers"
       :items="serverItems"
       :items-length="totalItems"

@@ -14,9 +14,9 @@ export function useUserApiKey() {
     let loading = ref(false);
 
 
-    async function paginateUserApiKey({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}) {
+    async function paginateUserApiKey({page= 1, limit= 5, orderBy="", order=false, search = ""}) {
         loading.value = true
-        let paginateduserApiKey = userApiKeySystem.paginate({page, limit, orderBy, orderDesc, search})
+        let paginateduserApiKey = userApiKeySystem.paginate({page, limit, orderBy, order, search})
         loading.value = false
         return paginateduserApiKey
     }

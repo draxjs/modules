@@ -4,7 +4,13 @@ import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
 import {IRole, IRoleBase} from "@drax/identity-share";
-import {SqliteErrorToValidationError, SqliteTableBuilder, SqliteTableField} from "@drax/common-back";
+import {
+    SqliteErrorToValidationError,
+    SqliteTableBuilder,
+    SqliteTableField,
+    SqlQueryFilter,
+    SqlSort
+} from "@drax/common-back";
 
 const tableFields: SqliteTableField[] = [
     {name: "name", type: "TEXT", unique: true, primary: false},
@@ -106,7 +112,7 @@ class RoleSqliteRepository implements IRoleRepository{
                        page= 1,
                        limit= 5,
                        orderBy= '',
-                       orderDesc= false,
+                       order= false,
                        search= '',
                        filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>>{
         const offset = page > 1 ? (page - 1) * limit : 0
@@ -116,7 +122,11 @@ class RoleSqliteRepository implements IRoleRepository{
             where = ` WHERE name LIKE '%${search}%'`
         }
 
+        where = SqlQueryFilter.applyFilters(where, filters)
+        const sort = SqlSort.applySort(orderBy, order)
+
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM roles'+where).get();
+        where += sort
         const roles = this.db.prepare('SELECT * FROM roles '  + where + ' LIMIT ? OFFSET ?').all([limit, offset]);
 
         for (const role of roles) {

@@ -5,6 +5,10 @@ import type { PropType } from 'vue'
 defineProps({
   errorMessages: {
     type: String as PropType<string | string[] | undefined>,
+  },
+  clearable: {
+    type: Boolean,
+    default: false,
   }
 })
 
@@ -29,6 +33,7 @@ onMounted(async () => {
       item-value="id"
       variant="outlined"
       :error-messages="errorMessages"
+      :clearable="clearable"
   ></v-select>
 </template>
 

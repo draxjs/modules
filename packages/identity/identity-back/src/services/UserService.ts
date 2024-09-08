@@ -158,12 +158,12 @@ class UserService {
                        page = 1,
                        limit = 5,
                        orderBy = '',
-                       orderDesc = false,
+                       order = false,
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
         try {
-            const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
+            const pagination = await this._repository.paginate({page, limit, orderBy, order, search, filters});
             return pagination;
         } catch (e) {
             console.error("Error paginating users", e)

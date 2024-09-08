@@ -102,10 +102,10 @@ async function RoleRoutes(fastify, options) {
             const page = request.query.page
             const limit = request.query.limit
             const orderBy = request.query.orderBy
-            const orderDesc = request.query.orderDesc
+            const order = request.query.order
             const search = request.query.search
             const roleService = RoleServiceFactory()
-            let paginateResult = await roleService.paginate({page, limit, search, orderBy, orderDesc})
+            let paginateResult = await roleService.paginate({page, limit, search, orderBy, order})
             return paginateResult
         } catch (e) {
             console.error(e)

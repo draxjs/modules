@@ -1,5 +1,5 @@
 import {jwtMiddleware, UserRoutes, RoleRoutes, TenantRoutes, UserAvatarRoutes,UserApiKeyRoutes,  rbacMiddleware} from "@drax/identity-back"
-import ModuleMerger from "../utils/ModuleMerger.js";
+import ModuleMerger from "../merge/ModuleMerger.js";
 import ApolloFastifyServer from "../servers/ApolloFastifyServer.js";
 const {typeDefs, resolvers} = await ModuleMerger()
 

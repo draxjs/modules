@@ -1,7 +1,7 @@
 import {RoleModel} from "../../models/RoleModel.js";
 import {IRoleRepository} from '../../interfaces/IRoleRepository'
-import { mongoose} from "@drax/common-back";
-import {FilterQuery, PaginateOptions, PaginateResult} from "mongoose";
+import {mongoose, MongooseQueryFilter, MongooseSort} from "@drax/common-back";
+import {PaginateOptions, PaginateResult} from "mongoose";
 import {DeleteResult} from "mongodb";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 import {IRoleBase, IRole} from "@drax/identity-share";
@@ -44,7 +44,7 @@ class RoleMongoRepository implements IRoleRepository{
                        page= 1,
                        limit= 5,
                        orderBy= '',
-                       orderDesc= false,
+                       order= false,
                        search= '',
                        filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         const query = {}
@@ -55,7 +55,11 @@ class RoleMongoRepository implements IRoleRepository{
             ]
         }
 
-        const options = {populate: ['childRoles'], page, limit} as PaginateOptions
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const sort = MongooseSort.applySort(orderBy, order)
+
+        const options = {populate: ['childRoles'], page, limit, sort} as PaginateOptions
         const roles: PaginateResult<IRole> = await RoleModel.paginate(query, options)
         return {
             page: page,

@@ -13,8 +13,8 @@ class UserApiKeySystem {
         this.prototype = 'UserSystem'
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}):Promise<IDraxPaginateResult<IUserApiKey>> {
-        return this._provider.paginate({page, limit, orderBy, orderDesc, search})
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}):Promise<IDraxPaginateResult<IUserApiKey>> {
+        return this._provider.paginate({page, limit, orderBy, order, search})
     }
 
     async create(userPayload: IUserApiKeyBase):Promise<IUserApiKey> {

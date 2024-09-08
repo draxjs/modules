@@ -4,7 +4,7 @@ import {UUID} from "crypto";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
-import {SqliteErrorToValidationError, SqliteTableBuilder} from "@drax/common-back";
+import {SqliteErrorToValidationError, SqliteTableBuilder, SqlQueryFilter, SqlSort} from "@drax/common-back";
 import type {SqliteTableField} from "@drax/common-back";
 import UserSqliteRepository from "./UserSqliteRepository.js";
 
@@ -146,7 +146,7 @@ class UserApiKeySqliteRepository implements IUserApiKeyRepository {
                        page = 1,
                        limit = 5,
                        orderBy = '',
-                       orderDesc = false,
+                       order = false,
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
@@ -157,24 +157,13 @@ class UserApiKeySqliteRepository implements IUserApiKeyRepository {
             where = ` WHERE name LIKE '%${search}%'`
         }
 
-        let whereFilters= []
-        if(filters && filters.length > 0 ){
-            where = where ? ` AND ` : ` WHERE `
-            for(const filter of filters){
-                if(['eq','$eq'].includes(filter.operator)){
-                    whereFilters.push(` ${filter.field} = '${filter.value}' `)
-                }
-                if(['ne','$ne'].includes(filter.operator)){
-                    whereFilters.push(` ${filter.field} != '${filter.value}' `)
-                }
-                if(['in','$in'].includes(filter.operator)){
-                    whereFilters.push(` ${filter.field} LIKE '%${filter.value}%' `)
-                }
-            }
-            where += whereFilters.join(" AND ")
-        }
+        where = SqlQueryFilter.applyFilters(where, filters)
+        const sort = SqlSort.applySort(orderBy, order)
+
+        console.log("where", where)
 
         const rCount = this.db.prepare('SELECT COUNT(*) as count FROM user_api_keys' + where).get();
+        where += sort
         const userApiKeys = this.db.prepare('SELECT * FROM user_api_keys ' + where + ' LIMIT ? OFFSET ?').all([limit, offset]);
 
         for (const userApiKey of userApiKeys) {

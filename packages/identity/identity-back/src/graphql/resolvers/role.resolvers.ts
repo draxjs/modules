@@ -62,7 +62,7 @@ export default {
                 throw new GraphQLError('error.server')
             }
         },
-        paginateRole: async (_, {options= {page:1, limit:5, orderBy:"", orderDesc:false, search:"", filters: []} }, {rbac}) => {
+        paginateRole: async (_, {options= {page:1, limit:5, orderBy:"", order:false, search:"", filters: []} }, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
                 const roleService = RoleServiceFactory()

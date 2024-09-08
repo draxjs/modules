@@ -84,10 +84,10 @@ async function TenantRoutes(fastify, options) {
             const page = request.query.page
             const limit = request.query.limit
             const orderBy = request.query.orderBy
-            const orderDesc = request.query.orderDesc
+            const order = request.query.order
             const search = request.query.search
             const tenantService = TenantServiceFactory()
-            let paginateResult = await tenantService.paginate({page, limit,orderBy, orderDesc, search})
+            let paginateResult = await tenantService.paginate({page, limit,orderBy, order, search})
             return paginateResult
         } catch (e) {
             console.error(e)

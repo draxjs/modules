@@ -49,7 +49,7 @@ export default {
                 throw new GraphQLError('error.server')
             }
         },
-        paginateTenant: async (_, {options= {page:1, limit:5, orderBy:"", orderDesc:false, search:"", filters: []} }, {rbac}) => {
+        paginateTenant: async (_, {options= {page:1, limit:5, orderBy:"", order:false, search:"", filters: []} }, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewTenant)
                 const tenantService = TenantServiceFactory()

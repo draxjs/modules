@@ -8,7 +8,7 @@ import * as crypto from "node:crypto";
 
 export default {
     Query: {
-        paginateUserApiKey: async (_, {options= {page:1, limit:5, orderBy:"", orderDesc:false, search:"", filters: []} }, {rbac, authUser}) => {
+        paginateUserApiKey: async (_, {options= {page:1, limit:5, orderBy:"", order:false, search:"", filters: []} }, {rbac, authUser}) => {
             try {
                 rbac.assertAuthenticated()
 

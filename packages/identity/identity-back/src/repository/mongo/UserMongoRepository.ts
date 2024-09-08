@@ -1,5 +1,11 @@
 import {UserModel} from "../../models/UserModel.js";
-import {mongoose, MongooseErrorToValidationError, MongoServerErrorToValidationError, ValidationError} from "@drax/common-back"
+import {
+    mongoose,
+    MongooseErrorToValidationError,
+    MongooseQueryFilter, MongooseSort,
+    MongoServerErrorToValidationError,
+    ValidationError
+} from "@drax/common-back"
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import {DeleteResult, MongoServerError} from "mongodb";
 import type {IUserRepository} from "../../interfaces/IUserRepository";
@@ -70,7 +76,7 @@ class UserMongoRepository implements IUserRepository {
                        page= 1,
                        limit= 5,
                        orderBy= '',
-                       orderDesc= false,
+                       order= false,
                        search= '',
                        filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
 
@@ -84,21 +90,11 @@ class UserMongoRepository implements IUserRepository {
             ]
         }
 
-        if(filters){
-            for(const filter of filters){
-                if(['eq','$eq'].includes(filter.operator)){
-                    query[filter.field] = {$eq: filter.value}
-                }
-                if(['ne','$ne'].includes(filter.operator)){
-                    query[filter.field] = {$ne: filter.value}
-                }
-                if(['in','$in'].includes(filter.operator)){
-                    query[filter.field] = {$in: filter.value}
-                }
-            }
-        }
+        MongooseQueryFilter.applyFilters(query, filters)
 
-        const options = {populate: ['role','tenant'], page: page, limit: limit }
+        const sort = MongooseSort.applySort(orderBy, order)
+
+        const options = {populate: ['role','tenant'], page, limit, sort }
 
         const userPaginated: PaginateResult<IUser> = await UserModel.paginate(query, options)
         return {

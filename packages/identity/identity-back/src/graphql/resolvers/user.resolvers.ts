@@ -45,7 +45,7 @@ export default {
             }
 
         },
-        paginateUser: async (_, { options= {page:1, limit:5, orderBy:"", orderDesc:false, search:"", filters: []} }, {rbac}) => {
+        paginateUser: async (_, { options= {page:1, limit:5, orderBy:"", order:false, search:"", filters: []} }, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewUser)
                 let userService = UserServiceFactory()
@@ -55,7 +55,7 @@ export default {
                 }
 
                 if (rbac.getAuthUser.tenantId) {
-                    options.filters.push({field: 'tenant', operator: '$eq', value: rbac.getAuthUser.tenantId})
+                    options.filters.push({field: 'tenant', operator: 'eq', value: rbac.getAuthUser.tenantId})
                 }
                 return await userService.paginate(options)
             } catch (e) {

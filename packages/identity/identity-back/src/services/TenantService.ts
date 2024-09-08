@@ -92,12 +92,12 @@ class TenantService {
                        page = 1,
                        limit = 5,
                        orderBy = '',
-                       orderDesc = false,
+                       order = false,
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
         try {
-            const pagination = await this._repository.paginate({page, limit, orderBy, orderDesc, search, filters});
+            const pagination = await this._repository.paginate({page, limit, orderBy, order, search, filters});
             return pagination;
         } catch (e) {
             console.error("Error paginating tenants", e)

@@ -20,9 +20,9 @@ export function useTenant() {
         return tenants
     }
 
-    async function paginateTenant({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}) {
+    async function paginateTenant({page= 1, limit= 5, orderBy="", order=false, search = ""}) {
         loading.value = true
-        let paginatedtenant = tenantSystem.paginate({page, limit, orderBy, orderDesc, search})
+        let paginatedtenant = tenantSystem.paginate({page, limit, orderBy, order, search})
         loading.value = false
         return paginatedtenant
     }

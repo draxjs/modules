@@ -24,9 +24,10 @@ const serverItems: Ref<IUserApiKey[]> = ref([]);
 const totalItems = ref(0)
 const loading = ref(false)
 const search = ref('')
+const sortBy : Ref<any> = ref([])
 
 const headers = ref<any>([
-    ...( hasPermission('userApiKey:view') ? [{ title: t('userApiKey.user') as string, key: 'user.username', align: 'start' }] : []),
+    ...( hasPermission('userApiKey:view') ? [{ title: t('userApiKey.user') as string, key: 'user.username', align: 'start', sortable: false }] : []),
   { title: t('userApiKey.name') as string, key: 'name', align: 'start' },
   { title: t('userApiKey.ipv4') as string, key: 'ipv4', align: 'start' },
   { title: t('userApiKey.ipv6') as string, key: 'ipv6', align: 'start' },
@@ -40,6 +41,8 @@ async function loadItems(){
     const r = await paginateUserApiKey({
       page: page.value,
       limit: itemsPerPage.value,
+      orderBy: sortBy.value[0]?.key,
+      order: sortBy.value[0]?.order,
       search: search.value})
     serverItems.value = r.items
     totalItems.value = r.total
@@ -63,7 +66,9 @@ defineExpose({
       class="border"
       v-if="hasPermission('userApiKey:manage')"
       v-model:items-per-page="itemsPerPage"
+      :items-per-page-options="[5, 10, 20, 50]"
       v-model:page="page"
+      v-model:sort-by="sortBy"
       :headers="headers"
       :items="serverItems"
       :items-length="totalItems"

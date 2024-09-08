@@ -17,8 +17,8 @@ class TenantSystem {
         return this._provider.fetchTenant()
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", orderDesc=false, search = ""}):Promise<IDraxPaginateResult<ITenant>> {
-        return this._provider.paginate({page, limit, orderBy, orderDesc, search})
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}):Promise<IDraxPaginateResult<ITenant>> {
+        return this._provider.paginate({page, limit, orderBy, order, search})
     }
 
     async create(userPayload: ITenantBase):Promise<ITenant> {

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import {defineProps, type Ref, ref} from "vue";
 import {useTenant} from "../../composables/useTenant";
 import {useAuth} from "../../composables/useAuth";
@@ -24,11 +23,14 @@ const serverItems: Ref<ITenant[]> = ref([]);
 const totalItems = ref(0)
 const loading = ref(false)
 const search = ref('')
+const sortBy : Ref<any> = ref([])
+
 const headers = ref<any>([
   { title: t('tenant.name') as string, key: 'name', align: 'start' },
   { title: t('tenant.createdAt') as string, key: 'createdAt', align: 'start' },
   { title: '', key: 'actions', align: 'end', minWidth: '150px' },
 ])
+
 
 async function loadItems(){
   try{
@@ -36,6 +38,8 @@ async function loadItems(){
     const r = await paginateTenant({
       page: page.value,
       limit: itemsPerPage.value,
+      orderBy: sortBy.value[0]?.key,
+      order: sortBy.value[0]?.order,
       search: search.value})
     serverItems.value = r.items
     totalItems.value = r.total
@@ -59,12 +63,15 @@ defineExpose({
       class="border"
       v-if="hasPermission('user:manage')"
       v-model:items-per-page="itemsPerPage"
+      :items-per-page-options="[5, 10, 20, 50]"
       v-model:page="page"
+      v-model:sort-by="sortBy"
       :headers="headers"
       :items="serverItems"
       :items-length="totalItems"
       :loading="loading"
       :search="search"
+      :multi-sort="false"
       item-value="name"
       @update:options="loadItems"
   >

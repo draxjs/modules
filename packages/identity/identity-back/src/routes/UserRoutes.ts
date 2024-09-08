@@ -62,14 +62,14 @@ async function UserRoutes(fastify, options) {
             const page = request.query.page
             const limit = request.query.limit
             const orderBy = request.query.orderBy
-            const orderDesc = request.query.orderDesc
+            const order = request.query.order
             const search = request.query.search
             const userService = UserServiceFactory()
             const filters = []
             if(request.rbac.getAuthUser.tenantId){
-                filters.push({field: 'tenant', operator: '$eq', value: request.rbac.getAuthUser.tenantId})
+                filters.push({field: 'tenant', operator: 'eq', value: request.rbac.getAuthUser.tenantId})
             }
-            let paginateResult = await userService.paginate({page, limit, orderBy, orderDesc, search, filters})
+            let paginateResult = await userService.paginate({page, limit, orderBy, order, search, filters})
             for(let item of paginateResult.items){
                 item.password = undefined
                 delete item.password

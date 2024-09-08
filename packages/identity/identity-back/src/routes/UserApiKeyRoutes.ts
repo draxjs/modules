@@ -27,12 +27,12 @@ async function UserApiKeyRoutes(fastify, options) {
             const page = request.query.page
             const limit = request.query.limit
             const orderBy = request.query.orderBy
-            const orderDesc = request.query.orderDesc
+            const order = request.query.order
             const search = request.query.search
             const userApiKeyService = UserApiKeyServiceFactory()
 
 
-            let paginateResult = await userApiKeyService.paginate({page, limit, orderBy, orderDesc, search, filters})
+            let paginateResult = await userApiKeyService.paginate({page, limit, orderBy, order, search, filters})
             return paginateResult
         } catch (e) {
             console.log("/api/user-api-keys",e)

@@ -2,7 +2,12 @@ import GraphqlMerger from "./utils/GraphqlMerger.js";
 
 import MongooseSoftDelete from "./mongoose/MongooseSoftDelete.js";
 import MongooseConector from "./mongoose/MongooseConector.js";
+import MongooseQueryFilter from "./mongoose/MongooseQueryFilter.js";
+import MongooseSort from "./mongoose/MongooseSort.js";
 import mongoose from "mongoose"
+
+import SqlQueryFilter from "./sql/SqlQueryFilter.js";
+import SqlSort from "./sql/SqlSort.js";
 
 import UniqueError from "./errors/UniqueError.js";
 import ValidationError from "./errors/ValidationError.js";
@@ -63,6 +68,12 @@ export {
     mongoose,
     MongooseSoftDelete,
     MongooseConector,
+    MongooseQueryFilter,
+    MongooseSort,
+
+    //SQL
+    SqlQueryFilter,
+    SqlSort,
 
     //Utils
     StoreManager,
