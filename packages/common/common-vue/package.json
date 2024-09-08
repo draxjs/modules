@@ -25,13 +25,13 @@
   },
   "dependencies": {
     "@drax/common-front": "^0.1.0",
-    "@drax/common-share": "^0.1.0",
-    "vue-i18n": "^9.13.1"
+    "@drax/common-share": "^0.1.0"
   },
   "peerDependencies": {
     "pinia": "^2.2.2",
     "vue": "^3.5.3",
-    "vuetify": "^3.7.1"
+    "vuetify": "^3.7.1",
+    "vue-i18n": "^9.14.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

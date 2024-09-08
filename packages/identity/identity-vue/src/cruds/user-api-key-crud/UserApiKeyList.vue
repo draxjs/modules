@@ -5,7 +5,7 @@ import {useUserApiKey} from "../../composables/useUserApiKey";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
 import type {IUserApiKey} from "@drax/identity-share";
-import dayjs from "dayjs";
+import {formatDateTime} from "@drax/common-front";
 
 const {hasPermission} = useAuth()
 const {paginateUserApiKey} = useUserApiKey()
@@ -96,7 +96,7 @@ defineExpose({
     </template>
 
     <template v-slot:item.createdAt="{ value }" >
-      {{value ? dayjs(value).format('YYYY-MM-DD') : '' }}
+      {{formatDateTime(value)}}
     </template>
 
 

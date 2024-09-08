@@ -12,6 +12,9 @@ import HttpFetchClientFactory from './factories/HttpFetchClientFactory';
 import HttpGqlClientFactory from './factories/HttpGqlClientFactory';
 import {CommonI18nMessages} from './i18n/index';
 
+import {formatDate} from './helpers/formatDate'
+import {formatDateTime} from './helpers/formatDateTime'
+
 import type {IHttpClient, IHttpOptions} from './interfaces/IHttpClient';
 import type {IGqlClient, IGqlOptions} from './interfaces/IGqlClient';
 import type {IRestError} from './interfaces/IRestError';
@@ -22,6 +25,10 @@ import type {IClientInputError} from './interfaces/IClientInputError';
 
 
 export {
+  //helpers
+  formatDate,
+  formatDateTime,
+
   //Clients
   HttpRestClient,
   HttpGqlClient,
