@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.1.9",
+  "version": "0.2.0",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -24,17 +24,16 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/common-front": "^0.1.0",
-    "@drax/common-share": "^0.1.0",
-    "@drax/common-vue": "^0.1.9",
-    "@drax/identity-share": "^0.1.6"
-
+    "@drax/common-front": "^0.2.0",
+    "@drax/common-share": "^0.2.0",
+    "@drax/common-vue": "^0.2.0",
+    "@drax/identity-share": "^0.2.0"
   },
   "peerDependencies": {
     "pinia": "^2.2.2",
     "vue": "^3.5.3",
-    "vuetify": "^3.7.1",
-    "vue-i18n": "^9.14.0"
+    "vue-i18n": "^9.14.0",
+    "vuetify": "^3.7.1"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
