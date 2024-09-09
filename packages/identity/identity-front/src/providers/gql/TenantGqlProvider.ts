@@ -1,7 +1,7 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {ITenantProvider} from "../../interfaces/ITenantProvider";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 
 class TenantGqlProvider implements ITenantProvider {
@@ -52,7 +52,7 @@ class TenantGqlProvider implements ITenantProvider {
         return data.deleteTenant
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<ITenant>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
         const query: string = `query paginateTenant($options: PaginateOptions) { 
             paginateTenant(options: $options) { 
                 total page limit items{ id name createdAt updatedAt } 

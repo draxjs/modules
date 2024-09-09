@@ -1,7 +1,7 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {IUserApiKeyProvider} from "../../interfaces/IUserApiKeyProvider";
 import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 
 class UserApiKeyRestProvider implements IUserApiKeyProvider {
@@ -31,7 +31,7 @@ class UserApiKeyRestProvider implements IUserApiKeyProvider {
             return user
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<IUserApiKey>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
         const url = '/api/user-api-keys'
         const params = {page, limit, orderBy, order, search}
             let paginatedUsers = await this.httpClient.get(url, {params})

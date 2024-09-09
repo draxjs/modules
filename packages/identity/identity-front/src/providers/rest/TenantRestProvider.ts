@@ -1,7 +1,7 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {ITenantProvider} from "../../interfaces/ITenantProvider.ts";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 class TenantRestProvider implements ITenantProvider {
 
@@ -36,7 +36,7 @@ class TenantRestProvider implements ITenantProvider {
         return user
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<ITenant>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
         const url = '/api/tenants'
         const params = {page, limit, orderBy, order, search}
         let paginatedTenants = await this.httpClient.get(url, {params})

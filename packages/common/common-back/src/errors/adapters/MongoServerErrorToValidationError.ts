@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import ValidationError from '../ValidationError.js';
 import type {IValidationFieldError} from "../../interfaces/IValidationFieldError";
 import {MongoServerError} from "mongodb";

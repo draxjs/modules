@@ -1,7 +1,7 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider.ts";
 import type {IRole, IRoleBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 class RoleRestProvider implements IRoleProvider {
 
@@ -41,7 +41,7 @@ class RoleRestProvider implements IRoleProvider {
         return user
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<IRole>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         const url = '/api/roles'
         const params = {page, limit, orderBy, order, search}
         let paginatedRoles = await this.httpClient.get(url, {params})

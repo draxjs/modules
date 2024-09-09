@@ -1,7 +1,7 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {IUserProvider} from "../../interfaces/IUserProvider.ts";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 
 class UserRestProvider implements IUserProvider {
@@ -31,7 +31,7 @@ class UserRestProvider implements IUserProvider {
             return user
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<IUser>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
         const url = '/api/users'
         const params = {page, limit, orderBy, order, search}
             let paginatedUsers = await this.httpClient.get(url, {params})

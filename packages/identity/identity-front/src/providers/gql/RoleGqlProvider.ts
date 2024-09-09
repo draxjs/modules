@@ -1,7 +1,7 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider";
 import type {IRole, IRoleBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 
 class RoleGqlProvider implements IRoleProvider {
@@ -58,7 +58,7 @@ class RoleGqlProvider implements IRoleProvider {
         return data.deleteRole
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<IRole>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         const query: string = `query paginateRole($options: PaginateOptions) { 
             paginateRole(options: $options) { 
                 total, page, limit, items{id name permissions childRoles{id name} readonly } 

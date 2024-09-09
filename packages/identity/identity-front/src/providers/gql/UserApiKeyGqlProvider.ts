@@ -1,7 +1,7 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {IUserApiKeyProvider} from "../../interfaces/IUserApiKeyProvider";
 import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 class UserApiKeyGqlProvider implements IUserApiKeyProvider {
 
@@ -48,7 +48,7 @@ class UserApiKeyGqlProvider implements IUserApiKeyProvider {
         return data.deleteUserApiKey
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<IUserApiKey>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
         const query: string = `query paginateUserApiKey($options: PaginateOptions) { 
             paginateUserApiKey(options: $options) { 
                 total page limit items{ id name ipv4 ipv6 user{id username} createdAt updatedAt } 

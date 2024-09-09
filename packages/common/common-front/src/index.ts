@@ -8,7 +8,7 @@ import UnknownError from './errors/UnknownError';
 import ServerError from './errors/ServerError';
 import ClientError from './errors/ClientError';
 import NetworkError from './errors/NetworkError';
-import HttpFetchClientFactory from './factories/HttpFetchClientFactory';
+import HttpRestClientFactory from './factories/HttpRestClientFactory';
 import HttpGqlClientFactory from './factories/HttpGqlClientFactory';
 import {CommonI18nMessages} from './i18n/index';
 
@@ -33,7 +33,7 @@ export {
   HttpRestClient,
   HttpGqlClient,
 
-  HttpFetchClientFactory,
+  HttpRestClientFactory,
   HttpGqlClientFactory,
 
   //I18n

@@ -1,7 +1,7 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {IUserProvider} from "../../interfaces/IUserProvider";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
 
 class UserGqlProvider implements IUserProvider {
 
@@ -49,7 +49,7 @@ class UserGqlProvider implements IUserProvider {
         return data.deleteUser
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<IUser>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}:IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
         const query: string = `query paginateUser($options: PaginateOptions) { 
             paginateUser(options: $options) { 
                 total page limit items{ id name username email phone active role{id, name} tenant{id name} createdAt updatedAt } 
