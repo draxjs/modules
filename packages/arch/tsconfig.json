@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",       // Soporte para módulos ECMAScript
+    "esModuleInterop": true,  // Habilitar compatibilidad con módulos CommonJS
+    "target": "ES2020",       // Target adecuado para Node.js
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strict": true
+  },
+  "exclude": ["test", "types","dist"],
+  "ts-node": {
+    "esm": true               // Para habilitar soporte ESM en ts-node
+  }
+}

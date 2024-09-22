@@ -23,10 +23,12 @@
   "dependencies": {
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.4",
-    "mongoose": "^8.4.1"
+    "mongoose": "^8.6.3",
+    "mongoose-paginate-v2": "^1.8.3"
   },
   "peerDependencies": {
-    "dayjs": "^1.11.11"
+    "dayjs": "^1.11.13",
+    "mongoose-paginate-v2": "^1.8.3"
   },
   "devDependencies": {
     "@types/node": "^20.12.10",
@@ -34,7 +36,8 @@
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.4.5"
+    "typescript": "^5.6.2",
+    "mongoose-paginate-v2": "^1.8.3"
   },
   "gitHead": "ba1855cb55f67db2537dc65092dfa582e2df03cd"
 }

@@ -14,6 +14,7 @@ const messages = {
       search: 'Search',
       reset: 'Reset',
       success: 'Operation Success',
+      actions: 'Actions'
     }
   },
   es: {
@@ -31,6 +32,7 @@ const messages = {
       search: 'Buscar',
       reset: 'Reiniciar',
       success: 'Operación exitosa',
+      actions: 'Acciones'
     }
   }
 }

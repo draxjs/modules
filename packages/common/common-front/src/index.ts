@@ -14,6 +14,7 @@ import {CommonI18nMessages} from './i18n/index';
 
 import {formatDate} from './helpers/formatDate'
 import {formatDateTime} from './helpers/formatDateTime'
+import {debounce} from './helpers/debounce'
 
 import type {IHttpClient, IHttpOptions} from './interfaces/IHttpClient';
 import type {IGqlClient, IGqlOptions} from './interfaces/IGqlClient';
@@ -28,6 +29,7 @@ export {
   //helpers
   formatDate,
   formatDateTime,
+  debounce,
 
   //Clients
   HttpRestClient,

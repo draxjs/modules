@@ -13,3 +13,4 @@ function MongooseErrorToValidationError(mongooseError: mongoose.Error.Validation
 }
 
 export default MongooseErrorToValidationError;
+export {MongooseErrorToValidationError}

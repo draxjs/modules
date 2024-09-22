@@ -16,3 +16,4 @@ function ZodErrorToValidationError(zodError: ZodError, payload?: any) {
 }
 
 export default ZodErrorToValidationError
+export { ZodErrorToValidationError }

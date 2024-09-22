@@ -27,3 +27,4 @@ function SqliteErrorToValidationError(sqliteError: SqliteError, data: any): Vali
 }
 
 export default SqliteErrorToValidationError;
+export {SqliteErrorToValidationError}

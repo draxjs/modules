@@ -1,0 +1,33 @@
+{
+  "name": "@drax/crud-front",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "version": "0.3.1",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --build --force",
+    "tsc": "vue-tsc"
+  },
+  "dependencies": {
+    "@drax/common-share": "^0.3.0",
+    "deepmerge": "^4.3.1"
+  },
+  "devDependencies": {
+    "@babel/types": "^7.24.0",
+    "@types/node": "^20.11.25",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.5",
+    "vue-tsc": "^2.0.6"
+  },
+  "gitHead": "ba1855cb55f67db2537dc65092dfa582e2df03cd"
+}

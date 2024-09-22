@@ -8,9 +8,10 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import {setupLayouts} from 'virtual:generated-layouts'
 import iroutes from './routes'
+import peopleRoutes from '../modules/people/routes'
 import {IdentityRoutes} from "@drax/identity-vue";
 
-const routes = setupLayouts([...iroutes,...IdentityRoutes])
+const routes = setupLayouts([...iroutes,...IdentityRoutes, ...peopleRoutes])
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

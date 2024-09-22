@@ -9,6 +9,34 @@ const menu: MenuItem[] = [
     auth: false
   },
   {
+    icon: 'mdi-world',
+    text: 'People',
+    gallery: true,
+    children: [
+      {
+        icon: 'mdi-person',
+        text:'Person',
+        link: { name: "PersonCrudPage" },
+        gallery: true,
+        permission: 'person:manage'
+      },
+      {
+        icon: 'mdi-country',
+        text:'Country',
+        link: { name: "CountryCrudPage" },
+        gallery: true,
+        permission: 'country:manage'
+      },
+      {
+        icon: 'mdi-language',
+        text:'Language',
+        link: { name: "LanguageCrudPage" },
+        gallery: true,
+        permission: 'language:manage'
+      },
+    ]
+  },
+  {
     icon: 'mdi-account-circle',
     text:'Admin',
     gallery: true,
