@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-back",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -15,14 +15,14 @@
     "recoveryAdmin": " node --env-file .env --loader ts-node/esm src/setup/scripts/RecoverAdminPassword.ts"
   },
   "dependencies": {
-    "@drax/common-back": "^0.3.1",
-    "@drax/crud-back": "^0.3.1",
-    "@drax/identity-back": "^0.3.1",
-    "@drax/media-back": "^0.3.1",
-    "@fastify/multipart": "^8.3.0",
-    "@fastify/static": "^7.0.4",
     "@apollo/server": "^4.10.4",
     "@as-integrations/fastify": "^2.0.0",
+    "@drax/common-back": "^0.4.0",
+    "@drax/crud-back": "^0.4.0",
+    "@drax/identity-back": "^0.4.0",
+    "@drax/media-back": "^0.4.0",
+    "@fastify/multipart": "^8.3.0",
+    "@fastify/static": "^7.0.4",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.0",
     "better-sqlite3": "^11.0.0",
