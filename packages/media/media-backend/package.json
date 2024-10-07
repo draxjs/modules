@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Media files",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -20,8 +20,8 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "@drax/common-back": "^0.5.1",
-    "@drax/identity-back": "^0.5.1"
+    "@drax/common-back": "^0.5.2",
+    "@drax/identity-back": "^0.5.2"
   },
   "peerDependencies": {
     "@fastify/multipart": "^8.3.0",

@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.5.1",
+  "version": "0.5.2",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@drax/common-front": "^0.5.1",
-    "@drax/crud-share": "^0.5.1",
+    "@drax/crud-share": "^0.5.2",
     "@drax/identity-share": "^0.5.1"
   },
   "devDependencies": {
