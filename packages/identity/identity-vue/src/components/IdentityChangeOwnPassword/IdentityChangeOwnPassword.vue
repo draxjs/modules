@@ -6,7 +6,7 @@ import type {IClientInputError} from "@drax/common-front";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
 
-const {t} = useI18n()
+const {t,te} = useI18n()
 const {$ta} = useI18nValidation()
 
 const {changeOwnPassword} = useAuth()
@@ -57,7 +57,7 @@ async function submitChangePassowrd() {
 
     <template v-if="changed">
       <v-alert type="success">
-        {{ $t('user.passwordChanged') }}
+        {{ t('user.passwordChanged') }}
       </v-alert>
     </template>
 
@@ -65,14 +65,14 @@ async function submitChangePassowrd() {
 
           <v-form @submit.prevent="submitChangePassowrd">
             <v-card variant="elevated">
-              <v-card-title class="pa-4 text-center">{{ $t('user.changeOwnPassword') }}</v-card-title>
+              <v-card-title class="pa-4 text-center">{{ t('user.changeOwnPassword') }}</v-card-title>
               <v-card-text v-if="errorMsg">
                 <v-alert type="error">
-                  {{ $t ? $t(errorMsg) : errorMsg }}
+                  {{ te(errorMsg) ?t(errorMsg) : errorMsg }}
                 </v-alert>
               </v-card-text>
               <v-card-text>
-                <div class="text-subtitle-1 text-medium-emphasis">{{ $t('user.currentPassword') }}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.currentPassword') }}</div>
                 <v-text-field
                     variant="outlined"
                     id="current-password-input"
@@ -85,7 +85,7 @@ async function submitChangePassowrd() {
                     autocomplete="new-password"
                     :error-messages="$ta(inputErrors?.currentPassword)"
                 ></v-text-field>
-                <div class="text-subtitle-1 text-medium-emphasis">{{ $t('user.newPassword') }}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.newPassword') }}</div>
                 <v-text-field
                     variant="outlined"
                     id="new-password-input"
@@ -98,7 +98,7 @@ async function submitChangePassowrd() {
                     autocomplete="new-password"
                     :error-messages="$ta(inputErrors?.newPassword)"
                 ></v-text-field>
-                <div class="text-subtitle-1 text-medium-emphasis">{{ $t('user.confirmPassword') }}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.confirmPassword') }}</div>
                 <v-text-field
                     variant="outlined"
                     id="confirm-password-input"
@@ -125,7 +125,7 @@ async function submitChangePassowrd() {
                     block
                     :disabled="!isFormValid"
                 >
-                  {{ $t('action.sent') }}
+                  {{ t('action.sent') }}
                 </v-btn>
               </v-card-actions>
             </v-card>

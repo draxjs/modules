@@ -2,6 +2,8 @@
 
 import {ref, onMounted, defineModel} from 'vue'
 import type { PropType } from 'vue'
+import {useI18n} from "vue-i18n";
+const {t} = useI18n()
 defineProps({
   errorMessages: {
     type: String as PropType<string | string[] | undefined>,
@@ -27,7 +29,7 @@ onMounted(async () => {
 <template>
   <v-select
       v-model="model"
-      :label="$t ? $t('tenant.entity') : 'Tenant'"
+      :label="t ? t('tenant.entity') : 'Tenant'"
       :items="items"
       item-title="name"
       item-value="id"

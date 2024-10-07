@@ -46,7 +46,7 @@ const ipv6Address = [
     <v-text-field
         variant="outlined"
         id="name-input"
-        :label="$t('userApiKey.name')"
+        :label="t('userApiKey.name')"
         v-model="form.name"
         prepend-inner-icon="mdi-card-account-details"
         required
@@ -55,7 +55,7 @@ const ipv6Address = [
 
     <v-combobox
         v-model="form.ipv4 as string[]"
-        :label="$t('userApiKey.ipv4')"
+        :label="t('userApiKey.ipv4')"
         variant="outlined"
         multiple chips
         validate-on="blur"
@@ -64,7 +64,7 @@ const ipv6Address = [
 
     <v-combobox
         v-model="form.ipv6 as string[]"
-        :label="$t('userApiKey.ipv6')"
+        :label="t('userApiKey.ipv6')"
         variant="outlined"
         multiple chips
         validate-on="blur"

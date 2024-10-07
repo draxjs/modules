@@ -3,7 +3,7 @@ import {join} from "path";
 import {unlink} from "node:fs"
 import crypto from "crypto";
 import UploadFileError from "../errors/UploadFileError.js";
-import createDirIfNotExist from "./CreateDirIfNotExist.js";
+import createDirIfNotExist from "../utils/CreateDirIfNotExist.js";
 import StreamFileStore from "./StreamFileStore.js";
 import {Readable} from "stream";
 import DraxConfig from "../config/DraxConfig.js";
@@ -39,10 +39,8 @@ class StoreManager {
 
         //Improve filename uniqueness and split into year and month folders
         const random = crypto.randomBytes(8).toString('hex')
-        const year = (new Date().getFullYear()).toString()
-        const month = (new Date().getMonth() + 1).toString().padStart(2, '0')
-        const filename = `${year}-${month}-${random}-${file.filename.replace(/\s+/g,'-')}`;
-        destinationPath = join(destinationPath, year, month);
+        const filename = `${random}-${file.filename.replace(/\s+/g,'-')}`;
+        destinationPath = join(destinationPath);
 
         createDirIfNotExist(destinationPath)
         const destinationFile = join(destinationPath, filename);

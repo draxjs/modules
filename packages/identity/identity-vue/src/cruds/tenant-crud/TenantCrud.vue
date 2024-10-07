@@ -5,7 +5,8 @@ import {useTenant} from "../../composables/useTenant";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
 import TenantForm from "../../forms/TenantForm.vue";
 import TenantView from "../../views/TenantView.vue";
-
+import {useI18n} from "vue-i18n";
+const {t} = useI18n()
 const {createTenant, editTenant, deleteTenant, loading, tenantError, inputErrors} = useTenant()
 
 interface TenantList {
@@ -107,13 +108,13 @@ function toDelete(item: ITenant) {
 
     <v-card border rounded >
       <v-toolbar class="bg-toolbar">
-        <v-toolbar-title>{{ $t('tenant.managing') }}</v-toolbar-title>
+        <v-toolbar-title>{{ t('tenant.managing') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="filterEnable = !filterEnable">
           <v-icon>{{ filterEnable ? 'mdi-filter' : 'mdi-filter-off' }}</v-icon>
         </v-btn>
         <v-btn class="font-weight-bold" color="primary" @click="toCreate">
-          {{ $t('action.create') }}
+          {{ t('action.create') }}
         </v-btn>
       </v-toolbar>
       <v-theme-provider with-background class="pa-2 rounded-b">
@@ -129,7 +130,7 @@ function toDelete(item: ITenant) {
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>
         <v-toolbar>
-          <v-toolbar-title>{{ dialogTitle ? $t(dialogTitle) : '-' }}</v-toolbar-title>
+          <v-toolbar-title>{{ dialogTitle ? t(dialogTitle) : '-' }}</v-toolbar-title>
         </v-toolbar>
         <v-card class="pa-10">
           <v-card-text v-if="tenantError">
@@ -151,7 +152,7 @@ function toDelete(item: ITenant) {
                    @click="save"
                    :loading="loading"
             >
-              {{ $t(buttonText) }}
+              {{ t(buttonText) }}
             </v-btn>
           </v-card-actions>
 

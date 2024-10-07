@@ -1,6 +1,6 @@
 import type {ITenantProvider} from "../interfaces/ITenantProvider";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateResult} from "@drax/crud-share";
 
 
 class TenantSystem {

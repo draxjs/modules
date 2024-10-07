@@ -1,7 +1,7 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {IUserApiKeyProvider} from "../../interfaces/IUserApiKeyProvider";
 import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 
 class UserApiKeyRestProvider implements IUserApiKeyProvider {

@@ -1,22 +1,31 @@
 import {ValidationError, ZodErrorToValidationError} from "@drax/common-back"
 import {ZodError} from "zod";
 import type {ZodSchema} from "zod";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
-import type {ICrudRepository} from "../interfaces/ICrudRepository";
+import type {
+    IDraxPaginateOptions,
+    IDraxPaginateResult,
+    IDraxFindOptions,
+    IDraxCrud,
+    IDraxExportOptions
+} from "@drax/crud-share";
+import {IDraxCrudService} from "@drax/crud-share";
+import ExportCsv from "../exports/ExportCsv.js";
+import ExportJson from "../exports/ExportJson.js";
+import {IDraxExportResult} from "@drax/crud-share";
 
-class AbstractService<T,C,U> {
+class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
-    _repository: ICrudRepository<T,C,U>
+    _repository: IDraxCrud<T, C, U>
     _schema?: ZodSchema | undefined
 
-    constructor(repository: ICrudRepository<T,C,U>, schema?: ZodSchema) {
+    constructor(repository: IDraxCrud<T, C, U>, schema?: ZodSchema) {
         this._repository = repository
         this._schema = schema
     }
 
     async create(data: C): Promise<T> {
         try {
-            if(this._schema){
+            if (this._schema) {
                 await this._schema.parseAsync(data)
             }
             const item: T = await this._repository.create(data)
@@ -32,10 +41,10 @@ class AbstractService<T,C,U> {
 
     async update(id: string, data: U): Promise<T> {
         try {
-            if(this._schema){
+            if (this._schema) {
                 await this._schema.parseAsync(data)
             }
-            const item : T = await this._repository.update(id, data)
+            const item: T = await this._repository.update(id, data)
             return item
         } catch (e) {
             console.error("Error updating", e)
@@ -134,6 +143,68 @@ class AbstractService<T,C,U> {
             return pagination;
         } catch (e) {
             console.error("Error paginating", e)
+            throw e;
+        }
+
+    }
+
+    async find({
+                   orderBy = '',
+                   order = false,
+                   search = '',
+                   filters = []
+               }: IDraxFindOptions): Promise<T[]> {
+        try {
+            const items = await this._repository.find({orderBy, order, search, filters});
+            return items;
+        } catch (e) {
+            console.error("Error paginating", e)
+            throw e;
+        }
+
+    }
+
+    async export({
+                     format = 'JSON',
+                     headers = [],
+                     separator = ';',
+                     orderBy = '',
+                     order = false,
+                     search = '',
+                     filters = []
+                 }: IDraxExportOptions,
+                 destinationPath: string): Promise<IDraxExportResult> {
+        try {
+
+            console.log("ExportOptions", {
+                format,
+                headers,
+                separator,
+                outputPath: destinationPath,
+                orderBy,
+                order,
+                search,
+                filters
+            })
+
+            let cursor:any
+            let exporter:any
+
+            switch (format) {
+                case 'JSON':
+                    cursor = await this._repository.find({orderBy, order, search, filters});
+                    exporter = new ExportJson({cursor, destinationPath: destinationPath, headers});
+                    return await exporter.process()
+                case 'CSV':
+                    cursor = await this._repository.find({orderBy, order, search, filters});
+                    exporter = new ExportCsv({cursor, destinationPath: destinationPath, headers, separator});
+                    return await exporter.process()
+                default:
+                    throw new Error(`Unsupported export format: ${format}`);
+            }
+
+        } catch (e) {
+            console.error("Error exporting", e)
             throw e;
         }
 

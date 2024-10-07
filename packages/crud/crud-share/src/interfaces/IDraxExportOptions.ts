@@ -1,0 +1,14 @@
+import type {IDraxFieldFilter} from "./IDraxFieldFilter";
+
+interface IDraxExportOptions {
+  format: 'JSON' | 'CSV';
+  headers?: string[] | string;
+  separator: string;
+  limit?: number;
+  orderBy?: string;
+  order?: 'asc' | 'desc' | boolean;
+  search?: string;
+  filters?: IDraxFieldFilter[];
+}
+
+export type {IDraxExportOptions}

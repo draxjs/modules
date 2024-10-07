@@ -6,12 +6,14 @@ async function PersonFastifyRoutes(fastify, options) {
     const controller: PersonController = new PersonController()
 
     fastify.get('/api/person/:id', (req,rep) => controller.findById(req,rep))
-    
+
     fastify.get('/api/person/ids/:ids', (req,rep) => controller.findByIds(req,rep))
 
     fastify.get('/api/person', (req,rep) => controller.paginate(req,rep) )
 
     fastify.get('/api/person/search', (req,rep) => controller.search(req,rep) )
+
+    fastify.get('/api/person/export', (req,rep) => controller.export(req,rep) )
 
     fastify.post('/api/person', (req,rep) =>controller.create(req,rep))
 

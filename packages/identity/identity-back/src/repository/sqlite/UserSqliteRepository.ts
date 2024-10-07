@@ -3,7 +3,7 @@ import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
 import {UUID} from "crypto";
 import {IUserRepository} from "../../interfaces/IUserRepository";
-import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/common-share";
+import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/crud-share";
 import {
     SqliteErrorToValidationError,
     SqliteTableBuilder,

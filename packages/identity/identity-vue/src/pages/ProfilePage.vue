@@ -2,7 +2,8 @@
 import IdentityProfileView from "../components/IdentityProfileView/IdentityProfileView.vue";
 import {useRouter} from "vue-router";
 const router = useRouter();
-
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 </script>
 
 <template>
@@ -14,7 +15,9 @@ const router = useRouter();
         <v-card>
           <identity-profile-view> </identity-profile-view>
           <v-card-text class="text-center">
-            <v-btn color="blue" variant="tonal" @click="router.push({name: 'Password'})">{{$t('user.changeOwnPassword')}}</v-btn>
+            <v-btn color="blue" variant="tonal" @click="router.push({name: 'Password'})">
+              {{t('user.changeOwnPassword')}}
+            </v-btn>
           </v-card-text>
         </v-card>
       </v-col>

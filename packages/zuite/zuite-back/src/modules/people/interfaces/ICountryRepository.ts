@@ -1,8 +1,8 @@
 
 import type {ICountry, ICountryBase} from './ICountry'
-import {ICrudRepository} from "@drax/crud-back";
+import {IDraxCrud} from "@drax/crud-share";
 
-interface ICountryRepository extends ICrudRepository<ICountry, ICountryBase, ICountryBase>{
+interface ICountryRepository extends IDraxCrud<ICountry, ICountryBase, ICountryBase>{
 
 }
 

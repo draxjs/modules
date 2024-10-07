@@ -79,13 +79,13 @@ defineExpose({
   >
     <template v-slot:top>
       <v-toolbar  density="compact" v-if="filterEnable">
-        <v-toolbar-title>{{ $t('action.filters') }}</v-toolbar-title>
+        <v-toolbar-title>{{ t('action.filters') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-text-field v-model="search" hide-details
                       density="compact" class="mr-2"
                       variant="outlined"
                       append-inner-icon="mdi-magnify"
-                      :label="$t('action.search')"
+                      :label="t('action.search')"
                       single-line clearable @click:clear="() => search = ''"
         />
 

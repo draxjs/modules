@@ -4,7 +4,7 @@ import UserMongoRepository from "../../../src/repository/mongo/UserMongoReposito
 import MongoInMemory from "../../db/MongoInMemory";
 import RoleMongoInitializer from "../../initializers/RoleMongoInitializer";
 import {IUser} from "../../../../identity-share/src/interfaces/IUser";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateResult} from "@drax/crud-share";
 import {mongoose, ValidationError} from "@drax/common-back";
 
 

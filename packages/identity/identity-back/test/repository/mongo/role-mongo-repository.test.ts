@@ -3,7 +3,7 @@ import {equal} from "assert";
 import RoleMongoRepository from "../../../src/repository/mongo/RoleMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
 import {IRole} from "../../../../identity-share/src/interfaces/IRole";
-import {IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateResult} from "@drax/crud-share";
 
 describe("RoleRepositoryTest",  function() {
 

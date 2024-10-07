@@ -2,13 +2,11 @@ import "mongoose-paginate-v2";
 import mongoose from "mongoose";
 import {MongooseQueryFilter, MongooseSort, MongooseErrorToValidationError} from "@drax/common-back";
 import type {DeleteResult} from "mongodb";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult, IDraxFindOptions, IDraxCrud} from "@drax/crud-share";
 import type {PaginateModel, PaginateOptions, PaginateResult} from "mongoose";
-import type {ICrudRepository} from "../interfaces/ICrudRepository";
 
 
-
-class AbstractMongoRepository<T,C,U> implements ICrudRepository<T,C,U> {
+class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
     _model: mongoose.Model<T> & PaginateModel<T>
     _searchFields: string[] = []
@@ -76,7 +74,7 @@ class AbstractMongoRepository<T,C,U> implements ICrudRepository<T,C,U> {
         return items
     }
 
-    async search(value: string, limit : number = 1000): Promise<T[]> {
+    async search(value: string, limit: number = 1000): Promise<T[]> {
         const query = {}
         query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value, 'i')}))
         const items: mongoose.HydratedDocument<T>[] = await this._model.find(query).limit(limit).exec()
@@ -111,6 +109,28 @@ class AbstractMongoRepository<T,C,U> implements ICrudRepository<T,C,U> {
             total: items.totalDocs,
             items: items.docs
         }
+    }
+
+    async find({
+                   limit = 0,
+                   orderBy = '',
+                   order = false,
+                   search = '',
+                   filters = []
+               }: IDraxFindOptions): Promise<T[]> {
+
+        const query = {}
+
+        if (search) {
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search, 'i')}))
+        }
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const sort = MongooseSort.applySort(orderBy, order)
+        const populate = this._populateFields
+        const items: T[] = await this._model.find(query).sort(sort).populate(populate)
+        return items
     }
 }
 

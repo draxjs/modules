@@ -4,7 +4,8 @@ import {StoreManager, UploadFileError, DraxConfig, CommonConfig} from "@drax/com
 import UserServiceFactory from "../factory/UserServiceFactory.js";
 import IdentityConfig from "../config/IdentityConfig.js";
 
-const FILE_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatars';
+const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
+const AVATAR_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatar';
 const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
 
 
@@ -24,13 +25,13 @@ async function UserAvatarRoutes(fastify, options) {
                 mimetype: data.mimetype
             }
 
-            const destinationPath = join(FILE_DIR)
+            const destinationPath = join(BASE_FILE_DIR, AVATAR_DIR)
             const storedFile = await StoreManager.saveFile(file, destinationPath)
             const urlFile = BASE_URL + '/api/user/avatar/' + storedFile.filename
 
             //Save into DB
             const userService = UserServiceFactory()
-            return await userService.changeAvatar(userId, urlFile)
+            await userService.changeAvatar(userId, urlFile)
 
             return {
                 filename: storedFile.filename,
@@ -58,9 +59,9 @@ async function UserAvatarRoutes(fastify, options) {
     fastify.get('/api/user/avatar/:filename', async (request, reply): Promise<any> => {
         try {
             const filename = request.params.filename
-            const [year, month] = filename.split('-')
-            const fileDir = join(FILE_DIR, year, month)
-            //console.log("FILE_DIR: ",fileDir, " FILENAME:", filename)
+            const subPath = 'avatar'
+            const fileDir = join(BASE_FILE_DIR, subPath)
+            console.log("FILE_DIR: ",fileDir, " FILENAME:", filename)
             return reply.sendFile(filename, fileDir)
         } catch (e) {
             console.error(e)

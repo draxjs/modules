@@ -3,7 +3,7 @@ import {DraxConfig, ValidationError, ZodErrorToValidationError} from "@drax/comm
 import {userApiKeySchema} from "../zod/UserApiKeyZod.js";
 import {ZodError} from "zod";
 import {IUserApiKeyBase, IUserApiKey} from "@drax/identity-share";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import crypto from "node:crypto";
 import AuthUtils from "../utils/AuthUtils.js";
 import IdentityConfig from "../config/IdentityConfig.js";

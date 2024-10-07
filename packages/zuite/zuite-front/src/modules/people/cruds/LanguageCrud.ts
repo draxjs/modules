@@ -1,12 +1,10 @@
 
 import {EntityCrud} from "@drax/crud-vue";
-import type {IFields} from "@drax/crud-vue";
 import LanguageProvider from "../providers/LanguageProvider";
+import {IEntityCrud, IEntityCrudField, IEntityCrudHeader} from "@drax/crud-share";
 
-//Import EntityCrud Refs
 
-
-class LanguageCrud extends EntityCrud {
+class LanguageCrud extends EntityCrud implements IEntityCrud {
 
   static singleton: LanguageCrud
 
@@ -14,7 +12,7 @@ class LanguageCrud extends EntityCrud {
     super();
     this.name = 'Language'
   }
-  
+
   static get instance(): LanguageCrud {
     if(!LanguageCrud.singleton){
       LanguageCrud.singleton = new LanguageCrud()
@@ -24,15 +22,15 @@ class LanguageCrud extends EntityCrud {
 
   get permissions(){
     return {
-      manage: 'language:manage', 
-      view: 'language:view', 
-      create: 'language:create', 
-      update: 'language:update', 
+      manage: 'language:manage',
+      view: 'language:view',
+      create: 'language:create',
+      update: 'language:update',
       delete: 'language:delete'
     }
   }
 
-  get headers() {
+  get headers():IEntityCrudHeader[] {
     return [
         {title: 'name',key:'name', align: 'start'}
     ]
@@ -41,10 +39,10 @@ class LanguageCrud extends EntityCrud {
   get provider(){
     return LanguageProvider.instance
   }
-  
+
   get refs(){
     return {
-      
+
     }
   }
 
@@ -54,12 +52,12 @@ class LanguageCrud extends EntityCrud {
     }
   }
 
-  get fields():IFields{
+  get fields(): IEntityCrudField[]{
     return [
         {name: 'name', type: 'string', label: 'name', default:'' }
     ]
   }
-  
+
   get dialogFullscreen(){
     return false
   }

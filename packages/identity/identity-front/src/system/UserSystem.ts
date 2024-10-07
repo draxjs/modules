@@ -1,6 +1,6 @@
 import type {IUserProvider} from "../interfaces/IUserProvider";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateResult} from "@drax/crud-share";
 
 
 class UserSystem {

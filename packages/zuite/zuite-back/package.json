@@ -6,8 +6,8 @@
   "main": "dist/index.js",
   "private": true,
   "scripts": {
-    "serve": "nodemon --exec node --env-file .env --loader ts-node/esm src/index.ts",
-    "dev": "nodemon --exec node --env-file .env dist/index.js",
+    "back": "nodemon --exec node --env-file .env --loader ts-node/esm src/index.ts",
+    "prod": "nodemon --exec node --env-file .env index.js",
     "build": "rm -rf ../dist && tsc -p tsconfig.json && copyfiles -u 1 ./**/*.graphql ../../../dist/ && copyfiles package.json ../../../dist && copyfiles .env.example ../../../dist",
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -p tsconfig.json",
@@ -19,6 +19,7 @@
     "@as-integrations/fastify": "^2.0.0",
     "@drax/common-back": "^0.4.0",
     "@drax/crud-back": "^0.4.0",
+    "@drax/crud-share": "^0.4.0",
     "@drax/identity-back": "^0.4.0",
     "@drax/media-back": "^0.4.0",
     "@fastify/multipart": "^8.3.0",

@@ -1,4 +1,4 @@
-interface IEntityPermission {
+interface IDraxPermission {
     Create: string
     Update: string
     Delete: string
@@ -7,4 +7,4 @@ interface IEntityPermission {
     [key: string]: string
 }
 
-export type { IEntityPermission }
+export type { IDraxPermission }

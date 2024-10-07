@@ -1,7 +1,7 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider";
 import type {IRole, IRoleBase} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 
 class RoleGqlProvider implements IRoleProvider {

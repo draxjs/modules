@@ -6,8 +6,8 @@
     "front": "vite",
     "vuetsc": "vue-tsc --noEmit",
     "build": "vue-tsc --noEmit && vite build",
-    "copydist": "copyfiles -f dist ../../../dist/public",
-    "copyasd": "copyfiles index.html ../../../dist/public",
+    "copydist": "copyfiles -f dist ../../../dist/web",
+    "copyasd": "copyfiles index.html ../../../dist/web",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore"
   },

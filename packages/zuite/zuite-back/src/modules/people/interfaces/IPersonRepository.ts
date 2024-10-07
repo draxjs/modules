@@ -1,8 +1,8 @@
 
 import type {IPerson, IPersonBase} from './IPerson'
-import {ICrudRepository} from "@drax/crud-back";
+import {IDraxCrud} from "@drax/crud-share";
 
-interface IPersonRepository extends ICrudRepository<IPerson, IPersonBase, IPersonBase>{
+interface IPersonRepository extends IDraxCrud<IPerson, IPersonBase, IPersonBase>{
 
 }
 

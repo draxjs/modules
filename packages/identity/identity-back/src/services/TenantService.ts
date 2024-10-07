@@ -3,7 +3,7 @@ import {ValidationError, ZodErrorToValidationError} from "@drax/common-back"
 import {tenantSchema} from "../zod/TenantZod.js";
 import {ZodError} from "zod";
 import {ITenantBase, ITenant} from "@drax/identity-share";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 class TenantService {
 

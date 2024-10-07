@@ -1,9 +1,9 @@
 import path from "path";
 import {fileURLToPath} from "url";
-import MongoDb from './databases/MongoDB.js'
-import ApolloExpressServerFactory from './factories/ApolloExpressServerFactory.js'
-import ApolloFastifyServerFactory from './factories/ApolloFastifyServerFactory.js'
-import YogaFastifyServerFactory from './factories/YogaFastifyServerFactory.js'
+import MongoDb from './databases/MongoDB'
+import ApolloExpressServerFactory from './factories/ApolloExpressServerFactory'
+import ApolloFastifyServerFactory from './factories/ApolloFastifyServerFactory'
+import YogaFastifyServerFactory from './factories/YogaFastifyServerFactory'
 
 MongoDb()
 const ROOT_DIR = path.dirname(fileURLToPath(import.meta.url));

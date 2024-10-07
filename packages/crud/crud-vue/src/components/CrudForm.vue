@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
 import  {ref} from "vue";
-import EntityCrud from "../EntityCrud";
 import CrudFormField from "./CrudFormField.vue";
 import type {TOperation} from "../interfaces/TOperation";
-
+import type {IEntityCrud} from "@drax/crud-share";
+import {useI18n} from "vue-i18n";
+const {t,te} = useI18n()
 
 const valueModel = defineModel({type: [Object]})
 
 
 const {entity} = defineProps({
-  entity: {type: Object as PropType<EntityCrud>, required: true},
+  entity: {type: Object as PropType<IEntityCrud>, required: true},
   operation: {type: String as PropType<TOperation>, required: true},
   readonly: {type: Boolean, default: false},
   error: {type: String, required: false},
@@ -38,7 +39,7 @@ const emit = defineEmits(['submit', 'cancel'])
   <v-form v-model="valid" ref="formRef"  @submit.prevent >
     <v-card flat>
       <v-card-text v-if="error">
-        <v-alert color="error">{{ $te(error) ? $t(error) : error }}</v-alert>
+        <v-alert color="error">{{ te(error) ? t(error) : error }}</v-alert>
       </v-card-text>
       <v-card-text>
         <template v-for="field in entity.fields" :key="field.name">
@@ -52,9 +53,9 @@ const emit = defineEmits(['submit', 'cancel'])
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn variant="text" color="grey" @click="cancel">{{ $t('action.cancel') }}</v-btn>
+        <v-btn variant="text" color="grey" @click="cancel">{{ t('action.cancel') }}</v-btn>
         <v-btn variant="flat" color="primary" @click="submit">
-          {{ operation ? $t('action.' + operation) : $t('action.sent') }}
+          {{ operation ? t('action.' + operation) : t('action.sent') }}
         </v-btn>
       </v-card-actions>
     </v-card>

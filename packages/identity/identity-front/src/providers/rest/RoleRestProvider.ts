@@ -1,7 +1,7 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider.ts";
 import type {IRole, IRoleBase} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 class RoleRestProvider implements IRoleProvider {
 

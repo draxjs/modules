@@ -14,7 +14,13 @@ const messages = {
       search: 'Search',
       reset: 'Reset',
       success: 'Operation Success',
-      actions: 'Actions'
+      actions: 'Actions',
+      download: 'Download',
+      export: 'Export',
+      exports: 'Exports',
+      import: 'Import',
+      imports: 'Imports',
+      clear: 'Clear'
     }
   },
   es: {
@@ -32,7 +38,13 @@ const messages = {
       search: 'Buscar',
       reset: 'Reiniciar',
       success: 'Operación exitosa',
-      actions: 'Acciones'
+      actions: 'Acciones',
+      download: 'Descargar',
+      export: 'Exportar',
+      exports: 'Exportaciones',
+      import: 'Importar',
+      imports: 'Importaciones',
+      clear: 'Limpiar'
     }
   }
 }

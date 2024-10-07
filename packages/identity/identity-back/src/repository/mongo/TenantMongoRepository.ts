@@ -3,7 +3,7 @@ import {ITenantRepository} from '../../interfaces/ITenantRepository'
 import {mongoose, MongooseSort, MongooseQueryFilter} from "@drax/common-back";
 import { PaginateOptions, PaginateResult} from "mongoose";
 import {DeleteResult} from "mongodb";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {ITenant, ITenantBase} from "@drax/identity-share";
 
 class TenantMongoRepository implements ITenantRepository{

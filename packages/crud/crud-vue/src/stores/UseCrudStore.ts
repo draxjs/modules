@@ -9,8 +9,8 @@ export const useCrudStore = defineStore('CrudStore', {
             form: {} as any,
             formValid: {} as any,
             notify: false as boolean,
-            error: '' as string,
             message: '' as string,
+            error: '' as string,
             items: [] as any[],
             totalItems: 0 as number,
             itemsPerPage: 5 as number,
@@ -18,7 +18,10 @@ export const useCrudStore = defineStore('CrudStore', {
             search: '' as string,
             sortBy: [] as any[],
             loading: false,
-            inputErrors: null
+            inputErrors: null,
+            exportLoading: false,
+            exportFiles: [] as string[],
+            exportListVisible: false,
         }
     ),
     getters:{
@@ -80,6 +83,18 @@ export const useCrudStore = defineStore('CrudStore', {
         },
         setInputErrors(inputErrors: any) {
             this.inputErrors = inputErrors
+        },
+        setExportFiles(exportFiles: string[]) {
+            this.exportFiles = exportFiles
+        },
+        addExportFile(exportFile: string) {
+            this.exportFiles.push(exportFile)
+        },
+        setExportLoading(exportLoading: boolean) {
+            this.exportLoading = exportLoading
+        },
+        setExportListVisible(exportListVisible: boolean) {
+            this.exportListVisible = exportListVisible
         }
     }
 

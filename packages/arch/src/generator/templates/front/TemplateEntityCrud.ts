@@ -110,13 +110,21 @@ const generateFields = (schema: ISchema) => {
 
 export const TemplateEntityCrud = (entity: IEntitySchema) => `
 import {EntityCrud} from "@drax/crud-vue";
-import type {IFields} from "@drax/crud-vue";
+import {
+  IDraxCrudService,
+  IEntityCrud,
+  IEntityCrudField,
+  IEntityCrudHeader, 
+  IEntityCrudPermissions,
+  IEntityCrudRefs,
+  IEntityCrudRules
+} from "@drax/crud-share";
 import ${entity.name}Provider from "../providers/${entity.name}Provider";
 
 //Import EntityCrud Refs
 ${generateImportRefs(entity.schema)}
 
-class ${entity.name}Crud extends EntityCrud {
+class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
 
   static singleton: ${entity.name}Crud
 
@@ -132,7 +140,7 @@ class ${entity.name}Crud extends EntityCrud {
     return ${entity.name}Crud.singleton
   }
 
-  get permissions(){
+  get permissions(): IEntityCrudPermissions{
     return {
       manage: '${entity.name.toLowerCase()}:manage', 
       view: '${entity.name.toLowerCase()}:view', 
@@ -142,29 +150,29 @@ class ${entity.name}Crud extends EntityCrud {
     }
   }
 
-  get headers() {
+  get headers(): IEntityCrudHeader[] {
     return [
         ${generateHeaders(entity.schema)}
     ]
   }
 
-  get provider(){
+  get provider(): IDraxCrudService<any, any, any>{
     return ${entity.name}Provider.instance
   }
   
-  get refs(){
+  get refs(): IEntityCrudRefs{
     return {
       ${generateRefs(entity.schema)}
     }
   }
 
-  get rules(){
+  get rules():IEntityCrudRules{
     return {
       ${generateRules(entity.schema)}
     }
   }
 
-  get fields():IFields{
+  get fields(): IEntityCrudField[]{
     return [
         ${generateFields(entity.schema)}
     ]

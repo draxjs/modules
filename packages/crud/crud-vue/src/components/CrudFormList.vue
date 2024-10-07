@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import type {ICrudField} from "../interfaces/IEntityCrud";
 import CrudFormField from "./CrudFormField.vue";
-import EntityCrud from "@/EntityCrud";
+import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 
 const valueModel = defineModel({type: Array, default: () => []});
 
 const {field} = defineProps({
-  entity: {type: Object as PropType<EntityCrud>, required: true},
-  field: {type: Object as PropType<ICrudField>, required: true},
+  entity: {type: Object as PropType<IEntityCrud>, required: true},
+  field: {type: Object as PropType<IEntityCrudField>, required: true},
   readonly: {type: Boolean, default: false},
 })
 
@@ -16,7 +15,7 @@ function newItem() {
   return field.objectFields ? field.objectFields.reduce((acc, field) => ({...acc, [field.name]: field.default }), {}) : []
 }
 
-function getField(key: string):ICrudField|undefined {
+function getField(key: string):IEntityCrudField|undefined {
   return field.objectFields ? field.objectFields.find(field => field.name === key) : undefined;
 }
 
@@ -43,12 +42,12 @@ function removeItem(index: number) {
         <v-col cols="12" v-for="(item,index) in valueModel" :key="index" class="text-right">
           <v-row dense align="center">
             <v-col cols="11">
-              <template v-for="key in Object.keys(item)" :key="key">
+              <template v-for="key in Object.keys(item as Record<string, any>)" :key="key">
                 <crud-form-field
                     v-if="hasField(key)"
                     :entity="entity"
                     :field="getField(key)"
-                    v-model="valueModel[index][key]"
+                    v-model="(valueModel[index] as any)[key]"
                     :readonly="readonly"
                     :index="index"
                 />

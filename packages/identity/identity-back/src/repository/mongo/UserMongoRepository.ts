@@ -11,7 +11,7 @@ import {DeleteResult, MongoServerError} from "mongodb";
 import type {IUserRepository} from "../../interfaces/IUserRepository";
 import {PaginateResult} from "mongoose";
 import RoleMongoRepository from "./RoleMongoRepository.js";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 class UserMongoRepository implements IUserRepository {
     private roleRepository: RoleMongoRepository;

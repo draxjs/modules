@@ -4,7 +4,7 @@ import {ValidationError} from "@drax/common-back";
 import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
-import {IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateResult} from "@drax/crud-share";
 
 async function UserRoutes(fastify, options) {
     fastify.post('/api/auth', async (request, reply) => {

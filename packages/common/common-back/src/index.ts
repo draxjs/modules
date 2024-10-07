@@ -31,17 +31,23 @@ import ZodErrorToValidationError from "./errors/adapters/ZodErrorToValidationErr
 import ValidationErrorToGraphQLError from "./errors/adapters/ValidationErrorToGraphQLError.js";
 import commonGraphql  from "./graphql/index.js"
 
-//Utils
+//Config
 import DraxCache  from "./cache/DraxCache.js"
 import DraxConfig  from "./config/DraxConfig.js"
 import CommonConfig  from "./config/CommonConfig.js"
 import LoadCommonConfigFromEnv  from "./setup/LoadCommonConfigFromEnv.js"
+
+//Constants
 import {COMMON} from "./constants/CommonConstants.js"
 
-//File
-import {StoreManager} from "./utils/StoreManager.js";
-import {StreamFileStore} from "./utils/StreamFileStore.js";
-import {StreamSizeValidator} from "./utils/StreamSizeValidator.js";
+//Utils
+import {WorkerHandler} from "./utils/WorkerHandler.js";
+import {createDirIfNotExist} from "./utils/CreateDirIfNotExist.js";
+
+//Store
+import {StoreManager} from "./store/StoreManager.js";
+import {StreamFileStore} from "./store/StreamFileStore.js";
+import {StreamSizeValidator} from "./store/StreamSizeValidator.js";
 
 //GQL
 import GraphqlMerger from "./utils/GraphqlMerger.js";
@@ -52,6 +58,11 @@ const commonResolvers: IResolvers = await graphqlMergeResult.resolvers;
 
 
 export {
+
+    //Utils
+    createDirIfNotExist,
+    WorkerHandler,
+
     //Constants
     COMMON,
 

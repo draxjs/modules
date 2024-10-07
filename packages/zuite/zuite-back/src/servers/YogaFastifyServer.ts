@@ -28,7 +28,7 @@ class YogaFastifyServer {
     constructor(typeDefs: any, resolvers: any, rootDir: string) {
         this.typeDefs = typeDefs
         this.resolvers = resolvers
-        this.rootDir = rootDir ? rootDir : path.join(__dirname, '..');
+        this.rootDir = rootDir ? rootDir : path.join(__dirname);
         this.setup()
     }
 
@@ -38,12 +38,14 @@ class YogaFastifyServer {
         this.setupStatusRoute()
         this.setupYogaServer()
         this.linkFastifyYoga()
-        this.setupPublicFiles()
+        this.setupWebFiles()
     }
 
-    setupPublicFiles() {
+
+
+    setupWebFiles() {
         this.fastifyServer.register(fastifyStatic, {
-            root: path.join(this.rootDir, 'public'),
+            root: path.join(this.rootDir, 'web'),
             prefix: '/',
             index: 'index.html'
         });

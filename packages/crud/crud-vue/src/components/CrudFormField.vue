@@ -1,25 +1,28 @@
 <script setup lang="ts">
 import {computed} from "vue";
 import type {PropType} from "vue";
-import type {ICrudField} from "../interfaces/IEntityCrud";
 import CrudFormList from "./CrudFormList.vue";
 import CrudAutocomplete from "./CrudAutocomplete.vue";
-import EntityCrud from "@/EntityCrud";
 import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {VDateInput} from 'vuetify/labs/VDateInput'
+import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 const {t, te} = useI18n()
 
 const store = useCrudStore()
 
-const valueModel = defineModel({type: [String, Number, Boolean, Object, Array], default: false})
+const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
 const {index, entity, field} = defineProps({
-  entity: {type: Object as PropType<EntityCrud>, required: true},
-  field: {type: Object as PropType<ICrudField>, required: true},
+  entity: {type: Object as PropType<IEntityCrud>, required: true},
+  field: {type: Object as PropType<IEntityCrudField|undefined>, required: true},
   readonly: {type: Boolean, default: false},
   index: {type: Number, default: 0},
 })
+
+if(!field){
+  throw new Error("CrudFormField must be provided with a field object")
+}
 
 const name = computed(() => index > 0 ? `${field.name}_${index}` : field.name)
 
@@ -93,7 +96,7 @@ const inputErrors = computed(() =>
 
     <crud-autocomplete
         v-if="field.type === 'ref'"
-        :entity="entity.getRef(field.ref).instance"
+        :entity="entity.getRef(field.ref)"
         :field="field"
         v-model="valueModel"
         :label="label"
@@ -133,7 +136,7 @@ const inputErrors = computed(() =>
 
     <crud-autocomplete
         v-if="field.type === 'array.ref'"
-        :entity="entity.getRef(field.ref).instance"
+        :entity="entity.getRef(field.ref)"
         :field="field"
         v-model="valueModel"
         :multiple="true"

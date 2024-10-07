@@ -2,6 +2,8 @@
 import {computed, ref, defineEmits} from 'vue'
 import {useAuth} from '../../composables/useAuth.js'
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
+import {useI18n} from "vue-i18n";
+const {t, te} = useI18n()
 
 const {login, isAuthenticated} = useAuth()
 
@@ -50,14 +52,14 @@ function togglePasswordVisibility() {
 
         <v-form @submit.prevent="submitLogin">
           <v-card variant="elevated" class="pa-6">
-            <v-card-title class="pa-4 text-center">{{ $t ? $t('auth.signIn') : 'Sign In' }}</v-card-title>
+            <v-card-title class="pa-4 text-center">{{ te('auth.signIn') ? t('auth.signIn') : 'Sign In' }}</v-card-title>
             <v-card-text v-if="authError">
               <v-alert type="error">
-                {{ $t ? $t(authError) : authError }}
+                {{te(authError) ? t(authError) : authError }}
               </v-alert>
             </v-card-text>
             <v-card-text>
-              <div class="text-subtitle-1 text-medium-emphasis">{{ $t ? $t('auth.username') : 'Username' }}</div>
+              <div class="text-subtitle-1 text-medium-emphasis">{{ te('auth.username') ? t('auth.username') : 'Username' }}</div>
               <v-text-field
                   variant="outlined"
                   id="username-input"
@@ -66,7 +68,7 @@ function togglePasswordVisibility() {
                   required
                   autocomplete="new-username"
               ></v-text-field>
-              <div class="text-subtitle-1 text-medium-emphasis">{{ $t ? $t('auth.password') : 'Password' }}</div>
+              <div class="text-subtitle-1 text-medium-emphasis">{{ te('auth.password') ? t('auth.password') : 'Password' }}</div>
               <v-text-field
                   variant="outlined"
                   id="password-input"
@@ -92,7 +94,7 @@ function togglePasswordVisibility() {
                   :disabled="!isFormValid"
                   :loading="loading"
               >
-                {{ $t ? $t('auth.login') : 'Login' }}
+                {{ te('auth.login') ? t('auth.login') : 'Login' }}
               </v-btn>
             </v-card-actions>
           </v-card>

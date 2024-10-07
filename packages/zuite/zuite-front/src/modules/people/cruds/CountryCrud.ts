@@ -1,12 +1,19 @@
-
 import {EntityCrud} from "@drax/crud-vue";
-import type {IFields} from "@drax/crud-vue";
+import {
+  IDraxCrudProvider,
+  IEntityCrud,
+  IEntityCrudField,
+  IEntityCrudHeader,
+  IEntityCrudPermissions,
+  IEntityCrudRefs,
+  IEntityCrudRules
+} from "@drax/crud-share";
 import CountryProvider from "../providers/CountryProvider";
 
 //Import EntityCrud Refs
 
 
-class CountryCrud extends EntityCrud {
+class CountryCrud extends EntityCrud implements IEntityCrud {
 
   static singleton: CountryCrud
 
@@ -14,7 +21,7 @@ class CountryCrud extends EntityCrud {
     super();
     this.name = 'Country'
   }
-  
+
   static get instance(): CountryCrud {
     if(!CountryCrud.singleton){
       CountryCrud.singleton = new CountryCrud()
@@ -22,46 +29,51 @@ class CountryCrud extends EntityCrud {
     return CountryCrud.singleton
   }
 
-  get permissions(){
+  get permissions():IEntityCrudPermissions{
     return {
-      manage: 'country:manage', 
-      view: 'country:view', 
-      create: 'country:create', 
-      update: 'country:update', 
+      manage: 'country:manage',
+      view: 'country:view',
+      create: 'country:create',
+      update: 'country:update',
       delete: 'country:delete'
     }
   }
 
-  get headers() {
+  get headers(): IEntityCrudHeader[] {
     return [
         {title: 'name',key:'name', align: 'start'}
     ]
   }
 
-  get provider(){
+  //@ts-ignore
+  get provider(): IDraxCrudProvider<any, any, any>{
     return CountryProvider.instance
   }
-  
-  get refs(){
+
+  get refs(): IEntityCrudRefs{
     return {
-      
+
     }
   }
 
-  get rules(){
+  get rules():IEntityCrudRules  {
     return {
       name: [(v: any) => v || 'Requerido']
     }
   }
 
-  get fields():IFields{
+  get fields(): IEntityCrudField[]{
     return [
         {name: 'name', type: 'string', label: 'name', default:'' }
     ]
   }
-  
+
   get dialogFullscreen(){
     return false
+  }
+
+  get exportHeaders(){
+    return ['_id', 'name']
   }
 
 }

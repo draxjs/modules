@@ -5,7 +5,7 @@ import {ValidationError, ZodErrorToValidationError} from "@drax/common-back";
 import AuthUtils from "../utils/AuthUtils.js";
 import {createUserSchema, editUserSchema,} from "../zod/UserZod.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 class UserService {
 

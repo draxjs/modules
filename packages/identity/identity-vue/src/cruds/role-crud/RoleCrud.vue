@@ -5,7 +5,8 @@ import {useRole} from "../../composables/useRole";
 import type {IRole, IRoleBase} from "@drax/identity-share";
 import RoleForm from "../../forms/RoleForm.vue";
 import RoleView from "../../views/RoleView.vue";
-
+import {useI18n} from "vue-i18n";
+const {t} = useI18n()
 const {createRole, editRole, deleteRole, loading, roleError, inputErrors} = useRole()
 
 interface RoleList {
@@ -110,13 +111,13 @@ function toDelete(item: IRole) {
 
     <v-card border rounded>
       <v-toolbar class="bg-toolbar">
-        <v-toolbar-title>{{$t('role.managing')}}</v-toolbar-title>
+        <v-toolbar-title>{{t('role.managing')}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="filterEnable = !filterEnable">
           <v-icon>{{ filterEnable ? 'mdi-filter' : 'mdi-filter-off' }}</v-icon>
         </v-btn>
         <v-btn color="primary" @click="toCreate">
-          {{$t('action.create') }}
+          {{t('action.create') }}
         </v-btn>
       </v-toolbar>
       <v-theme-provider with-background class="pa-2 rounded-b">
@@ -132,7 +133,7 @@ function toDelete(item: IRole) {
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>
         <v-toolbar>
-          <v-toolbar-title>{{ dialogTitle ? $t(dialogTitle) : '-' }}</v-toolbar-title>
+          <v-toolbar-title>{{ dialogTitle ? t(dialogTitle) : '-' }}</v-toolbar-title>
         </v-toolbar>
         <v-card class="pa-10">
           <v-card-text v-if="roleError">
@@ -154,7 +155,7 @@ function toDelete(item: IRole) {
                    @click="save"
                    :loading="loading"
             >
-              {{ $t(buttonText) }}
+              {{ t(buttonText) }}
             </v-btn>
           </v-card-actions>
 

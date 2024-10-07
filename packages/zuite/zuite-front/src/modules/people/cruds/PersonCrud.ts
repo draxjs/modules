@@ -1,12 +1,12 @@
+import {IEntityCrud, IEntityCrudField, IEntityCrudHeader, IEntityCrudRefs} from "@drax/crud-share";
 import {EntityCrud} from "@drax/crud-vue";
-import type {IFields} from "@drax/crud-vue";
-import PersonProvider from "../providers/PersonProvider";
 
+import PersonProvider from "../providers/PersonProvider";
 //Import EntityCrud Refs
 import CountryCrud from "./CountryCrud";
 import LanguageCrud from "./LanguageCrud";
 
-class PersonCrud extends EntityCrud {
+class PersonCrud extends EntityCrud implements IEntityCrud {
 
   static singleton: PersonCrud
 
@@ -32,7 +32,7 @@ class PersonCrud extends EntityCrud {
     }
   }
 
-  get headers() {
+  get headers():IEntityCrudHeader[] {
     return [
       {title: 'fullname', key: 'fullname', align: 'start'},
       {title: 'live', key: 'live', align: 'start'},
@@ -48,10 +48,10 @@ class PersonCrud extends EntityCrud {
     return PersonProvider.instance
   }
 
-  get refs() {
+  get refs(): IEntityCrudRefs {
     return {
-      Country: CountryCrud,
-      Language: LanguageCrud
+      Country: CountryCrud.instance,
+      Language: LanguageCrud.instance
     }
   }
 
@@ -68,7 +68,7 @@ class PersonCrud extends EntityCrud {
     }
   }
 
-  get fields(): IFields {
+  get fields(): IEntityCrudField[] {
     return [
       {name: 'fullname', type: 'string', label: 'fullname', default: ''},
       {name: 'live', type: 'boolean', label: 'live', default: false},

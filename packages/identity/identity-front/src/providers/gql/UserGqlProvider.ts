@@ -1,7 +1,7 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {IUserProvider} from "../../interfaces/IUserProvider";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 class UserGqlProvider implements IUserProvider {
 

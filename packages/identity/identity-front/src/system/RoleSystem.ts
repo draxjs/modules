@@ -1,6 +1,6 @@
 import type {IRoleProvider} from "../interfaces/IRoleProvider";
 import type {IRole, IRoleBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 
 class RoleSystem implements IRoleProvider {
@@ -21,7 +21,7 @@ class RoleSystem implements IRoleProvider {
         return this._provider.fetchPermissions()
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}): Promise<IDraxPaginateResult<IRole>> {
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         return this._provider.paginate({page, limit, orderBy, order, search})
     }
 

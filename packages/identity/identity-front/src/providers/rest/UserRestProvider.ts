@@ -1,7 +1,7 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {IUserProvider} from "../../interfaces/IUserProvider.ts";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 
 class UserRestProvider implements IUserProvider {

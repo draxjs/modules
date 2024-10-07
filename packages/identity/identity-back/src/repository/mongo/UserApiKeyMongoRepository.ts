@@ -8,7 +8,7 @@ import {
 import type {IUserApiKey, IUserApiKeyBase, IUserApiKeySoftDelete} from "@drax/identity-share";
 import {DeleteResult, MongoServerError} from "mongodb";
 import {PaginateResult} from "mongoose";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {IUserApiKeyRepository} from "../../interfaces/IUserApiKeyRepository";
 
 class UserMongoRepository implements IUserApiKeyRepository {

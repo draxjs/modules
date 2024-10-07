@@ -4,7 +4,7 @@ import {IRole} from "@drax/identity-share";
 import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import {PermissionService} from "../services/PermissionService.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
-import {IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateResult} from "@drax/crud-share";
 
 
 

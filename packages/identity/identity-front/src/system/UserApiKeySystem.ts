@@ -1,6 +1,6 @@
 import type {IUserApiKeyProvider} from "../interfaces/IUserApiKeyProvider";
 import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateResult} from "@drax/crud-share";
 
 
 class UserApiKeySystem {

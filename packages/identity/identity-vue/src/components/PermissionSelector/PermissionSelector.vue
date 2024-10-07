@@ -2,6 +2,8 @@
 
 import {ref, onMounted, defineModel, computed} from 'vue'
 import type {PropType} from 'vue'
+import {useI18n} from "vue-i18n";
+const {t,te} = useI18n()
 
 defineProps({
   errorMessages: {
@@ -49,7 +51,7 @@ const permissionGroups = computed(() => {
 
 <template>
   <v-sheet  class="pa-2">
-    <h5 class="text-h5 mb-2">{{$t ? $t('permission.permissions') : 'Permissions'}}</h5>
+    <h5 class="text-h5 mb-2">{{te('permission.permissions') ? t('permission.permissions') : 'Permissions'}}</h5>
   <v-item-group
       v-model="model"
       variant="outlined"
@@ -60,7 +62,7 @@ const permissionGroups = computed(() => {
     <template v-for="(permissions, entity) in permissionGroups" :key="entity">
       <v-card class="mb-2" variant="outlined">
         <v-card-title class="text-capitalize">
-          {{ $t ? $t('permission.'+entity) : entity }}
+          {{ t ? t('permission.'+entity) : entity }}
         </v-card-title>
         <v-card-text>
           <v-item
@@ -73,7 +75,7 @@ const permissionGroups = computed(() => {
                 :color="isSelected? 'green' : 'grey-darken-3'" class=""
                 @click="toggle" variant="flat" :rounded="false" border
             >
-              {{ $t ? $t('permission.'+permission) : permission }}
+              {{ te('permission.'+permission) ? t('permission.'+permission) : permission }}
             </v-chip>
 
 

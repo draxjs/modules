@@ -4,7 +4,7 @@ import fs from 'fs';
 import type {IUploadFile} from "../../../../common/common-back/src/interfaces/IUploadFile";
 import {join} from "path";
 import UploadFileError from "../../../../common/common-back/src/errors/UploadFileError";
-import StoreManager from "../../../../common/common-back/src/utils/StoreManager.js";
+import StoreManager from "../../../../common/common-back/src/store/StoreManager";
 import path from "path";
 import {fileURLToPath} from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

@@ -1,5 +1,5 @@
 import sqlite from "better-sqlite3";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {randomUUID} from "node:crypto";
 import {
     SqlSort, SqlQueryFilter, SqliteTableBuilder, SqliteTableField,

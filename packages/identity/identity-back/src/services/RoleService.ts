@@ -2,7 +2,7 @@ import {IRoleRepository} from "../interfaces/IRoleRepository";
 import { ZodErrorToValidationError} from "@drax/common-back"
 import {roleSchema} from "../zod/RoleZod.js";
 import {ZodError} from "zod";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import type {IRoleBase, IRole} from "@drax/identity-share";
 
 class RoleService {

@@ -6,7 +6,8 @@ import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
 import {useCopy} from "@drax/common-vue";
 import UserApiKeyForm from "../../forms/UserApiKeyForm.vue";
 import UserApiKeyView from "../../views/UserApiKeyView.vue";
-
+import {useI18n} from "vue-i18n";
+const {t} = useI18n()
 const {createUserApiKey, editUserApiKey, deleteUserApiKey, loading, userApiKeyError, inputErrors} = useUserApiKey()
 
 
@@ -120,13 +121,13 @@ function toDelete(item: IUserApiKey) {
 
     <v-card border rounded>
       <v-toolbar class="bg-toolbar">
-        <v-toolbar-title>{{ $t('userApiKey.managing') }}</v-toolbar-title>
+        <v-toolbar-title>{{ t('userApiKey.managing') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="filterEnable = !filterEnable">
           <v-icon>{{ filterEnable ? 'mdi-filter' : 'mdi-filter-off' }}</v-icon>
         </v-btn>
         <v-btn class="font-weight-bold" color="primary" @click="toCreate">
-          {{ $t('action.create') }}
+          {{ t('action.create') }}
         </v-btn>
       </v-toolbar>
       <v-theme-provider with-background class="pa-2 rounded-b">
@@ -142,14 +143,14 @@ function toDelete(item: IUserApiKey) {
     <v-dialog v-model="dialog" max-width="800">
       <v-sheet border>
         <v-toolbar>
-          <v-toolbar-title>{{ dialogTitle ? $t(dialogTitle) : '-' }}</v-toolbar-title>
+          <v-toolbar-title>{{ dialogTitle ? t(dialogTitle) : '-' }}</v-toolbar-title>
         </v-toolbar>
         <v-card class="pa-10">
           <v-card-text v-if="userApiKeyError">
             <v-alert type="error">{{ userApiKeyError }}</v-alert>
           </v-card-text>
           <v-card-text v-if="success">
-            <v-alert type="success">{{ $t('action.success') }}</v-alert>
+            <v-alert type="success">{{ t('action.success') }}</v-alert>
           </v-card-text>
           <v-card-text>
             <UserApiKeyForm v-if="dialogMode === 'create' || dialogMode === 'edit'"
@@ -165,7 +166,7 @@ function toDelete(item: IUserApiKey) {
                 base-color="success"
                 variant="outlined"
                 @click:append="copy(userApiKeyCreated.secret)"
-                :hint="$t('userApiKey.secretWarning')"
+                :hint="t('userApiKey.secretWarning')"
                 persistent-hint
             >
               <template v-slot:append>
@@ -178,7 +179,7 @@ function toDelete(item: IUserApiKey) {
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn variant="text" @click="cancel" :loading="loading">
-              {{success ? $t('action.close') : $t('action.cancel')}}
+              {{success ? t('action.close') : t('action.cancel')}}
             </v-btn>
             <v-btn
                 v-if="!success"
@@ -187,7 +188,7 @@ function toDelete(item: IUserApiKey) {
                 @click="save"
                 :loading="loading"
             >
-              {{ $t(buttonText) }}
+              {{ t(buttonText) }}
             </v-btn>
           </v-card-actions>
 

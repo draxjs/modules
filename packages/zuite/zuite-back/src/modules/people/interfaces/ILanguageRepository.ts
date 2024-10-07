@@ -1,8 +1,8 @@
 
 import type {ILanguage, ILanguageBase} from './ILanguage'
-import {ICrudRepository} from "@drax/crud-back";
+import {IDraxCrud} from "@drax/crud-share";
 
-interface ILanguageRepository extends ICrudRepository<ILanguage, ILanguageBase, ILanguageBase>{
+interface ILanguageRepository extends IDraxCrud<ILanguage, ILanguageBase, ILanguageBase>{
 
 }
 

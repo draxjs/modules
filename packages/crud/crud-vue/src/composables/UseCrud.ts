@@ -1,14 +1,12 @@
-import EntityCrud from "../EntityCrud";
-import type {IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateResult, IEntityCrud} from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {computed} from "vue";
-import type {ICrudField} from "@/interfaces/IEntityCrud";
 
-export function useCrud(entity: EntityCrud) {
+export function useCrud(entity: IEntityCrud) {
 
   const store = useCrudStore()
 
-  async function loadItems() {
+  async function doPaginate() {
     store.setLoading(true)
     try {
       const r: IDraxPaginateResult<any> = await entity?.provider.paginate({
@@ -27,23 +25,66 @@ export function useCrud(entity: EntityCrud) {
     }
   }
 
-  function cast(item: any){
+  async function doExport(format: 'JSON') {
+    store.setExportLoading(true)
+    store.setExportListVisible(true)
+    try {
 
-    entity.fields.filter(field => field.type === 'date')
-        .forEach(field => {
-          if(field.type === 'date'){
-            item[field.name] = new Date(item[field.name])
-          }
-        })
+      if(!entity?.provider.export) {
+        throw new Error("exportCsv not implemented")
+      }
 
-    return item
+      const headers: string = entity.exportHeaders.join(',')
+
+      const r: any = await entity?.provider.export({
+        format: format,
+        headers: headers,
+        separator: ";",
+        orderBy: store.sortBy[0]?.key,
+        order: store.sortBy[0]?.order,
+        search: store.search
+      })
+
+      if(r && r.url) {
+        store.addExportFile(r)
+        store.showMessage("Export successful")
+      }
+
+      return r
+
+    } catch (e) {
+      console.error("Error exporting csv", e)
+    } finally {
+      store.setExportLoading(false)
+    }
   }
+
+
 
 
   function onCreate() {
     store.setOperation("create")
     store.setForm(entity.form)
     store.setDialog(true)
+  }
+
+  function cast(item: any){
+    entity.fields.filter(field => field.type === 'date')
+        .forEach(field => {
+            item[field.name] = new Date(item[field.name])
+        })
+
+    entity.fields.filter(field => field.type === 'ref')
+        .forEach(field => {
+          item[field.name] = item[field.name]._id
+        })
+
+    entity.fields.filter(field => field.type === 'array.ref')
+        .forEach(field => {
+          item[field.name] = item[field.name].map(((i:any) => i._id))
+        })
+
+    return item
   }
 
   function onEdit(item: object) {
@@ -83,7 +124,7 @@ export function useCrud(entity: EntityCrud) {
   async function doCreate(formData: any) {
     try {
       await entity?.provider.create(formData)
-      await loadItems()
+      await doPaginate()
       store.setDialog(false)
       store.showMessage("Entity created successfully!")
     } catch (e: any) {
@@ -99,7 +140,7 @@ export function useCrud(entity: EntityCrud) {
   async function doUpdate(formData: any) {
     try {
       await entity?.provider.update(formData._id, formData)
-      await loadItems()
+      await doPaginate()
       store.setDialog(false)
       store.showMessage("Entity updated successfully!")
     } catch (e: any) {
@@ -116,7 +157,7 @@ export function useCrud(entity: EntityCrud) {
   async function doDelete(formData: any) {
     try {
       await entity?.provider.delete(formData._id)
-      await loadItems()
+      await doPaginate()
       store.setDialog(false)
       store.showMessage("Entity deleted successfully!")
     } catch (e: any) {
@@ -140,11 +181,15 @@ export function useCrud(entity: EntityCrud) {
   const search = computed({get(){return store.search} , set(value){store.setSearch(value)}})
   const totalItems = computed({get(){return store.totalItems} , set(value){store.setTotalItems(value)}})
   const items = computed({get(){return store.items} , set(value){store.setItems(value)}})
+  const exportFiles = computed({get(){return store.exportFiles} , set(value){store.setExportFiles(value)}})
+  const exportLoading = computed({get(){return store.exportLoading} , set(value){store.setExportLoading(value)}})
+  const exportListVisible = computed({get(){return store.exportListVisible} , set(value){store.setExportListVisible(value)}})
 
   return {
-    loadItems, onCreate, onEdit, onDelete, onCancel, onSubmit,
-    operation, dialog, form, notify, error, message,
-    loading, itemsPerPage, page, sortBy, search, totalItems, items
+    loadItems: doPaginate, doExport, onCreate, onEdit, onDelete, onCancel, onSubmit,
+    operation, dialog, form, notify, error, message, formValid,
+    loading, itemsPerPage, page, sortBy, search, totalItems, items,
+    exportFiles,exportLoading,exportListVisible
   }
 
 }

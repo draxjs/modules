@@ -18,10 +18,11 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:8082',
       '/graphql': 'http://localhost:8082',
+      '/media': 'http://localhost:8082',
     },
   },
   build: {
-    outDir: '../../../dist/public',
+    outDir: '../../../dist/web',
   },
   plugins: [
     VueRouter({

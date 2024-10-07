@@ -3,7 +3,7 @@ import type {IUserApiKey} from "@drax/identity-share";
 import {ValidationError} from "@drax/common-back";
 import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
-import {IDraxPaginateResult} from "@drax/common-share";
+import {IDraxPaginateResult} from "@drax/crud-share";
 
 
 async function UserApiKeyRoutes(fastify, options) {

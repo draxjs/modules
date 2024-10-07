@@ -1,7 +1,7 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {ITenantProvider} from "../../interfaces/ITenantProvider";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 
 class TenantGqlProvider implements ITenantProvider {

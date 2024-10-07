@@ -10,8 +10,6 @@ import {useCrudStore} from "./stores/UseCrudStore";
 import {useCrud} from "./composables/UseCrud";
 import {EntityCrud} from "./EntityCrud";
 
-import type {IFields, ICrudForm, ICrudHeaders, ICrudPermissions, ICrudRules} from "./interfaces/IEntityCrud";
-export type {IFields, ICrudForm, ICrudHeaders, ICrudPermissions, ICrudRules}
 
 export {
     Crud,

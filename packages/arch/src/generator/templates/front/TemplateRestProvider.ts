@@ -1,11 +1,11 @@
 import {IEntitySchema} from "../../../interfaces/IEntitySchema";
 
 export const TemplateRestProvider = (entity: IEntitySchema) => `
-import {IDraxCrud} from "@drax/common-share";
+import {IDraxCrud} from "@drax/crud-share";
 import {AbstractCrudRestProvider} from "@drax/crud-front";
 import type {I${entity.name}, I${entity.name}Base} from '../interfaces/I${entity.name}'
 
-class ${entity.name}Provider extends AbstractCrudRestProvider<I${entity.name}, I${entity.name}Base, I${entity.name}Base> implements IDraxCrud<I${entity.name}, I${entity.name}Base, I${entity.name}Base> {
+class ${entity.name}Provider extends AbstractCrudRestProvider<I${entity.name}, I${entity.name}Base, I${entity.name}Base> {
     
   static singleton: ${entity.name}Provider
     

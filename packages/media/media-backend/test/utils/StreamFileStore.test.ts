@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from "fs";
 import type {IUploadFile} from "../../../../common/common-back/src/interfaces/IUploadFile";
-import StreamFileStore from "../../../../common/common-back/src/utils/StreamFileStore";
+import StreamFileStore from "../../../../common/common-back/src/store/StreamFileStore";
 import {join} from "path";
 import UploadFileError from "../../../../common/common-back/src/errors/UploadFileError";
 

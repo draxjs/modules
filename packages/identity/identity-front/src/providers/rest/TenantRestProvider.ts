@@ -1,7 +1,7 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {ITenantProvider} from "../../interfaces/ITenantProvider.ts";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 class TenantRestProvider implements ITenantProvider {
 
