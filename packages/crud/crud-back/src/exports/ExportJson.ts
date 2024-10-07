@@ -14,8 +14,7 @@ class ExportJson extends AbstractExport {
     // Método principal para procesar los datos y generar el CSV
     process(): Promise<any> {
         return new Promise(async (resolve, reject) => {
-
-            try{
+            try {
                 this.generateFilePath('json')
                 let rowCount = 0
                 const start = Date.now();
@@ -37,25 +36,35 @@ class ExportJson extends AbstractExport {
                 writableStream.write('[');
 
                 if (this.isIterableAsync(this.cursor)) {
+                    let isFirstRecord = true;
                     for await (const record of this.cursor) {
-                        const csvRow = JSON.stringify(record);
-                        console.log("csvRow", csvRow);
-                        writableStream.write(csvRow + ',\n');
-                        rowCount++
+                        if (!isFirstRecord) {
+                            writableStream.write(',\n');
+                        }
+                        const jsonRow = JSON.stringify(record);
+                        writableStream.write(jsonRow);
+                        rowCount++;
+                        isFirstRecord = false;
                     }
                 } else if (this.isIterableSync(this.cursor)) {
+                    let isFirstRecord = true;
                     for (const record of this.cursor) {
-                        const csvRow = JSON.stringify(record);
-                        writableStream.write(csvRow + ',\n');
-                        rowCount++
+                        if (!isFirstRecord) {
+                            writableStream.write(',\n');
+                        }
+                        const jsonRow = JSON.stringify(record);
+                        writableStream.write(jsonRow);
+                        rowCount++;
+                        isFirstRecord = false;
                     }
                 }
-                writableStream.write(']');
+
+                writableStream.write('\n]');
                 writableStream.end();
-            }catch (e){
+
+            } catch (e) {
                 reject(e);
             }
-
         })
     }
 

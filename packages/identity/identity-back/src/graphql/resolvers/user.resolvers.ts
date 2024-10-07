@@ -8,7 +8,7 @@ import {
     CommonConfig
 } from "@drax/common-back";
 import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
-import UnauthorizedError from "../../errors/UnauthorizedError.js";
+import {UnauthorizedError} from "@drax/common-back";
 import BadCredentialsError from "../../errors/BadCredentialsError.js";
 import {join} from "path";
 import IdentityConfig from "../../config/IdentityConfig.js";

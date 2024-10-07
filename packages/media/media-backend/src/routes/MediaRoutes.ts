@@ -1,7 +1,6 @@
 import {join} from "path";
-import {UnauthorizedError} from "@drax/identity-back";
 import {MediaPermissions} from "../permissions/MediaPermissions.js";
-import {StoreManager, UploadFileError, DraxConfig, CommonConfig} from "@drax/common-back";
+import {StoreManager, UploadFileError, DraxConfig, CommonConfig, UnauthorizedError} from "@drax/common-back";
 
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''

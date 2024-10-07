@@ -32,7 +32,7 @@ const label = computed(() => {
 })
 
 const rules = computed(() => {
-  return entity.rule(field.name) as any
+  return entity.getRule(field.name) as any
 })
 
 const inputErrors = computed(() =>
@@ -44,7 +44,6 @@ const inputErrors = computed(() =>
 <template>
 
   <div v-if="field && field.type">
-
     <v-text-field
         v-if="field.type === 'string'"
         type="text"

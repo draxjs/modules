@@ -1,55 +1,56 @@
 import {TenantModel} from "../../models/TenantModel.js";
 import {ITenantRepository} from '../../interfaces/ITenantRepository'
 import {mongoose, MongooseSort, MongooseQueryFilter} from "@drax/common-back";
-import { PaginateOptions, PaginateResult} from "mongoose";
+import {PaginateOptions, PaginateResult} from "mongoose";
 import {DeleteResult} from "mongodb";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import {IDraxFindOptions, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {ITenant, ITenantBase} from "@drax/identity-share";
 
-class TenantMongoRepository implements ITenantRepository{
+class TenantMongoRepository implements ITenantRepository {
 
     async create(tenantData: ITenantBase): Promise<ITenant> {
-        const tenant : mongoose.HydratedDocument<ITenant> = new TenantModel(tenantData)
+        const tenant: mongoose.HydratedDocument<ITenant> = new TenantModel(tenantData)
         await tenant.save()
         return tenant
     }
 
     async update(id: string, tenantData: ITenantBase): Promise<ITenant> {
-        const tenant : mongoose.HydratedDocument<ITenant> = await TenantModel.findOneAndUpdate({_id: id}, tenantData, {new: true}).exec()
+        const tenant: mongoose.HydratedDocument<ITenant> = await TenantModel.findOneAndUpdate({_id: id}, tenantData, {new: true}).exec()
         return tenant
     }
 
     async delete(id: string): Promise<boolean> {
-        const result : DeleteResult = await TenantModel.deleteOne({_id:id}).exec()
+        const result: DeleteResult = await TenantModel.deleteOne({_id: id}).exec()
         return result.deletedCount == 1
     }
 
-    async findById(id: string): Promise<ITenant | null>{
+    async findById(id: string): Promise<ITenant | null> {
         const tenant: mongoose.HydratedDocument<ITenant> | null = await TenantModel.findById(id).exec()
         return tenant
     }
 
-    async findByName(name: string): Promise<ITenant | null>{
+    async findByName(name: string): Promise<ITenant | null> {
         const tenant: mongoose.HydratedDocument<ITenant> | null = await TenantModel.findOne({name}).exec()
         return tenant
     }
 
-    async fetchAll(): Promise<ITenant[]>{
+    async fetchAll(): Promise<ITenant[]> {
         const tenants: mongoose.HydratedDocument<ITenant>[] = await TenantModel.find().exec()
         return tenants
     }
 
     async paginate({
-                       page= 1,
-                       limit= 5,
-                       orderBy= '',
-                       order= false,
-                       search= '',
-                       filters= []} : IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
+                       page = 1,
+                       limit = 5,
+                       orderBy = '',
+                       order = false,
+                       search = '',
+                       filters = []
+                   }: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
 
         const query = {}
 
-        if(search){
+        if (search) {
             query['$or'] = [
                 {name: new RegExp(search, 'i')},
             ]
@@ -67,6 +68,30 @@ class TenantMongoRepository implements ITenantRepository{
             total: tenants.totalDocs,
             items: tenants.docs
         }
+    }
+
+    async find({
+                   cursor = false,
+                   limit = 0,
+                   orderBy = '',
+                   order = false,
+                   search = '',
+                   filters = []
+               }: IDraxFindOptions): Promise<ITenant[]> {
+
+        const query = {}
+
+        if (search) {
+            query['$or'] = [
+                {name: new RegExp(search, 'i')},
+            ]
+        }
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const sort = MongooseSort.applySort(orderBy, order)
+        const items: ITenant[] = await TenantModel.find(query).sort(sort)
+        return items
     }
 }
 

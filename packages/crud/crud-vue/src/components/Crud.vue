@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {PropType} from "vue";
+import {onBeforeMount, type PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import CrudList from "./CrudList.vue";
 import CrudForm from "./CrudForm.vue";
@@ -7,23 +7,24 @@ import CrudNotify from "./CrudNotify.vue";
 import CrudDialog from "./CrudDialog.vue";
 import {useCrud} from "../composables/UseCrud";
 
-
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
 })
 
 const {
-  onCreate, onEdit, onDelete, onCancel, onSubmit,
+  onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
   operation, dialog, form, notify, error, message, doExport
 } = useCrud(entity);
+
+onBeforeMount(() => {
+  resetCrudStore()
+})
 
 </script>
 
 <template>
   <v-container fluid class="mt-5">
     <v-card>
-
-
 
       <crud-list
           :entity="entity"

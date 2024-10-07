@@ -110,8 +110,8 @@ const generateFields = (schema: ISchema) => {
 
 export const TemplateEntityCrud = (entity: IEntitySchema) => `
 import {EntityCrud} from "@drax/crud-vue";
-import {
-  IDraxCrudService,
+import type{
+  IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudHeader, 
@@ -156,7 +156,7 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
     ]
   }
 
-  get provider(): IDraxCrudService<any, any, any>{
+  get provider(): IDraxCrudProvider<any, any, any>{
     return ${entity.name}Provider.instance
   }
   

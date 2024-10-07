@@ -13,7 +13,7 @@ import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import type {IEntityCrudHeader} from "@drax/crud-share";
 
-const {t} = useI18n()
+const {t,te} = useI18n()
 const {hasPermission} = useAuth()
 
 const {entity} = defineProps({
@@ -26,7 +26,10 @@ const {
 } = useCrud(entity)
 
 const actions: IEntityCrudHeader[] = [{title: t('action.actions'), key: 'actions', sortable: false, align: 'end', minWidth: '140px'}]
-const tHeaders: IEntityCrudHeader[] = entity.headers.map(header => ({...header, title: t(`${entity.name}.fields.${header.title}`)}))
+const tHeaders: IEntityCrudHeader[] = entity.headers.map(header => ({
+  ...header,
+  title: te(`${entity.name.toLowerCase()}.fields.${header.title}`) ? t(`${entity.name.toLowerCase()}.fields.${header.title}`) : header.title
+}))
 
 const headers: IEntityCrudHeader[] = [...tHeaders, ...actions]
 

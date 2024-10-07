@@ -1,8 +1,7 @@
 import UserServiceFactory from "../factory/UserServiceFactory.js";
 import {IUser} from "@drax/identity-share";
-import {ValidationError} from "@drax/common-back";
+import {ValidationError, UnauthorizedError} from "@drax/common-back";
 import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
-import UnauthorizedError from "../errors/UnauthorizedError.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
 import {IDraxPaginateResult} from "@drax/crud-share";
 

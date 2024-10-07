@@ -1,5 +1,5 @@
 import {IJwtUser, IRole} from "@drax/identity-share";
-import UnauthorizedError from "../errors/UnauthorizedError.js";
+import {UnauthorizedError} from "@drax/common-back";
 
 class Rbac {
     private role: IRole;

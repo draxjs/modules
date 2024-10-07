@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import EntityCrud from "../../EntityCrud";
+import type {IEntityCrud} from "@drax/crud-share"
 import {useCrud} from "../../composables/UseCrud";
 import {useI18n} from "vue-i18n";
 
 const {t} = useI18n()
 
 const {entity} = defineProps({
-  entity: {type: Object as PropType<EntityCrud>, required: true},
+  entity: {type: Object as PropType<IEntityCrud>, required: true},
 })
 
 const {

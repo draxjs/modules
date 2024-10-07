@@ -3,7 +3,7 @@ import {ITenantRepository} from '../../interfaces/ITenantRepository'
 import {UUID} from "crypto";
 import sqlite from "better-sqlite3";
 import {randomUUID} from "node:crypto";
-import {IDraxPaginateResult, IDraxPaginateOptions} from "@drax/crud-share";
+import {IDraxPaginateResult, IDraxPaginateOptions, IDraxFindOptions} from "@drax/crud-share";
 import {SqliteErrorToValidationError, SqliteTableBuilder, SqlQueryFilter, SqlSort} from "@drax/common-back";
 import type {SqliteTableField} from "@drax/common-back";
 
@@ -141,6 +141,29 @@ class TenantSqliteRepository implements ITenantRepository{
             total: rCount.count,
             items: tenants
         }
+    }
+
+    async find({
+                   cursor = false,
+                   limit = 0,
+                   orderBy = '',
+                   order = false,
+                   search = '',
+                   filters = []
+               }: IDraxFindOptions): Promise<ITenant[]>{
+
+        let where=""
+        if (search) {
+            where = ` WHERE name LIKE '%${search}%'`
+        }
+
+        where = SqlQueryFilter.applyFilters(where, filters)
+        const sort = SqlSort.applySort(orderBy, order)
+
+        where += sort
+        const tenants = this.db.prepare('SELECT * FROM tenants '  + where).all();
+
+        return tenants
     }
 
 

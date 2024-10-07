@@ -31,7 +31,7 @@ export function useCrud(entity: IEntityCrud) {
     try {
 
       if(!entity?.provider.export) {
-        throw new Error("exportCsv not implemented")
+        throw new Error("provider.export not implemented")
       }
 
       const headers: string = entity.exportHeaders.join(',')
@@ -106,7 +106,6 @@ export function useCrud(entity: IEntityCrud) {
   }
 
   function onSubmit(formData: any) {
-    console.log("formData", formData)
     store.setInputErrors(null)
     switch (store.operation) {
       case "create":
@@ -167,6 +166,10 @@ export function useCrud(entity: IEntityCrud) {
 
   }
 
+  function resetCrudStore(){
+    store.$reset()
+  }
+
   const dialog = computed({get(){return store.dialog} , set(value){store.setDialog(value)}})
   const operation = computed({get(){return store.operation} , set(value){store.setOperation(value)}})
   const form = computed({get(){return store.form} , set(value){store.setForm(value)}})
@@ -186,7 +189,7 @@ export function useCrud(entity: IEntityCrud) {
   const exportListVisible = computed({get(){return store.exportListVisible} , set(value){store.setExportListVisible(value)}})
 
   return {
-    loadItems: doPaginate, doExport, onCreate, onEdit, onDelete, onCancel, onSubmit,
+    loadItems: doPaginate, doExport, onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
     operation, dialog, form, notify, error, message, formValid,
     loading, itemsPerPage, page, sortBy, search, totalItems, items,
     exportFiles,exportLoading,exportListVisible

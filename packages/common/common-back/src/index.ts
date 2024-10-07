@@ -23,6 +23,7 @@ import type {SqliteTableField} from "./sqlite/SqliteTableBuilder";
 import UniqueError from "./errors/UniqueError.js";
 import ValidationError from "./errors/ValidationError.js";
 import ValidationFieldError from "./errors/ValidationFieldError.js";
+import UnauthorizedError from "./errors/UnauthorizedError.js";
 import {UploadFileError} from "./errors/UploadFileError.js";
 
 import MongooseErrorToValidationError from "./errors/adapters/MongooseErrorToValidationError.js";
@@ -109,6 +110,7 @@ export {
     ValidationError,
     ValidationFieldError,
     UploadFileError,
+    UnauthorizedError
 
 }
 

@@ -112,6 +112,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async find({
+                   cursor = false,
                    limit = 0,
                    orderBy = '',
                    order = false,

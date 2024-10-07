@@ -21,9 +21,7 @@ import {jwtMiddleware} from "./middleware/jwtMiddleware.js";
 import {rbacMiddleware} from "./middleware/rbacMiddleware.js";
 import {apiKeyMiddleware} from "./middleware/apiKeyMiddleware.js";
 
-import IdentityPermissions from "./permissions/IdentityPermissions.js";
 import IdentityConfig from "./config/IdentityConfig.js";
-import UnauthorizedError from "./errors/UnauthorizedError.js";
 import BadCredentialsError from "./errors/BadCredentialsError.js";
 
 import CreateUserIfNotExist from "./setup/CreateUserIfNotExist.js";
@@ -36,6 +34,14 @@ import type {IRoleRepository} from "./interfaces/IRoleRepository";
 import type {ITenantRepository} from "./interfaces/ITenantRepository";
 import type {IUserRepository} from "./interfaces/IUserRepository";
 import type {IUserApiKeyRepository} from "./interfaces/IUserApiKeyRepository";
+
+
+import IdentityPermissions from "./permissions/IdentityPermissions.js";
+
+import {RolePermissions} from "./permissions/RolePermissions.js";
+import {TenantPermissions} from "./permissions/TenantPermissions.js";
+import {UserPermissions} from "./permissions/UserPermissions.js";
+import {UserApiKeyPermissions} from "./permissions/UserApiKeyPermissions.js";
 
 
 const graphqlMergeResult = await GraphqlMerge()
@@ -83,12 +89,15 @@ export {
 
     //Permissions
     IdentityPermissions,
+    RolePermissions,
+    TenantPermissions,
+    UserPermissions,
+    UserApiKeyPermissions,
 
     //Config
     IdentityConfig,
 
     //Errors
-    UnauthorizedError,
     BadCredentialsError,
 
     //Setup

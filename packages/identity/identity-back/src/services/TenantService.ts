@@ -4,12 +4,14 @@ import {tenantSchema} from "../zod/TenantZod.js";
 import {ZodError} from "zod";
 import {ITenantBase, ITenant} from "@drax/identity-share";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import {AbstractService} from "@drax/crud-back";
 
-class TenantService {
+class TenantService extends AbstractService<ITenant,ITenantBase,ITenantBase> {
 
     _repository: ITenantRepository
 
     constructor(tenantRepostitory: ITenantRepository) {
+        super(tenantRepostitory, tenantSchema)
         this._repository = tenantRepostitory
         console.log("TenantService constructor")
     }

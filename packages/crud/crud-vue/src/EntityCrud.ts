@@ -90,10 +90,9 @@ class EntityCrud implements IEntityCrud{
     return {}
   }
 
-  get rule(): (field:string|undefined) => Array<Function>  {
-    return (field:string|undefined) => {
-      return field && this.rules[field] ? this.rules[field] : []
-    }
+  getRule(field:string|undefined):Array<Function>|undefined  {
+      console.log("Getting rule for field: ", field, this.rules)
+      return field && this.rules[field] && this.rules[field].length > 0 ? this.rules[field] : undefined
   }
 
   get isEditable(){

@@ -13,8 +13,6 @@ interface IEntityCrud {
   permissions: IEntityCrudPermissions
   fields: IEntityCrudField[]
   form: IEntityCrudForm
-  rules: IEntityCrudRules
-  rule: (field:string|undefined) => Array<Function>
   isEditable: boolean
   isCreatable: boolean
   isDeletable: boolean
@@ -24,8 +22,13 @@ interface IEntityCrud {
   exportFormats: string[]
   importFormats: string[]
   exportHeaders: string[]
-  getRef(ref: string|undefined): IEntityCrud
+
   refs: IEntityCrudRefs
+  getRef(ref: string|undefined): IEntityCrud
+
+  rules: IEntityCrudRules
+  getRule(field:string|undefined): Array<Function>|undefined
+
   provider: IDraxCrudProvider<any, any, any>
 }
 

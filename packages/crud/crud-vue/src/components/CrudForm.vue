@@ -5,8 +5,9 @@ import CrudFormField from "./CrudFormField.vue";
 import type {TOperation} from "../interfaces/TOperation";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
+import {useCrudStore} from "../stores/UseCrudStore";
 const {t,te} = useI18n()
-
+const store = useCrudStore()
 const valueModel = defineModel({type: [Object]})
 
 
@@ -20,10 +21,13 @@ const {entity} = defineProps({
 const valid = ref()
 const formRef = ref()
 
-function submit() {
-  formRef.value.validate()
+async function submit() {
+  store.resetErrors()
+  await formRef.value.validate()
   if(valid.value) {
     emit('submit',valueModel.value)
+  }else{
+    console.log('Invalid form')
   }
 }
 
@@ -38,6 +42,9 @@ const emit = defineEmits(['submit', 'cancel'])
 <template>
   <v-form v-model="valid" ref="formRef"  @submit.prevent >
     <v-card flat>
+
+      <v-card-subtitle v-if="valueModel._id">ID: {{valueModel._id}}</v-card-subtitle>
+
       <v-card-text v-if="error">
         <v-alert color="error">{{ te(error) ? t(error) : error }}</v-alert>
       </v-card-text>

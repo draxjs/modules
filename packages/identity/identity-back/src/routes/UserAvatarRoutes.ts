@@ -1,6 +1,5 @@
 import {join} from "path";
-import UnauthorizedError from "../errors/UnauthorizedError.js";
-import {StoreManager, UploadFileError, DraxConfig, CommonConfig} from "@drax/common-back";
+import {StoreManager, UploadFileError, DraxConfig, CommonConfig, UnauthorizedError} from "@drax/common-back";
 import UserServiceFactory from "../factory/UserServiceFactory.js";
 import IdentityConfig from "../config/IdentityConfig.js";
 

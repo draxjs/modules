@@ -1,13 +1,13 @@
 import AbstractService from "../services/AbstractService";
 import {CommonConfig, DraxConfig, ValidationError} from "@drax/common-back";
-import {UnauthorizedError, Rbac} from "@drax/identity-back";
+import {UnauthorizedError} from "@drax/common-back";
 import type {FastifyReply, FastifyRequest} from "fastify";
 import {IDraxExportResult, IDraxPermission} from "@drax/crud-share";
 import {join} from "path";
 
 declare module 'fastify' {
     interface FastifyRequest {
-        rbac?: Rbac;
+        rbac?: any;
     }
 }
 

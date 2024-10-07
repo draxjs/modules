@@ -6,6 +6,7 @@ interface IDraxFindOptions {
   order?: 'asc' | 'desc' | boolean;
   search?: string;
   filters?: IDraxFieldFilter[];
+  cursor?: boolean;
 }
 
 export type {IDraxFindOptions}

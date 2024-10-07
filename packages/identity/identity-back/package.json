@@ -6,7 +6,7 @@
   "version": "0.5.1",
   "description": "Identity module for user management, authentication and authorization.",
   "main": "dist/index.js",
-  "types": "types/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "type": "module",
   "scripts": {
     "prepublish": "tsc && npm run copygql",
@@ -29,6 +29,7 @@
   "license": "ISC",
   "dependencies": {
     "@drax/common-back": "^0.5.1",
+    "@drax/crud-back": "^0.5.1",
     "@drax/crud-share": "^0.5.1",
     "@drax/identity-share": "^0.5.1",
     "bcryptjs": "^2.4.3",

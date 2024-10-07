@@ -24,6 +24,7 @@ import RoleSystem from "./system/RoleSystem.js"
 import TenantRestProvider from "./providers/rest/TenantRestProvider.js";
 import TenantGqlProvider from "./providers/gql/TenantGqlProvider.js";
 import TenantSystem from "./system/TenantSystem.js"
+import TenantSystemFactory from "./factory/TenantSystemFactory.js"
 
 
 import {IdentityI18nMessages} from "./i18n/index.js"
@@ -72,6 +73,9 @@ export {
     RoleSystem,
     TenantSystem,
     UserApiKeySystem,
+
+    //Factory
+    TenantSystemFactory,
 
     //Helpers
     AuthHelper,

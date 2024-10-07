@@ -1,8 +1,7 @@
 import TenantServiceFactory from "../../factory/TenantServiceFactory.js";
 import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
-import {ValidationError, ValidationErrorToGraphQLError} from "@drax/common-back";
+import {ValidationError, ValidationErrorToGraphQLError, UnauthorizedError} from "@drax/common-back";
 import {GraphQLError} from "graphql";
-import UnauthorizedError from "../../errors/UnauthorizedError.js";
 
 
 export default {

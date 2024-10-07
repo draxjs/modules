@@ -8,6 +8,10 @@ const messages = {
             creating: "Creating Tenant",
             deleting: "Deleting Tenant",
             managing: 'Managing Tenant',
+            fields:{
+                id: 'ID',
+                name: 'Name'
+            }
         }
     },
     es: {
@@ -19,6 +23,10 @@ const messages = {
             creating: "Creando Tenant",
             deleting: "Eliminando Tenant",
             managing: 'Gestionando Tenant',
+            fields:{
+                id: 'ID',
+                name: 'Nombre'
+            }
         }
     }
 }

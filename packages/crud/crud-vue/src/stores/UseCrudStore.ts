@@ -84,6 +84,10 @@ export const useCrudStore = defineStore('CrudStore', {
         setInputErrors(inputErrors: any) {
             this.inputErrors = inputErrors
         },
+        resetErrors(){
+            this.inputErrors = null
+            this.error = ''
+        },
         setExportFiles(exportFiles: string[]) {
             this.exportFiles = exportFiles
         },

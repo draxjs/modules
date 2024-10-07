@@ -1,7 +1,12 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {ITenantProvider} from "../../interfaces/ITenantProvider.ts";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import type {
+    IDraxCrudProviderExportResult,
+    IDraxExportOptions, IDraxFieldFilter,
+    IDraxPaginateOptions,
+    IDraxPaginateResult
+} from "@drax/crud-share";
 
 class TenantRestProvider implements ITenantProvider {
 
@@ -41,6 +46,23 @@ class TenantRestProvider implements ITenantProvider {
         const params = {page, limit, orderBy, order, search}
         let paginatedTenants = await this.httpClient.get(url, {params})
         return paginatedTenants as IDraxPaginateResult<ITenant>
+
+    }
+
+    async export({
+                     format = 'JSON',
+                     headers = [],
+                     separator = ';',
+                     limit = 0,
+                     orderBy = "",
+                     order = false,
+                     search = "",
+                     filters = []
+                 }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
+        const url =  '/api/tenants/export'
+        const sFilters: string  = filters.map((filter : IDraxFieldFilter ) => `${filter.field},${filter.operator},${filter.value}`).join('|')
+        const params: any = {format, headers, separator, limit, orderBy, order, search, filters: sFilters}
+        return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
 
     }
 
