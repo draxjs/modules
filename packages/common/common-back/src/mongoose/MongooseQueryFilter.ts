@@ -1,10 +1,10 @@
 import z from "zod";
-import {IDraxFieldFilter} from "@drax/common-share";
+import type {IQueryFilter} from "../interfaces/IQueryFilter";
 
 
 class MongooseQueryFilter{
 
-    static applyFilters(query: object, filters: IDraxFieldFilter[]){
+    static applyFilters(query: object, filters: IQueryFilter[]){
 
         this.assertQuerySchema(query)
         this.assertFiltersSchema(filters)
@@ -55,7 +55,7 @@ class MongooseQueryFilter{
         z.object({}).parse(query)
     }
 
-    static assertFiltersSchema(filters : IDraxFieldFilter[]){
+    static assertFiltersSchema(filters : IQueryFilter[]){
         z.array(this.filterSchema).parse(filters)
     }
 

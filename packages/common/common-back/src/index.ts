@@ -1,6 +1,7 @@
 import type {IResolvers, TypeSource} from "@graphql-tools/utils";
 import type {IValidationFieldError} from './interfaces/IValidationFieldError'
 import type {IDraxConfig} from './interfaces/IDraxConfig'
+import type {IQueryFilter} from './interfaces/IQueryFilter'
 import type {IUploadFile, IUploadFileResult, IUploadFileOptions} from './interfaces/IUploadFile'
 
 
@@ -115,7 +116,7 @@ export type{
 
     IValidationFieldError,
     IDraxConfig,
-
+    IQueryFilter,
     IUploadFile,
     IUploadFileResult,
     IUploadFileOptions,

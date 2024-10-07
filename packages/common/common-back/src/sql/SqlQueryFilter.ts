@@ -1,10 +1,10 @@
 import z from "zod";
-import {IDraxFieldFilter} from "@drax/common-share";
+import type {IQueryFilter} from "../interfaces/IQueryFilter";
 
 
 class SqlQueryFilter {
 
-    static applyFilters(where: string = "", filters: IDraxFieldFilter[]){
+    static applyFilters(where: string = "", filters: IQueryFilter[]){
         if(filters.length === 0) return where
 
         where += where ? ` AND ` : ` WHERE `
@@ -54,7 +54,7 @@ class SqlQueryFilter {
         return where
     }
 
-    static assertFiltersSchema(filters : IDraxFieldFilter[]){
+    static assertFiltersSchema(filters : IQueryFilter[]){
         z.array(this.filterSchema).parse(filters)
     }
 
