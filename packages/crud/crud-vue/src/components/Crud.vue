@@ -13,11 +13,13 @@ const {entity} = defineProps({
 
 const {
   onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
-  operation, dialog, form, notify, error, message, doExport
+  operation, dialog, form, notify, error, message, doExport,
+  prepareFilters
 } = useCrud(entity);
 
 onBeforeMount(() => {
   resetCrudStore()
+  prepareFilters()
 })
 
 </script>

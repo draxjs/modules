@@ -1,10 +1,12 @@
 import type {IEntityCrudHeader} from "./IEntityCrudHeader";
 import type {IEntityCrudPermissions} from "./IEntityCrudPermissions";
 import type {IEntityCrudField} from "./IEntityCrudField";
+import type {IEntityCrudFilter} from "./IEntityCrudFilter";
 import type {IEntityCrudForm} from "./IEntityCrudForm";
 import type {IEntityCrudRules} from "./IEntityCrudRules";
 import type {IEntityCrudRefs} from "./IEntityCrudRefs";
 import type {IDraxCrudProvider} from "./IDraxCrudProvider";
+import type {IEntityCrudFormFilter} from "./IEntityCrudFormFilter";
 
 interface IEntityCrud {
   name: string
@@ -12,7 +14,9 @@ interface IEntityCrud {
   headers: IEntityCrudHeader[]
   permissions: IEntityCrudPermissions
   fields: IEntityCrudField[]
+  filters: IEntityCrudFilter[]
   form: IEntityCrudForm
+  formFilters: IEntityCrudFormFilter[]
   isEditable: boolean
   isCreatable: boolean
   isDeletable: boolean

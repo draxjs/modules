@@ -57,6 +57,20 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
         return item as T[]
     }
 
+
+
+    prepareFilters(filters: IDraxFieldFilter) {
+        const isDate = (value: any): value is Date => value instanceof Date;
+
+        return filters
+            .filter((filter: IDraxFieldFilter) => filter.value != null)
+            .map((filter: IDraxFieldFilter) => {
+                let value = isDate(filter.value)? filter.value.toISOString() : filter.value
+                return `${filter.field},${filter.operator},${value}`
+            })
+            .join('|')
+    }
+
     async paginate({
                        page = 1,
                        limit = 5,
@@ -66,8 +80,7 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<T>> {
         const url = this.basePath
-        const sFilters: string = filters.map((filter : IDraxFieldFilter ) => `${filter.field},${filter.operator},${filter.value}`).join('|')
-        const params: any = {page, limit, orderBy, order, search, filters: sFilters}
+        const params: any = {page, limit, orderBy, order, search, filters: this.prepareFilters(filters)}
         const paginatedItems = await this.httpClient.get(url, {params})
         return paginatedItems as IDraxPaginateResult<T>
 
@@ -84,8 +97,16 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
                      filters = []
                  }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
         const url = this.basePath + '/export'
-        const sFilters: string  = filters.map((filter : IDraxFieldFilter ) => `${filter.field},${filter.operator},${filter.value}`).join('|')
-        const params: any = {format, headers, separator, limit, orderBy, order, search, filters: sFilters}
+        const params: any = {
+            format,
+            headers,
+            separator,
+            limit,
+            orderBy,
+            order,
+            search,
+            filters: this.prepareFilters(filters)
+        }
         return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
 
     }

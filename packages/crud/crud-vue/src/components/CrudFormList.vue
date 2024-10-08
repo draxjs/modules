@@ -2,6 +2,7 @@
 import type {PropType} from "vue";
 import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
+import {VDateInput} from "vuetify/lib/labs/VDateInput";
 
 const valueModel = defineModel({type: Array, default: () => []});
 
@@ -9,6 +10,11 @@ const {field} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField>, required: true},
   readonly: {type: Boolean, default: false},
+  hideDetails: {type: Boolean, default: false},
+  singleLine: {type: Boolean, default: false},
+  clearable: {type: Boolean, default: true},
+  density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
+  variant: {type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>, default: 'filled'},
 })
 
 function newItem() {
@@ -31,6 +37,8 @@ function removeItem(index: number) {
   valueModel.value.splice(index, 1);
 }
 
+defineEmits(['updateValue'])
+
 </script>
 
 <template>
@@ -50,6 +58,12 @@ function removeItem(index: number) {
                     v-model="(valueModel[index] as any)[key]"
                     :readonly="readonly"
                     :index="index"
+                    :density="density"
+                    :variant="variant"
+                    :clearable="clearable"
+                    :hide-details="hideDetails"
+                    :single-line="singleLine"
+                    @updateValue="$emit('updateValue')"
                 />
               </template>
 

@@ -6,15 +6,37 @@ export function useCrud(entity: IEntityCrud) {
 
   const store = useCrudStore()
 
+  const dialog = computed({get(){return store.dialog} , set(value){store.setDialog(value)}})
+  const operation = computed({get(){return store.operation} , set(value){store.setOperation(value)}})
+  const form = computed({get(){return store.form} , set(value){store.setForm(value)}})
+  const formValid = computed({get(){return store.formValid} , set(value){store.setFormValid(value)}})
+  const notify = computed({get(){return store.notify} , set(value){store.setNotify(value)}})
+  const error = computed({get(){return store.error} , set(value){store.setError(value)}})
+  const message = computed({get(){return store.message} , set(value){store.setMessage(value)}})
+  const loading = computed({get(){return store.loading} , set(value){store.setLoading(value)}})
+  const itemsPerPage = computed({get(){return store.itemsPerPage} , set(value){store.setItemsPerPage(value)}})
+  const page = computed({get(){return store.page} , set(value){store.setPage(value)}})
+  const sortBy = computed({get(){return store.sortBy} , set(value){store.setSortBy(value)}})
+  const search = computed({get(){return store.search} , set(value){store.setSearch(value)}})
+  const totalItems = computed({get(){return store.totalItems} , set(value){store.setTotalItems(value)}})
+  const items = computed({get(){return store.items} , set(value){store.setItems(value)}})
+  const exportFiles = computed({get(){return store.exportFiles} , set(value){store.setExportFiles(value)}})
+  const exportLoading = computed({get(){return store.exportLoading} , set(value){store.setExportLoading(value)}})
+  const exportListVisible = computed({get(){return store.exportListVisible} , set(value){store.setExportListVisible(value)}})
+  const filters = computed({get(){return store.filters} , set(value){store.setFilters(value)}})
+
+
   async function doPaginate() {
     store.setLoading(true)
     try {
+
       const r: IDraxPaginateResult<any> = await entity?.provider.paginate({
         page: store.page,
         limit: store.itemsPerPage,
         orderBy: store.sortBy[0]?.key,
         order: store.sortBy[0]?.order,
-        search: store.search
+        search: store.search,
+        filters: store.filters
       })
       store.setItems(r.items)
       store.setTotalItems(r.total)
@@ -170,28 +192,16 @@ export function useCrud(entity: IEntityCrud) {
     store.$reset()
   }
 
-  const dialog = computed({get(){return store.dialog} , set(value){store.setDialog(value)}})
-  const operation = computed({get(){return store.operation} , set(value){store.setOperation(value)}})
-  const form = computed({get(){return store.form} , set(value){store.setForm(value)}})
-  const formValid = computed({get(){return store.formValid} , set(value){store.setFormValid(value)}})
-  const notify = computed({get(){return store.notify} , set(value){store.setNotify(value)}})
-  const error = computed({get(){return store.error} , set(value){store.setError(value)}})
-  const message = computed({get(){return store.message} , set(value){store.setMessage(value)}})
-  const loading = computed({get(){return store.loading} , set(value){store.setLoading(value)}})
-  const itemsPerPage = computed({get(){return store.itemsPerPage} , set(value){store.setItemsPerPage(value)}})
-  const page = computed({get(){return store.page} , set(value){store.setPage(value)}})
-  const sortBy = computed({get(){return store.sortBy} , set(value){store.setSortBy(value)}})
-  const search = computed({get(){return store.search} , set(value){store.setSearch(value)}})
-  const totalItems = computed({get(){return store.totalItems} , set(value){store.setTotalItems(value)}})
-  const items = computed({get(){return store.items} , set(value){store.setItems(value)}})
-  const exportFiles = computed({get(){return store.exportFiles} , set(value){store.setExportFiles(value)}})
-  const exportLoading = computed({get(){return store.exportLoading} , set(value){store.setExportLoading(value)}})
-  const exportListVisible = computed({get(){return store.exportListVisible} , set(value){store.setExportListVisible(value)}})
+  function prepareFilters(){
+    store.setFilters(entity.formFilters)
+  }
+
 
   return {
-    loadItems: doPaginate, doExport, onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
+    doPaginate, doExport, onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
     operation, dialog, form, notify, error, message, formValid,
     loading, itemsPerPage, page, sortBy, search, totalItems, items,
+    prepareFilters,filters,
     exportFiles,exportLoading,exportListVisible
   }
 

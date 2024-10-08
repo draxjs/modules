@@ -5,12 +5,14 @@ const model = defineModel<any>()
 </script>
 
 <template>
-  <v-text-field v-model="model" hide-details
-                density="compact" class="mr-2"
+  <v-text-field v-model="model"
+                density="compact"
+                class="mr-2"
                 variant="outlined"
                 append-inner-icon="mdi-magnify"
                 :label="t('action.search')"
-                single-line clearable @click:clear="() => model = ''"
+                single-line hide-details
+                clearable @click:clear="() => model = ''"
   />
 </template>
 

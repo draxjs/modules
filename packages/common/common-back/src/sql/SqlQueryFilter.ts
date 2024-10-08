@@ -16,6 +16,9 @@ class SqlQueryFilter {
             if(filter.value === undefined || filter.value === null) return
 
             switch (filter.operator) {
+                case 'like':
+                    whereFilters.push(` ${filter.field} LIKE '%${filter.value}%' `)
+                    break;
                 case 'eq':
                     whereFilters.push(` ${filter.field} = '${filter.value}' `)
                     break;
@@ -61,7 +64,7 @@ class SqlQueryFilter {
     static  get filterSchema(){
         return z.object({
             field: z.string(),
-            operator: z.enum(['eq', 'ne', 'in', 'nin','gt', 'gte', 'lt', 'lte']),
+            operator: z.enum(['eq', 'like','ne', 'in', 'nin','gt', 'gte', 'lt', 'lte']),
             value: z.any()
         })
     }

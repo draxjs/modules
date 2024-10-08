@@ -6,19 +6,27 @@ import CrudAutocomplete from "./CrudAutocomplete.vue";
 import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {VDateInput} from 'vuetify/labs/VDateInput'
-import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
+import type {IEntityCrud, IEntityCrudField, IEntityCrudFilter} from "@drax/crud-share";
 const {t, te} = useI18n()
 
 const store = useCrudStore()
 
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
-const {index, entity, field} = defineProps({
+const {index, entity, field, disableRules} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-  field: {type: Object as PropType<IEntityCrudField|undefined>, required: true},
+  field: {type: Object as PropType<IEntityCrudField|IEntityCrudFilter|undefined>, required: true},
   readonly: {type: Boolean, default: false},
+  hideDetails: {type: Boolean, default: false},
+  singleLine: {type: Boolean, default: false},
+  clearable: {type: Boolean, default: true},
+  disableRules: {type: Boolean, default: false},
   index: {type: Number, default: 0},
+  density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
+  variant: {type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>, default: 'filled'},
 })
+
+
 
 if(!field){
   throw new Error("CrudFormField must be provided with a field object")
@@ -32,12 +40,15 @@ const label = computed(() => {
 })
 
 const rules = computed(() => {
+  if(disableRules) return undefined
   return entity.getRule(field.name) as any
 })
 
 const inputErrors = computed(() =>
     store.getInputErrors(field.name).map((error: string) => t(te(error) ? t(error) : error))
 )
+
+defineEmits(['updateValue'])
 
 </script>
 
@@ -53,6 +64,12 @@ const inputErrors = computed(() =>
         :readonly="readonly"
         :error-messages="inputErrors"
         :rules="rules"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        @update:modelValue="$emit('updateValue')"
     >
     </v-text-field>
 
@@ -65,6 +82,12 @@ const inputErrors = computed(() =>
         :readonly="readonly"
         :error-messages="inputErrors"
         :rules="rules"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        @update:modelValue="$emit('updateValue')"
     >
     </v-text-field>
 
@@ -76,6 +99,12 @@ const inputErrors = computed(() =>
         :readonly="readonly"
         :error-messages="inputErrors"
         :rules="rules"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        @update:modelValue="$emit('updateValue')"
     >
     </v-checkbox>
 
@@ -91,6 +120,12 @@ const inputErrors = computed(() =>
         prepend-inner-icon="mdi-calendar"
         prepend-icon=""
         :rules="rules"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        @update:modelValue="$emit('updateValue')"
     />
 
     <crud-autocomplete
@@ -101,6 +136,12 @@ const inputErrors = computed(() =>
         :label="label"
         :error-messages="inputErrors"
         :rules="rules"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        @updateValue="$emit('updateValue')"
     />
 
     <v-card v-if="field.type === 'object'" class="mt-3" variant="flat" border>
@@ -112,6 +153,12 @@ const inputErrors = computed(() =>
             :entity="entity"
             :field="oField"
             v-model="valueModel[oField.name]"
+            :density="density"
+            :variant="variant"
+            :clearable="clearable"
+            :hide-details="hideDetails"
+            :single-line="singleLine"
+            @updateValue="$emit('updateValue')"
         ></crud-form-field>
       </v-card-text>
 
@@ -126,9 +173,15 @@ const inputErrors = computed(() =>
         :multiple="true"
         :chips="true"
         :closable-chips="true"
-        :clearable="true"
         :readonly="readonly"
         :error-messages="inputErrors"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :rules="rules"
+        @update:modelValue="$emit('updateValue')"
     >
     </v-combobox>
 
@@ -140,9 +193,15 @@ const inputErrors = computed(() =>
         v-model="valueModel"
         :multiple="true"
         :chips="true"
-        :clearable="true"
         :label="label"
+        :rules="rules"
         :error-messages="inputErrors"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        @updateValue="$emit('updateValue')"
     />
 
 
@@ -154,9 +213,15 @@ const inputErrors = computed(() =>
         v-model="valueModel"
         :multiple="true"
         :chips="true"
-        :clearable="true"
         :readonly="readonly"
         :error-messages="inputErrors"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :rules="rules"
+        @update:modelValue="$emit('updateValue')"
     >
     </v-combobox>
 
@@ -167,6 +232,12 @@ const inputErrors = computed(() =>
         :field="field"
         v-model="valueModel"
         :readonly="readonly"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        @updateValue="$emit('updateValue')"
     />
 
   </div>

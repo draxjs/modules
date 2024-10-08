@@ -12,20 +12,28 @@ import CrudExportList from "./CrudExportList.vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import type {IEntityCrudHeader} from "@drax/crud-share";
+import CrudFilters from "./CrudFilters.vue";
 
-const {t,te} = useI18n()
+const {t, te} = useI18n()
 const {hasPermission} = useAuth()
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
+
 })
 
 const {
   loading, itemsPerPage, page, sortBy, search, totalItems, items,
-  loadItems
+  doPaginate, filters
 } = useCrud(entity)
 
-const actions: IEntityCrudHeader[] = [{title: t('action.actions'), key: 'actions', sortable: false, align: 'end', minWidth: '140px'}]
+const actions: IEntityCrudHeader[] = [{
+  title: t('action.actions'),
+  key: 'actions',
+  sortable: false,
+  align: 'end',
+  minWidth: '140px'
+}]
 const tHeaders: IEntityCrudHeader[] = entity.headers.map(header => ({
   ...header,
   title: te(`${entity.name.toLowerCase()}.fields.${header.title}`) ? t(`${entity.name.toLowerCase()}.fields.${header.title}`) : header.title
@@ -35,7 +43,7 @@ const headers: IEntityCrudHeader[] = [...tHeaders, ...actions]
 
 
 defineExpose({
-  loadItems
+  doPaginate
 });
 
 </script>
@@ -55,7 +63,7 @@ defineExpose({
       :search="search"
       :multi-sort="false"
       item-value="name"
-      @update:options="loadItems"
+      @update:options="doPaginate"
   >
     <template v-slot:top>
       <v-toolbar density="compact">
@@ -80,12 +88,25 @@ defineExpose({
 
       </v-toolbar>
 
-      <crud-export-list :entity="entity"></crud-export-list>
+      <crud-export-list
+          :entity="entity"
+      />
 
       <v-card>
         <v-card-text>
-          <crud-search v-model="search"></crud-search>
+          <crud-search
+              v-model="search"
+          />
         </v-card-text>
+
+        <v-card-text class="pt-0">
+          <crud-filters
+              :entity="entity"
+              v-model="filters"
+              @updateValue="doPaginate()"
+          />
+        </v-card-text>
+
       </v-card>
 
     </template>

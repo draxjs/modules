@@ -3,6 +3,7 @@ import {debounce} from "@drax/common-front"
 import { type PropType, type Ref} from "vue";
 import {ref, onBeforeMount} from "vue";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
+import {VDateInput} from "vuetify/lib/labs/VDateInput";
 
 const valueModel = defineModel<string | string[]>({type: [String, Array], required: false})
 
@@ -18,6 +19,10 @@ const {entity, multiple} = defineProps({
   itemTitle: {type: [String], default: 'name'},
   rules: {type: Array as PropType<any>, default: []},
   errorMessages: {type: Array as PropType<string[]>, default: []},
+  hideDetails: {type: Boolean, default: false},
+  singleLine: {type: Boolean, default: false},
+  density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
+  variant: {type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>, default: 'filled'},
 })
 
 if(!entity){
@@ -86,6 +91,8 @@ async function search(value: any) {
 
 }
 
+defineEmits(['updateValue'])
+
 </script>
 
 <template>
@@ -97,13 +104,18 @@ async function search(value: any) {
       :multiple="multiple"
       :chips="chips"
       :closable-chips="closableChips"
-      :clearable="clearable"
       :item-value="itemValue"
       :item-title="itemTitle"
       :loading="loading"
       :rules="rules"
+      :density="density"
+      :variant="variant"
+      :hide-details="hideDetails"
+      :single-line="singleLine"
+      :clearable="clearable"
       :error-messages="errorMessages"
       @update:search="debouncedSearch"
+      @update:modelValue="$emit('updateValue')"
   ></v-autocomplete>
 </template>
 

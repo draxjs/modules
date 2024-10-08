@@ -1,4 +1,4 @@
-import {IEntityCrud, IEntityCrudField, IEntityCrudHeader, IEntityCrudRefs} from "@drax/crud-share";
+import {IEntityCrud, IEntityCrudField, IEntityCrudFilter, IEntityCrudHeader, IEntityCrudRefs} from "@drax/crud-share";
 import {EntityCrud} from "@drax/crud-vue";
 
 import PersonProvider from "../providers/PersonProvider";
@@ -94,6 +94,14 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         objectFields: [{name: 'name', type: 'string', label: 'name', default: ''},
           {name: 'level', type: 'number', label: 'level', default: null}]
       }
+    ]
+  }
+
+  get filters(): IEntityCrudFilter[] {
+    return [
+      {name: 'fullname', type: 'string', label: 'fullname', default: '', operator: 'like'},
+      {name: 'birthdate', type: 'date', label: 'birthdate', default: null, operator: 'eq'},
+      {name: 'live', type: 'boolean', label: 'live', default: false, operator: 'eq'},
     ]
   }
 

@@ -1,7 +1,7 @@
 import type {
   IEntityCrud, IEntityCrudForm, IEntityCrudHeader, IEntityCrudRefs,
   IEntityCrudRules, IEntityCrudField, IEntityCrudPermissions,
-  IDraxCrudProvider
+  IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFormFilter
 } from "@drax/crud-share";
 
 
@@ -36,7 +36,13 @@ class EntityCrud implements IEntityCrud{
 
   get fields():IEntityCrudField[]{
     return [
-      {name: 'id', type: 'string', label: 'ID', default: '' },
+      {name: '_id', type: 'string', label: 'ID', default: '' },
+    ]
+  }
+
+  get filters():IEntityCrudFilter[]{
+    return [
+      {name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
     ]
   }
 
@@ -57,7 +63,7 @@ class EntityCrud implements IEntityCrud{
 
   get form():IEntityCrudForm{
 
-    const form = this.fields.reduce((acc, field) => {
+    return this.fields.reduce((acc, field) => {
       let value = null
       if(field.type === 'object'){
         value = this.objectFields(field)
@@ -68,10 +74,14 @@ class EntityCrud implements IEntityCrud{
       return {...acc, [field.name]: value }
     }, {})
 
-    //console.log("Form: ", form)
+  }
 
-    return form
 
+  get formFilters():IEntityCrudFormFilter[]{
+    return this.filters.map(
+        (filter:IEntityCrudFilter) =>
+            ({field:filter.name, value: null, operator: filter.operator  })
+    )
   }
 
   get refs():IEntityCrudRefs{
@@ -91,7 +101,6 @@ class EntityCrud implements IEntityCrud{
   }
 
   getRule(field:string|undefined):Array<Function>|undefined  {
-      console.log("Getting rule for field: ", field, this.rules)
       return field && this.rules[field] && this.rules[field].length > 0 ? this.rules[field] : undefined
   }
 

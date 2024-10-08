@@ -48,7 +48,7 @@ class AbstractFastifyController<T,C,U>{
     parseFilters(stringFilters: string): any {
         try {
             if (!stringFilters) {
-                return {}
+                return []
             }
             const filterArray = stringFilters.split(";")
             const filters = []
@@ -217,8 +217,8 @@ class AbstractFastifyController<T,C,U>{
             const orderBy = request.query.orderBy
             const order = request.query.order
             const search = request.query.search
-            //const filters = this.parseFilters(request.query.filters)
-            let paginateResult = await this.service.paginate({page, limit, orderBy, order, search})
+            const filters = this.parseFilters(request.query.filters)
+            let paginateResult = await this.service.paginate({page, limit, orderBy, order, search, filters})
             return paginateResult
         } catch (e) {
             console.error(e)
@@ -246,6 +246,7 @@ class AbstractFastifyController<T,C,U>{
             const orderBy = request.query.orderBy
             const order = request.query.order
             const search = request.query.search
+            const filters = this.parseFilters(request.query.filters)
 
             const year = (new Date().getFullYear()).toString()
             const month = (new Date().getMonth() + 1).toString().padStart(2, '0')
@@ -261,6 +262,7 @@ class AbstractFastifyController<T,C,U>{
                 orderBy,
                 order,
                 search,
+                filters,
             }, destinationPath)
 
             const url = `${BASE_URL}/api/file/${exportPath}/${year}/${month}/${result.fileName}`

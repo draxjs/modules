@@ -5,7 +5,9 @@ import type {IQueryFilter} from "../interfaces/IQueryFilter";
 class MongooseQueryFilter{
 
     static applyFilters(query: object, filters: IQueryFilter[]){
-
+        if(!filters || filters.length === 0){
+            return query;
+        }
         this.assertQuerySchema(query)
         this.assertFiltersSchema(filters)
 
@@ -14,6 +16,9 @@ class MongooseQueryFilter{
             if(filter.value === undefined || filter.value === null) return
 
             switch (filter.operator) {
+                case 'like':
+                    query[filter.field] = {...query[filter.field], ... {$regex: filter.value, $options: 'i'} }
+                    break;
                 case 'eq':
                     query[filter.field] = {...query[filter.field], ...{$eq:filter.value} }
                     break;
@@ -62,7 +67,7 @@ class MongooseQueryFilter{
     static  get filterSchema(){
         return z.object({
             field: z.string(),
-            operator: z.enum(['eq', 'ne', 'in', 'nin','gt', 'gte', 'lt', 'lte']),
+            operator: z.enum(['eq','like','ne', 'in', 'nin','gt', 'gte', 'lt', 'lte']),
             value: z.any()
         })
     }

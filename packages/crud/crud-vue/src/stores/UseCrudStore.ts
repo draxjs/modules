@@ -11,6 +11,7 @@ export const useCrudStore = defineStore('CrudStore', {
             notify: false as boolean,
             message: '' as string,
             error: '' as string,
+            filters: [] as any[],
             items: [] as any[],
             totalItems: 0 as number,
             itemsPerPage: 5 as number,
@@ -99,6 +100,9 @@ export const useCrudStore = defineStore('CrudStore', {
         },
         setExportListVisible(exportListVisible: boolean) {
             this.exportListVisible = exportListVisible
+        },
+        setFilters(filters: any[]) {
+            this.filters = filters
         }
     }
 
