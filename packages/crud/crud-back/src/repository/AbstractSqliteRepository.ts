@@ -1,5 +1,5 @@
 import sqlite from "better-sqlite3";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import type {IDraxCrud, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {randomUUID} from "node:crypto";
 import {
     SqlSort, SqlQueryFilter, SqliteTableBuilder, SqliteTableField,
@@ -7,7 +7,7 @@ import {
 
 
 
-class AbstractSqliteRepository<T>{
+class AbstractSqliteRepository<T> implements IDraxCrud<T, T, T>{
     protected db: any;
     protected tableName: string;
     protected dataBase: string;
@@ -160,9 +160,17 @@ class AbstractSqliteRepository<T>{
     }
 
     async fetchAll(): Promise<any[]>{
-        const tenants = this.db.prepare(`SELECT * FROM ${this.tableName}`).all();
+        const items = this.db.prepare(`SELECT * FROM ${this.tableName}`).all();
+        return items
+    }
 
-        return tenants
+    async search(value: any, limit: number = 1000): Promise<any[]>{
+        let where=""
+        if (value && this.searchFields.length > 0) {
+            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${value}%'`).join(" OR ")}`
+        }
+        const items = this.db.prepare(`SELECT * FROM ${this.tableName} ${where}`).all();
+        return items
     }
 
 }

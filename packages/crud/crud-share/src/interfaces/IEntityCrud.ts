@@ -14,9 +14,12 @@ interface IEntityCrud {
   headers: IEntityCrudHeader[]
   permissions: IEntityCrudPermissions
   fields: IEntityCrudField[]
+  createFields: IEntityCrudField[]
+  updateFields: IEntityCrudField[]
   filters: IEntityCrudFilter[]
   form: IEntityCrudForm
   formFilters: IEntityCrudFormFilter[]
+  isViewable: boolean
   isEditable: boolean
   isCreatable: boolean
   isDeletable: boolean

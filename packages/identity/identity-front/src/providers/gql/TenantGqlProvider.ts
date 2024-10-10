@@ -20,17 +20,28 @@ class TenantGqlProvider implements ITenantProvider {
         this.gqlClient.removeHeader('Authorization')
     }
 
+    get gqlFields(){
+        return `id name createdAt updatedAt`
+    }
+
 
     async fetchTenant(): Promise<ITenant[]> {
-        const query: string = `query fetchTenant { fetchTenant { id name } }`
+        const query: string = `query fetchTenant { fetchTenant { ${this.gqlFields} } }`
         const variables = {}
         let data = await this.gqlClient.query(query, variables)
         return data.fetchTenant
     }
 
+    async search(value: any): Promise<any> {
+        const query: string = `query searchTenant($value: String) { searchTenant(value: $value) { ${this.gqlFields} } }`
+        const variables = {value}
+        let data = await this.gqlClient.query(query, variables)
+        return data.searchTenant
+    }
+
     async create(payload: ITenantBase): Promise<any> {
         const query: string = `mutation createTenant($input: TenantInput) { 
-        createTenant(input: $input) {id name } 
+        createTenant(input: $input) { ${this.gqlFields} } 
         }`
         const variables = {input: payload}
         let data = await this.gqlClient.mutation(query, variables)
@@ -39,7 +50,7 @@ class TenantGqlProvider implements ITenantProvider {
 
     async update(id: string, payload: ITenantBase): Promise<ITenant> {
         const query: string = `mutation updateTenant($id: ID!, $input: TenantInput) { updateTenant(id: $id, input: $input) {  
-        id name  } }`
+        ${this.gqlFields}  } }`
         const variables = {id, input: payload}
         let data = await this.gqlClient.mutation(query, variables)
         return data.updateTenant
@@ -55,7 +66,7 @@ class TenantGqlProvider implements ITenantProvider {
     async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
         const query: string = `query paginateTenant($options: PaginateOptions) { 
             paginateTenant(options: $options) { 
-                total page limit items{ id name createdAt updatedAt } 
+                total page limit items{ ${this.gqlFields} } 
             } 
         }`
         const variables = {options: {page, limit, orderBy, order, search}}

@@ -12,7 +12,7 @@ const {entity} = defineProps({
 })
 
 const {
-  onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
+  onView, onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
   operation, dialog, form, notify, error, message, doExport,
   prepareFilters
 } = useCrud(entity);
@@ -34,6 +34,7 @@ onBeforeMount(() => {
           @edit="onEdit"
           @delete="onDelete"
           @export="doExport"
+          @view="onView"
       >
         <template v-for="header in entity.headers" :key="header.key" v-slot:[`item.${header.key}`]="{item, value}">
           <slot :name="`item.${header.key}`" v-bind="{item, value}">

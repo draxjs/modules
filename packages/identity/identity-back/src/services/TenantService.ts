@@ -2,7 +2,7 @@ import {ITenantRepository} from "../interfaces/ITenantRepository";
 import {ValidationError, ZodErrorToValidationError} from "@drax/common-back"
 import {tenantSchema} from "../zod/TenantZod.js";
 import {ZodError} from "zod";
-import {ITenantBase, ITenant} from "@drax/identity-share";
+import {ITenantBase, ITenant, IRole} from "@drax/identity-share";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {AbstractService} from "@drax/crud-back";
 
@@ -88,6 +88,12 @@ class TenantService extends AbstractService<ITenant,ITenantBase,ITenantBase> {
             throw e;
         }
 
+    }
+
+    async search(value: any): Promise<ITenant[]> {
+        const limit = 100
+        const tenants: ITenant[] = await this._repository.search(value, limit);
+        return tenants;
     }
 
     async paginate({

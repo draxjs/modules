@@ -1,7 +1,7 @@
 import type {IRole, IRoleBase} from "@drax/identity-share";
-import type {IDraxCrud} from "@drax/crud-share";
+import type {IDraxCrudProvider} from "@drax/crud-share";
 
-interface IRoleProvider extends IDraxCrud<IRole, IRoleBase, IRoleBase>{
+interface IRoleProvider extends IDraxCrudProvider<IRole, IRoleBase, IRoleBase>{
     fetchRole(): Promise<IRole[]>
     fetchPermissions(): Promise<any>
 }

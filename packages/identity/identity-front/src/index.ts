@@ -4,22 +4,24 @@ import {jwtDecodeHelper} from "./helpers/JwtDecodeHelper.js"
 import AuthRestProvider from "./providers/rest/AuthRestProvider.js";
 import AuthGqlProvider from "./providers/gql/AuthGqlProvider.js";
 import AuthSystem from "./system/AuthSystem.js"
-
+import AuthSystemFactory from "./factory/AuthSystemFactory.js"
 
 import UserRestProvider from "./providers/rest/UserRestProvider.js";
 import UserGqlProvider from "./providers/gql/UserGqlProvider.js";
 import UserSystem from "./system/UserSystem.js"
+import UserSystemFactory from "./factory/UserSystemFactory.js"
 
 import UserApiKeyRestProvider from "./providers/rest/UserApiKeyRestProvider.js";
 import UserApiKeyGqlProvider from "./providers/gql/UserApiKeyGqlProvider.js";
 import UserApiKeySystem from "./system/UserApiKeySystem.js"
+import UserApiKeySystemFactory from "./factory/UserApiKeySystemFactory.js"
 
 
 
 import RoleRestProvider from "./providers/rest/RoleRestProvider.js";
 import RoleGqlProvider from "./providers/gql/RoleGqlProvider.js";
 import RoleSystem from "./system/RoleSystem.js"
-
+import RoleSystemFactory from "./factory/RoleSystemFactory.js"
 
 import TenantRestProvider from "./providers/rest/TenantRestProvider.js";
 import TenantGqlProvider from "./providers/gql/TenantGqlProvider.js";
@@ -75,7 +77,11 @@ export {
     UserApiKeySystem,
 
     //Factory
+    AuthSystemFactory,
+    UserSystemFactory,
+    RoleSystemFactory,
     TenantSystemFactory,
+    UserApiKeySystemFactory,
 
     //Helpers
     AuthHelper,

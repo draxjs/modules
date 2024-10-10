@@ -1,9 +1,9 @@
 import type {IUserApiKeyProvider} from "../interfaces/IUserApiKeyProvider";
-import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
-import type {IDraxPaginateResult} from "@drax/crud-share";
+import type {IRole, IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 
-class UserApiKeySystem {
+class UserApiKeySystem implements IUserApiKeyProvider{
 
     _provider: IUserApiKeyProvider
     prototype: string;
@@ -13,8 +13,17 @@ class UserApiKeySystem {
         this.prototype = 'UserSystem'
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}):Promise<IDraxPaginateResult<IUserApiKey>> {
-        return this._provider.paginate({page, limit, orderBy, order, search})
+    async search(value: any):Promise<IUserApiKey[]> {
+
+        if(!this._provider.search){
+            throw new Error("Search method not implemented")
+        }
+
+        return this._provider.search(value)
+    }
+
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = "", filters = []}: IDraxPaginateOptions):Promise<IDraxPaginateResult<IUserApiKey>> {
+        return this._provider.paginate({page, limit, orderBy, order, search, filters})
     }
 
     async create(userPayload: IUserApiKeyBase):Promise<IUserApiKey> {

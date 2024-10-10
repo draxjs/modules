@@ -19,9 +19,20 @@ class UserGqlProvider implements IUserProvider {
         this.gqlClient.removeHeader('Authorization')
     }
 
+    get gqlFields(){
+        return `id username name email phone active role{id name} tenant{id name} createdAt updatedAt`
+    }
+
+    async search(value: any): Promise<IUser[]> {
+        const query: string = `query searchUser($value: String) { searchUser(value: $value) { ${this.gqlFields} } }`
+        const variables = {value}
+        let data = await this.gqlClient.query(query, variables)
+        return data.searchUser
+    }
+
     async create(payload: IUserCreate): Promise<IUser> {
         const query: string = `mutation createUser($input: UserCreateInput) { createUser(input: $input) {  
-        id username name email phone active role{id name} tenant{id name}  } }`
+        ${this.gqlFields}  } }`
         const variables = {input: payload}
         let data = await this.gqlClient.mutation(query, variables)
         return data.createUser
@@ -29,7 +40,7 @@ class UserGqlProvider implements IUserProvider {
 
     async update(id: string, payload: IUserUpdate): Promise<IUser> {
         const query: string = `mutation updateUser($id: ID!, $input: UserUpdateInput) { updateUser(id: $id, input: $input) {  
-        id username name email phone active role{id name} tenant{id name}  } }`
+        ${this.gqlFields}  } }`
         const variables = {id, input: payload}
         let data = await this.gqlClient.mutation(query, variables)
         return data.updateUser
@@ -52,7 +63,7 @@ class UserGqlProvider implements IUserProvider {
     async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}:IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
         const query: string = `query paginateUser($options: PaginateOptions) { 
             paginateUser(options: $options) { 
-                total page limit items{ id name username email phone active role{id, name} tenant{id name} createdAt updatedAt } 
+                total page limit items{ ${this.gqlFields} createdAt updatedAt } 
             } 
         }`
         const variables = {options: {page, limit, orderBy, order, search}}

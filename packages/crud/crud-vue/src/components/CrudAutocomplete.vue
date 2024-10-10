@@ -3,16 +3,20 @@ import {debounce} from "@drax/common-front"
 import { type PropType, type Ref} from "vue";
 import {ref, onBeforeMount} from "vue";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
-import {VDateInput} from "vuetify/lib/labs/VDateInput";
 
 const valueModel = defineModel<string | string[]>({type: [String, Array], required: false})
 
 const {entity, multiple} = defineProps({
   entity: {type: Object as PropType<IEntityCrud|undefined>, required: true},
   field: {type: Object as PropType<IEntityCrudField>, required: true},
+  prependIcon: {type: String},
+  prependInnerIcon: {type: String},
+  appendIcon: {type: String},
+  appendInnerIcon: {type: String},
   multiple: {type: Boolean, default: false},
   chips: {type: Boolean, default: false},
   closableChips: {type: Boolean, default: true},
+  readonly: {type: Boolean, default: false},
   clearable: {type: Boolean, default: true},
   label: {type: String},
   itemValue: {type: [String], default: '_id'},
@@ -34,45 +38,6 @@ const items: Ref<Array<any>> = ref([])
 
 const debouncedSearch = debounce(search, 300)
 
-onBeforeMount(async () => {
-  if(valueModel.value && valueModel.value.length > 0){
-
-    if(multiple && Array.isArray(valueModel.value) ){
-      items.value = valueModel.value
-
-      // valueModel.value = valueModel.value.map((item:any) => item._id)
-      await findByIds(valueModel.value)
-    }else if(!Array.isArray(valueModel.value)){
-      // items.value = [valueModel.value]
-      await findByIds([valueModel.value])
-    }
-
-
-
-  }
-})
-
-async function findByIds(ids: Array<string> = []) {
-  try{
-    if(!entity){
-      throw new Error('Entity is required')
-    }
-    if(!entity.provider){
-      throw new Error('Provider is not defined')
-    }
-    if (typeof entity.provider.findByIds !== 'function') {
-      throw new Error('Provider does not have a findByIds method');
-    }
-    loading.value = true
-    items.value = await entity.provider.findByIds(ids)
-  }catch (e){
-    console.error(e)
-  }finally{
-    loading.value = false
-  }
-}
-
-
 async function search(value: any) {
   try{
     loading.value = true
@@ -91,6 +56,41 @@ async function search(value: any) {
 
 }
 
+onBeforeMount(async () => {
+
+  await search('')
+  await checkIds()
+})
+
+async function checkIds(ids: Array<string> = []) {
+  try{
+
+    if(valueModel.value) {
+      let ids = Array.isArray(valueModel.value) ? valueModel.value : [valueModel.value]
+      for (let id of ids) {
+        if (!items.value.some((item: any) => item._id === id)) {
+          if (!entity) {
+            throw new Error('CrudAutocomplete Entity is required')
+          }
+          if (!entity.provider) {
+            throw new Error('CrudAutocomplete Provider is not defined')
+          }
+          if (typeof entity.provider.findById !== 'function') {
+            throw new Error('CrudAutocomplete Provider does not have a findById method');
+          }
+          let item = await entity.provider.findById(id)
+          items.value.push(item)
+        }
+      }
+    }
+  }catch (e){
+    console.error(e)
+  }
+}
+
+
+
+
 defineEmits(['updateValue'])
 
 </script>
@@ -108,6 +108,7 @@ defineEmits(['updateValue'])
       :item-title="itemTitle"
       :loading="loading"
       :rules="rules"
+      :readonly="readonly"
       :density="density"
       :variant="variant"
       :hide-details="hideDetails"
@@ -116,6 +117,10 @@ defineEmits(['updateValue'])
       :error-messages="errorMessages"
       @update:search="debouncedSearch"
       @update:modelValue="$emit('updateValue')"
+      :prepend-icon="prependIcon"
+      :append-icon="appendIcon"
+      :prepend-inner-icon="prependInnerIcon"
+      :append-inner-icon="appendInnerIcon"
   ></v-autocomplete>
 </template>
 

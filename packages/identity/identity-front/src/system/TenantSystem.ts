@@ -1,5 +1,5 @@
 import type {ITenantProvider} from "../interfaces/ITenantProvider";
-import type {ITenant, ITenantBase} from "@drax/identity-share";
+import type {ITenant, ITenantBase, IUser} from "@drax/identity-share";
 import type {
     IDraxCrudProvider,
     IDraxCrudProviderExportResult,
@@ -22,14 +22,24 @@ class TenantSystem implements IDraxCrudProvider<ITenant, ITenantBase, ITenantBas
         return this._provider.fetchTenant()
     }
 
+    async search(value: any):Promise<ITenant[]> {
+
+        if(!this._provider.search){
+            throw new Error("Search method not implemented")
+        }
+
+        return this._provider.search(value)
+    }
+
     async paginate({
                        page = 1,
                        limit = 5,
                        orderBy = "",
                        order = false,
-                       search = ""
+                       search = "",
+                       filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
-        return this._provider.paginate({page, limit, orderBy, order, search})
+        return this._provider.paginate({page, limit, orderBy, order, search, filters})
     }
 
     async create(userPayload: ITenantBase): Promise<ITenant> {

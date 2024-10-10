@@ -1,10 +1,10 @@
 import {defineStore} from "pinia";
-import type {TOperation} from "../interfaces/TOperation";
+import type {IEntityCrudOperation} from "@drax/crud-share";
 
 export const useCrudStore = defineStore('CrudStore', {
     state: () => (
         {
-            operation: null as TOperation,
+            operation: null as IEntityCrudOperation,
             dialog: false as boolean,
             form: {} as any,
             formValid: {} as any,
@@ -36,7 +36,7 @@ export const useCrudStore = defineStore('CrudStore', {
       }
     },
     actions: {
-        setOperation(operation: TOperation) {
+        setOperation(operation: IEntityCrudOperation) {
             this.operation = operation
         },
         setDialog(dialog: boolean) {

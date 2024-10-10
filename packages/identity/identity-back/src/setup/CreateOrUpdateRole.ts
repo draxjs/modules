@@ -18,7 +18,7 @@ async function CreateOrUpdateRole(roleData: IRoleBase) {
     }
 
     if(role){
-        const r = await roleService.update(role.id, roleData)
+        const r = await roleService.systemUpdate(role.id, roleData)
         console.log("Role Updated. Name: "+ roleData.name)
     }else{
         const r = await roleService.create(roleData)

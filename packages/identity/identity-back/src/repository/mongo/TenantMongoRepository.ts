@@ -8,6 +8,8 @@ import {ITenant, ITenantBase} from "@drax/identity-share";
 
 class TenantMongoRepository implements ITenantRepository {
 
+    _searchFields = ['_id','name']
+
     async create(tenantData: ITenantBase): Promise<ITenant> {
         const tenant: mongoose.HydratedDocument<ITenant> = new TenantModel(tenantData)
         await tenant.save()
@@ -37,6 +39,15 @@ class TenantMongoRepository implements ITenantRepository {
     async fetchAll(): Promise<ITenant[]> {
         const tenants: mongoose.HydratedDocument<ITenant>[] = await TenantModel.find().exec()
         return tenants
+    }
+
+    async search(value: string, limit: number = 1000): Promise<ITenant[]> {
+        const query = {}
+        if(value){
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
+        }
+        const items: mongoose.HydratedDocument<ITenant>[] = await TenantModel.find(query).limit(limit).exec()
+        return items
     }
 
     async paginate({

@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type {TOperation} from "../interfaces/TOperation";
 import type {PropType} from "vue";
-import type {IEntityCrud} from "@drax/crud-share";
+import type {IEntityCrud, IEntityCrudOperation} from "@drax/crud-share";
 const dialog = defineModel({type: Boolean, default: false})
 import {useI18n} from "vue-i18n";
 const {t,te} = useI18n()
 
 defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-  operation: {type: String as PropType<TOperation>}
+  operation: {type: String as PropType<IEntityCrudOperation>}
 })
 
 defineEmits(

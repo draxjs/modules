@@ -15,31 +15,36 @@ class UserApiKeyRestProvider implements IUserApiKeyProvider {
 
     async create(data: IUserApiKeyBase): Promise<IUserApiKey> {
             const url = '/api/user-api-keys'
-            let user = await this.httpClient.post(url, data)
-            return user as IUserApiKey
+            let userApiKey = await this.httpClient.post(url, data)
+            return userApiKey as IUserApiKey
     }
 
     async update(id: string, data: IUserApiKeyBase): Promise<IUserApiKey> {
             const url = '/api/user-api-keys/' + id
-            let user = await this.httpClient.put(url, data)
-            return user as IUserApiKey
+            let userApiKey = await this.httpClient.put(url, data)
+            return userApiKey as IUserApiKey
     }
 
     async delete(id: string): Promise<any> {
             const url = '/api/user-api-keys/' + id
-            let user = await this.httpClient.delete(url)
-            return user
+            let result = await this.httpClient.delete(url)
+            return result
     }
 
     async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
         const url = '/api/user-api-keys'
         const params = {page, limit, orderBy, order, search}
-            let paginatedUsers = await this.httpClient.get(url, {params})
-            return paginatedUsers as IDraxPaginateResult<IUserApiKey>
+            let paginatedUserApiKeys = await this.httpClient.get(url, {params})
+            return paginatedUserApiKeys as IDraxPaginateResult<IUserApiKey>
 
     }
 
-
+    async search(value: any): Promise<any> {
+        const url = '/api/user-api-keys/search'
+        let data = {value: value}
+        let userApiKeys = await this.httpClient.post(url, data )
+        return userApiKeys
+    }
 
 
 }

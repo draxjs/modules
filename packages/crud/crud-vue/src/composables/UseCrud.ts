@@ -83,13 +83,6 @@ export function useCrud(entity: IEntityCrud) {
 
 
 
-
-  function onCreate() {
-    store.setOperation("create")
-    store.setForm(entity.form)
-    store.setDialog(true)
-  }
-
   function cast(item: any){
     entity.fields.filter(field => field.type === 'date')
         .forEach(field => {
@@ -98,31 +91,44 @@ export function useCrud(entity: IEntityCrud) {
 
     entity.fields.filter(field => field.type === 'ref')
         .forEach(field => {
-          item[field.name] = item[field.name]._id
+          item[field.name] = item[field.name]?._id ? item[field.name]._id : item[field.name]
         })
 
     entity.fields.filter(field => field.type === 'array.ref')
         .forEach(field => {
-          item[field.name] = item[field.name].map(((i:any) => i._id))
+          item[field.name] = item[field.name].map(((i:any) => i?._id ? i._id : i))
         })
 
     return item
   }
 
+  function onView(item: object) {
+    store.setOperation("view")
+    store.setForm(cast({...item}))
+    openDialog()
+  }
+
+
+  function onCreate() {
+    store.setOperation("create")
+    store.setForm(entity.form)
+    openDialog()
+  }
+
   function onEdit(item: object) {
     store.setOperation("edit")
     store.setForm(cast({...item}))
-    store.setDialog(true)
+    openDialog()
   }
 
   function onDelete(item: object) {
     store.setOperation("delete")
     store.setForm(cast({...item}))
-    store.setDialog(true)
+    openDialog()
   }
 
   function onCancel() {
-    store.setDialog(false)
+    closeDialog()
     store.setError("")
     store.setInputErrors(null)
   }
@@ -130,6 +136,9 @@ export function useCrud(entity: IEntityCrud) {
   function onSubmit(formData: any) {
     store.setInputErrors(null)
     switch (store.operation) {
+      case "view":
+        closeDialog()
+        break
       case "create":
         doCreate(formData)
         break
@@ -142,11 +151,19 @@ export function useCrud(entity: IEntityCrud) {
     }
   }
 
+  function openDialog() {
+    store.setDialog(true)
+  }
+
+  function closeDialog() {
+    store.setDialog(false)
+  }
+
   async function doCreate(formData: any) {
     try {
       await entity?.provider.create(formData)
       await doPaginate()
-      store.setDialog(false)
+      closeDialog()
       store.showMessage("Entity created successfully!")
     } catch (e: any) {
       if(e.inputErrors){
@@ -162,7 +179,7 @@ export function useCrud(entity: IEntityCrud) {
     try {
       await entity?.provider.update(formData._id, formData)
       await doPaginate()
-      store.setDialog(false)
+      closeDialog()
       store.showMessage("Entity updated successfully!")
     } catch (e: any) {
       console.log("inputErrors", e.inputErrors)
@@ -179,7 +196,7 @@ export function useCrud(entity: IEntityCrud) {
     try {
       await entity?.provider.delete(formData._id)
       await doPaginate()
-      store.setDialog(false)
+      closeDialog()
       store.showMessage("Entity deleted successfully!")
     } catch (e: any) {
       store.setError(e.message || "An error occurred while deleting the entity")
@@ -198,7 +215,7 @@ export function useCrud(entity: IEntityCrud) {
 
 
   return {
-    doPaginate, doExport, onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
+    doPaginate, doExport, onView, onCreate, onEdit, onDelete, onCancel, onSubmit,resetCrudStore,
     operation, dialog, form, notify, error, message, formValid,
     loading, itemsPerPage, page, sortBy, search, totalItems, items,
     prepareFilters,filters,

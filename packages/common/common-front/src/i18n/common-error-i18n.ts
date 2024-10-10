@@ -7,6 +7,7 @@ const messages = {
       network: 'Network Error',
       unknown: 'Unknown Error',
       badCredentials: 'Bad Credentials',
+      deletionFailed: 'Deletion Failed',
     }
   },
   es: {
@@ -17,6 +18,7 @@ const messages = {
       network: 'Error de Red',
       unknown: 'Error Desconocido',
       badCredentials: 'Credenciales Incorrectas',
+      deletionFailed: 'Eliminación Fallida',
     }
   }
 }

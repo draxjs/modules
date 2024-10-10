@@ -16,10 +16,14 @@ const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Arr
 const {index, entity, field, disableRules} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField|IEntityCrudFilter|undefined>, required: true},
+  prependIcon: {type: String, default: ''},
+  prependInnerIcon: {type: String, default: ''},
+  appendIcon: {type: String, default: ''},
+  appendInnerIcon: {type: String, default: ''},
   readonly: {type: Boolean, default: false},
   hideDetails: {type: Boolean, default: false},
   singleLine: {type: Boolean, default: false},
-  clearable: {type: Boolean, default: true},
+  clearable: {type: Boolean, default: false},
   disableRules: {type: Boolean, default: false},
   index: {type: Number, default: 0},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
@@ -69,9 +73,12 @@ defineEmits(['updateValue'])
         :clearable="clearable"
         :hide-details="hideDetails"
         :single-line="singleLine"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
         @update:modelValue="$emit('updateValue')"
-    >
-    </v-text-field>
+    />
 
     <v-text-field
         v-if="field.type === 'number'"
@@ -88,10 +95,13 @@ defineEmits(['updateValue'])
         :hide-details="hideDetails"
         :single-line="singleLine"
         @update:modelValue="$emit('updateValue')"
-    >
-    </v-text-field>
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
+    />
 
-    <v-checkbox
+    <v-switch
         v-if="field.type === 'boolean'"
         :name="name"
         :label="label"
@@ -105,8 +115,12 @@ defineEmits(['updateValue'])
         :hide-details="hideDetails"
         :single-line="singleLine"
         @update:modelValue="$emit('updateValue')"
-    >
-    </v-checkbox>
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
+        color="primary"
+    />
 
 
     <v-date-input
@@ -117,8 +131,6 @@ defineEmits(['updateValue'])
         v-model="valueModel"
         :readonly="readonly"
         :error-messages="inputErrors"
-        prepend-inner-icon="mdi-calendar"
-        prepend-icon=""
         :rules="rules"
         :density="density"
         :variant="variant"
@@ -126,6 +138,10 @@ defineEmits(['updateValue'])
         :hide-details="hideDetails"
         :single-line="singleLine"
         @update:modelValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
     />
 
     <crud-autocomplete
@@ -138,10 +154,15 @@ defineEmits(['updateValue'])
         :rules="rules"
         :density="density"
         :variant="variant"
+        :readonly="readonly"
         :clearable="clearable"
         :hide-details="hideDetails"
         :single-line="singleLine"
         @updateValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
     />
 
     <v-card v-if="field.type === 'object'" class="mt-3" variant="flat" border>
@@ -159,6 +180,10 @@ defineEmits(['updateValue'])
             :hide-details="hideDetails"
             :single-line="singleLine"
             @updateValue="$emit('updateValue')"
+            :prepend-icon="prependIcon"
+            :append-icon="appendIcon"
+            :prepend-inner-icon="prependInnerIcon"
+            :append-inner-icon="appendInnerIcon"
         ></crud-form-field>
       </v-card-text>
 
@@ -182,6 +207,10 @@ defineEmits(['updateValue'])
         :single-line="singleLine"
         :rules="rules"
         @update:modelValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
     >
     </v-combobox>
 
@@ -202,6 +231,10 @@ defineEmits(['updateValue'])
         :hide-details="hideDetails"
         :single-line="singleLine"
         @updateValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
     />
 
 
@@ -222,6 +255,10 @@ defineEmits(['updateValue'])
         :single-line="singleLine"
         :rules="rules"
         @update:modelValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
     >
     </v-combobox>
 

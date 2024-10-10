@@ -1,6 +1,7 @@
 const messages = {
   en: {
     action: {
+      view: 'View',
       create: 'Create',
       edit: 'Edit',
       update: 'update',
@@ -25,6 +26,7 @@ const messages = {
   },
   es: {
     action: {
+      view: 'Ver',
       create: 'Crear',
       edit: 'Editar',
       update: 'Actualizar',

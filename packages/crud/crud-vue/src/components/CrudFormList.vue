@@ -2,7 +2,6 @@
 import type {PropType} from "vue";
 import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
-import {VDateInput} from "vuetify/lib/labs/VDateInput";
 
 const valueModel = defineModel({type: Array, default: () => []});
 

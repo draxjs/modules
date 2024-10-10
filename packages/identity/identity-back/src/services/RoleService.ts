@@ -1,15 +1,17 @@
 import {IRoleRepository} from "../interfaces/IRoleRepository";
-import { ZodErrorToValidationError} from "@drax/common-back"
+import {UnauthorizedError, ValidationError, ZodErrorToValidationError} from "@drax/common-back"
+import { AbstractService } from "@drax/crud-back"
 import {roleSchema} from "../zod/RoleZod.js";
 import {ZodError} from "zod";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import type {IRoleBase, IRole} from "@drax/identity-share";
 
-class RoleService {
+class RoleService extends AbstractService<IRole, IRoleBase, IRoleBase> {
 
     _repository: IRoleRepository
 
     constructor(roleRepostitory: IRoleRepository) {
+        super(roleRepostitory, roleSchema)
         this._repository = roleRepostitory
         console.log("RoleService constructor")
     }
@@ -29,11 +31,15 @@ class RoleService {
         }
     }
 
-    async update(id: string, roleData: IRoleBase) {
+    async update(id: string, roleData: IRoleBase): Promise<IRole> {
         try {
             roleData.name = roleData?.name?.trim()
             await roleSchema.parseAsync(roleData)
-            const role = await this._repository.update(id, roleData)
+            const currentRole = await this.findById(id)
+            if(currentRole.readonly){
+                throw new ValidationError([{field:'name', reason:"role.readonly", value:roleData.name}])
+            }
+            const role: IRole = await this._repository.update(id, roleData)
             return role
         } catch (e) {
             console.error("Error updating role", e)
@@ -44,7 +50,36 @@ class RoleService {
         }
     }
 
+    async systemUpdate(id: string, roleData: IRoleBase): Promise<IRole> {
+        try {
+            roleData.name = roleData?.name?.trim()
+            await roleSchema.parseAsync(roleData)
+            const role: IRole = await this._repository.update(id, roleData)
+            return role
+        } catch (e) {
+            console.error("Error systemUpdating role", e)
+            if (e instanceof ZodError) {
+                throw ZodErrorToValidationError(e, roleData)
+            }
+            throw e
+        }
+    }
+
     async delete(id: string): Promise<boolean> {
+        try {
+            const currentRole = await this.findById(id)
+            if(currentRole.readonly){
+                throw new UnauthorizedError()
+            }
+            const deletedRole = await this._repository.delete(id);
+            return deletedRole;
+        } catch (e) {
+            console.error("Error deleting role", e)
+            throw e
+        }
+    }
+
+    async systemDelete(id: string): Promise<boolean> {
         try {
             const deletedRole = await this._repository.delete(id);
             return deletedRole;
@@ -79,6 +114,12 @@ class RoleService {
     async fetchAll(): Promise<IRole[]> {
         const roles: IRole[] = await this._repository.fetchAll();
         return roles
+    }
+
+    async search(value: any): Promise<IRole[]> {
+        const limit = 100
+        const roles: IRole[] = await this._repository.search(value, limit);
+        return roles;
     }
 
     async paginate({

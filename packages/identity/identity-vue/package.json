@@ -27,6 +27,7 @@
     "@drax/common-front": "^0.5.1",
     "@drax/common-vue": "^0.5.1",
     "@drax/crud-share": "^0.5.3",
+    "@drax/crud-front": "^0.5.3",
     "@drax/identity-share": "^0.5.1"
   },
   "peerDependencies": {

@@ -1,11 +1,10 @@
 import type {ITenant, ITenantBase} from "@drax/identity-share";
 import {AbstractFastifyController} from "@drax/crud-back";
-import {ValidationError} from "@drax/common-back";
+import {ValidationError, UnauthorizedError} from "@drax/common-back";
 
 import TenantServiceFactory from "../factory/TenantServiceFactory.js";
 import TenantService from "../services/TenantService.js";
 import TenantPermissions from "../permissions/TenantPermissions.js";
-import {UnauthorizedError} from "@drax/common-back";
 
 class TenantController extends AbstractFastifyController<ITenant, ITenantBase, ITenantBase>   {
 

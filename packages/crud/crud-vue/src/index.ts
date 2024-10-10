@@ -8,6 +8,7 @@ import CrudNotify from "./components/CrudNotify.vue";
 import CrudSearch from "./components/CrudSearch.vue";
 import {useCrudStore} from "./stores/UseCrudStore";
 import {useCrud} from "./composables/UseCrud";
+import {useFormUtils} from "./composables/UseFormUtils";
 import {EntityCrud} from "./EntityCrud";
 
 
@@ -21,6 +22,7 @@ export {
     CrudNotify,
     CrudSearch,
     useCrud,
+    useFormUtils,
     useCrudStore,
     EntityCrud
 

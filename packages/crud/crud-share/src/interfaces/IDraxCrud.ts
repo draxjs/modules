@@ -13,7 +13,7 @@ interface IDraxCrud<T,C,U>{
   findOneBy?(field: string, value: any): Promise<T | null>
   findBy?(field: string, value: any): Promise<T[]>
   fetchAll?(): Promise<T[]>
-  search?(value: any): Promise<T[]>
+  search?(value: any, limit: number): Promise<T[]>
   find?(options: IDraxFindOptions): Promise<T[]>
 
 }

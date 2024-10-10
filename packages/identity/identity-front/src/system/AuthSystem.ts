@@ -2,7 +2,7 @@ import type {IAuthProvider} from "../interfaces/IAuthProvider";
 import type {IAuthUser} from "../interfaces/IAuthUser";
 import type {ILoginResponse} from "../interfaces/ILoginResponse";
 
-class AuthSystem {
+class AuthSystem implements IAuthProvider {
 
     _provider : IAuthProvider
     prototype: string;

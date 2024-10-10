@@ -40,6 +40,14 @@ class EntityCrud implements IEntityCrud{
     ]
   }
 
+  get createFields(){
+    return this.fields
+  }
+
+  get updateFields(){
+    return this.fields
+  }
+
   get filters():IEntityCrudFilter[]{
     return [
       {name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
@@ -102,6 +110,10 @@ class EntityCrud implements IEntityCrud{
 
   getRule(field:string|undefined):Array<Function>|undefined  {
       return field && this.rules[field] && this.rules[field].length > 0 ? this.rules[field] : undefined
+  }
+
+  get isViewable(){
+    return true
   }
 
   get isEditable(){

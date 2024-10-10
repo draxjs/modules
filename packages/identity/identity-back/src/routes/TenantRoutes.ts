@@ -6,6 +6,8 @@ async function TenantRoutes(fastify, options) {
 
     fastify.get('/api/tenants/export', (req,rep) => controller.export(req,rep) )
 
+    fastify.get('/api/tenants/search', (req,rep) => controller.search(req,rep) )
+
     fastify.get('/api/tenants/:id', (req,rep) => controller.findById(req,rep) )
 
     fastify.get('/api/tenants/name/:name', (req,rep) => controller.findByName(req,rep))

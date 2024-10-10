@@ -7,12 +7,14 @@ import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import crypto from "node:crypto";
 import AuthUtils from "../utils/AuthUtils.js";
 import IdentityConfig from "../config/IdentityConfig.js";
+import {AbstractService} from "@drax/crud-back";
 
-class UserApiKeyService {
+class UserApiKeyService extends AbstractService<IUserApiKey, IUserApiKeyBase, IUserApiKeyBase>{
 
     _repository: IUserApiKeyRepository
 
     constructor(userApiKeyRepostitory: IUserApiKeyRepository) {
+        super(userApiKeyRepostitory,userApiKeySchema)
         this._repository = userApiKeyRepostitory
         console.log("UserApiKeyService constructor")
     }
@@ -22,6 +24,9 @@ class UserApiKeyService {
             userApiKeyData.name = userApiKeyData?.name?.trim()
             const secret = crypto.randomUUID()
             const APIKEY_SECRET = DraxConfig.getOrLoad(IdentityConfig.ApiKeySecret)
+            if(!APIKEY_SECRET){
+                throw new Error('ApiKey miss configuration')
+            }
             userApiKeyData.secret = AuthUtils.generateHMAC(APIKEY_SECRET, secret)
             await userApiKeySchema.parseAsync(userApiKeyData)
             const userApiKey = await this._repository.create(userApiKeyData)
@@ -74,9 +79,14 @@ class UserApiKeyService {
 
     }
 
+
+
     async findBySecret(secret: string): Promise<IUserApiKey | null> {
         try{
             const APIKEY_SECRET = DraxConfig.getOrLoad(IdentityConfig.ApiKeySecret)
+            if(!APIKEY_SECRET){
+                throw new Error('ApiKey miss configuration')
+            }
             const hashedSecret = AuthUtils.generateHMAC(APIKEY_SECRET, secret)
             const userApiKey: IUserApiKey = await this._repository.findBySecret(hashedSecret);
             return userApiKey

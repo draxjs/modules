@@ -8,6 +8,7 @@ import CrudImportButton from "./buttons/CrudImportButton.vue";
 import CrudCreateButton from "./buttons/CrudCreateButton.vue";
 import CrudUpdateButton from "./buttons/CrudUpdateButton.vue";
 import CrudDeleteButton from "./buttons/CrudDeleteButton.vue";
+import CrudViewButton from "./buttons/CrudViewButton.vue";
 import CrudExportList from "./CrudExportList.vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
@@ -31,8 +32,8 @@ const actions: IEntityCrudHeader[] = [{
   title: t('action.actions'),
   key: 'actions',
   sortable: false,
-  align: 'end',
-  minWidth: '140px'
+  align: 'center',
+  minWidth: '190px'
 }]
 const tHeaders: IEntityCrudHeader[] = entity.headers.map(header => ({
   ...header,
@@ -45,6 +46,8 @@ const headers: IEntityCrudHeader[] = [...tHeaders, ...actions]
 defineExpose({
   doPaginate
 });
+
+defineEmits(['import', 'export', 'create', 'update', 'delete', 'view'])
 
 </script>
 
@@ -120,6 +123,11 @@ defineExpose({
 
 
     <template v-slot:item.actions="{item}">
+      <crud-view-button
+          v-if="entity.isViewable && hasPermission(entity.permissions.view)"
+          @click="$emit('view', item)"
+      />
+
       <crud-update-button
           v-if="entity.isEditable && hasPermission(entity.permissions.update)"
           @click="$emit('edit', item)"

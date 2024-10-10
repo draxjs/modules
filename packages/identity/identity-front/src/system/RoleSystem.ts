@@ -1,5 +1,5 @@
 import type {IRoleProvider} from "../interfaces/IRoleProvider";
-import type {IRole, IRoleBase} from "@drax/identity-share";
+import type {IRole, IRoleBase, ITenant} from "@drax/identity-share";
 import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 
@@ -13,7 +13,16 @@ class RoleSystem implements IRoleProvider {
         this.prototype = 'RoleSystem'
     }
 
-    fetchRole():Promise<any> {
+    async search(value: any):Promise<IRole[]> {
+
+        if(!this._provider.search){
+            throw new Error("Search method not implemented")
+        }
+
+        return this._provider.search(value)
+    }
+
+    fetchRole():Promise<IRole[]> {
         return this._provider.fetchRole()
     }
 
@@ -21,8 +30,8 @@ class RoleSystem implements IRoleProvider {
         return this._provider.fetchPermissions()
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
-        return this._provider.paginate({page, limit, orderBy, order, search})
+    async paginate({page= 1, limit= 5, orderBy="", order=false, search = "", filters = []}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
+        return this._provider.paginate({page, limit, orderBy, order, search, filters})
     }
 
     async create(userPayload: IRoleBase):Promise<IRole> {

@@ -3,15 +3,18 @@ import type {IUserRepository} from "../interfaces/IUserRepository";
 import {ZodError} from "zod";
 import {ValidationError, ZodErrorToValidationError} from "@drax/common-back";
 import AuthUtils from "../utils/AuthUtils.js";
-import {createUserSchema, editUserSchema,} from "../zod/UserZod.js";
+import {createUserSchema, editUserSchema, userBaseSchema} from "../zod/UserZod.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import {AbstractService} from "@drax/crud-back";
+import {ITenant} from "@drax/identity-share";
 
-class UserService {
+class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate>{
 
     _repository: IUserRepository
 
     constructor(userRepository: IUserRepository) {
+        super(userRepository,userBaseSchema);
         this._repository = userRepository;
         console.log("UserService constructor")
     }
@@ -123,8 +126,11 @@ class UserService {
 
     async delete(id: string): Promise<boolean> {
         try {
-            const deletedRole: boolean = await this._repository.delete(id);
-            return deletedRole;
+            const result: boolean = await this._repository.delete(id);
+            if(!result){
+                throw new Error("error.deletionFailed")
+            }
+            return result;
         } catch (e) {
             console.error("Error deleting user", e)
             throw e
@@ -170,6 +176,12 @@ class UserService {
             throw e;
         }
 
+    }
+
+    async search(value: any): Promise<IUser[]> {
+        const limit = 100
+        const users: IUser[] = await this._repository.search(value, limit);
+        return users;
     }
 }
 

@@ -1,203 +1,28 @@
-import { ValidationError, UnauthorizedError} from "@drax/common-back";
-import RoleServiceFactory from "../factory/RoleServiceFactory.js";
-import {IRole} from "@drax/identity-share";
-import {IdentityPermissions} from "../permissions/IdentityPermissions.js";
-import {PermissionService} from "../services/PermissionService.js";
-import {IDraxPaginateResult} from "@drax/crud-share";
+import RoleController from "../controllers/RoleController.js";
 
 
 
 async function RoleRoutes(fastify, options) {
 
-    fastify.get('/api/permissions', async (request, reply): Promise<string[]> => {
-        try {
-            request.rbac.assertPermission(IdentityPermissions.PermissionsRole)
-            let permissions = PermissionService.getPermissions()
-            return permissions
-        }catch (e){
-            console.error(e)
-            if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
-    })
+    const controller: RoleController = new RoleController()
 
-    fastify.get('/api/roles/:id', async (request, reply): Promise<IRole> => {
-        try {
-            request.rbac.assertPermission(IdentityPermissions.ViewRole)
-            const id = request.params.id
-            const roleService = RoleServiceFactory()
-            let role = await roleService.findById(id)
-            return role
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
-    })
+    fastify.get('/api/permissions', (req,rep) => controller.permissions(req,rep))
 
-    fastify.get('/api/roles/name/:name', async (request, reply): Promise<IRole> => {
-        try {
-            request.rbac.assertPermission(IdentityPermissions.ViewRole)
-            const name = request.params.name
-            const roleService = RoleServiceFactory()
-            let role = await roleService.findByName(name)
-            return role
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
-    })
+    fastify.get('/api/roles/search', (req,rep) => controller.search(req,rep))
 
-    fastify.get('/api/roles/all', async (request, reply): Promise<IRole[]> => {
-        try {
-            request.rbac.assertPermission(IdentityPermissions.ViewRole)
-            const roleService = RoleServiceFactory()
-            let roles = await roleService.fetchAll()
-            if(request.rbac.getRole?.childRoles?.length > 0) {
-                return roles.filter(role => request.rbac.getRole.childRoles.some(childRole => childRole.id === role.id));
-            }else{
-                return roles
-            }
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
-    })
+    fastify.get('/api/roles/:id', (req,rep) => controller.findById(req,rep))
 
-    fastify.get('/api/roles', async (request, reply): Promise<IDraxPaginateResult<IRole>> => {
-        try {
-            request.rbac.assertPermission(IdentityPermissions.ViewRole)
-            const page = request.query.page
-            const limit = request.query.limit
-            const orderBy = request.query.orderBy
-            const order = request.query.order
-            const search = request.query.search
-            const roleService = RoleServiceFactory()
-            let paginateResult = await roleService.paginate({page, limit, search, orderBy, order})
-            return paginateResult
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
-    })
+    fastify.get('/api/roles/name/:name', (req,rep) => controller.findByName(req,rep))
 
-    fastify.post('/api/roles', async (request, reply): Promise<IRole> => {
-        try {
-            request.rbac.assertPermission(IdentityPermissions.CreateRole)
-            const payload = request.body
-            const roleService = RoleServiceFactory()
-            let role = await roleService.create(payload)
-            return role
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
+    fastify.get('/api/roles/all', (req,rep) => controller.all(req,rep))
 
-    })
+    fastify.get('/api/roles', (req,rep) => controller.paginate(req,rep))
 
-    fastify.put('/api/roles/:id', async (request, reply): Promise<IRole> => {
-        try {
-            request.rbac.assertPermission(IdentityPermissions.UpdateRole)
-            const id = request.params.id
-            const payload = request.body
-            const roleService = RoleServiceFactory()
-            const currentRole = await roleService.findById(id)
-            if(currentRole.readonly){
-                throw new ValidationError([{field:'name', reason:"role.readonly", value:payload.name}])
-            }
+    fastify.post('/api/roles', (req,rep) => controller.create(req,rep))
 
-            let role = await roleService.update(id, payload)
-            return role
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
+    fastify.put('/api/roles/:id', (req,rep) => controller.update(req,rep))
 
-    })
-
-    fastify.delete('/api/roles/:id', async (request, reply): Promise<any> => {
-        try {
-            request.rbac.assertPermission(IdentityPermissions.DeleteRole)
-            const id = request.params.id
-            const roleService = RoleServiceFactory()
-            const currentRole = await roleService.findById(id)
-            if(currentRole.readonly){
-                throw new UnauthorizedError()
-            }
-            let r = await roleService.delete(id)
-            return r
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
-    })
+    fastify.delete('/api/roles/:id', (req,rep) => controller.delete(req,rep))
 
 }
 

@@ -3,7 +3,7 @@ import {IDraxExportOptions} from "./IDraxExportOptions";
 import {IDraxExportResult} from "./IDraxExportResult";
 
 interface IDraxCrudService<T,C,U> extends IDraxCrud<T, C, U>  {
-
+  search?(value: any): Promise<T[]>
   export?(options: IDraxExportOptions, destinationPath:string): Promise<IDraxExportResult>
 }
 

@@ -57,8 +57,11 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async delete(id: string): Promise<boolean> {
         try {
-            const deleted = await this._repository.delete(id);
-            return deleted;
+            const result: boolean = await this._repository.delete(id);
+            if(!result){
+                throw new Error("error.deletionFailed");
+            }
+            return result;
         } catch (e) {
             console.error("Error deleting", e)
             throw e;
@@ -121,7 +124,8 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async search(value: string): Promise<T[]> {
         try {
-            const items: T[] = await this._repository.search(value);
+            const limit:number = 1000
+            const items: T[] = await this._repository.search(value, limit);
             return items
         } catch (e) {
             console.error("Error fetching all Autos", e)

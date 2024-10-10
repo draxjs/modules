@@ -1,23 +1,23 @@
 
 import {EntityCrud} from "@drax/crud-vue";
-import {TenantSystemFactory} from "@drax/identity-front";
+import {RoleSystemFactory} from "@drax/identity-front";
 import type {IEntityCrud, IEntityCrudField, IEntityCrudFilter, IEntityCrudHeader} from "@drax/crud-share";
 
 
-class TenantCrud extends EntityCrud implements IEntityCrud {
+class RoleCrud extends EntityCrud implements IEntityCrud {
 
-  static singleton: TenantCrud
+  static singleton: RoleCrud
 
   constructor() {
     super();
-    this.name = 'Tenant'
+    this.name = 'Role'
   }
 
-  static get instance(): TenantCrud {
-    if(!TenantCrud.singleton){
-      TenantCrud.singleton = new TenantCrud()
+  static get instance(): RoleCrud {
+    if(!RoleCrud.singleton){
+      RoleCrud.singleton = new RoleCrud()
     }
-    return TenantCrud.singleton
+    return RoleCrud.singleton
   }
 
   get permissions(){
@@ -33,12 +33,15 @@ class TenantCrud extends EntityCrud implements IEntityCrud {
   get headers():IEntityCrudHeader[] {
     return [
         //{title: 'id',key:'_id', align: 'start'},
-        {title: 'name',key:'name', align: 'start'}
+        {title: 'name',key:'name', align: 'start'},
+        {title: 'permissions',key:'permissions', align: 'start'},
+        {title: 'childRoles',key:'childRoles', align: 'start'},
+        {title: 'readonly',key:'readonly', align: 'start'},
     ]
   }
 
   get provider(){
-    return TenantSystemFactory.getInstance()
+    return RoleSystemFactory.getInstance()
   }
 
   get refs(){
@@ -75,5 +78,6 @@ class TenantCrud extends EntityCrud implements IEntityCrud {
 
 }
 
-export default TenantCrud
-export { TenantCrud }
+export default RoleCrud
+
+export {RoleCrud}

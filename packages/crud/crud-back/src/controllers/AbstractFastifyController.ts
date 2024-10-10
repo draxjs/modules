@@ -45,7 +45,7 @@ class AbstractFastifyController<T,C,U>{
         console.log("AbstractFastifyController created. Permissions", this.permission)
     }
 
-    parseFilters(stringFilters: string): any {
+    protected parseFilters(stringFilters: string): any {
         try {
             if (!stringFilters) {
                 return []
@@ -62,9 +62,6 @@ class AbstractFastifyController<T,C,U>{
             throw e
         }
     }
-
-
-
 
     async create(request: CustomRequest, reply: FastifyReply) {
         try {

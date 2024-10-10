@@ -66,6 +66,13 @@ class TenantRestProvider implements ITenantProvider {
 
     }
 
+    async search(value: any): Promise<any> {
+        const url = '/api/tenants/search'
+        let params = {value: value}
+        let tenants = await this.httpClient.get(url, {params} )
+        return tenants
+    }
+
 
 }
 

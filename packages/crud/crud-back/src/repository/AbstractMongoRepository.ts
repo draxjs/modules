@@ -76,7 +76,9 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
     async search(value: string, limit: number = 1000): Promise<T[]> {
         const query = {}
-        query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value, 'i')}))
+        if (value) {
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
+        }
         const items: mongoose.HydratedDocument<T>[] = await this._model.find(query).limit(limit).exec()
         return items
     }

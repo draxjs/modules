@@ -8,6 +8,8 @@ import {IRoleBase, IRole} from "@drax/identity-share";
 
 class RoleMongoRepository implements IRoleRepository{
 
+    _searchFields = ['_id','name']
+
     async create(roleData: IRoleBase): Promise<IRole> {
         const role : mongoose.HydratedDocument<IRole> = new RoleModel(roleData)
         await role.save()
@@ -40,6 +42,15 @@ class RoleMongoRepository implements IRoleRepository{
         return roles
     }
 
+    async search(value: string, limit: number = 1000): Promise<IRole[]> {
+        const query = {}
+        if(value){
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
+        }
+        const items: mongoose.HydratedDocument<IRole>[] = await RoleModel.find(query).limit(limit).exec()
+        return items
+    }
+
     async paginate({
                        page= 1,
                        limit= 5,
@@ -50,9 +61,7 @@ class RoleMongoRepository implements IRoleRepository{
         const query = {}
 
         if(search){
-            query['$or'] = [
-                {name: new RegExp(search, 'i')},
-            ]
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
         }
 
         MongooseQueryFilter.applyFilters(query, filters)

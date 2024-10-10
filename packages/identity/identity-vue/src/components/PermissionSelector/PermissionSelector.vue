@@ -6,9 +6,8 @@ import {useI18n} from "vue-i18n";
 const {t,te} = useI18n()
 
 defineProps({
-  errorMessages: {
-    type: String as PropType<string | string[] | undefined>,
-  }
+  errorMessages: {type: String as PropType<string | string[] | undefined>,},
+  readonly: {type: Boolean, default: false},
 })
 
 const model = defineModel()
@@ -68,17 +67,15 @@ const permissionGroups = computed(() => {
           <v-item
               v-for="permission in permissions"
               v-slot="{ isSelected, toggle }"
-              :value="permission"
+              :value="permission" :disabled="readonly"
           >
 
             <v-chip
-                :color="isSelected? 'green' : 'grey-darken-3'" class=""
+                :color="isSelected? 'green' : 'grey-darken-3'" :disabled="readonly"
                 @click="toggle" variant="flat" :rounded="false" border
             >
               {{ te('permission.'+permission) ? t('permission.'+permission) : permission }}
             </v-chip>
-
-
           </v-item>
         </v-card-text>
       </v-card>

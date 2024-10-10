@@ -11,6 +11,7 @@ import type {IDraxExportOptions} from "./interfaces/IDraxExportOptions";
 import type {IDraxExportResult} from "./interfaces/IDraxExportResult";
 
 import type {IEntityCrud} from "./interfaces/IEntityCrud";
+import type {IEntityCrudOperation} from "./interfaces/IEntityCrudOperation";
 import type {IEntityCrudField} from "./interfaces/IEntityCrudField";
 import type {IEntityCrudFilter} from "./interfaces/IEntityCrudFilter";
 import type {IEntityCrudForm} from "./interfaces/IEntityCrudForm";
@@ -36,6 +37,7 @@ export type {
     IDraxPermission,
 
     IEntityCrud,
+    IEntityCrudOperation,
     IEntityCrudField,
     IEntityCrudFilter,
     IEntityCrudForm,

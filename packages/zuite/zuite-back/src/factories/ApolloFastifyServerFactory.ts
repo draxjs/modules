@@ -1,4 +1,4 @@
-import {jwtMiddleware, UserRoutes, RoleRoutes, TenantRoutes, UserAvatarRoutes,UserApiKeyRoutes,  rbacMiddleware} from "@drax/identity-back"
+import {jwtMiddleware, UserRoutes, RoleRoutes, TenantRoutes,UserApiKeyRoutes,  rbacMiddleware} from "@drax/identity-back"
 import ModuleMerger from "../merge/ModuleMerger.js";
 import ApolloFastifyServer from "../servers/ApolloFastifyServer.js";
 const {typeDefs, resolvers} = await ModuleMerger()
@@ -13,7 +13,6 @@ function ApolloFastifyServerFactory(rootDir:string) {
     server.fastifyRegister(UserRoutes)
     server.fastifyRegister(RoleRoutes)
     server.fastifyRegister(TenantRoutes)
-    server.fastifyRegister(UserAvatarRoutes)
     server.fastifyRegister(UserApiKeyRoutes)
     return server
 }
