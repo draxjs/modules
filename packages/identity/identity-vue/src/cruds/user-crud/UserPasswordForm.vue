@@ -50,7 +50,7 @@ const onSubmit = () => {
   <v-sheet v-else>
     <form ref="changeUserPassword" @submit.prevent="onSubmit">
 
-      <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.newPassword') }}</div>
+      <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.newPassword') }}</div>
       <v-text-field
           variant="outlined"
           id="new-password-input"
@@ -63,7 +63,9 @@ const onSubmit = () => {
           autocomplete="new-password"
           :error-messages="$ta(inputErrors.newPassword)"
       ></v-text-field>
-      <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.confirmPassword') }}</div>
+
+      <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.confirmPassword') }}</div>
+
       <v-text-field
           variant="outlined"
           id="confirm-password-input"

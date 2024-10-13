@@ -1,6 +1,11 @@
 import type {IRoleProvider} from "../interfaces/IRoleProvider";
 import type {IRole, IRoleBase, ITenant} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import type {
+    IDraxCrudProviderExportResult,
+    IDraxExportOptions,
+    IDraxPaginateOptions,
+    IDraxPaginateResult
+} from "@drax/crud-share";
 
 
 class RoleSystem implements IRoleProvider {
@@ -44,6 +49,33 @@ class RoleSystem implements IRoleProvider {
 
     async delete(id: string):Promise<any> {
         return this._provider.delete(id)
+    }
+
+    async export({
+                     format = 'JSON',
+                     headers = [],
+                     separator = ';',
+                     limit = 0,
+                     orderBy = "",
+                     order = false,
+                     search = "",
+                     filters = []
+                 }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
+
+        if(!this._provider.export){
+            throw new Error(`RoleSystem.provider does not support export`)  // assuming we have a custom error for this case  // replace with actual error handling as needed  // see: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html#error-handling-changes for more details on custom error classes in TypeScript 3.1+  // or use a library like 'ts-error' for a more robust and flexible error handling solution  // or use a custom error type if you want to have a specific error type for this operation  // or use a custom interface or class for the export result if you want to have a specific structure for the result  // or use a custom function that returns the result if you want to have a specific function for the result  // or use a custom interface or class if you want to have a specific structure for the result  // or use a custom function that returns the result
+        }
+
+        return this._provider.export({
+            format,
+            headers,
+            separator,
+            limit,
+            orderBy,
+            order,
+            search,
+            filters
+        })
     }
 
 }

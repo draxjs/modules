@@ -21,7 +21,8 @@ const messages = {
       exports: 'Exports',
       import: 'Import',
       imports: 'Imports',
-      clear: 'Clear'
+      clear: 'Clear',
+      change: 'Change'
     }
   },
   es: {
@@ -46,7 +47,8 @@ const messages = {
       exports: 'Exportaciones',
       import: 'Importar',
       imports: 'Importaciones',
-      clear: 'Limpiar'
+      clear: 'Limpiar',
+      change: 'Cambiar'
     }
   }
 }

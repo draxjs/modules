@@ -1,7 +1,12 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {IRoleProvider} from "../../interfaces/IRoleProvider.ts";
 import type {IRole, IRoleBase} from "@drax/identity-share";
-import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import type {
+    IDraxCrudProviderExportResult,
+    IDraxExportOptions, IDraxFieldFilter,
+    IDraxPaginateOptions,
+    IDraxPaginateResult
+} from "@drax/crud-share";
 
 class RoleRestProvider implements IRoleProvider {
 
@@ -54,6 +59,22 @@ class RoleRestProvider implements IRoleProvider {
         let params = {value: value}
         let roles = await this.httpClient.get(url, {params} )
         return roles
+    }
+
+    async export({
+                     format = 'JSON',
+                     headers = [],
+                     separator = ';',
+                     limit = 0,
+                     orderBy = "",
+                     order = false,
+                     search = "",
+                     filters = []
+                 }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
+        const url =  '/api/roles/export'
+        const sFilters: string  = filters.map((filter : IDraxFieldFilter ) => `${filter.field},${filter.operator},${filter.value}`).join('|')
+        const params: any = {format, headers, separator, limit, orderBy, order, search, filters: sFilters}
+        return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
     }
 
 }

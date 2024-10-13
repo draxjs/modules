@@ -63,7 +63,6 @@ class TenantRestProvider implements ITenantProvider {
         const sFilters: string  = filters.map((filter : IDraxFieldFilter ) => `${filter.field},${filter.operator},${filter.value}`).join('|')
         const params: any = {format, headers, separator, limit, orderBy, order, search, filters: sFilters}
         return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
-
     }
 
     async search(value: any): Promise<any> {

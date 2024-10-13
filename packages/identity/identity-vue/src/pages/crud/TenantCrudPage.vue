@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TenantCrud from '../cruds/tenant-crud/TenantCrud'
+import TenantCrud from '../../cruds/tenant-crud/TenantCrud'
 import {Crud} from "@drax/crud-vue";
 </script>
 

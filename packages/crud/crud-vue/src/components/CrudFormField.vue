@@ -39,7 +39,7 @@ if(!field){
 const name = computed(() => index > 0 ? `${field.name}_${index}` : field.name)
 
 const label = computed(() => {
-  const i18n = `${entity.name}.fields.${field.name}`
+  const i18n = `${entity.name}.field.${field.name}`
   return te(i18n) ? t(i18n) : field.label
 })
 

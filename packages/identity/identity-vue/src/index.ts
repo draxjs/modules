@@ -4,35 +4,28 @@ import IdentityProfileDrawer from "./components/IdentityProfileDrawer/IdentityPr
 import IdentityProfileView from "./components/IdentityProfileView/IdentityProfileView.vue";
 
 import UserCrud from "./cruds/user-crud/UserCrud.vue";
-import UserList from "./cruds/user-crud/UserList.vue";
-import UserCrudPage from "./pages/UserCrudPage.vue";
-import UserCreateForm from "./forms/UserCreateForm.vue";
-import UserEditForm from "./forms/UserEditForm.vue";
+import UserCrudPage from "./pages/crud/UserCrudPage.vue";
+import UserForm from "./cruds/user-crud/UserForm.vue";
 import UserView from "./views/UserView.vue";
 
-import RoleForm from "./forms/RoleForm.vue";
+import RoleForm from "./cruds/role-crud/RoleForm.vue";
 import RoleView from "./views/RoleView.vue";
-import RoleCrud from "./cruds/role-crud/RoleCrud.vue";
-import RoleList from "./cruds/role-crud/RoleList.vue";
-import RoleCrudPage from "./pages/RoleCrudPage.vue";
+import RoleCrudPage from "./pages/crud/RoleCrudPage.vue";
 
 import LoginPage from "./pages/LoginPage.vue";
 import ProfilePage from "./pages/ProfilePage.vue";
 import PasswordPage from "./pages/PasswordPage.vue";
 
 
-import TenantForm from "./forms/TenantForm.vue";
 import TenantView from "./views/TenantView.vue";
-import TenantCrud from "./cruds/tenant-crud/TenantCrud.vue";
-import TenantList from "./cruds/tenant-crud/TenantList.vue";
-import TenantCrudPage from "./pages/TenantCrudPage.vue";
+import TenantCrudPage from "./pages/crud/TenantCrudPage.vue";
 
 
 import UserApiKeyForm from "./forms/UserApiKeyForm.vue";
 import UserApiKeyView from "./views/UserApiKeyView.vue";
 import UserApiKeyCrud from "./cruds/user-api-key-crud/UserApiKeyCrud.vue";
 import UserApiKeyList from "./cruds/user-api-key-crud/UserApiKeyList.vue";
-import UserApiKeyCrudPage from "./pages/UserApiKeyCrudPage.vue";
+import UserApiKeyCrudPage from "./pages/crud/UserApiKeyCrudPage.vue";
 
 import {useAuth} from "./composables/useAuth.js";
 import {useUser} from "./composables/useUser.js";
@@ -60,10 +53,8 @@ export {
 
     //User
     UserView,
-    UserCreateForm,
-    UserEditForm,
+    UserForm,
     UserCrud,
-    UserList,
     UserCrudPage,
     useAuth,
     useUser,
@@ -71,16 +62,11 @@ export {
     //Role
     RoleView,
     RoleForm,
-    RoleCrud,
-    RoleList,
     RoleCrudPage,
     useRole,
 
     //Tenant
     TenantView,
-    TenantForm,
-    TenantCrud,
-    TenantList,
     TenantCrudPage,
     useTenant,
 

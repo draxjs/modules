@@ -1,4 +1,5 @@
 import type {IDraxCrud} from "./interfaces/IDraxCrud";
+import type {IDraxCrudRepository} from "./interfaces/IDraxCrudRepository";
 import type {IDraxCrudProvider} from "./interfaces/IDraxCrudProvider";
 import type {IDraxCrudProviderExportResult} from "./interfaces/IDraxCrudProviderExportResult";
 import type {IDraxCrudService} from "./interfaces/IDraxCrudService";
@@ -25,9 +26,10 @@ import type {IEntityCrudRefs} from "./interfaces/IEntityCrudRefs";
 
 export type {
     IDraxCrud,
+    IDraxCrudRepository,
+    IDraxCrudService,
     IDraxCrudProvider,
     IDraxCrudProviderExportResult,
-    IDraxCrudService,
     IDraxFieldFilter,
     IDraxPaginateResult,
     IDraxPaginateOptions,

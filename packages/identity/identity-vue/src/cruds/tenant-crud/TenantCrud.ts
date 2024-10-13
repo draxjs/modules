@@ -73,6 +73,14 @@ class TenantCrud extends EntityCrud implements IEntityCrud {
     return ['_id', 'name']
   }
 
+  get isExportable(){
+    return true
+  }
+
+  get isImportable(){
+    return false
+  }
+
 }
 
 export default TenantCrud

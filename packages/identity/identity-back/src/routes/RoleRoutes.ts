@@ -8,6 +8,8 @@ async function RoleRoutes(fastify, options) {
 
     fastify.get('/api/permissions', (req,rep) => controller.permissions(req,rep))
 
+    fastify.get('/api/roles/export', (req,rep) => controller.export(req,rep) )
+
     fastify.get('/api/roles/search', (req,rep) => controller.search(req,rep))
 
     fastify.get('/api/roles/:id', (req,rep) => controller.findById(req,rep))

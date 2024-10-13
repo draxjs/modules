@@ -3,15 +3,15 @@
 import {ref, onMounted, defineModel} from 'vue'
 import type { PropType } from 'vue'
 import {useI18n} from "vue-i18n";
-const {t} = useI18n()
+const {t,te} = useI18n()
 defineProps({
-  errorMessages: {
-    type: String as PropType<string | string[] | undefined>,
-  },
-  clearable: {
-    type: Boolean,
-    default: false,
-  }
+  errorMessages: {type: String as PropType<string | string[] | undefined>,},
+  clearable: {type: Boolean, default: false},
+  readonly: {type: Boolean, default: false},
+  rules: {type: Array as PropType<any[]>, default: () => []},
+  label: {type: String, default: 'tenant.entity'},
+  density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
+  variant: {type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>, default: 'filled'},
 })
 
 const model = defineModel<any>()
@@ -29,13 +29,15 @@ onMounted(async () => {
 <template>
   <v-select
       v-model="model"
-      :label="t ? t('tenant.entity') : 'Tenant'"
+      :label="te(label) ? t(label) : label"
       :items="items"
       item-title="name"
       item-value="id"
       variant="outlined"
       :error-messages="errorMessages"
       :clearable="clearable"
+      :rules="rules"
+      :readonly="readonly"
   ></v-select>
 </template>
 

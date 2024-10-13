@@ -1,13 +1,10 @@
 import LoginPage from '../pages/LoginPage.vue'
 import ProfilePage from '../pages/ProfilePage.vue'
 import PasswordPage from '../pages/PasswordPage.vue'
-import UserCrudPage from '../pages/UserCrudPage.vue'
-import UserCrudCustomPage from '../pages/UserCrudCustomPage.vue'
-import RoleCrudPage from '../pages/RoleCrudPage.vue'
-import RoleCrudCustomPage from '../pages/RoleCrudCustomPage.vue'
-import TenantCrudPage from '../pages/TenantCrudPage.vue'
-import TenantCrudCustomPage from '../pages/TenantCrudCustomPage.vue'
-import UserApiKeyCrudPage from '../pages/UserApiKeyCrudPage.vue'
+import UserCrudPage from '../pages/crud/UserCrudPage.vue'
+import RoleCrudPage from '../pages/crud/RoleCrudPage.vue'
+import TenantCrudPage from '../pages/crud/TenantCrudPage.vue'
+import UserApiKeyCrudPage from '../pages/crud/UserApiKeyCrudPage.vue'
 
 const routes = [
     {
@@ -74,34 +71,7 @@ const routes = [
         }
     },
 
-    //CUSTOM CRUDs
-    {
-        name: 'CrudCustomTenant',
-        path: '/crud/custom/tenant',
-        component: TenantCrudCustomPage,
-        meta: {
-            auth: true,
-            permission: 'tenant:manage'
-        }
-    },
-    {
-        name: 'CrudRoleCustom',
-        path: '/crud/custom/role',
-        component: RoleCrudCustomPage,
-        meta: {
-            auth: true,
-            permission: 'role:manage'
-        }
-    },
-    {
-        name: 'CrudCustomUser',
-        path: '/crud/custom/user',
-        component: UserCrudCustomPage,
-        meta: {
-            auth: true,
-            permission: 'user:manage'
-        }
-    },
+
 
 ]
 

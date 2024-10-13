@@ -1,7 +1,7 @@
 import {TenantModel} from "../../models/TenantModel.js";
 import {ITenantRepository} from '../../interfaces/ITenantRepository'
 import {mongoose, MongooseSort, MongooseQueryFilter} from "@drax/common-back";
-import {PaginateOptions, PaginateResult} from "mongoose";
+import {Cursor, PaginateOptions, PaginateResult} from "mongoose";
 import {DeleteResult} from "mongodb";
 import {IDraxFindOptions, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {ITenant, ITenantBase} from "@drax/identity-share";
@@ -82,7 +82,6 @@ class TenantMongoRepository implements ITenantRepository {
     }
 
     async find({
-                   cursor = false,
                    limit = 0,
                    orderBy = '',
                    order = false,
@@ -101,8 +100,31 @@ class TenantMongoRepository implements ITenantRepository {
         MongooseQueryFilter.applyFilters(query, filters)
 
         const sort = MongooseSort.applySort(orderBy, order)
-        const items: ITenant[] = await TenantModel.find(query).sort(sort)
+        const items: ITenant[] = await TenantModel.find(query).limit(limit).sort(sort)
         return items
+    }
+
+    async findCursor({
+                         limit = 0,
+                         orderBy = '',
+                         order = false,
+                         search = '',
+                         filters = []
+                     }: IDraxFindOptions): Promise<Cursor> {
+        console.log("TenantMongoRepository.findCursor called")
+        const query = {}
+
+        if (search) {
+            query['$or'] = [
+                {name: new RegExp(search, 'i')},
+            ]
+        }
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const sort = MongooseSort.applySort(orderBy, order)
+
+        return TenantModel.find(query).limit(limit).sort(sort).cursor() as Cursor;
     }
 }
 

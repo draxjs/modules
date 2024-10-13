@@ -144,7 +144,6 @@ class TenantSqliteRepository implements ITenantRepository{
     }
 
     async find({
-                   cursor = false,
                    limit = 0,
                    orderBy = '',
                    order = false,

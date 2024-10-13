@@ -4,11 +4,7 @@ const messages = {
             entity: "Tenant",
             name: "Name",
             createdAt: 'Created At',
-            updating: "Updating Tenant",
-            creating: "Creating Tenant",
-            deleting: "Deleting Tenant",
-            managing: 'Managing Tenant',
-            fields:{
+            field:{
                 id: 'ID',
                 name: 'Name'
             }
@@ -19,11 +15,7 @@ const messages = {
             entity: "Tenant",
             name: "Nombre",
             createdAt: 'Creado',
-            updating: "Actualizando Tenant",
-            creating: "Creando Tenant",
-            deleting: "Eliminando Tenant",
-            managing: 'Gestionando Tenant',
-            fields:{
+            field:{
                 id: 'ID',
                 name: 'Nombre'
             }

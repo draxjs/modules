@@ -3,12 +3,19 @@ import {ref, onMounted, defineModel} from 'vue'
 import type {PropType} from 'vue'
 import type {IRole} from "@drax/identity-share";
 import {useRole} from "../composables/useRole";
+import {useI18n} from "vue-i18n";
+
+
+const {t,te} = useI18n()
+
 
 defineProps({
   errorMessages: {type: String as PropType<string | string[] | undefined>},
+  rules: {type: Array as PropType<any[]>, default: () => []},
   multiple: {type: Boolean, default: false},
   clearable: {type: Boolean, default: false},
   readonly: {type: Boolean, default: false},
+  label: {type: String, default: 'role.entity'},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
   variant: {type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>, default: 'filled'},
 })
@@ -26,7 +33,7 @@ onMounted(async () => {
 <template>
   <v-select
       v-model="model"
-      label="Rol"
+      :label="te(label) ? t(label) : label"
       :items="items"
       item-title="name"
       item-value="id"
@@ -36,6 +43,7 @@ onMounted(async () => {
       :clearable="clearable"
       :readonly="readonly"
       :density="density"
+      :rules="rules"
   ></v-select>
 </template>
 

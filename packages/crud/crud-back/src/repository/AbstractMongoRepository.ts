@@ -1,5 +1,5 @@
 import "mongoose-paginate-v2";
-import mongoose from "mongoose";
+import mongoose, {Cursor} from "mongoose";
 import {MongooseQueryFilter, MongooseSort, MongooseErrorToValidationError} from "@drax/common-back";
 import type {DeleteResult} from "mongodb";
 import type {IDraxPaginateOptions, IDraxPaginateResult, IDraxFindOptions, IDraxCrud} from "@drax/crud-share";
@@ -114,7 +114,6 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async find({
-                   cursor = false,
                    limit = 0,
                    orderBy = '',
                    order = false,
@@ -132,8 +131,30 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const sort = MongooseSort.applySort(orderBy, order)
         const populate = this._populateFields
-        const items: T[] = await this._model.find(query).sort(sort).populate(populate)
-        return items
+        return this._model.find(query).limit(limit).sort(sort).populate(populate)
+    }
+
+    async findCursor({
+                         limit = 0,
+                         orderBy = '',
+                         order = false,
+                         search = '',
+                         filters = []
+                     }: IDraxFindOptions): Promise<Cursor<T>> {
+
+        const query = {}
+
+        if (search) {
+            query['$or'] = [
+                {name: new RegExp(search, 'i')},
+            ]
+        }
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const sort = MongooseSort.applySort(orderBy, order)
+
+        return this._model.find(query).limit(limit).sort(sort).cursor() as Cursor<T>;
     }
 }
 

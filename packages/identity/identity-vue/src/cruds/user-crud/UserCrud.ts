@@ -95,6 +95,17 @@ class UserCrud extends EntityCrud implements IEntityCrud {
     return ['_id', 'name','username','email','phone','role.name','tenant.name','active']
   }
 
+  get exportFormats(){
+    return ['CSV']
+  }
+
+  get isExportable(){
+    return true
+  }
+
+  get isImportable(){
+    return false
+  }
 }
 
 export default UserCrud

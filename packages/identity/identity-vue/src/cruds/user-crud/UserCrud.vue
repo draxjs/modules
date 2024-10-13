@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import {computed, ref} from 'vue'
-import UserList from "./UserList.vue";
 import {useUser} from "../../composables/useUser";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import type {IUserPassword} from "@drax/identity-front";
-import UserCreateForm from "../../forms/UserCreateForm.vue";
-import UserEditForm from "../../forms/UserEditForm.vue";
-import UserPasswordForm from "../../forms/UserPasswordForm.vue";
+import UserCreateForm from "./UserForm.vue";
+import UserPasswordForm from "./UserPasswordForm.vue";
 import UserView from "../../views/UserView.vue";
 import {useI18n} from "vue-i18n";
 
@@ -154,13 +152,7 @@ function toChangePassword(item: IUser) {
         </v-btn>
       </v-toolbar>
       <v-theme-provider with-background class="pa-2 rounded-b">
-        <UserList
-            ref="userList"
-            @toEdit="toEdit"
-            @toDelete="toDelete"
-            @toChangePassword="toChangePassword"
-            :filterEnable="filterEnable"
-        />
+
       </v-theme-provider>
     </v-card>
 
@@ -181,12 +173,7 @@ function toChangePassword(item: IUser) {
                 @formSubmit="save"
             />
 
-            <UserEditForm
-                v-if="dialogMode === 'edit'"
-                v-model="editForm"
-                :inputErrors="inputErrors"
-                @formSubmit="save"
-            />
+
 
             <UserView v-if="dialogMode === 'delete'
             && target" :user="target"

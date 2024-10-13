@@ -65,14 +65,14 @@ async function submitChangePassowrd() {
 
           <v-form @submit.prevent="submitChangePassowrd">
             <v-card variant="elevated">
-              <v-card-title class="pa-4 text-center">{{ t('user.changeOwnPassword') }}</v-card-title>
+              <v-card-title class="pa-4 text-center">{{ t('user.action.changeOwnPassword') }}</v-card-title>
               <v-card-text v-if="errorMsg">
                 <v-alert type="error">
                   {{ te(errorMsg) ?t(errorMsg) : errorMsg }}
                 </v-alert>
               </v-card-text>
               <v-card-text>
-                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.currentPassword') }}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.currentPassword') }}</div>
                 <v-text-field
                     variant="outlined"
                     id="current-password-input"
@@ -85,7 +85,7 @@ async function submitChangePassowrd() {
                     autocomplete="new-password"
                     :error-messages="$ta(inputErrors?.currentPassword)"
                 ></v-text-field>
-                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.newPassword') }}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.newPassword') }}</div>
                 <v-text-field
                     variant="outlined"
                     id="new-password-input"
@@ -98,7 +98,7 @@ async function submitChangePassowrd() {
                     autocomplete="new-password"
                     :error-messages="$ta(inputErrors?.newPassword)"
                 ></v-text-field>
-                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.confirmPassword') }}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.confirmPassword') }}</div>
                 <v-text-field
                     variant="outlined"
                     id="confirm-password-input"

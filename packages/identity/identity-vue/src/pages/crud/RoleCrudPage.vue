@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {Crud, useCrud} from "@drax/crud-vue";
-import RoleCrud from "../cruds/role-crud/RoleCrud";
-import RoleForm from "../forms/RoleForm.vue";
+import RoleCrud from "../../cruds/role-crud/RoleCrud";
+import RoleForm from "../../cruds/role-crud/RoleForm.vue";
 import {useI18n} from "vue-i18n";
 
 const {t, te} = useI18n()
@@ -34,14 +34,15 @@ const {
     </template>
 
     <template v-slot:item.childRoles="{ value }">
-      <v-chip
-          v-if="value && value.length > 0"
-          v-for="role in value"
-          :key="role" color="blue"
-          class="ma-1"
-      >
-        {{ role.name }}
-      </v-chip>
+
+        <v-chip
+            v-for="role in value"
+            :key="role" color="blue"
+            class="ma-1"
+        >
+          {{ role.name }}
+        </v-chip>
+
     </template>
 
     <template v-slot:item.readonly="{ value }">

@@ -22,24 +22,38 @@ export const Templatei18n = (entity: IEntitySchema) => `
 const messages = {
   en: {
   
-    ${entity.name}: {
+    ${entity.name.toLowerCase()}: {
           entity: '${entity.name}',
           menu: '${entity.name}',
           crud: 'Manage ${entity.name}',
-          fields:{
-${generateT(entity.schema)}
+          field:{
+            ${generateT(entity.schema)}
           }
+      },
+      permission: {
+              '${entity.name.toLowerCase()}:view': 'View ${entity.name}',
+              '${entity.name.toLowerCase()}:create': 'Create ${entity.name}',
+              '${entity.name.toLowerCase()}:update': 'Edit ${entity.name}',
+              '${entity.name.toLowerCase()}:delete': 'Delete ${entity.name}',
+              '${entity.name.toLowerCase()}:manage': 'Manage ${entity.name}',
       }
   },
   es: {
-     ${entity.name}: {
+     ${entity.name.toLowerCase()}: {
           entity: '${entity.name}',
           menu: '${entity.name}',
           crud: 'Gestionar ${entity.name}',
-          fields:{
-${generateT(entity.schema)}
+          field:{
+            ${generateT(entity.schema)}
           }
-      }
+      },
+     permission: {
+              '${entity.name.toLowerCase()}:view': 'Ver ${entity.name}',
+              '${entity.name.toLowerCase()}:create': 'Crear ${entity.name}',
+              '${entity.name.toLowerCase()}:update': 'Editar ${entity.name}',
+              '${entity.name.toLowerCase()}:delete': 'Eliminar ${entity.name}',
+              '${entity.name.toLowerCase()}:manage': 'Gestionar ${entity.name}',
+     }
   }
 }
 

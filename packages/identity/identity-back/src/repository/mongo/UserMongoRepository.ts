@@ -9,9 +9,10 @@ import {
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import {DeleteResult, MongoServerError} from "mongodb";
 import type {IUserRepository} from "../../interfaces/IUserRepository";
-import {PaginateResult} from "mongoose";
+import {Cursor, PaginateResult} from "mongoose";
 import RoleMongoRepository from "./RoleMongoRepository.js";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import {IDraxFindOptions, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import {IRole} from "@drax/identity-share";
 
 class UserMongoRepository implements IUserRepository {
     private roleRepository: RoleMongoRepository;
@@ -123,6 +124,52 @@ class UserMongoRepository implements IUserRepository {
             console.error(e)
             return false
         }
+    }
+
+    async find({
+                   limit = 0,
+                   orderBy = '',
+                   order = false,
+                   search = '',
+                   filters = []
+               }: IDraxFindOptions): Promise<IUser[]> {
+
+        const query = {}
+
+        if (search) {
+            query['$or'] = [
+                {name: new RegExp(search, 'i')},
+            ]
+        }
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const sort = MongooseSort.applySort(orderBy, order)
+
+        return await UserModel.find(query).populate(['role','tenant']).limit(limit).sort(sort)
+    }
+
+    async findCursor({
+                         limit = 0,
+                         orderBy = '',
+                         order = false,
+                         search = '',
+                         filters = []
+                     }: IDraxFindOptions): Promise<Cursor> {
+        console.log("RoleMongoRepository.findCursor called")
+        const query = {}
+
+        if (search) {
+            query['$or'] = [
+                {name: new RegExp(search, 'i')},
+            ]
+        }
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const sort = MongooseSort.applySort(orderBy, order)
+
+        return UserModel.find(query).populate(['role','tenant']).limit(limit).sort(sort).cursor() as Cursor;
     }
 }
 

@@ -37,7 +37,7 @@ const actions: IEntityCrudHeader[] = [{
 }]
 const tHeaders: IEntityCrudHeader[] = entity.headers.map(header => ({
   ...header,
-  title: te(`${entity.name.toLowerCase()}.fields.${header.title}`) ? t(`${entity.name.toLowerCase()}.fields.${header.title}`) : header.title
+  title: te(`${entity.name.toLowerCase()}.field.${header.title}`) ? t(`${entity.name.toLowerCase()}.field.${header.title}`) : header.title
 }))
 
 const headers: IEntityCrudHeader[] = [...tHeaders, ...actions]
@@ -47,7 +47,7 @@ defineExpose({
   doPaginate
 });
 
-defineEmits(['import', 'export', 'create', 'update', 'delete', 'view'])
+defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
 </script>
 
@@ -70,7 +70,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view'])
   >
     <template v-slot:top>
       <v-toolbar density="compact">
-        <v-toolbar-title>{{ entity.name }}</v-toolbar-title>
+        <v-toolbar-title>{{ te(`${entity.name.toLowerCase()}.crud`) ? t(`${entity.name.toLowerCase()}.crud`) : entity.name }}</v-toolbar-title>
         <v-spacer></v-spacer>
 
         <crud-import-button
@@ -123,6 +123,10 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view'])
 
 
     <template v-slot:item.actions="{item}">
+
+      <slot name="item.actions" v-bind="{item}">
+      </slot>
+
       <crud-view-button
           v-if="entity.isViewable && hasPermission(entity.permissions.view)"
           @click="$emit('view', item)"
@@ -136,6 +140,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view'])
           v-if="entity.isDeletable && hasPermission(entity.permissions.delete)"
           @click="$emit('delete', item)"
       />
+
     </template>
 
   </v-data-table-server>

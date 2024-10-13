@@ -1,26 +1,28 @@
 const messages = {
     en: {
         role: {
-            name: "Name",
-            permissions: "Username",
-            childRoles: "ChildRoles",
-            readonly: "Read Only",
-            updating: "Updating Role",
-            creating: "Creating Role",
-            deleting: "Deleting Role",
-            managing: 'Managing Role',
+            entity: 'Role',
+            menu: 'Roles',
+            crud: 'Manage Roles',
+            field:{
+                name: "Name",
+                permissions: "Username",
+                childRoles: "ChildRoles",
+                readonly: "Read Only",
+            }
         }
     },
     es: {
         role:{
-            name: "Nombre",
-            permissions: "Permisos",
-            childRoles: "Roles gestionados",
-            readonly: "Solo lectura",
-            updating: "Actualizando Rol",
-            creating: "Creando Rol",
-            deleting: "Eliminando Rol",
-            managing: 'Gestionando Rol',
+            entity: 'Rol',
+            menu: 'Roles',
+            crud: 'Gestionando Roles',
+            field:{
+                name: "Nombre",
+                permissions: "Permisos",
+                childRoles: "Roles gestionados",
+                readonly: "Solo lectura",
+            }
         }
     }
 }

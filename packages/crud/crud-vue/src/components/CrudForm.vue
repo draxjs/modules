@@ -68,6 +68,7 @@ const  {
       <v-card-text v-if="error">
         <v-alert color="error">{{ te(error) ? t(error) : error }}</v-alert>
       </v-card-text>
+
       <v-card-text>
         <template v-for="field in fields" :key="field.name">
           <crud-form-field

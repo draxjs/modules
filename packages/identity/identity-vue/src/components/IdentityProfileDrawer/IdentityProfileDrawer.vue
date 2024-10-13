@@ -37,7 +37,7 @@ const valueModel = defineModel<boolean>()
         <v-list-item
             @click="auth.logout()"
             prepend-icon="mdi-logout"
-            :title="t('user.logout')"
+            :title="t('user.action.logout')"
         >
         </v-list-item>
       </v-list>
@@ -48,7 +48,7 @@ const valueModel = defineModel<boolean>()
         <v-list-item
             href="/login"
             prepend-icon="mdi-login"
-            :title="t('user.login')"
+            :title="t('user.action.login')"
         >
         </v-list-item>
       </v-list>

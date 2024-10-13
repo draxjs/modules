@@ -6,7 +6,8 @@ import type {
     IDraxPaginateResult,
     IDraxFindOptions,
     IDraxCrud,
-    IDraxExportOptions
+    IDraxExportOptions,
+    IDraxCrudRepository
 } from "@drax/crud-share";
 import {IDraxCrudService} from "@drax/crud-share";
 import ExportCsv from "../exports/ExportCsv.js";
@@ -15,10 +16,10 @@ import {IDraxExportResult} from "@drax/crud-share";
 
 class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
-    _repository: IDraxCrud<T, C, U>
+    _repository: IDraxCrudRepository<T, C, U>
     _schema?: ZodSchema | undefined
 
-    constructor(repository: IDraxCrud<T, C, U>, schema?: ZodSchema) {
+    constructor(repository: IDraxCrudRepository<T, C, U>, schema?: ZodSchema) {
         this._repository = repository
         this._schema = schema
     }
@@ -180,27 +181,20 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                  destinationPath: string): Promise<IDraxExportResult> {
         try {
 
-            console.log("ExportOptions", {
-                format,
-                headers,
-                separator,
-                outputPath: destinationPath,
-                orderBy,
-                order,
-                search,
-                filters
-            })
-
             let cursor:any
             let exporter:any
 
+            if(this._repository.findCursor){
+                cursor = await this._repository.findCursor({orderBy, order, search, filters});
+            }else{
+                cursor = await this._repository.find({orderBy, order, search, filters});
+            }
+
             switch (format) {
                 case 'JSON':
-                    cursor = await this._repository.find({orderBy, order, search, filters});
                     exporter = new ExportJson({cursor, destinationPath: destinationPath, headers});
                     return await exporter.process()
                 case 'CSV':
-                    cursor = await this._repository.find({orderBy, order, search, filters});
                     exporter = new ExportCsv({cursor, destinationPath: destinationPath, headers, separator});
                     return await exporter.process()
                 default:
