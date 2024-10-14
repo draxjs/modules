@@ -6,7 +6,7 @@ import type {I${entity.name}Base, I${entity.name}} from "../interfaces/I${entity
 import {AbstractService} from "@drax/crud-back";
 import {ZodSchema} from "zod";
 
-class ${entity.name}Service extends AbstractService<I${entity.name}, I${entity.name}Base, I${entity.name}> {
+class ${entity.name}Service extends AbstractService<I${entity.name}, I${entity.name}Base, I${entity.name}Base> {
 
     _repository: I${entity.name}Repository
 

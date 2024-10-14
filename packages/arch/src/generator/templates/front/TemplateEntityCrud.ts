@@ -67,7 +67,7 @@ const generateFields = (schema: ISchema) => {
                 fields.push(`{name: '${field}', type: 'string', label: '${field}', default:'' }`)
                 break;
             case "number":
-                fields.push(`{name: '${field}', type: 'number', label: '${field}', default: null }`)
+                fields.push(`{name: '${field}', type: 'number', label: '${field}', default: 0 }`)
                 break;
             case "boolean":
                 fields.push(`{name: '${field}', type: 'boolean', label: '${field}', default:false }`)
@@ -114,6 +114,7 @@ import type{
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
+  IEntityCrudFilter,
   IEntityCrudHeader, 
   IEntityCrudPermissions,
   IEntityCrudRefs,
@@ -178,6 +179,48 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
     ]
   }
   
+  get filters():IEntityCrudFilter[]{
+    return [
+      //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
+    ]
+  }
+  
+  get isViewable(){
+    return true
+  }
+
+  get isEditable(){
+    return true
+  }
+
+  get isCreatable(){
+    return true
+  }
+
+  get isDeletable(){
+    return true
+  }
+
+  get isExportable(){
+    return true
+  }
+
+  get exportFormats(){
+    return ['CSV', 'JSON']
+  }
+
+  get exportHeaders(){
+    return ['_id']
+  }
+
+  get isImportable(){
+    return true
+  }
+
+  get importFormats(){
+    return ['CSV', 'JSON']
+  }
+
   get dialogFullscreen(){
     return false
   }
