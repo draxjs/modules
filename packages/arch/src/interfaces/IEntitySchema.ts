@@ -8,6 +8,7 @@ interface IFieldSchema{
     unique?: boolean
     default?: any
     ref?: string
+    refDisplay?: string
     schema?: ISchema
     header?: boolean
     smCol?: number

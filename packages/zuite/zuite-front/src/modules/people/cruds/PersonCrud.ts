@@ -75,7 +75,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
       {name: 'birthdate', type: 'date', label: 'birthdate', default: null},
       {name: 'nationality', type: 'ref', ref: 'Country', label: 'nationality', default: null},
       {name: 'hobbies', type: 'array.string', label: 'hobbies', default: []},
-      {name: 'languages', type: 'array.ref', ref: 'Language', label: 'languages', default: []},
+      {name: 'languages', type: 'array.ref', ref: 'Language', refDisplay: 'name', label: 'languages', default: []},
       {
         name: 'address',
         type: 'object',

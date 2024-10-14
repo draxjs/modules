@@ -76,7 +76,7 @@ const generateFields = (schema: ISchema) => {
                 fields.push(`{name: '${field}', type: 'date', label: '${field}', default:null }`)
                 break;
             case "ref":
-                fields.push(`{name: '${field}', type: 'ref', ref: '${schema[field].ref}', label: '${field}', default:null }`)
+                fields.push(`{name: '${field}', type: 'ref', ref: '${schema[field].ref}', refDisplay: '${schema[field].refDisplay}',label: '${field}', default:null }`)
                 break;
             case "object":
                 if(!schema[field].schema){
