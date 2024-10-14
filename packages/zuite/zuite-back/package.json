@@ -31,8 +31,8 @@
     "fastify": "^4.27.0",
     "graphql": "^16.6.0",
     "graphql-yoga": "^5.3.1",
-    "mongoose": "^8.6.3",
-    "mongoose-paginate-v2": "^1.8.3",
+    "mongoose": "^8.7.1",
+    "mongoose-paginate-v2": "^1.8.5",
     "mongoose-unique-validator": "^5.0.1"
   },
   "author": "",

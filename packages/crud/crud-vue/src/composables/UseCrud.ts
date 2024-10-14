@@ -96,7 +96,9 @@ export function useCrud(entity: IEntityCrud) {
 
     entity.fields.filter(field => field.type === 'array.ref')
         .forEach(field => {
-          item[field.name] = item[field.name].map(((i:any) => i?._id ? i._id : i))
+          if(item[field.name] && Array.isArray(item[field.name])){
+            item[field.name] = item[field.name].map(((i:any) => i?._id ? i._id : i))
+          }
         })
 
     return item
