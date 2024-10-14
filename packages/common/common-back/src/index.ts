@@ -17,7 +17,7 @@ import SqlQueryFilter from "./sql/SqlQueryFilter.js";
 import SqlSort from "./sql/SqlSort.js";
 
 import {SqliteTableBuilder} from "./sqlite/SqliteTableBuilder.js";
-import type {SqliteTableField} from "./sqlite/SqliteTableBuilder";
+import type {SqliteTableField} from "./sqlite/SqliteTableBuilder.js";
 
 //Errors
 import UniqueError from "./errors/UniqueError.js";
