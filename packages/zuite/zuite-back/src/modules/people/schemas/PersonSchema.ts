@@ -10,12 +10,12 @@ const PersonSchema = z.object({
     address: z.object({
         country: z.string(),
         city: z.string(),
-        street: z.string(),
+        street: z.string().min(1, 'validation.required'),
         zip: z.string()
     }),
     skills: z.array(
         z.object({
-            name: z.string(),
+            name: z.string().min(1, 'validation.required'),
             level: z.number()
         })
     )

@@ -7,15 +7,16 @@ import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {VDateInput} from 'vuetify/labs/VDateInput'
 import type {IEntityCrud, IEntityCrudField, IEntityCrudFilter} from "@drax/crud-share";
+
 const {t, te} = useI18n()
 
 const store = useCrudStore()
 
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
-const {index, entity, field, disableRules} = defineProps({
+const {index, entity, field, disableRules, parentField} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-  field: {type: Object as PropType<IEntityCrudField|IEntityCrudFilter|undefined>, required: true},
+  field: {type: Object as PropType<IEntityCrudField | IEntityCrudFilter | undefined>, required: true},
   prependIcon: {type: String, default: ''},
   prependInnerIcon: {type: String, default: ''},
   appendIcon: {type: String, default: ''},
@@ -25,18 +26,21 @@ const {index, entity, field, disableRules} = defineProps({
   singleLine: {type: Boolean, default: false},
   clearable: {type: Boolean, default: false},
   disableRules: {type: Boolean, default: false},
-  index: {type: Number, default: 0},
+  parentField: {type: String, default: null, required: false},
+  index: {type: Number, default: null, required: false},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
-  variant: {type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>, default: 'filled'},
+  variant: {
+    type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>,
+    default: 'filled'
+  },
 })
 
 
-
-if(!field){
+if (!field) {
   throw new Error("CrudFormField must be provided with a field object")
 }
 
-const name = computed(() => index > 0 ? `${field.name}_${index}` : field.name)
+const name = computed(() => index >= 0 ? `${field.name}_${index}` : field.name)
 
 const label = computed(() => {
   const i18n = `${entity.name}.field.${field.name}`
@@ -44,12 +48,16 @@ const label = computed(() => {
 })
 
 const rules = computed(() => {
-  if(disableRules) return undefined
+  if (disableRules) return undefined
   return entity.getRule(field.name) as any
 })
 
-const inputErrors = computed(() =>
-    store.getInputErrors(field.name).map((error: string) => t(te(error) ? t(error) : error))
+const inputErrors = computed(() => {
+      let sIndex = (index != null && index >= 0) ? `${index}.` : ''
+      let name = parentField ? `${parentField}.${sIndex}${field.name}` : field.name
+      console.log("inputErrors name",name, index, sIndex)
+      return store.getInputErrors(name).map((error: string) => t(te(error) ? t(error) : error))
+    }
 )
 
 defineEmits(['updateValue'])
@@ -85,7 +93,7 @@ defineEmits(['updateValue'])
         type="number"
         :name="name"
         :label="label"
-        v-model="valueModel"
+        v-model.number="valueModel"
         :readonly="readonly"
         :error-messages="inputErrors"
         :rules="rules"
@@ -174,6 +182,7 @@ defineEmits(['updateValue'])
             v-for="oField in field.objectFields"
             :entity="entity"
             :field="oField"
+            :parent-field="field.name"
             v-model="valueModel[oField.name]"
             :density="density"
             :variant="variant"

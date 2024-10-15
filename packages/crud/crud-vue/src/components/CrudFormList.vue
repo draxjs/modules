@@ -46,7 +46,7 @@ defineEmits(['updateValue'])
     <v-card-title class="text-h5">{{field.label}}</v-card-title>
     <v-card-text>
       <v-row>
-        <v-col cols="12" v-for="(item,index) in valueModel" :key="index" class="text-right">
+        <v-col cols="12" v-for="(item,index) in valueModel" :key="index" >
           <v-row dense align="center">
             <v-col cols="11">
               <template v-for="key in Object.keys(item as Record<string, any>)" :key="key">
@@ -56,6 +56,7 @@ defineEmits(['updateValue'])
                     :field="getField(key)"
                     v-model="(valueModel[index] as any)[key]"
                     :readonly="readonly"
+                    :parentField="field.name"
                     :index="index"
                     :density="density"
                     :variant="variant"

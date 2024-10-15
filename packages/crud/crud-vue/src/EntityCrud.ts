@@ -60,6 +60,8 @@ class EntityCrud implements IEntityCrud{
       field.objectFields.forEach(subField => {
         if(subField.type === 'object'){
           value[subField.name] = this.objectFields(subField)
+        }if(subField.type === 'number' && field.default!= undefined){
+          value[subField.name] = null
         }else{
           value[subField.name] = subField.default
         }
@@ -77,6 +79,8 @@ class EntityCrud implements IEntityCrud{
         value = this.objectFields(field)
       }else if(field.default != undefined){
         value = field.default
+      }else{
+        value = null
       }
 
       return {...acc, [field.name]: value }

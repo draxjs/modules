@@ -35,7 +35,6 @@ class ClientError extends Error {
 
   static extractInputErrors(error: IRestError|IGqlError): IClientInputError|undefined {
     if ('body' in error && error.body && error.body.inputErrors) {
-
       return ClientError.convertToKeyValue(error.body.inputErrors)
     }
     if ('extensions' in error && error.extensions && error.extensions.inputErrors) { // Corrected property name to inputError

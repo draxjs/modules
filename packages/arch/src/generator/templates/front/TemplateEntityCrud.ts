@@ -33,7 +33,7 @@ const generateRules = (schema: ISchema) => {
 
     for(const field in schema){
         if(schema[field].required){
-            fields.push(`${field}: [(v: any) => !!v || 'Requerido']`)
+            fields.push(`${field}: [(v: any) => !!v || 'validation.required']`)
         }else{
             fields.push(`${field}: []`)
         }
