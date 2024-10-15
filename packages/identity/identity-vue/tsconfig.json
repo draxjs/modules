@@ -12,6 +12,8 @@
     }
   ],
   "compilerOptions": {
-    "module": "NodeNext"
+    "allowImportingTsExtensions": true,
+    "module": "NodeNext",
+
   }
 }

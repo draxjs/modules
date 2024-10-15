@@ -3,7 +3,6 @@ import IdentityProfileAvatar from "./components/IdentityProfileAvatar/IdentityPr
 import IdentityProfileDrawer from "./components/IdentityProfileDrawer/IdentityProfileDrawer.vue";
 import IdentityProfileView from "./components/IdentityProfileView/IdentityProfileView.vue";
 
-import UserCrud from "./cruds/user-crud/UserCrud.vue";
 import UserCrudPage from "./pages/crud/UserCrudPage.vue";
 import UserForm from "./cruds/user-crud/UserForm.vue";
 import UserView from "./views/UserView.vue";
@@ -15,7 +14,6 @@ import RoleCrudPage from "./pages/crud/RoleCrudPage.vue";
 import LoginPage from "./pages/LoginPage.vue";
 import ProfilePage from "./pages/ProfilePage.vue";
 import PasswordPage from "./pages/PasswordPage.vue";
-
 
 import TenantView from "./views/TenantView.vue";
 import TenantCrudPage from "./pages/crud/TenantCrudPage.vue";
@@ -33,12 +31,22 @@ import {useRole} from "./composables/useRole.js";
 import {useTenant} from "./composables/useTenant.js";
 import {useUserApiKey} from "./composables/useUserApiKey.js";
 
+import TenantCrud from "./cruds/tenant-crud/TenantCrud"
+import UserCrud from "./cruds/user-crud/UserCrud"
+import RoleCrud from "./cruds/role-crud/RoleCrud"
+
+
 
 import {useAuthStore} from "./stores/auth/AuthStore.js";
 
 import IdentityRoutes from "./routes/IdentityRoutes.js";
 
 export {
+
+    //Cruds
+    TenantCrud,
+    UserCrud,
+    RoleCrud,
 
     //Vue Components
     IdentityLogin,
@@ -54,7 +62,6 @@ export {
     //User
     UserView,
     UserForm,
-    UserCrud,
     UserCrudPage,
     useAuth,
     useUser,
