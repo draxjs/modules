@@ -21,7 +21,7 @@ const generateImportRefs = (schema: ISchema) => {
         if(['ref','array.ref'].includes(schema[field].type) && schema[field].ref){
 
             if(['Tenant','User','Role'].includes(schema[field].ref as string)){
-                refs.push(`import ${schema[field].ref}Crud from "@drax/identity-vue"`)
+                refs.push(`import {${schema[field].ref}Crud} from "@drax/identity-vue"`)
             }else{
                 refs.push(`import ${schema[field].ref}Crud from "./${schema[field].ref}Crud";`)
             }
