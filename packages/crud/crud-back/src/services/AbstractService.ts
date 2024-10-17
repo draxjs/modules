@@ -17,10 +17,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     _repository: IDraxCrudRepository<T, C, U>
     _schema?: ZodSchema | undefined
+    transformCreate?: (data: C) => Promise<C>;
+    transformUpdate?: (data: U) => Promise<U>;
+    transformRead?: (data: T) => Promise<T>;
 
-    abstract transformCreate?(data: C): Promise<C>;
-    abstract transformUpdate?(data: U): Promise<U>;
-    abstract transformRead?(data: T): Promise<T>;
+
 
     constructor(repository: IDraxCrudRepository<T, C, U>, schema?: ZodSchema) {
         this._repository = repository
