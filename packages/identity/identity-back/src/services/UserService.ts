@@ -7,7 +7,7 @@ import {createUserSchema, editUserSchema, userBaseSchema} from "../zod/UserZod.j
 import BadCredentialsError from "../errors/BadCredentialsError.js";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {AbstractService} from "@drax/crud-back";
-import {ITenant} from "@drax/identity-share";
+import {randomUUID} from "crypto"
 
 class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate>{
 
@@ -24,8 +24,8 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate>{
         console.log("auth username", username)
         user = await this.findByUsername(username)
         if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
-            //TODO: Generar Sesion
-            const session = '123'
+            //TODO: Generar session
+            const session = randomUUID()
             const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, user.role.id, user.tenant?.id, session)
             return {accessToken: accessToken}
         } else {

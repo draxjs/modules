@@ -3,6 +3,7 @@ import jsonwebtoken, {SignOptions, VerifyOptions} from "jsonwebtoken";
 import {DraxConfig} from "@drax/common-back";
 import IdentityConfig from "../config/IdentityConfig.js";
 import crypto from "crypto";
+import type {IJwtUser} from "@drax/identity-share";
 
 class AuthUtils{
 
@@ -31,7 +32,7 @@ class AuthUtils{
         return bcryptjs.compareSync(password, hashPassword);
     }
 
-    static tokenSignPayload(userId : string, username: string, roleId: string, tenantId: string, session : string) {
+    static tokenSignPayload(userId : string, username: string, roleId: string, tenantId: string, session : string): IJwtUser {
         return {
             id: userId,
             username: username,

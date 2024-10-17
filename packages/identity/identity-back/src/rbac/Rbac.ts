@@ -49,6 +49,18 @@ class Rbac {
         }
     }
 
+    assertUserId(userId: string) {
+        if (this.authUser.id != userId) {
+            throw new UnauthorizedError()
+        }
+    }
+
+    assertTenantId(tenantId: string) {
+        if (this.authUser.tenantId && this.authUser.tenantId != tenantId) {
+            throw new UnauthorizedError()
+        }
+    }
+
 }
 
 export default Rbac;
