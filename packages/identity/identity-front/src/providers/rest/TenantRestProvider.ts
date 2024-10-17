@@ -65,9 +65,9 @@ class TenantRestProvider implements ITenantProvider {
         return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
     }
 
-    async search(value: any): Promise<any> {
+    async search(search: any): Promise<any> {
         const url = '/api/tenants/search'
-        let params = {value: value}
+        const params = {search}
         let tenants = await this.httpClient.get(url, {params} )
         return tenants
     }

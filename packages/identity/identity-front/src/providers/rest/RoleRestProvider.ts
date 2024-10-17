@@ -54,9 +54,9 @@ class RoleRestProvider implements IRoleProvider {
 
     }
 
-    async search(value: any): Promise<any> {
+    async search(search: any): Promise<any> {
         const url = '/api/roles/search'
-        let params = {value: value}
+        let params = {search}
         let roles = await this.httpClient.get(url, {params} )
         return roles
     }

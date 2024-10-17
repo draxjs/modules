@@ -44,10 +44,10 @@ class UserRestProvider implements IUserProvider {
 
     }
 
-    async search(value: any): Promise<any> {
+    async search(search: any): Promise<any> {
         const url = '/api/users/search'
-        let data = {value: value}
-        let users = await this.httpClient.post(url, data )
+        const params = {search}
+        let users = await this.httpClient.get(url, {params} )
         return users
     }
 

@@ -39,10 +39,10 @@ class UserApiKeyRestProvider implements IUserApiKeyProvider {
 
     }
 
-    async search(value: any): Promise<any> {
+    async search(search: any): Promise<any> {
         const url = '/api/user-api-keys/search'
-        let data = {value: value}
-        let userApiKeys = await this.httpClient.post(url, data )
+        let params = {search}
+        let userApiKeys = await this.httpClient.get(url, {params} )
         return userApiKeys
     }
 
