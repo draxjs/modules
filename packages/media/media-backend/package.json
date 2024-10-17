@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.5.15",
+  "version": "0.5.16",
   "description": "Media files",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@drax/common-back": "^0.5.6",
-    "@drax/identity-back": "^0.5.15"
+    "@drax/identity-back": "^0.5.16"
   },
   "peerDependencies": {
     "@fastify/multipart": "^8.3.0",
