@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.5.17",
+  "version": "0.5.18",
   "description": "Crud utils across modules",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -24,7 +24,7 @@
   "dependencies": {
     "@drax/common-back": "^0.5.6",
     "@drax/common-share": "^0.5.1",
-    "@drax/media-back": "^0.5.17",
+    "@drax/media-back": "^0.5.18",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.4",
     "mongoose": "^8.6.3",
