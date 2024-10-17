@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import {ref} from "vue";
 import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
