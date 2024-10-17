@@ -1,5 +1,5 @@
 import type {IUserApiKeyProvider} from "../interfaces/IUserApiKeyProvider";
-import type {IRole, IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
+import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
 import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 

@@ -14,7 +14,6 @@ const {entity} = defineProps({
   actions: {type: Boolean, default: false},
 })
 
-const formRef = ref()
 
 async function filter() {
   emit('filter')

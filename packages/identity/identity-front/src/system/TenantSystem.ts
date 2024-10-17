@@ -1,5 +1,5 @@
 import type {ITenantProvider} from "../interfaces/ITenantProvider";
-import type {ITenant, ITenantBase, IUser} from "@drax/identity-share";
+import type {ITenant, ITenantBase} from "@drax/identity-share";
 import type {
     IDraxCrudProvider,
     IDraxCrudProviderExportResult,

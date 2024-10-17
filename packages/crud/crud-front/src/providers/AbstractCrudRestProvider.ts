@@ -59,7 +59,7 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
 
 
 
-    prepareFilters(filters: IDraxFieldFilter) {
+    prepareFilters(filters: IDraxFieldFilter[]) {
         const isDate = (value: any): value is Date => value instanceof Date;
 
         return filters

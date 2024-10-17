@@ -1,5 +1,5 @@
 import type {IRoleProvider} from "../interfaces/IRoleProvider";
-import type {IRole, IRoleBase, ITenant} from "@drax/identity-share";
+import type {IRole, IRoleBase} from "@drax/identity-share";
 import type {
     IDraxCrudProviderExportResult,
     IDraxExportOptions,
