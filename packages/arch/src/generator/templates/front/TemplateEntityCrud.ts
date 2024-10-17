@@ -73,6 +73,9 @@ const generateFields = (schema: ISchema) => {
             case "string":
                 fields.push(`{name: '${field}', type: 'string', label: '${field}', default:'' }`)
                 break;
+            case "password":
+                fields.push(`{name: '${field}', type: 'password', label: '${field}', default:'' }`)
+                break;
             case "number":
                 fields.push(`{name: '${field}', type: 'number', label: '${field}', default: 0 }`)
                 break;

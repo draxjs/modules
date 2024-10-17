@@ -1,6 +1,6 @@
 interface IEntityCrudField {
     name: string
-    type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' | 'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum'
+    type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' | 'password' | 'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum'
     ref?: string
     refDisplay?: string
     enum?: string[]

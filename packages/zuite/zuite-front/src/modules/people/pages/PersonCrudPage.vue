@@ -9,8 +9,9 @@ import {formatDate} from "@drax/common-front"
 <template>
   <crud :entity="PersonCrud.instance">
     <template v-slot:item.birthdate="{value}">{{formatDate(value)}}</template>
-    <template v-slot:item.nationality="{value}">{{value}}</template>
+    <template v-slot:item.nationality="{value}">{{value.name}}</template>
     <template v-slot:item.hobbies="{value}"><v-chip v-for="v in value">{{v}}</v-chip></template>
+    <template v-slot:item.languages="{value}">{{ value.map(v => v.name).join(",") }}</template>
   </crud>
 </template>
 

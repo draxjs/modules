@@ -7,6 +7,7 @@ const schema: IEntitySchema = {
         fullname: {type: 'string', required: true, unique: true, index: true, search:true, header: true},
         live: {type: 'boolean', required: false, unique: false, index: false, header: true},
         birthdate: {type: 'date', required: false, unique: false, index: false, header: true},
+        secret: {type: 'password', required: false, unique: false, index: false, header: false},
         nationality: {type: 'ref', ref:'Country', refDisplay: 'name', required: false, unique: false, index: false, header: true},
         hobbies: {type: 'array.string', required: false, unique: false, index: false, search:true, header: true},
         race: {type: 'enum', enum:["human","elf","orc"], required: false, unique: false, index: false, search:true, header: true},

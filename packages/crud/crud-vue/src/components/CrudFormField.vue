@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import type {PropType} from "vue";
 import CrudFormList from "./CrudFormList.vue";
 import CrudAutocomplete from "./CrudAutocomplete.vue";
@@ -39,6 +39,8 @@ const {index, entity, field, disableRules, parentField} = defineProps({
 if (!field) {
   throw new Error("CrudFormField must be provided with a field object")
 }
+
+const show = ref(false)
 
 const name = computed(() => index >= 0 ? `${field.name}_${index}` : field.name)
 
@@ -86,6 +88,28 @@ defineEmits(['updateValue'])
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
         @update:modelValue="$emit('updateValue')"
+    />
+
+    <v-text-field
+        v-if="field.type === 'password'"
+        :name="name"
+        :label="label"
+        v-model="valueModel"
+        :readonly="readonly"
+        :error-messages="inputErrors"
+        :rules="rules"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        @update:modelValue="$emit('updateValue')"
+        :type="show ? 'text' : 'password'"
+        :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append-inner="show = !show"
     />
 
     <v-combobox

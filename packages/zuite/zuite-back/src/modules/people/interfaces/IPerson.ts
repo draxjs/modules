@@ -3,6 +3,7 @@ interface IPersonBase {
     fullname: string
     live: boolean
     birthdate: Date
+    secret: string
     nationality: any
     hobbies: Array<string>
     race: string
@@ -25,6 +26,7 @@ interface IPerson {
     fullname: string
     live: boolean
     birthdate: Date
+    secret: string
     nationality: any
     hobbies: Array<string>
     race: string

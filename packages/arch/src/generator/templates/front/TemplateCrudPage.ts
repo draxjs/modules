@@ -6,7 +6,10 @@ const generateRenders = (schema: ISchema) => {
 
     for(const field in schema){
         if(['ref'].includes(schema[field].type) && schema[field].ref){
-            fields.push(`    <template v-slot:item.${field}="{value}">{{value}}</template>`)
+            fields.push(`    <template v-slot:item.${field}="{value}">{{value.${schema[field].refDisplay}}}</template>`)
+        }
+        if(['array.ref'].includes(schema[field].type) && schema[field].ref){
+            fields.push(`    <template v-slot:item.${field}="{value}">{{ value.map(v => v.${schema[field].refDisplay}).join(",") }}</template>`)
         }
         if(['date'].includes(schema[field].type) ){
             fields.push(`    <template v-slot:item.${field}="{value}">{{formatDate(value)}}</template>`)

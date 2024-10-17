@@ -5,6 +5,7 @@ const PersonSchema = z.object({
       fullname: z.string().min(1,'validation.required'),
     live: z.boolean(),
     birthdate: z.coerce.date().nullable(),
+    secret: z.string(),
     nationality: z.string().nullable(),
     hobbies: z.array(z.string()),
     race: z.enum(['human', 'elf', 'orc']),
