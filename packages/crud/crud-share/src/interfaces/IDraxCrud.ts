@@ -1,6 +1,7 @@
 import type {IDraxPaginateResult} from "./IDraxPaginateResult";
 import type {IDraxPaginateOptions} from "./IDraxPaginateOptions";
 import type {IDraxFindOptions} from "./IDraxFindOptions";
+import type {IDraxFieldFilter} from "./IDraxFieldFilter";
 
 interface IDraxCrud<T,C,U>{
   paginate(options: IDraxPaginateOptions): Promise<IDraxPaginateResult<T>>
@@ -13,7 +14,7 @@ interface IDraxCrud<T,C,U>{
   findOneBy?(field: string, value: any): Promise<T | null>
   findBy?(field: string, value: any): Promise<T[]>
   fetchAll?(): Promise<T[]>
-  search?(value: any, limit: number): Promise<T[]>
+  search?(value: any, limit: number, filters: IDraxFieldFilter[]): Promise<T[]>
   find?(options: IDraxFindOptions): Promise<T[]>
 
 }

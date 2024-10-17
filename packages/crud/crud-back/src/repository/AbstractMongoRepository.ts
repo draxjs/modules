@@ -2,7 +2,7 @@ import "mongoose-paginate-v2";
 import mongoose, {Cursor} from "mongoose";
 import {MongooseQueryFilter, MongooseSort, MongooseErrorToValidationError} from "@drax/common-back";
 import type {DeleteResult} from "mongodb";
-import type {IDraxPaginateOptions, IDraxPaginateResult, IDraxFindOptions, IDraxCrud} from "@drax/crud-share";
+import type {IDraxPaginateOptions, IDraxPaginateResult, IDraxFindOptions, IDraxCrud, IDraxFieldFilter} from "@drax/crud-share";
 import type {PaginateModel, PaginateOptions, PaginateResult} from "mongoose";
 
 
@@ -74,11 +74,16 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return items
     }
 
-    async search(value: string, limit: number = 1000): Promise<T[]> {
+    async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] =[]): Promise<T[]> {
+
         const query = {}
+
         if (value) {
             query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
         }
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
         const items: mongoose.HydratedDocument<T>[] = await this._model.find(query).limit(limit).exec()
         return items
     }

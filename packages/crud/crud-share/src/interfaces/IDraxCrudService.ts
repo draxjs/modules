@@ -1,9 +1,10 @@
-import {IDraxCrud} from "./IDraxCrud";
-import {IDraxExportOptions} from "./IDraxExportOptions";
-import {IDraxExportResult} from "./IDraxExportResult";
+import type {IDraxCrud} from "./IDraxCrud";
+import type {IDraxExportOptions} from "./IDraxExportOptions";
+import type {IDraxExportResult} from "./IDraxExportResult";
+import type {IDraxFieldFilter} from "./IDraxFieldFilter";
 
 interface IDraxCrudService<T,C,U> extends IDraxCrud<T, C, U>  {
-  search?(value: any): Promise<T[]>
+  search?(value: any, limit: number, filters: IDraxFieldFilter[]): Promise<T[]>
   export?(options: IDraxExportOptions, destinationPath:string): Promise<IDraxExportResult>
 }
 

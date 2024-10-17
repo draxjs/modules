@@ -8,6 +8,7 @@ import UserPermissions from "../permissions/UserPermissions.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
 import {join} from "path";
 import {IdentityConfig} from "../config/IdentityConfig.js";
+import type {FastifyReply} from "fastify";
 
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const AVATAR_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatar';
@@ -94,6 +95,32 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             } else {
                 reply.statusCode = 500
                 reply.send({error: 'error.server'})
+            }
+        }
+    }
+
+
+    async search(request, reply) {
+        try {
+            request.rbac.assertPermission(UserPermissions.View)
+            const filters = []
+            if(request.rbac.getAuthUser.tenantId){
+                filters.push({field: 'tenant', operator: 'eq', value: request.rbac.getAuthUser.tenantId})
+            }
+            const search = request.query.search
+            let item = await this.service.search(search,1000,filters)
+            return item
+        } catch (e) {
+            console.error(e)
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'INTERNAL_SERVER_ERROR'})
             }
         }
     }

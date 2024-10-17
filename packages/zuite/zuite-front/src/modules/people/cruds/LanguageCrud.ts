@@ -48,7 +48,7 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
 
   get rules(){
     return {
-      name: [(v: any) => v || 'Requerido']
+      name: [(v: any) => !!v || 'validation.required']
     }
   }
 

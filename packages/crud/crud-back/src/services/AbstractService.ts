@@ -7,7 +7,7 @@ import type {
     IDraxFindOptions,
     IDraxCrud,
     IDraxExportOptions,
-    IDraxCrudRepository
+    IDraxCrudRepository, IDraxFieldFilter
 } from "@drax/crud-share";
 import {IDraxCrudService} from "@drax/crud-share";
 import ExportCsv from "../exports/ExportCsv.js";
@@ -123,10 +123,9 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     }
 
-    async search(value: string): Promise<T[]> {
+    async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[]> {
         try {
-            const limit:number = 1000
-            const items: T[] = await this._repository.search(value, limit);
+            const items: T[] = await this._repository.search(value, limit, filters);
             return items
         } catch (e) {
             console.error("Error fetching all Autos", e)

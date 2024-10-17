@@ -6,7 +6,7 @@ const generateRefs = (schema: ISchema) => {
 
     for(const field in schema){
         if(['ref','array.ref'].includes(schema[field].type) && schema[field].ref){
-            refs.push(`${schema[field].ref}: ${schema[field].ref}Crud `)
+            refs.push(`${schema[field].ref}: ${schema[field].ref}Crud.instance `)
         }
     }
     content += refs.join(",\n")
@@ -19,7 +19,14 @@ const generateImportRefs = (schema: ISchema) => {
 
     for(const field in schema){
         if(['ref','array.ref'].includes(schema[field].type) && schema[field].ref){
-            refs.push(`import ${schema[field].ref}Crud from "./${schema[field].ref}Crud";`)
+
+            if(['Tenant','User','Role'].includes(schema[field].ref as string)){
+                refs.push(`import ${schema[field].ref}Crud from "@drax/identity-vue"`)
+            }else{
+                refs.push(`import ${schema[field].ref}Crud from "./${schema[field].ref}Crud";`)
+            }
+
+
         }
     }
     content += refs.join("\n")

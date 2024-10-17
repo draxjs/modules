@@ -90,9 +90,8 @@ class TenantService extends AbstractService<ITenant,ITenantBase,ITenantBase> {
 
     }
 
-    async search(value: any): Promise<ITenant[]> {
-        const limit = 100
-        const tenants: ITenant[] = await this._repository.search(value, limit);
+    async search(value: any, limit=1000, filters=[]): Promise<ITenant[]> {
+        const tenants: ITenant[] = await this._repository.search(value, limit,filters);
         return tenants;
     }
 

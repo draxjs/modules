@@ -12,11 +12,12 @@ import type {IUserRepository} from "../../interfaces/IUserRepository";
 import {Cursor, PaginateResult} from "mongoose";
 import RoleMongoRepository from "./RoleMongoRepository.js";
 import {IDraxFindOptions, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
-import {IRole} from "@drax/identity-share";
+import {IRole, ITenant} from "@drax/identity-share";
+import type {IDraxFieldFilter} from "@drax/crud-share/dist";
 
 class UserMongoRepository implements IUserRepository {
     private roleRepository: RoleMongoRepository;
-
+    _searchFields = ['name','username','email','phone']
 
     constructor() {
         this.roleRepository = new RoleMongoRepository()
@@ -84,11 +85,7 @@ class UserMongoRepository implements IUserRepository {
         const query = {}
 
         if(search){
-            query['$or'] = [
-                {username: new RegExp(search, 'i')},
-                {email: new RegExp(search, 'i')},
-                {name: new RegExp(search, 'i')},
-            ]
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
         }
 
         MongooseQueryFilter.applyFilters(query, filters)
@@ -104,6 +101,17 @@ class UserMongoRepository implements IUserRepository {
             total: userPaginated.totalDocs,
             items: userPaginated.docs
         }
+    }
+
+
+    async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<IUser[]> {
+        const query = {}
+        if(value){
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
+        }
+        MongooseQueryFilter.applyFilters(query, filters)
+        const items: mongoose.HydratedDocument<IUser>[] = await UserModel.find(query).limit(limit).exec()
+        return items
     }
 
     async changePassword(id: string, password: string):Promise<boolean> {

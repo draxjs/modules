@@ -1,5 +1,5 @@
 import {IUser, IUserCreate, IUserUpdate} from '@drax/identity-share'
-import {IDraxCrud} from "@drax/crud-share";
+import {IDraxCrud, IDraxFieldFilter} from "@drax/crud-share";
 
 interface IUserRepository extends IDraxCrud<IUser, IUserCreate, IUserUpdate>{
     findById(id: string): Promise<IUser | null>;

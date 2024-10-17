@@ -8,6 +8,8 @@ async function UserRoutes(fastify, options) {
 
     fastify.get('/api/me', (req,rep) => controller.me(req,rep))
 
+    fastify.get('/api/users/search', (req,rep) => controller.search(req,rep) )
+
     fastify.get('/api/users/export', (req,rep) => controller.export(req,rep) )
 
     fastify.get('/api/users', (req,rep) => controller.paginate(req,rep))

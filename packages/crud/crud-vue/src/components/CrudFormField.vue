@@ -254,7 +254,7 @@ defineEmits(['updateValue'])
         type="number"
         :name="name"
         :label="label"
-        v-model="valueModel"
+        v-model   ="valueModel"
         :multiple="true"
         :chips="true"
         :readonly="readonly"

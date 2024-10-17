@@ -178,9 +178,8 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate>{
 
     }
 
-    async search(value: any): Promise<IUser[]> {
-        const limit = 100
-        const users: IUser[] = await this._repository.search(value, limit);
+    async search(value: any, limit: number = 1000, filters = []): Promise<IUser[]> {
+        const users: IUser[] = await this._repository.search(value, limit, filters);
         return users;
     }
 }

@@ -116,9 +116,8 @@ class RoleService extends AbstractService<IRole, IRoleBase, IRoleBase> {
         return roles
     }
 
-    async search(value: any): Promise<IRole[]> {
-        const limit = 100
-        const roles: IRole[] = await this._repository.search(value, limit);
+    async search(value: any, limit=1000, filters=[]): Promise<IRole[]> {
+        const roles: IRole[] = await this._repository.search(value, limit, filters);
         return roles;
     }
 

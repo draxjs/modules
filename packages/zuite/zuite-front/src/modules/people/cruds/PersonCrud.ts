@@ -32,7 +32,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     }
   }
 
-  get headers():IEntityCrudHeader[] {
+  get headers(): IEntityCrudHeader[] {
     return [
       {title: 'fullname', key: 'fullname', align: 'start'},
       {title: 'live', key: 'live', align: 'start'},
@@ -103,6 +103,10 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
       {name: 'birthdate', type: 'date', label: 'birthdate', default: null, operator: 'eq'},
       {name: 'live', type: 'boolean', label: 'live', default: false, operator: 'eq'},
     ]
+  }
+
+  get exportHeaders(){
+    return ['_id', 'fullname', 'live', 'birthdate', 'nationality.name', 'hobbies', 'languages.name', 'address.country', 'address.city', 'address.street']
   }
 
   get dialogFullscreen() {
