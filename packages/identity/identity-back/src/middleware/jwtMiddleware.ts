@@ -3,7 +3,13 @@ import {IJwtUser} from "@drax/identity-share";
 
 function jwtMiddleware (request, reply, done) {
         try{
-            const token = request.headers?.authorization?.replace(/Bearer /i, "")
+
+            let token: string
+
+            const bearerRegExp = /^Bearer (.*)$/i;
+            if(request.headers['authorization'] && bearerRegExp.test(request.headers['authorization'])){
+                token = request.headers?.authorization?.replace(/Bearer /i, "")
+            }
 
             if(token){
                 const authUser = AuthUtils.verifyToken(token) as IJwtUser

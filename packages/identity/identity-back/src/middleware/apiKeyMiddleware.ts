@@ -15,7 +15,17 @@ async function userApiKeyLoader(k):Promise<IUserApiKey | null> {
 
 async function apiKeyMiddleware (request, reply) {
         try{
-            const apiKey = request.headers['x-api-key']
+            let apiKey: string
+
+            if(request.headers['x-api-key']){
+                apiKey = request.headers['x-api-key']
+            }
+
+            const apiKeyRegExp = /^ApiKey (.*)$/i;
+            if(request.headers['authorization'] && apiKeyRegExp.test(request.headers['authorization'])){
+                apiKey = request.headers?.authorization?.replace(/ApiKey /i, "")
+            }
+
             if(apiKey){
                 const userApiKey = await draxCache.getOrLoad(apiKey, userApiKeyLoader)
                 if(userApiKey && userApiKey.user){
