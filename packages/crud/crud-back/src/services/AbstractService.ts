@@ -1,11 +1,10 @@
-import {ValidationError, ZodErrorToValidationError} from "@drax/common-back"
+import {ZodErrorToValidationError} from "@drax/common-back"
 import {ZodError} from "zod";
 import type {ZodSchema} from "zod";
 import type {
     IDraxPaginateOptions,
     IDraxPaginateResult,
     IDraxFindOptions,
-    IDraxCrud,
     IDraxExportOptions,
     IDraxCrudRepository, IDraxFieldFilter
 } from "@drax/crud-share";
@@ -14,20 +13,28 @@ import ExportCsv from "../exports/ExportCsv.js";
 import ExportJson from "../exports/ExportJson.js";
 import {IDraxExportResult} from "@drax/crud-share";
 
-class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
+abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     _repository: IDraxCrudRepository<T, C, U>
     _schema?: ZodSchema | undefined
+
+    abstract transformCreate?(data: C): Promise<C>;
+    abstract transformUpdate?(data: U): Promise<U>;
+    abstract transformRead?(data: T): Promise<T>;
 
     constructor(repository: IDraxCrudRepository<T, C, U>, schema?: ZodSchema) {
         this._repository = repository
         this._schema = schema
     }
 
+
     async create(data: C): Promise<T> {
         try {
             if (this._schema) {
                 await this._schema.parseAsync(data)
+            }
+            if(this.transformCreate){
+                data = await this.transformCreate(data)
             }
             const item: T = await this._repository.create(data)
             return item
@@ -44,6 +51,9 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
         try {
             if (this._schema) {
                 await this._schema.parseAsync(data)
+            }
+            if(this.transformUpdate){
+                data = await this.transformUpdate(data)
             }
             const item: T = await this._repository.update(id, data)
             return item
@@ -72,7 +82,10 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async findById(id: string): Promise<T | null> {
         try {
-            const item: T = await this._repository.findById(id);
+            let item: T = await this._repository.findById(id);
+            if(this.transformRead){
+                item = await this.transformRead(item)
+            }
             return item
         } catch (e) {
             console.error("Error finding Auto by id", e)
@@ -82,7 +95,10 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async findByIds(ids: Array<string>): Promise<T[]> {
         try {
-            const items: T[] = await this._repository.findByIds(ids);
+            let items: T[] = await this._repository.findByIds(ids);
+            if(this.transformRead){
+                items = await Promise.all(items.map( item =>  this.transformRead(item)))
+            }
             return items
         } catch (e) {
             console.error("Error finding Auto by id", e)
@@ -92,7 +108,10 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async findOneBy(field: string, value: string): Promise<T | null> {
         try {
-            const item: T = await this._repository.findOneBy(field, value);
+            let item: T = await this._repository.findOneBy(field, value);
+            if(this.transformRead){
+                item = await this.transformRead(item)
+            }
             return item
         } catch (e) {
             console.error("Error finding Auto findOneBy", e)
@@ -103,7 +122,10 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async findBy(field: string, value: string): Promise<T[] | null> {
         try {
-            const items: T[] = await this._repository.findBy(field, value);
+            let items: T[] = await this._repository.findBy(field, value);
+            if(this.transformRead){
+                items = await Promise.all(items.map( item =>  this.transformRead(item)))
+            }
             return items
         } catch (e) {
             console.error("Error finding Auto findBy", e)
@@ -114,7 +136,10 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async fetchAll(): Promise<T[]> {
         try {
-            const items: T[] = await this._repository.fetchAll();
+            let items: T[] = await this._repository.fetchAll();
+            if(this.transformRead){
+                items = await Promise.all(items.map( item =>  this.transformRead(item)))
+            }
             return items
         } catch (e) {
             console.error("Error fetching all Autos", e)
@@ -125,7 +150,10 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[]> {
         try {
-            const items: T[] = await this._repository.search(value, limit, filters);
+            let items: T[] = await this._repository.search(value, limit, filters);
+            if(this.transformRead){
+                items = await Promise.all(items.map( item =>  this.transformRead(item)))
+            }
             return items
         } catch (e) {
             console.error("Error fetching all Autos", e)
@@ -144,6 +172,11 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<T>> {
         try {
             const pagination = await this._repository.paginate({page, limit, orderBy, order, search, filters});
+
+            if(this.transformRead){
+                pagination.items = await Promise.all(pagination.items.map( item =>  this.transformRead(item)))
+            }
+
             return pagination;
         } catch (e) {
             console.error("Error paginating", e)
@@ -159,7 +192,7 @@ class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                    filters = []
                }: IDraxFindOptions): Promise<T[]> {
         try {
-            const items = await this._repository.find({orderBy, order, search, filters});
+            let items = await this._repository.find({orderBy, order, search, filters});
             return items;
         } catch (e) {
             console.error("Error paginating", e)
