@@ -4,7 +4,7 @@ import type {ICountryBase, ICountry} from "../interfaces/ICountry";
 import {AbstractService} from "@drax/crud-back";
 import {ZodSchema} from "zod";
 
-class CountryService extends AbstractService<ICountry, ICountryBase, ICountry> {
+class CountryService extends AbstractService<ICountry, ICountryBase, ICountryBase> {
 
     _repository: ICountryRepository
 

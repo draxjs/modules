@@ -1,8 +1,9 @@
 interface IEntityCrudField {
     name: string
-    type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'array.string' | 'array.number' | 'array.object' | 'array.ref'
+    type: 'string' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' | 'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum'
     ref?: string
     refDisplay?: string
+    enum?: string[]
     objectFields?: IEntityCrudField[]
     label: string
     default: any

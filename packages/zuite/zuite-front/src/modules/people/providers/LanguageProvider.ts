@@ -1,15 +1,16 @@
 
+import {IDraxCrud} from "@drax/crud-share";
 import {AbstractCrudRestProvider} from "@drax/crud-front";
 import type {ILanguage, ILanguageBase} from '../interfaces/ILanguage'
 
-class LanguageProvider extends AbstractCrudRestProvider<ILanguage, ILanguageBase, ILanguageBase>  {
-
+class LanguageProvider extends AbstractCrudRestProvider<ILanguage, ILanguageBase, ILanguageBase> {
+    
   static singleton: LanguageProvider
-
+    
   constructor() {
    super('/api/language')
   }
-
+  
   static get instance() {
     if(!LanguageProvider.singleton){
       LanguageProvider.singleton = new LanguageProvider()

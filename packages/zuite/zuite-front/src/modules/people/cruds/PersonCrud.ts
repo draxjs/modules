@@ -1,7 +1,17 @@
-import {IEntityCrud, IEntityCrudField, IEntityCrudFilter, IEntityCrudHeader, IEntityCrudRefs} from "@drax/crud-share";
-import {EntityCrud} from "@drax/crud-vue";
 
+import {EntityCrud} from "@drax/crud-vue";
+import type{
+  IDraxCrudProvider,
+  IEntityCrud,
+  IEntityCrudField,
+  IEntityCrudFilter,
+  IEntityCrudHeader, 
+  IEntityCrudPermissions,
+  IEntityCrudRefs,
+  IEntityCrudRules
+} from "@drax/crud-share";
 import PersonProvider from "../providers/PersonProvider";
+
 //Import EntityCrud Refs
 import CountryCrud from "./CountryCrud";
 import LanguageCrud from "./LanguageCrud";
@@ -14,102 +24,126 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     super();
     this.name = 'Person'
   }
-
+  
   static get instance(): PersonCrud {
-    if (!PersonCrud.singleton) {
+    if(!PersonCrud.singleton){
       PersonCrud.singleton = new PersonCrud()
     }
     return PersonCrud.singleton
   }
 
-  get permissions() {
+  get permissions(): IEntityCrudPermissions{
     return {
-      manage: 'person:manage',
-      view: 'person:view',
-      create: 'person:create',
-      update: 'person:update',
+      manage: 'person:manage', 
+      view: 'person:view', 
+      create: 'person:create', 
+      update: 'person:update', 
       delete: 'person:delete'
     }
   }
 
   get headers(): IEntityCrudHeader[] {
     return [
-      {title: 'fullname', key: 'fullname', align: 'start'},
-      {title: 'live', key: 'live', align: 'start'},
-      {title: 'birthdate', key: 'birthdate', align: 'start'},
-      {title: 'nationality', key: 'nationality', align: 'start'},
-      {title: 'hobbies', key: 'hobbies', align: 'start'},
-      {title: 'languages', key: 'languages', align: 'start'},
-      {title: 'address', key: 'address', align: 'start'}
+        {title: 'fullname',key:'fullname', align: 'start'},
+{title: 'live',key:'live', align: 'start'},
+{title: 'birthdate',key:'birthdate', align: 'start'},
+{title: 'nationality',key:'nationality', align: 'start'},
+{title: 'hobbies',key:'hobbies', align: 'start'},
+{title: 'race',key:'race', align: 'start'},
+{title: 'interests',key:'interests', align: 'start'},
+{title: 'languages',key:'languages', align: 'start'},
+{title: 'address',key:'address', align: 'start'}
     ]
   }
 
-  get provider() {
+  get provider(): IDraxCrudProvider<any, any, any>{
     return PersonProvider.instance
   }
-
-  get refs(): IEntityCrudRefs {
+  
+  get refs(): IEntityCrudRefs{
     return {
-      Country: CountryCrud.instance,
-      Language: LanguageCrud.instance
+      Country: CountryCrud.instance ,
+Language: LanguageCrud.instance 
     }
   }
 
-  get rules() {
+  get rules():IEntityCrudRules{
     return {
-      fullname: [(v: any) => !!v || 'Requerido'],
-      live: [(v: any) => !!v || 'Requerido'],
-      birthdate: [(v: any) => !!v || 'Requerido'],
-      nationality: [(v: any) => !!v || 'Requerido'],
-      hobbies: [],
-      languages: [],
-      address: [],
-      skills: []
+      fullname: [(v: any) => !!v || 'validation.required'],
+live: [],
+birthdate: [],
+nationality: [],
+hobbies: [],
+race: [],
+interests: [],
+languages: [],
+address: [],
+skills: []
     }
   }
 
-  get fields(): IEntityCrudField[] {
+  get fields(): IEntityCrudField[]{
     return [
-      {name: 'fullname', type: 'string', label: 'fullname', default: ''},
-      {name: 'live', type: 'boolean', label: 'live', default: false},
-      {name: 'birthdate', type: 'date', label: 'birthdate', default: null},
-      {name: 'nationality', type: 'ref', ref: 'Country', label: 'nationality', default: null},
-      {name: 'hobbies', type: 'array.string', label: 'hobbies', default: []},
-      {name: 'languages', type: 'array.ref', ref: 'Language', refDisplay: 'name', label: 'languages', default: []},
-      {
-        name: 'address',
-        type: 'object',
-        label: 'address',
-        default: {},
-        objectFields: [{name: 'country', type: 'string', label: 'country', default: ''},
-          {name: 'city', type: 'string', label: 'city', default: ''},
-          {name: 'street', type: 'string', label: 'street', default: ''},
-          {name: 'zip', type: 'string', label: 'zip', default: ''}]
-      },
-      {
-        name: 'skills',
-        type: 'array.object',
-        label: 'skills',
-        default: [],
-        objectFields: [{name: 'name', type: 'string', label: 'name', default: ''},
-          {name: 'level', type: 'number', label: 'level', default: null}]
-      }
+        {name: 'fullname', type: 'string', label: 'fullname', default:'' },
+{name: 'live', type: 'boolean', label: 'live', default:false },
+{name: 'birthdate', type: 'date', label: 'birthdate', default:null },
+{name: 'nationality', type: 'ref', ref: 'Country', refDisplay: 'name',label: 'nationality', default:null },
+{name: 'hobbies', type: 'array.string', label: 'hobbies', default:[] },
+{name: 'race', type: 'enum', enum: ['human', 'elf', 'orc'], label: 'race', default:null },
+{name: 'interests', type: 'array.enum', enum: ['sports', 'music', 'reading', 'travel', 'cooking', 'technology'], label: 'interests', default:[] },
+{name: 'languages', type: 'array.ref', ref: 'Language', label: 'languages', default:[] },
+{name: 'address', type: 'object', label: 'address', default:{}, objectFields: [{name: 'country', type: 'string', label: 'country', default:'' },
+{name: 'city', type: 'string', label: 'city', default:'' },
+{name: 'street', type: 'string', label: 'street', default:'' },
+{name: 'zip', type: 'string', label: 'zip', default:'' }] },
+{name: 'skills', type: 'array.object', label: 'skills', default:[], objectFields: [{name: 'name', type: 'string', label: 'name', default:'' },
+{name: 'level', type: 'number', label: 'level', default: 0 }] }
     ]
   }
-
-  get filters(): IEntityCrudFilter[] {
+  
+  get filters():IEntityCrudFilter[]{
     return [
-      {name: 'fullname', type: 'string', label: 'fullname', default: '', operator: 'like'},
-      {name: 'birthdate', type: 'date', label: 'birthdate', default: null, operator: 'eq'},
-      {name: 'live', type: 'boolean', label: 'live', default: false, operator: 'eq'},
+      //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
     ]
+  }
+  
+  get isViewable(){
+    return true
+  }
+
+  get isEditable(){
+    return true
+  }
+
+  get isCreatable(){
+    return true
+  }
+
+  get isDeletable(){
+    return true
+  }
+
+  get isExportable(){
+    return true
+  }
+
+  get exportFormats(){
+    return ['CSV', 'JSON']
   }
 
   get exportHeaders(){
-    return ['_id', 'fullname', 'live', 'birthdate', 'nationality.name', 'hobbies', 'languages.name', 'address.country', 'address.city', 'address.street']
+    return ['_id']
   }
 
-  get dialogFullscreen() {
+  get isImportable(){
+    return true
+  }
+
+  get importFormats(){
+    return ['CSV', 'JSON']
+  }
+
+  get dialogFullscreen(){
     return false
   }
 

@@ -17,13 +17,15 @@ const generateModelSchema = (schema: ISchema) => {
                 return "Date";
             case "ref":
                 return "mongoose.Schema.Types.ObjectId";
+            case "enum":
+                return "String";
             default:
                 throw new Error("Unsupported type " + type)
         }
     }
 
     function generateField(field:IFieldSchema, fieldType: IType){
-        return `{type: ${mapType(fieldType)}, ${fieldType === 'ref' ? "ref: '"+ field.ref + "'," : "" } required: ${field.required}, index: ${field.index}, unique: ${field.unique} }`
+        return `{type: ${mapType(fieldType)}, ${fieldType === 'ref' ? "ref: '"+ field.ref + "'," : "" } ${fieldType === 'enum' ? "enum: ['"+ field.enum.join("', '") + "']," : "" } required: ${field.required}, index: ${field.index}, unique: ${field.unique} }`
     }
 
     function generateArrayField(field:IFieldSchema){

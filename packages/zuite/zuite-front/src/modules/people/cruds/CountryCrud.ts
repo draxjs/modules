@@ -1,9 +1,11 @@
+
 import {EntityCrud} from "@drax/crud-vue";
-import {
+import type{
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
-  IEntityCrudHeader,
+  IEntityCrudFilter,
+  IEntityCrudHeader, 
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
@@ -21,7 +23,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     super();
     this.name = 'Country'
   }
-
+  
   static get instance(): CountryCrud {
     if(!CountryCrud.singleton){
       CountryCrud.singleton = new CountryCrud()
@@ -29,12 +31,12 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return CountryCrud.singleton
   }
 
-  get permissions():IEntityCrudPermissions{
+  get permissions(): IEntityCrudPermissions{
     return {
-      manage: 'country:manage',
-      view: 'country:view',
-      create: 'country:create',
-      update: 'country:update',
+      manage: 'country:manage', 
+      view: 'country:view', 
+      create: 'country:create', 
+      update: 'country:update', 
       delete: 'country:delete'
     }
   }
@@ -45,20 +47,19 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     ]
   }
 
-  //@ts-ignore
   get provider(): IDraxCrudProvider<any, any, any>{
     return CountryProvider.instance
   }
-
+  
   get refs(): IEntityCrudRefs{
     return {
-
+      
     }
   }
 
-  get rules():IEntityCrudRules  {
+  get rules():IEntityCrudRules{
     return {
-      name: [(v: any) => v || 'Requerido']
+      name: [(v: any) => !!v || 'validation.required']
     }
   }
 
@@ -67,13 +68,51 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
         {name: 'name', type: 'string', label: 'name', default:'' }
     ]
   }
+  
+  get filters():IEntityCrudFilter[]{
+    return [
+      //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
+    ]
+  }
+  
+  get isViewable(){
+    return true
+  }
 
-  get dialogFullscreen(){
-    return false
+  get isEditable(){
+    return true
+  }
+
+  get isCreatable(){
+    return true
+  }
+
+  get isDeletable(){
+    return true
+  }
+
+  get isExportable(){
+    return true
+  }
+
+  get exportFormats(){
+    return ['CSV', 'JSON']
   }
 
   get exportHeaders(){
-    return ['_id', 'name']
+    return ['_id']
+  }
+
+  get isImportable(){
+    return true
+  }
+
+  get importFormats(){
+    return ['CSV', 'JSON']
+  }
+
+  get dialogFullscreen(){
+    return false
   }
 
 }

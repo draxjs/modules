@@ -85,6 +85,9 @@ const generateFields = (schema: ISchema) => {
             case "ref":
                 fields.push(`{name: '${field}', type: 'ref', ref: '${schema[field].ref}', refDisplay: '${schema[field].refDisplay}',label: '${field}', default:null }`)
                 break;
+            case "enum":
+                fields.push(`{name: '${field}', type: 'enum', enum: ['${schema[field].enum.join("', '")}'], label: '${field}', default:null }`)
+                break;
             case "object":
                 if(!schema[field].schema){
                     throw new Error("object fields must have a schema")
@@ -105,6 +108,9 @@ const generateFields = (schema: ISchema) => {
                     throw new Error("array.object fields must have a schema")
                 }
                 fields.push(`{name: '${field}', type: 'array.object', label: '${field}', default:[], objectFields: [${generateFields(schema[field].schema)}] }`)
+                break;
+            case "array.enum":
+                fields.push(`{name: '${field}', type: 'array.enum', enum: ['${schema[field].enum.join("', '")}'], label: '${field}', default:[] }`)
                 break;
             default:
                 throw new Error("Unsupported type " + schema[field].type)

@@ -1,41 +1,40 @@
+
 const messages = {
   en: {
-
-    Country: {
-      entity: 'Country',
-      menu: 'Country',
-      crud: 'Manage Country',
-      field: {
-        name: 'name'
+  
+    country: {
+          entity: 'Country',
+          menu: 'Country',
+          crud: 'Manage Country',
+          field:{
+                       name:'name'
+          }
       },
-    },
-    permission: {
-      country: 'Country',
-      'country:view': 'View Country',
-      'country:create': 'Create Country',
-      'country:update': 'Edit Country',
-      'country:delete': 'Delete Country',
-      'country:manage': 'Manage Country',
-    }
+      permission: {
+              'country:view': 'View Country',
+              'country:create': 'Create Country',
+              'country:update': 'Edit Country',
+              'country:delete': 'Delete Country',
+              'country:manage': 'Manage Country',
+      }
   },
   es: {
-    Country: {
-      entity: 'Pais',
-      menu: 'Country',
-      crud: 'Gestionar Country',
-      field: {
-        name: 'name'
-      }
-    },
-    permission: {
-      country: 'Country',
-      'country:view': 'Ver Países',
-      'country:create': 'Crear País',
-      'country:update': 'Editar País',
-      'country:delete': 'Eliminar Países',
-      'country:manage': 'Gestionar Países',
-    }
+     country: {
+          entity: 'Country',
+          menu: 'Country',
+          crud: 'Gestionar Country',
+          field:{
+                       name:'name'
+          }
+      },
+     permission: {
+              'country:view': 'Ver Country',
+              'country:create': 'Crear Country',
+              'country:update': 'Editar Country',
+              'country:delete': 'Eliminar Country',
+              'country:manage': 'Gestionar Country',
+     }
   }
 }
 
-export default messages;
+export default messages;  

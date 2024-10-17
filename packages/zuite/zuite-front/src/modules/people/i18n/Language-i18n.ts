@@ -1,42 +1,40 @@
 
 const messages = {
   en: {
-
-    Language: {
+  
+    language: {
           entity: 'Language',
           menu: 'Language',
           crud: 'Manage Language',
           field:{
-           name:'name'
+                       name:'name'
           }
       },
-    permission: {
-      language: 'Language',
-      'language:view': 'Ver Language',
-      'language:create': 'Crear Language',
-      'language:update': 'Editar Language',
-      'language:delete': 'Eliminar Language',
-      'language:manage': 'Gestionar Language',
-    }
+      permission: {
+              'language:view': 'View Language',
+              'language:create': 'Create Language',
+              'language:update': 'Edit Language',
+              'language:delete': 'Delete Language',
+              'language:manage': 'Manage Language',
+      }
   },
   es: {
-     Language: {
+     language: {
           entity: 'Language',
           menu: 'Language',
           crud: 'Gestionar Language',
           field:{
-           name:'name'
+                       name:'name'
           }
       },
-    permission: {
-      language: 'Language',
-      'language:view': 'Ver Language',
-      'language:create': 'Crear Language',
-      'language:update': 'Editar Language',
-      'language:delete': 'Eliminar Language',
-      'language:manage': 'Gestionar Language',
-    }
+     permission: {
+              'language:view': 'Ver Language',
+              'language:create': 'Crear Language',
+              'language:update': 'Editar Language',
+              'language:delete': 'Eliminar Language',
+              'language:manage': 'Gestionar Language',
+     }
   }
 }
 
-export default messages;
+export default messages;  

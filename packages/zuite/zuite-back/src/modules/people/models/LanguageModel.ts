@@ -6,7 +6,7 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 import type {ILanguage} from '../interfaces/ILanguage'
 
 const LanguageSchema = new mongoose.Schema<ILanguage>({
-            name: {type: String,  required: true, index: true, unique: true }
+            name: {type: String,   required: true, index: true, unique: true }
 }, {timestamps: true});
 
 LanguageSchema.plugin(uniqueValidator, {message: 'validation.unique'});

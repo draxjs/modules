@@ -1,4 +1,4 @@
-type IType = 'string' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'array.string' | 'array.number' | 'array.object' | 'array.ref'
+type IType = 'string' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' |'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum'
 
 interface IFieldSchema{
     type: IType
@@ -7,6 +7,7 @@ interface IFieldSchema{
     search?: boolean
     unique?: boolean
     default?: any
+    enum?: string[]
     ref?: string
     refDisplay?: string
     schema?: ISchema

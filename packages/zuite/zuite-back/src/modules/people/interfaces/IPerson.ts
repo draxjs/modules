@@ -5,6 +5,8 @@ interface IPersonBase {
     birthdate: Date
     nationality: any
     hobbies: Array<string>
+    race: string
+    interests: Array<string>
     languages: Array<any>
     address: {    country: string
     city: string
@@ -25,6 +27,8 @@ interface IPerson {
     birthdate: Date
     nationality: any
     hobbies: Array<string>
+    race: string
+    interests: Array<string>
     languages: Array<any>
     address: {    country: string
     city: string

@@ -10,7 +10,7 @@ class PersonMongoRepository extends AbstractMongoRepository<IPerson, IPersonBase
     constructor() {
         super();
         this._model = PersonModel;
-        this._searchFields = ['fullname', 'hobbies'];
+        this._searchFields = ['fullname', 'hobbies', 'race', 'interests'];
          this._populateFields = ['nationality', 'languages'];
     }
 

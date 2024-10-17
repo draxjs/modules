@@ -10,6 +10,12 @@ const generateEntitySchema = (schema: ISchema) => {
             case "string":
                 fields.push(`    ${field}: z.string()${schema[field].required? ".min(1,'validation.required')" : ""}`)
                 break;
+            case "enum":
+                if(!schema[field].enum){
+                    throw new Error("enum fields must have a enum")
+                }
+                fields.push(`    ${field}: z.enum(['${schema[field].enum.join("', '")}'])`)
+                break;
             case "number":
                 fields.push(`    ${field}: z.number()${schema[field].required? ".min(0,'validation.required')" : ""}`)
                 break;
@@ -30,6 +36,12 @@ const generateEntitySchema = (schema: ISchema) => {
                 break;
             case "array.string":
                 fields.push(`    ${field}: z.array(z.string())`)
+                break;
+            case "array.enum":
+                if(!schema[field].enum){
+                    throw new Error("enum fields must have a enum")
+                }
+                fields.push(`    ${field}: z.array(z.enum(['${schema[field].enum.join("', '")}']))`)
                 break;
             case "array.number":
                 fields.push(`    ${field}: z.array(z.number())`)

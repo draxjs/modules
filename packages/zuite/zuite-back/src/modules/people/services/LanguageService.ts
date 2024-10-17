@@ -4,7 +4,7 @@ import type {ILanguageBase, ILanguage} from "../interfaces/ILanguage";
 import {AbstractService} from "@drax/crud-back";
 import {ZodSchema} from "zod";
 
-class LanguageService extends AbstractService<ILanguage, ILanguageBase, ILanguage> {
+class LanguageService extends AbstractService<ILanguage, ILanguageBase, ILanguageBase> {
 
     _repository: ILanguageRepository
 

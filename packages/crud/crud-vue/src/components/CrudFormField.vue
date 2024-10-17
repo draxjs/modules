@@ -88,6 +88,29 @@ defineEmits(['updateValue'])
         @update:modelValue="$emit('updateValue')"
     />
 
+    <v-combobox
+        v-if="field.type === 'enum'"
+        type="text"
+        :name="name"
+        :label="label"
+        v-model="valueModel"
+        :items="field.enum"
+        :readonly="readonly"
+        :error-messages="inputErrors"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :rules="rules"
+        @update:modelValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
+    >
+    </v-combobox>
+
     <v-text-field
         v-if="field.type === 'number'"
         type="number"
@@ -205,6 +228,32 @@ defineEmits(['updateValue'])
         :name="name"
         :label="label"
         v-model="valueModel"
+        :multiple="true"
+        :chips="true"
+        :closable-chips="true"
+        :readonly="readonly"
+        :error-messages="inputErrors"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :rules="rules"
+        @update:modelValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
+    >
+    </v-combobox>
+
+    <v-combobox
+        v-if="field.type === 'array.enum'"
+        type="text"
+        :name="name"
+        :label="label"
+        v-model="valueModel"
+        :items="field.enum"
         :multiple="true"
         :chips="true"
         :closable-chips="true"

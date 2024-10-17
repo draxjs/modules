@@ -1,7 +1,18 @@
 
 import {EntityCrud} from "@drax/crud-vue";
+import type{
+  IDraxCrudProvider,
+  IEntityCrud,
+  IEntityCrudField,
+  IEntityCrudFilter,
+  IEntityCrudHeader, 
+  IEntityCrudPermissions,
+  IEntityCrudRefs,
+  IEntityCrudRules
+} from "@drax/crud-share";
 import LanguageProvider from "../providers/LanguageProvider";
-import {IEntityCrud, IEntityCrudField, IEntityCrudHeader} from "@drax/crud-share";
+
+//Import EntityCrud Refs
 
 
 class LanguageCrud extends EntityCrud implements IEntityCrud {
@@ -12,7 +23,7 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     super();
     this.name = 'Language'
   }
-
+  
   static get instance(): LanguageCrud {
     if(!LanguageCrud.singleton){
       LanguageCrud.singleton = new LanguageCrud()
@@ -20,33 +31,33 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     return LanguageCrud.singleton
   }
 
-  get permissions(){
+  get permissions(): IEntityCrudPermissions{
     return {
-      manage: 'language:manage',
-      view: 'language:view',
-      create: 'language:create',
-      update: 'language:update',
+      manage: 'language:manage', 
+      view: 'language:view', 
+      create: 'language:create', 
+      update: 'language:update', 
       delete: 'language:delete'
     }
   }
 
-  get headers():IEntityCrudHeader[] {
+  get headers(): IEntityCrudHeader[] {
     return [
         {title: 'name',key:'name', align: 'start'}
     ]
   }
 
-  get provider(){
+  get provider(): IDraxCrudProvider<any, any, any>{
     return LanguageProvider.instance
   }
-
-  get refs(){
+  
+  get refs(): IEntityCrudRefs{
     return {
-
+      
     }
   }
 
-  get rules(){
+  get rules():IEntityCrudRules{
     return {
       name: [(v: any) => !!v || 'validation.required']
     }
@@ -56,6 +67,48 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     return [
         {name: 'name', type: 'string', label: 'name', default:'' }
     ]
+  }
+  
+  get filters():IEntityCrudFilter[]{
+    return [
+      //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
+    ]
+  }
+  
+  get isViewable(){
+    return true
+  }
+
+  get isEditable(){
+    return true
+  }
+
+  get isCreatable(){
+    return true
+  }
+
+  get isDeletable(){
+    return true
+  }
+
+  get isExportable(){
+    return true
+  }
+
+  get exportFormats(){
+    return ['CSV', 'JSON']
+  }
+
+  get exportHeaders(){
+    return ['_id']
+  }
+
+  get isImportable(){
+    return true
+  }
+
+  get importFormats(){
+    return ['CSV', 'JSON']
   }
 
   get dialogFullscreen(){
