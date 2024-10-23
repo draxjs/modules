@@ -46,6 +46,18 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
         {title: 'name',key:'name', align: 'start'}
     ]
   }
+  
+  get actionHeaders():IEntityCrudHeader[]{
+    return [
+      {
+        title: 'action.actions',
+        key: 'actions',
+        sortable: false,
+        align: 'center',
+        minWidth: '190px'
+      },
+    ]
+  }
 
   get provider(): IDraxCrudProvider<any, any, any>{
     return LanguageProvider.instance

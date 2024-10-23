@@ -24,6 +24,19 @@ class EntityCrud implements IEntityCrud{
     ]
   }
 
+  get actionHeaders():IEntityCrudHeader[]{
+    return [
+      {
+        title: 'action.actions',
+        key: 'actions',
+        sortable: false,
+        align: 'center',
+        minWidth: '190px'
+      },
+    ]
+  }
+
+
   get permissions(): IEntityCrudPermissions {
     return {
       manage: 'manage', view: 'view', create: 'create',  update: 'update', delete: 'delete'
@@ -45,6 +58,14 @@ class EntityCrud implements IEntityCrud{
   }
 
   get updateFields(){
+    return this.fields
+  }
+
+  get deleteFields(){
+    return this.fields
+  }
+
+  get viewFields(){
     return this.fields
   }
 

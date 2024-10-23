@@ -291,7 +291,7 @@ export function useCrud(entity: IEntityCrud) {
             closeDialog()
             store.showMessage("Entity updated successfully!")
         } catch (e: any) {
-            console.log("inputErrors", e.inputErrors)
+            //console.log("inputErrors", e.inputErrors)
             if (e.inputErrors) {
                 store.setInputErrors(e.inputErrors)
             }

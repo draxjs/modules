@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import {useFormUtils, useCrudStore} from "@drax/crud-vue";
-import {defineEmits, defineModel, defineProps, ref} from "vue";
+import {defineEmits, defineModel, defineProps, type PropType, ref} from "vue";
 import {useI18nValidation} from "@drax/common-vue";
 import RoleCombobox from "../../combobox/RoleCombobox.vue";
 import TenantCombobox from "../../combobox/TenantCombobox.vue";
 import {useI18n} from "vue-i18n";
+import type {IEntityCrudOperation} from "@drax/crud-share";
 
 const {$ta} = useI18nValidation()
 const {t, te} = useI18n()
 
-defineProps({
+const {operation} = defineProps({
+  operation: {type: String as PropType<IEntityCrudOperation>, required: true},
   enablePassword: {type: Boolean, default: false}
 })
 
@@ -25,6 +27,12 @@ const formRef = ref()
 
 async function submit() {
   store.resetErrors()
+
+  if(operation === 'delete') {
+    emit('submit',valueModel.value)
+    return
+  }
+
   await formRef.value.validate()
   if (valid.value) {
     emit('submit', valueModel.value)

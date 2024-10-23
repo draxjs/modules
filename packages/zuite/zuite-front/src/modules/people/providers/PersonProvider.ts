@@ -1,5 +1,4 @@
 
-import {IDraxCrud} from "@drax/crud-share";
 import {AbstractCrudRestProvider} from "@drax/crud-front";
 import type {IPerson, IPersonBase} from '../interfaces/IPerson'
 

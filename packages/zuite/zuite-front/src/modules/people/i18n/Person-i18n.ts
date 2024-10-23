@@ -23,7 +23,9 @@ const messages = {
            zip: 'zip',
            skills:'skills',
            name: 'name',
-           level: 'level'
+           level: 'level',
+           tenant:'tenant',
+           user:'user'
           }
       },
       permission: {
@@ -56,7 +58,9 @@ const messages = {
            zip: 'zip',
            skills:'skills',
            name: 'name',
-           level: 'level'
+           level: 'level',
+           tenant:'tenant',
+           user:'user'
           }
       },
      permission: {

@@ -172,6 +172,18 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
         ${generateHeaders(entity.schema)}
     ]
   }
+  
+  get actionHeaders():IEntityCrudHeader[]{
+    return [
+      {
+        title: 'action.actions',
+        key: 'actions',
+        sortable: false,
+        align: 'center',
+        minWidth: '190px'
+      },
+    ]
+  }
 
   get provider(): IDraxCrudProvider<any, any, any>{
     return ${entity.name}Provider.instance

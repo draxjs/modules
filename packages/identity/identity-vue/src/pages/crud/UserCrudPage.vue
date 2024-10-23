@@ -33,6 +33,7 @@ function onChangePassword(user:IUser){
       <template v-slot:form>
         <user-form
             :enable-password="operation === 'create'"
+            :operation="operation"
             v-model="form"
             @submit="onSubmit"
             @cancel="onCancel"

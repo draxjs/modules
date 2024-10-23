@@ -8,6 +8,14 @@ class PersonController extends AbstractFastifyController<IPerson, IPersonBase, I
 
     constructor() {
         super(PersonServiceFactory.instance, PersonPermissions)
+        this.tenantField = "tenant";
+        this.userField = "user";
+        this.tenantFilter = true;
+        this.userFilter = true;
+        this.tenantSetter = true;
+        this.userSetter = true;
+        this.tenantAssert = true;
+        this.userAssert = true;
     }
 
 }

@@ -1,4 +1,4 @@
-import type {IRole} from "@drax/identity-share";
+import type {IRole, ITenant} from "@drax/identity-share";
 
 interface IAuthUser {
     id: string
@@ -9,7 +9,7 @@ interface IAuthUser {
     phone: string
     avatar: string
     role: IRole
-
+    tenant?: ITenant
 }
 
 export type {IAuthUser}

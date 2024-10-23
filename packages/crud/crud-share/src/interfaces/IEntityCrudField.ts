@@ -11,6 +11,7 @@ interface IEntityCrudField {
     prependInnerIcon?: string
     appendIcon?: string
     appendInnerIcon?: string
+    permission?: string
 }
 
 export type { IEntityCrudField }

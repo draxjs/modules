@@ -17,6 +17,8 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     _repository: IDraxCrudRepository<T, C, U>
     _schema?: ZodSchema | undefined
+    _defaultOrder?: string | undefined
+
     transformCreate?: (data: C) => Promise<C>;
     transformUpdate?: (data: U) => Promise<U>;
     transformRead?: (data: T) => Promise<T>;
@@ -166,7 +168,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async paginate({
                        page = 1,
                        limit = 5,
-                       orderBy = '',
+                       orderBy = this._defaultOrder,
                        order = false,
                        search = '',
                        filters = []

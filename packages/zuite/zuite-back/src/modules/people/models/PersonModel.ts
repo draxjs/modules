@@ -24,7 +24,9 @@ const PersonSchema = new mongoose.Schema<IPerson>({
             skills: [{ 
                         name: {type: String,   required: true, index: false, unique: false },
             level: {type: Number,   required: false, index: false, unique: false } 
-            }]
+            }],
+            tenant: {type: mongoose.Schema.Types.ObjectId, ref: 'Tenant',  required: false, index: false, unique: false },
+            user: {type: mongoose.Schema.Types.ObjectId, ref: 'User',  required: false, index: false, unique: false }
 }, {timestamps: true});
 
 PersonSchema.plugin(uniqueValidator, {message: 'validation.unique'});

@@ -52,7 +52,7 @@ export type {
     IRoleRepository,
     ITenantRepository,
     IUserRepository,
-    IUserApiKeyRepository
+    IUserApiKeyRepository,
 }
 
 export {

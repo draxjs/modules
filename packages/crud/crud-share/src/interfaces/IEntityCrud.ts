@@ -12,10 +12,13 @@ interface IEntityCrud {
   name: string
 
   headers: IEntityCrudHeader[]
+  actionHeaders: IEntityCrudHeader[]
   permissions: IEntityCrudPermissions
   fields: IEntityCrudField[]
   createFields: IEntityCrudField[]
   updateFields: IEntityCrudField[]
+  deleteFields: IEntityCrudField[]
+  viewFields: IEntityCrudField[]
   filters: IEntityCrudFilter[]
   form: IEntityCrudForm
   formFilters: IEntityCrudFormFilter[]

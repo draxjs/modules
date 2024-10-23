@@ -17,6 +17,8 @@ interface IPersonBase {
     name: string
     level: number
     }>
+    tenant: any
+    user: any
     createdAt?: Date
     updatedAt?: Date
 }
@@ -40,6 +42,8 @@ interface IPerson {
     name: string
     level: number
     }>
+    tenant: any
+    user: any
     createdAt?: Date
     updatedAt?: Date
 }

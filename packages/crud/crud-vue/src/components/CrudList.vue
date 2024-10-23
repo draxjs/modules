@@ -28,17 +28,17 @@ const {
   doPaginate, filters
 } = useCrud(entity)
 
-const actions: IEntityCrudHeader[] = [{
-  title: t('action.actions'),
-  key: 'actions',
-  sortable: false,
-  align: 'center',
-  minWidth: '190px'
-}]
-const tHeaders: IEntityCrudHeader[] = entity.headers.map(header => ({
+const actions: IEntityCrudHeader[] = entity.actionHeaders.map(header => ({
   ...header,
-  title: te(`${entity.name.toLowerCase()}.field.${header.title}`) ? t(`${entity.name.toLowerCase()}.field.${header.title}`) : header.title
+  title: te(header.title) ? t(header.title) : header.title,
 }))
+
+const tHeaders: IEntityCrudHeader[] = entity.headers
+    .filter(header => !header.permission || hasPermission(header.permission))
+    .map(header => ({
+      ...header,
+      title: te(`${entity.name.toLowerCase()}.field.${header.title}`) ? t(`${entity.name.toLowerCase()}.field.${header.title}`) : header.title
+    }))
 
 const headers: IEntityCrudHeader[] = [...tHeaders, ...actions]
 
@@ -70,7 +70,9 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
   >
     <template v-slot:top>
       <v-toolbar density="compact">
-        <v-toolbar-title>{{ te(`${entity.name.toLowerCase()}.crud`) ? t(`${entity.name.toLowerCase()}.crud`) : entity.name }}</v-toolbar-title>
+        <v-toolbar-title>
+          {{ te(`${entity.name.toLowerCase()}.crud`) ? t(`${entity.name.toLowerCase()}.crud`) : entity.name }}
+        </v-toolbar-title>
         <v-spacer></v-spacer>
 
         <crud-import-button

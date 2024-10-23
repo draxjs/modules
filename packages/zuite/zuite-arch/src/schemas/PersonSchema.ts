@@ -26,7 +26,9 @@ const schema: IEntitySchema = {
                 name: {type: 'string', required: true, unique: false, index: false},
                 level: {type: 'number', required: false, unique: false, index: false},
             }
-        }
+        },
+        tenant: {type: 'ref', ref:'Tenant', refDisplay: 'name', required: false, unique: false, index: false, header: true},
+        user: {type: 'ref', ref:'User', refDisplay: 'username', required: false, unique: false, index: false, header: true},
     }
 }
 

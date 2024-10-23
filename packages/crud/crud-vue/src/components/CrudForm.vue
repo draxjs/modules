@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import type {IEntityCrud, IEntityCrudOperation} from "@drax/crud-share";
+import type {IEntityCrud, IEntityCrudField, IEntityCrudOperation} from "@drax/crud-share";
 import {useFormUtils} from "../composables/UseFormUtils";
 import CrudFormField from "./CrudFormField.vue";
 import {computed, defineEmits, defineModel, defineProps, ref} from "vue";
 import type { PropType} from "vue";
 import {useCrudStore} from "../stores/UseCrudStore";
+import {useAuth} from '@drax/identity-vue'
 
-
+const {hasPermission} = useAuth()
 const {t, te} = useI18n()
 
 const valueModel = defineModel({type: [Object]})
@@ -32,14 +33,26 @@ const fields = computed(() => {
   }else if(operation === 'edit') {
     return entity.updateFields
   }else if(operation === 'delete') {
-    return entity.updateFields
+    return entity.deleteFields
   }else if(operation === 'view') {
-    return entity.updateFields
+    return entity.viewFields
   }
+  return []
+})
+
+
+const aFields = computed(() => {
+  return fields.value.filter((field:IEntityCrudField) => !field.permission || hasPermission(field.permission))
 })
 
 async function submit() {
   store.resetErrors()
+
+  if(operation === 'delete') {
+    emit('submit',valueModel.value)
+    return
+  }
+
   await formRef.value.validate()
   if(valid.value) {
     emit('submit',valueModel.value)
@@ -70,7 +83,7 @@ const  {
       </v-card-text>
 
       <v-card-text>
-        <template v-for="field in fields" :key="field.name">
+        <template v-for="field in aFields" :key="field.name">
           <crud-form-field
               :field="field"
               :entity="entity"

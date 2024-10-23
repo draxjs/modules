@@ -18,7 +18,9 @@ const PersonSchema = z.object({
     skills: z.array(
 z.object({    name: z.string().min(1,'validation.required'),
     level: z.number()})
-    )
+    ),
+    tenant: z.string().nullable(),
+    user: z.string().nullable()
 });
 
 export default PersonSchema;

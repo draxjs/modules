@@ -3,12 +3,12 @@ import {AbstractFastifyController} from "@drax/crud-back";
 import {CommonConfig, DraxConfig, StoreManager, UploadFileError, ValidationError, UnauthorizedError} from "@drax/common-back";
 
 import UserServiceFactory from "../factory/UserServiceFactory.js";
+import RoleServiceFactory from "../factory/RoleServiceFactory.js";
 import UserService from "../services/UserService.js";
 import UserPermissions from "../permissions/UserPermissions.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
 import {join} from "path";
 import {IdentityConfig} from "../config/IdentityConfig.js";
-import type {FastifyReply} from "fastify";
 
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const AVATAR_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatar';
@@ -129,10 +129,18 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
         try {
             request.rbac.assertPermission(UserPermissions.Create)
             const payload = request.body
-            const userService = UserServiceFactory()
-            if(request.rbac.getAuthUser.tenantId){
+
+            const roleService = RoleServiceFactory()
+            const role = await roleService.findById(payload.role)
+            if(!role){
+                throw new ValidationError([{field: 'role', reason: 'Role not found'}])
+            }else if(role.name === 'Admin'){
+                payload.tenant = null
+            }else if(request.rbac.getAuthUser.tenantId){
                 payload.tenant = request.rbac.getAuthUser.tenantId
             }
+
+            const userService = UserServiceFactory()
             let user = await userService.create(payload)
             return user
         } catch (e) {
@@ -154,10 +162,19 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             request.rbac.assertPermission(UserPermissions.Update)
             const id = request.params.id
             const payload = request.body
-            const userService = UserServiceFactory()
-            if(request.rbac.getAuthUser.tenantId){
+
+
+            const roleService = RoleServiceFactory()
+            const role = await roleService.findById(payload.role)
+            if(!role){
+                throw new ValidationError([{field: 'role', reason: 'Role not found'}])
+            }else if(role.name === 'Admin'){
+                payload.tenant = null
+            }else if(request.rbac.getAuthUser.tenantId){
                 payload.tenant = request.rbac.getAuthUser.tenantId
             }
+
+            const userService = UserServiceFactory()
             let user = await userService.update(id, payload)
             return user
         } catch (e) {
