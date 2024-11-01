@@ -64,7 +64,7 @@ class HttpRestClient implements IHttpClient {
       if(options?.removeHeaders){
         options?.removeHeaders.forEach(header => delete headers[header]);
       }
-      const timeout = options.timeout ? options.timeout : this.timeout;
+      const timeout = options?.timeout ? options.timeout : this.timeout;
       const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       const response = await fetch(url, {
         method: 'GET',
@@ -80,6 +80,7 @@ class HttpRestClient implements IHttpClient {
 
       return response.json();
     } catch (error) {
+      console.log("httpRestClient: get error", error)
       throw this.errorHandler(error as Error)
     }
   }
@@ -91,7 +92,7 @@ class HttpRestClient implements IHttpClient {
       if(options?.removeHeaders){
         options?.removeHeaders.forEach(header => delete headers[header]);
       }
-      const timeout = options.timeout ? options.timeout : this.timeout;
+      const timeout = options?.timeout ? options.timeout : this.timeout;
       const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
@@ -121,7 +122,7 @@ class HttpRestClient implements IHttpClient {
       if(options?.removeHeaders){
         options?.removeHeaders.forEach(header => delete headers[header]);
       }
-      const timeout = options.timeout ? options.timeout : this.timeout;
+      const timeout = options?.timeout ? options.timeout : this.timeout;
       const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
@@ -152,7 +153,7 @@ class HttpRestClient implements IHttpClient {
       if(options?.removeHeaders){
         options?.removeHeaders.forEach(header => delete headers[header]);
       }
-      const timeout = options.timeout ? options.timeout : this.timeout;
+      const timeout = options?.timeout ? options.timeout : this.timeout;
       const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
@@ -178,7 +179,7 @@ class HttpRestClient implements IHttpClient {
     try {
       url = this.baseUrl + url;
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
-      const timeout = options.timeout ? options.timeout : this.timeout;
+      const timeout = options?.timeout ? options.timeout : this.timeout;
       const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       const response = await fetch(url, {
         method: 'PATCH',

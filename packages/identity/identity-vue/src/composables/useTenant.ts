@@ -1,13 +1,14 @@
-import {inject, ref} from "vue";
+import {ref} from "vue";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
 import type { TenantSystem} from "@drax/identity-front";
+import { TenantSystemFactory} from "@drax/identity-front";
 import {ClientError} from "@drax/common-front";
 import type { IClientInputError} from "@drax/common-front";
 
 
 export function useTenant() {
 
-    const tenantSystem = inject('TenantSystem') as TenantSystem
+    const tenantSystem : TenantSystem = TenantSystemFactory.getInstance()
 
     let tenantError = ref<string>('')
     let inputErrors = ref<IClientInputError>()

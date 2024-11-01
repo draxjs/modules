@@ -1,13 +1,13 @@
-import {inject, ref} from "vue";
+import {ref} from "vue";
 import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
-import type { UserApiKeySystem} from "@drax/identity-front";
+import { UserApiKeySystemFactory} from "@drax/identity-front";
 import {ClientError} from "@drax/common-front";
 import type { IClientInputError} from "@drax/common-front";
 
 
 export function useUserApiKey() {
 
-    const userApiKeySystem = inject('UserApiKeySystem') as UserApiKeySystem
+    const userApiKeySystem = UserApiKeySystemFactory.getInstance()
 
     let userApiKeyError = ref<string>('')
     let inputErrors = ref<IClientInputError>()

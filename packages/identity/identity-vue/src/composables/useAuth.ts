@@ -1,6 +1,6 @@
 import {useAuthStore} from "../stores/auth/AuthStore";
-import {AuthHelper, AuthSystem} from "@drax/identity-front";
-import {inject} from "vue";
+import {AuthHelper, AuthSystemFactory} from "@drax/identity-front";
+import type {AuthSystem} from "@drax/identity-front";
 import {useRouter} from 'vue-router'
 
 export function useAuth() {
@@ -8,7 +8,7 @@ export function useAuth() {
     const authStore = useAuthStore()
     const router = useRouter()
 
-    const authSystem = inject('AuthSystem') as AuthSystem
+    const authSystem: AuthSystem = AuthSystemFactory.getInstance()
 
     const login = async (username: string, password: string) => {
         const {accessToken} = await authSystem.login(username, password)
@@ -22,7 +22,7 @@ export function useAuth() {
     }
 
     const changeAvatar = async (file: File) => {
-        if(file){
+        if (file) {
             await authSystem.changeAvatar(file)
             await fetchAuthUser()
             return

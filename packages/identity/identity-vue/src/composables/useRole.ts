@@ -1,13 +1,14 @@
-import {inject, ref} from "vue";
-import  {RoleSystem} from "@drax/identity-front";
+import {ref} from "vue";
+import type {RoleSystem} from "@drax/identity-front";
+import {RoleSystemFactory} from "@drax/identity-front";
 import type {IRole, IRoleBase} from "@drax/identity-share";
 import {ClientError} from "@drax/common-front";
-import type { IClientInputError} from "@drax/common-front";
+import type {IClientInputError} from "@drax/common-front";
 
 
 export function useRole() {
 
-    const roleSystem = inject('RoleSystem') as RoleSystem
+    const roleSystem: RoleSystem = RoleSystemFactory.getInstance()
 
     let roleError = ref<string>('')
     let inputErrors = ref<IClientInputError>()
@@ -27,7 +28,7 @@ export function useRole() {
         return roles
     }
 
-    async function paginateRole({page= 1, limit= 5, orderBy="", order=false, search = ""}) {
+    async function paginateRole({page = 1, limit = 5, orderBy = "", order = false, search = ""}) {
         loading.value = true
         let paginatedrole = roleSystem.paginate({page, limit, orderBy, order, search})
         loading.value = false
@@ -37,16 +38,17 @@ export function useRole() {
     async function createRole(roleData: IRoleBase) {
         try {
             loading.value = true
-            let role: IRole =  await roleSystem.create(roleData)
+            let role: IRole = await roleSystem.create(roleData)
             return role
         } catch (err) {
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
-            }if(err instanceof Error) {
+            }
+            if (err instanceof Error) {
                 roleError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
 
@@ -62,11 +64,11 @@ export function useRole() {
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 roleError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
     }
@@ -76,19 +78,29 @@ export function useRole() {
             loading.value = true
             await roleSystem.delete(id)
         } catch (err) {
-            console.log("composable delete error: ", err, )
+            console.log("composable delete error: ", err,)
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 roleError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
     }
 
-    return {fetchRole, fetchPermissions, paginateRole, createRole, editRole, deleteRole, loading, roleError, inputErrors}
+    return {
+        fetchRole,
+        fetchPermissions,
+        paginateRole,
+        createRole,
+        editRole,
+        deleteRole,
+        loading,
+        roleError,
+        inputErrors
+    }
 
 }

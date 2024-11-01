@@ -1,5 +1,6 @@
 import {inject, ref} from "vue";
 import type {UserSystem} from "@drax/identity-front";
+import  {UserSystemFactory} from "@drax/identity-front";
 import type {IClientInputError} from "@drax/common-front";
 import {ClientError} from "@drax/common-front";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
@@ -7,7 +8,7 @@ import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 
 export function useUser() {
 
-    const userSystem = inject('UserSystem') as UserSystem
+    const userSystem: UserSystem = UserSystemFactory.getInstance()
 
     let userError = ref<string>('')
     let inputErrors = ref<IClientInputError>()
