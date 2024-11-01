@@ -2,6 +2,7 @@ import type {IHttpHeader} from "./IHttpClient";
 
 interface IGqlOptions {
   headers: IHttpHeader;
+  timeout: number;
 }
 
 interface IGqlClient {

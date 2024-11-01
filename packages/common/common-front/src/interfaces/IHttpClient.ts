@@ -9,7 +9,8 @@ interface IHttpParam {
 interface IHttpOptions {
   headers?: IHttpHeader;
   removeHeaders?: string[]
-  params?: IHttpParam
+  params?: IHttpParam,
+  timeout?: number
 }
 
 interface IHttpClient {

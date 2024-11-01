@@ -25,6 +25,10 @@ class HttpGqlClient implements IGqlClient {
     this.timeout = timeout;
   }
 
+  setTimeout(timeout: number): void {
+    this.timeout = timeout;
+  }
+
   addHeader(name: string, value: string): void {
     this.baseHeaders[name] = value;
   }
@@ -55,7 +59,8 @@ class HttpGqlClient implements IGqlClient {
       const url = this.url;
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
       const data = {query, variables}
-      const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
+      const timeout = options.timeout ? options.timeout : this.timeout;
+      const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       const response = await fetch(url, {
         method: 'POST',
         headers: headers,
@@ -99,7 +104,8 @@ class HttpGqlClient implements IGqlClient {
       const url = this.url;
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
       delete headers['content-type']
-      const timeoutId = setTimeout(() => this.controller.abort(), this.timeout)
+      const timeout = options.timeout ? options.timeout : this.timeout;
+      const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       const response = await fetch(url, {
         method: 'POST',
         headers: headers,
