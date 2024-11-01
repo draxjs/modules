@@ -70,7 +70,7 @@ let passwordVisibility = ref(false)
 
         <v-text-field
             id="name-input"
-            :label="$t('user.field.name')"
+            :label="t('user.field.name')"
             v-model="valueModel.name"
             prepend-inner-icon="mdi-card-account-details"
             :variant="variant"
@@ -81,7 +81,7 @@ let passwordVisibility = ref(false)
 
         <v-text-field
             id="username-input"
-            :label="$t('user.field.username')"
+            :label="t('user.field.username')"
             v-model="valueModel.username"
             prepend-inner-icon="mdi-account-question"
             :variant="variant"
@@ -94,7 +94,7 @@ let passwordVisibility = ref(false)
         <v-text-field
             v-if="enablePassword"
             id="password-input"
-            :label="$t('user.field.password')"
+            :label="t('user.field.password')"
             v-model="valueModel.password"
             :type="passwordVisibility ? 'text': 'password'"
             :variant="variant"
@@ -109,7 +109,7 @@ let passwordVisibility = ref(false)
 
         <RoleCombobox
             v-model="valueModel.role"
-            :label="$t('user.field.role')"
+            :label="t('user.field.role')"
             :variant="variant"
             :rules="[(v:any) => !!v || t('validation.required')]"
             :error-messages="$ta(store.inputErrors?.role)"
@@ -118,7 +118,7 @@ let passwordVisibility = ref(false)
 
         <TenantCombobox
             v-model="valueModel.tenant"
-            :label="$t('user.field.tenant')"
+            :label="t('user.field.tenant')"
             :variant="variant"
             :error-messages="$ta(store.inputErrors?.tenant)"
             clearable
@@ -129,7 +129,7 @@ let passwordVisibility = ref(false)
             v-model="valueModel.email"
             :variant="variant"
             id="email-input"
-            :label="$t('user.field.email')"
+            :label="t('user.field.email')"
             prepend-inner-icon="mdi-email"
             :rules="[(v:any) => !!v || t('validation.required')]"
             :error-messages="$ta(store.inputErrors?.email)"
@@ -140,7 +140,7 @@ let passwordVisibility = ref(false)
             v-model="valueModel.phone"
             :variant="variant"
             id="phone-input"
-            :label="$t('user.field.phone')"
+            :label="t('user.field.phone')"
             prepend-inner-icon="mdi-phone"
             :rules="[(v:any) => !!v || t('validation.required')]"
             :error-messages="$ta(store.inputErrors?.phone)"

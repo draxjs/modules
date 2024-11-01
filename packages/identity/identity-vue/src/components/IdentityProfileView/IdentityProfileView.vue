@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import {useAuthStore} from "../../stores/auth/AuthStore.js";
 import IdentityProfileAvatarEdit from "../IdentityProfileAvatarEdit/IdentityProfileAvatarEdit.vue";
+import {useI18n} from "vue-i18n";
 defineEmits(['click'])
 const authStore = useAuthStore()
-
+const {t} = useI18n()
 </script>
 
 <template>
@@ -20,7 +21,7 @@ const authStore = useAuthStore()
     <v-sheet class="text-center">
       <h6 class="text-caption">{{ authStore.authUser?.email }}</h6>
       <h6 class="text-caption">{{ authStore.authUser?.tenant?.name }}</h6>
-      <h6 class="text-subtitle-2">{{$t('user.field.role')}}: {{ authStore.authUser?.role?.name }}</h6>
+      <h6 class="text-subtitle-2">{{t('user.field.role')}}: {{ authStore.authUser?.role?.name }}</h6>
     </v-sheet>
   </v-sheet>
 </template>

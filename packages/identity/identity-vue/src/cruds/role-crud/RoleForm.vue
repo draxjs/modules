@@ -62,7 +62,7 @@ const {
           <v-text-field
               id="name-input"
               name="name"
-              :label="$t('role.field.name')"
+              :label="t('role.field.name')"
               v-model="valueModel.name"
               prepend-inner-icon="mdi-card-account-details"
               :variant="variant"

@@ -50,6 +50,8 @@ async function onFileChanged(e: Event) {
   }
 }
 
+defineEmits(['updateValue'])
+
 </script>
 
 <template>
