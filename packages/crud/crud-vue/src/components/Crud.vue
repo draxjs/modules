@@ -56,6 +56,9 @@ onBeforeMount(() => {
         :entity="entity"
         :operation="operation"
     >
+      <slot name="tools">
+
+      </slot>
 
       <slot name="form">
         <crud-form
