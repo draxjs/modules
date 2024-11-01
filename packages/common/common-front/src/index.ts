@@ -10,6 +10,7 @@ import ClientError from './errors/ClientError';
 import NetworkError from './errors/NetworkError';
 import HttpRestClientFactory from './factories/HttpRestClientFactory';
 import HttpGqlClientFactory from './factories/HttpGqlClientFactory';
+import HttpClientFactory from './factories/HttpClientFactory';
 import {CommonI18nMessages} from './i18n/index';
 
 import {formatDate} from './helpers/formatDate'
@@ -37,6 +38,7 @@ export {
 
   HttpRestClientFactory,
   HttpGqlClientFactory,
+  HttpClientFactory,
 
   //I18n
   CommonI18nMessages,

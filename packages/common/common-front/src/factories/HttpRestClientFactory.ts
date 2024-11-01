@@ -1,4 +1,4 @@
-import {HttpRestClient} from "@drax/common-front";
+import {HttpRestClient} from "../clients/HttpRestClient";
 
 class HttpRestClientFactory {
 
@@ -14,3 +14,4 @@ class HttpRestClientFactory {
 }
 
 export default HttpRestClientFactory
+export {HttpRestClientFactory}

@@ -10,28 +10,15 @@ import App from './App.vue'
 
 // Composables
 import { createApp } from 'vue'
+import {setupAuth} from "./setup/SetupAuth";
 
 const app = createApp(App)
 registerPlugins(app)
 
 app.use(i18n)
 
-//Core Systems Factories
-// import {SystemFactory} from "./factories/SystemFactory";
-//
-// const HttpClientType = 'REST' // 'GRAPHQL' 'REST'
-// const {
-//   authSystem: AuthSystem,
-//   userSystem: UserSystem,
-//   roleSystem: RoleSystem,
-//   tenantSystem: TenantSystem,
-//   userApiKeySystem: UserApiKeySystem,
-// } = SystemFactory(HttpClientType)
+setupAuth()
 
 app
-  // .provide('AuthSystem', AuthSystem)
-  // .provide('UserSystem', UserSystem)
-  // .provide('RoleSystem', RoleSystem)
-  // .provide('TenantSystem', TenantSystem)
-  // .provide('UserApiKeySystem', UserApiKeySystem)
+
   .mount('#app')

@@ -137,3 +137,4 @@ class HttpGqlClient implements IGqlClient {
 }
 
 export default HttpGqlClient
+export {HttpGqlClient}

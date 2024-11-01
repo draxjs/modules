@@ -1,4 +1,4 @@
-import {HttpGqlClient} from "@drax/common-front";
+import {HttpGqlClient} from "../clients/HttpGqlClient";
 
 class HttpGqlClientFactory{
 
@@ -14,3 +14,4 @@ class HttpGqlClientFactory{
 }
 
 export default HttpGqlClientFactory
+export {HttpGqlClientFactory}
