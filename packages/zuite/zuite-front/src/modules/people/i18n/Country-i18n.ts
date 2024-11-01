@@ -7,7 +7,8 @@ const messages = {
           menu: 'Country',
           crud: 'Manage Country',
           field:{
-                       name:'name'
+                       name:'name',
+           flag:'flag'
           }
       },
       permission: {
@@ -24,7 +25,8 @@ const messages = {
           menu: 'Country',
           crud: 'Gestionar Country',
           field:{
-                       name:'name'
+                       name:'name',
+           flag:'flag'
           }
       },
      permission: {

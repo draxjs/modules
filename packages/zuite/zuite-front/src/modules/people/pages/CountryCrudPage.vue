@@ -8,7 +8,7 @@ import {formatDate} from "@drax/common-front"
 
 <template>
   <crud :entity="CountryCrud.instance">
-
+    <template v-slot:item.flag="{value}"><v-img :src="value" max-height="30px" class="my-1" /></template>
   </crud>
 </template>
 

@@ -8,6 +8,14 @@ class CountryController extends AbstractFastifyController<ICountry, ICountryBase
 
     constructor() {
         super(CountryServiceFactory.instance, CountryPermissions)
+        this.tenantField = "tenant";
+        this.userField = "user";
+        this.tenantFilter = false;
+        this.userFilter = false;
+        this.tenantSetter = false;
+        this.userSetter = false;
+        this.tenantAssert = false;
+        this.userAssert = false;
     }
 
 }

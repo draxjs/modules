@@ -3,7 +3,6 @@ import AuthGqlProvider from "../providers/gql/AuthGqlProvider.js";
 import AuthRestClientProvider from "../providers/rest/AuthRestProvider.js";
 import {HttpGqlClientFactory, HttpRestClientFactory} from "@drax/common-front"
 const HTTP_TRANSPORT = import.meta.env.VITE_HTTP_TRANSPORT || 'REST';
-
 class AuthSystemFactory{
 
     static singleton: AuthSystem

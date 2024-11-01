@@ -14,6 +14,9 @@ const generateRenders = (schema: ISchema) => {
         if(['date'].includes(schema[field].type) ){
             fields.push(`    <template v-slot:item.${field}="{value}">{{formatDate(value)}}</template>`)
         }
+        if(['file'].includes(schema[field].type) ){
+            fields.push(`    <template v-slot:item.${field}="{value}"><v-img :src="value" max-height="30px" class="my-1" /></template>`)
+        }
         if(['array.string'].includes(schema[field].type) ){
             fields.push(`    <template v-slot:item.${field}="{value}"><v-chip v-for="v in value">{{v}}</v-chip></template>`)
         }

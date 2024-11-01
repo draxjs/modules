@@ -9,6 +9,7 @@ const generateEntitySchema = (schema: ISchema) => {
         switch (schema[field].type) {
             case "string":
             case "password":
+            case "file":
                 fields.push(`    ${field}: z.string()${schema[field].required? ".min(1,'validation.required')" : ""}`)
                 break;
             case "enum":

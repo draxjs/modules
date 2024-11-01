@@ -14,7 +14,6 @@ function onAvatarClick() {
 }
 
 async function onFileChanged(e: Event) {
-  console.log("OnFileChanged",e)
   if (e.target && (e.target as HTMLInputElement).files) {
     const files = (e.target as HTMLInputElement).files;
     if (files && files[0]) {

@@ -9,6 +9,7 @@ const generateModelSchema = (schema: ISchema) => {
         switch (type) {
             case "string":
             case "password":
+            case "file":
                 return "String";
             case "number":
                 return "Number";

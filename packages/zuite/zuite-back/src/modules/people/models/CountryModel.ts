@@ -6,7 +6,8 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 import type {ICountry} from '../interfaces/ICountry'
 
 const CountrySchema = new mongoose.Schema<ICountry>({
-            name: {type: String,   required: true, index: true, unique: true }
+            name: {type: String,   required: true, index: true, unique: true },
+            flag: {type: String,   required: false, index: false, unique: false }
 }, {timestamps: true});
 
 CountrySchema.plugin(uniqueValidator, {message: 'validation.unique'});

@@ -8,6 +8,14 @@ class LanguageController extends AbstractFastifyController<ILanguage, ILanguageB
 
     constructor() {
         super(LanguageServiceFactory.instance, LanguagePermissions)
+        this.tenantField = "tenant";
+        this.userField = "user";
+        this.tenantFilter = false;
+        this.userFilter = false;
+        this.tenantSetter = false;
+        this.userSetter = false;
+        this.tenantAssert = false;
+        this.userAssert = false;
     }
 
 }

@@ -1,6 +1,7 @@
 
 interface ICountryBase {
     name: string
+    flag: string
     createdAt?: Date
     updatedAt?: Date
 }
@@ -8,6 +9,7 @@ interface ICountryBase {
 interface ICountry {
     id: string
     name: string
+    flag: string
     createdAt?: Date
     updatedAt?: Date
 }

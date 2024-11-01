@@ -63,9 +63,13 @@ const generateHeaders = (schema: ISchema) => {
     return content;
 }
 
-const generateFields = (schema: ISchema) => {
+const generateFields = (schema: ISchema|undefined) => {
     let content: string = ""
     let fields: Array<string> = []
+
+    if(schema === undefined){
+        throw new Error("generateFields: schema is undefined")
+    }
 
 
     for(const field in schema){
@@ -75,6 +79,9 @@ const generateFields = (schema: ISchema) => {
                 break;
             case "password":
                 fields.push(`{name: '${field}', type: 'password', label: '${field}', default:'' }`)
+                break;
+            case "file":
+                fields.push(`{name: '${field}', type: 'file', label: '${field}', default:'' }`)
                 break;
             case "number":
                 fields.push(`{name: '${field}', type: 'number', label: '${field}', default: 0 }`)
@@ -89,7 +96,7 @@ const generateFields = (schema: ISchema) => {
                 fields.push(`{name: '${field}', type: 'ref', ref: '${schema[field].ref}', refDisplay: '${schema[field].refDisplay}',label: '${field}', default:null }`)
                 break;
             case "enum":
-                fields.push(`{name: '${field}', type: 'enum', enum: ['${schema[field].enum.join("', '")}'], label: '${field}', default:null }`)
+                fields.push(`{name: '${field}', type: 'enum', enum: ['${schema[field].enum?.join("', '")}'], label: '${field}', default:null }`)
                 break;
             case "object":
                 if(!schema[field].schema){
@@ -103,6 +110,9 @@ const generateFields = (schema: ISchema) => {
             case "array.number":
                 fields.push(`{name: '${field}', type: 'array.number', label: '${field}', default:[] }`)
                 break;
+            case "array.file":
+                fields.push(`{name: '${field}', type: 'array.file', label: '${field}', default:[] }`)
+                break;
             case "array.ref":
                 fields.push(`{name: '${field}', type: 'array.ref', ref: '${schema[field].ref}', label: '${field}', default:[] }`)
                 break;
@@ -113,7 +123,7 @@ const generateFields = (schema: ISchema) => {
                 fields.push(`{name: '${field}', type: 'array.object', label: '${field}', default:[], objectFields: [${generateFields(schema[field].schema)}] }`)
                 break;
             case "array.enum":
-                fields.push(`{name: '${field}', type: 'array.enum', enum: ['${schema[field].enum.join("', '")}'], label: '${field}', default:[] }`)
+                fields.push(`{name: '${field}', type: 'array.enum', enum: ['${schema[field].enum?.join("', '")}'], label: '${field}', default:[] }`)
                 break;
             default:
                 throw new Error("Unsupported type " + schema[field].type)
