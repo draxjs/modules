@@ -17,11 +17,12 @@ defineProps({
 
 <template>
   <v-list dense class="pt-3">
-    <template v-for="(item) in menu" :key="item.text">
+    <template v-for="(item,index) in menu" >
 
       <v-list-group
         v-if="item.children && isGranted(item)"
-        :value="isActive(item)"
+        :value="index"
+        :key="`group-${index}`"
       >
 
         <template v-slot:activator="{ props }">
@@ -33,8 +34,8 @@ defineProps({
         </template>
 
         <v-list-item
-          v-for="child in childActives(item.children)"
-          :key="child.text"
+          v-for="(child, i) in childActives(item.children)"
+          :key="`child-${index}-${i}`"
           :to="child.link"
           :prepend-icon="child.icon"
           :title="itemText(child)"
@@ -48,6 +49,7 @@ defineProps({
         :to="item.link" exact
         :prepend-icon="item.icon"
         :title="itemText(item)"
+        :key="`item-${index}`"
       />
 
     </template>
