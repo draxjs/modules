@@ -8,7 +8,7 @@ const valueModel = defineModel<any>({type: [String], default: false})
 
 const {dir} = defineProps({
   prependIcon: {type: String, default: ''},
- // prependInnerIcon: {type: String, default: ''},
+  prependInnerIcon: {type: String, default: ''},
   appendIcon: {type: String, default: ''},
   appendInnerIcon: {type: String, default: ''},
   readonly: {type: Boolean, default: false},
@@ -34,9 +34,7 @@ const {dir} = defineProps({
 let fileInput = ref()
 
 function onFileClick() {
-  console.log('File clicked');
   fileInput.value.click();
-  console.log('File clicked pass');
 }
 
 
@@ -50,12 +48,42 @@ async function onFileChanged(e: Event) {
   }
 }
 
+const handleDrop = async (event: DragEvent) => {
+  isDragOver.value = false;
+  const files = event.dataTransfer?.files;
+  if (files && files[0]) {
+    const file = await mediaSystem.uploadFile(files[0],dir);
+    valueModel.value = file.url;
+  }
+};
+
+const isDragOver = ref(false);
+
+const handleDragEnter = () => {
+  isDragOver.value = true;
+};
+
+const handleDragOver = () => {
+  isDragOver.value = true;
+};
+
+const handleDragLeave = () => {
+  isDragOver.value = false;
+};
+
 defineEmits(['updateValue'])
 
 </script>
 
 <template>
-  <div>
+  <div
+       :class="{ 'drop-zone': true, 'dragover': isDragOver }"
+       @dragenter.prevent="handleDragEnter"
+       @dragover.prevent="handleDragOver"
+       @dragleave.prevent="handleDragLeave"
+       @drop.prevent="handleDrop"
+
+  >
     <v-text-field
         type="text"
         :name="name"
@@ -69,7 +97,7 @@ defineEmits(['updateValue'])
         :clearable="clearable"
         :hide-details="hideDetails"
         :single-line="singleLine"
-        prepend-inner-icon="mdi mdi-upload-circle"
+        :prepend-inner-icon="prependInnerIcon"
         :append-icon="appendIcon"
         :prepend-icon="prependIcon"
         :append-inner-icon="appendInnerIcon"
@@ -86,10 +114,24 @@ defineEmits(['updateValue'])
         type="file"
         @change="onFileChanged"
     >
+
+    <v-btn  @click="onFileClick" density="compact" color="grey" variant="text">Click | Drag & Drop</v-btn>
+
   </div>
 
 </template>
 
 <style scoped>
+.drop-zone {
+  border: 2px dashed #ccc;
+  padding: 10px;
+  text-align: center;
+  color: #666;
+  transition: background-color 0.3s;
+}
 
+.drop-zone.dragover {
+  background-color: #e0f7fa;
+  border-color: #00acc1;
+}
 </style>

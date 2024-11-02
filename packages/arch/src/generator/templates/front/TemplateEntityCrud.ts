@@ -81,7 +81,7 @@ const generateFields = (schema: ISchema|undefined) => {
                 fields.push(`{name: '${field}', type: 'password', label: '${field}', default:'' }`)
                 break;
             case "file":
-                fields.push(`{name: '${field}', type: 'file', label: '${field}', default:'' }`)
+                fields.push(`{name: '${field}', type: 'file', label: '${field}', default:'', prependInnerIcon: 'mdi mdi-attachment' }`)
                 break;
             case "number":
                 fields.push(`{name: '${field}', type: 'number', label: '${field}', default: 0 }`)
