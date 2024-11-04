@@ -43,7 +43,7 @@ if (!field) {
 
 const show = ref(false)
 
-const name = computed(() => index >= 0 ? `${field.name}_${index}` : field.name)
+const name = computed(() => index >= 0 ? `${parentField ? parentField + "_" : ""}${field.name}_${index}` : `${parentField ? parentField + "_" : ""}${field.name}`)
 
 const label = computed(() => {
   const i18n = `${entity.name}.field.${field.name}`

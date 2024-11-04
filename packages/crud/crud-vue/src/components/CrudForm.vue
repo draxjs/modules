@@ -24,7 +24,6 @@ const emit = defineEmits(['submit', 'cancel'])
 
 const store = useCrudStore()
 
-const valid = ref()
 const formRef = ref()
 
 const fields = computed(() => {
@@ -53,11 +52,12 @@ async function submit() {
     return
   }
 
-  await formRef.value.validate()
-  if(valid.value) {
+  const {valid, errors} = await formRef.value.validate()
+
+  if(valid) {
     emit('submit',valueModel.value)
   }else{
-    console.log('Invalid form')
+    console.log('Invalid form', errors)
   }
 }
 
@@ -73,7 +73,7 @@ const  {
 </script>
 
 <template>
-  <v-form v-model="valid" ref="formRef"  @submit.prevent >
+  <v-form ref="formRef"  @submit.prevent >
     <v-card flat>
 
       <v-card-subtitle v-if="valueModel._id">ID: {{valueModel._id}}</v-card-subtitle>
