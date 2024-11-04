@@ -8,8 +8,6 @@ import {ZodSchema} from "zod";
 
 class ${entity.name}Service extends AbstractService<I${entity.name}, I${entity.name}Base, I${entity.name}Base> {
 
-    _repository: I${entity.name}Repository
-
     constructor(${entity.name}Repository: I${entity.name}Repository, schema?: ZodSchema) {
         super(${entity.name}Repository, schema);
     }
