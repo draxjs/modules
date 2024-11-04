@@ -9,7 +9,7 @@ interface ExportCsvOptions extends ExportOptions {
 
 class ExportCsv extends AbstractExport {
 
-    separator: string = ';'
+    protected separator: string = ';'
 
     constructor(options: ExportCsvOptions) {
         super(options)

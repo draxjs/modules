@@ -8,9 +8,9 @@ import type {PaginateModel, PaginateOptions, PaginateResult} from "mongoose";
 
 class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
-    _model: mongoose.Model<T> & PaginateModel<T>
-    _searchFields: string[] = []
-    _populateFields: string[] = []
+    protected _model: mongoose.Model<T> & PaginateModel<T>
+    protected _searchFields: string[] = []
+    protected _populateFields: string[] = []
 
 
     async create(data: C): Promise<T> {

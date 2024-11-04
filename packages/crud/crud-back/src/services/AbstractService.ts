@@ -15,9 +15,9 @@ import {IDraxExportResult} from "@drax/crud-share";
 
 abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
-    _repository: IDraxCrudRepository<T, C, U>
-    _schema?: ZodSchema | undefined
-    _defaultOrder?: string | undefined
+    protected _repository: IDraxCrudRepository<T, C, U>
+    protected _schema?: ZodSchema | undefined
+    protected _defaultOrder?: string | undefined
 
     transformCreate?: (data: C) => Promise<C>;
     transformUpdate?: (data: U) => Promise<U>;

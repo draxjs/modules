@@ -12,12 +12,12 @@ export type {ExportOptions}
 
 class AbstractExport {
 
-    cursor: any
-    destinationPath: string
-    headers: string[]
+    protected cursor: any
+    protected destinationPath: string
+    protected headers: string[]
 
-    fileName: string
-    relativeFilePath: string
+    protected fileName: string
+    protected relativeFilePath: string
 
     constructor(options: ExportOptions) {
         this.cursor = options.cursor;
