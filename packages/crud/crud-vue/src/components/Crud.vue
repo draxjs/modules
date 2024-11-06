@@ -36,6 +36,12 @@ onBeforeMount(() => {
           @export="doExport"
           @view="onView"
       >
+
+        <template v-slot:toolbar>
+          <slot name="toolbar">
+          </slot>
+        </template>
+
         <template v-for="header in entity.headers" :key="header.key" v-slot:[`item.${header.key}`]="{item, value}">
           <slot :name="`item.${header.key}`" v-bind="{item, value}">
             {{ (Array.isArray(value) && value.length > 0) || !Array.isArray(value) ? value : '' }}

@@ -75,6 +75,10 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
         </v-toolbar-title>
         <v-spacer></v-spacer>
 
+        <slot name="toolbar">
+
+        </slot>
+
         <crud-import-button
             :entity="entity"
             @import="v => $emit('import', v)"
