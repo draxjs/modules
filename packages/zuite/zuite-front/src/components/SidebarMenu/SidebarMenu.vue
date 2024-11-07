@@ -3,7 +3,7 @@ import {useMenu} from '@/composables/useMenu'
 import {PropType} from "vue";
 import type {MenuItem} from "@/types/menu";
 
-const {isActive, isGranted, childActives, itemText } = useMenu()
+const {isGranted, childActives, itemText } = useMenu()
 
 defineProps({
   menu: {
