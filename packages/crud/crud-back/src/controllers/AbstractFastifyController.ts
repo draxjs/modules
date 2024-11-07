@@ -63,7 +63,7 @@ class AbstractFastifyController<T, C, U> {
             if (!stringFilters) {
                 return []
             }
-            const filterArray = stringFilters.split(";")
+            const filterArray = stringFilters.split("|")
             const filters: IDraxFieldFilter[] = []
             filterArray.forEach((filter) => {
                 const [field, operator, value] = filter.split(",")
