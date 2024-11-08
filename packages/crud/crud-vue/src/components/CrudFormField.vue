@@ -91,6 +91,27 @@ defineEmits(['updateValue'])
         @update:modelValue="$emit('updateValue')"
     />
 
+    <v-textarea
+        v-if="field.type === 'longString'"
+        type="text"
+        :name="name"
+        :label="label"
+        v-model="valueModel"
+        :readonly="readonly"
+        :error-messages="inputErrors"
+        :rules="rules"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
+        @update:modelValue="$emit('updateValue')"
+    />
+
     <v-text-field
         v-if="field.type === 'password'"
         :name="name"

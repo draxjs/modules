@@ -6,8 +6,6 @@ import {ZodSchema} from "zod";
 
 class PersonService extends AbstractService<IPerson, IPersonBase, IPersonBase> {
 
-    _repository: IPersonRepository
-
     constructor(PersonRepository: IPersonRepository, schema?: ZodSchema) {
         super(PersonRepository, schema);
     }

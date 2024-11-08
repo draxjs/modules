@@ -81,7 +81,7 @@ class ArchGenerator{
 
     async crudPage(entity: IEntitySchema){
         const content = TemplateCrudPage(entity)
-        const path = this.outputPath + '/'+ entity.module + '/front/pages'
+        const path = this.outputPath + '/'+ entity.module + '/front/pages/crud'
         const fileName = `${entity.name}CrudPage.vue`
         await this.writeToFile(path, fileName, content)
     }
@@ -116,7 +116,7 @@ class ArchGenerator{
 
     async serviceFactory(entity: IEntitySchema){
         const content = TemplateServiceFactory(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/factory'
+        const path = this.outputPath + '/'+ entity.module + '/back/factory/services'
         const fileName = `${entity.name}ServiceFactory.ts`
         await this.writeToFile(path, fileName, content)
     }

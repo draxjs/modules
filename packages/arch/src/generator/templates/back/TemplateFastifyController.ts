@@ -9,7 +9,7 @@ function hasUserField(schema: any): boolean {
 }
 
 export const TemplateFastifyController = (entity: IEntitySchema) => `
-import ${entity.name}ServiceFactory from "../factory/${entity.name}ServiceFactory.js";
+import ${entity.name}ServiceFactory from "../factory/services/${entity.name}ServiceFactory.js";
 import {AbstractFastifyController} from "@drax/crud-back";
 import ${entity.name}Permissions from "../permissions/${entity.name}Permissions.js";
 import type {I${entity.name}, I${entity.name}Base} from "../interfaces/I${entity.name}";

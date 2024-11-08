@@ -1,5 +1,5 @@
 
-import PersonServiceFactory from "../factory/PersonServiceFactory.js";
+import PersonServiceFactory from "../factory/services/PersonServiceFactory.js";
 import {AbstractFastifyController} from "@drax/crud-back";
 import PersonPermissions from "../permissions/PersonPermissions.js";
 import type {IPerson, IPersonBase} from "../interfaces/IPerson";

@@ -1,7 +1,7 @@
 
-import LanguageRepository from '../repository/LanguageRepository.js'
-import {LanguageService} from '../services/LanguageService.js'
-import {LanguageSchema} from "../schemas/LanguageSchema.js";
+import LanguageRepository from '../../repository/LanguageRepository.js'
+import {LanguageService} from '../../services/LanguageService.js'
+import {LanguageSchema} from "../../schemas/LanguageSchema.js";
 
 class LanguageServiceFactory {
     private static service: LanguageService;

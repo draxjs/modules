@@ -1,7 +1,7 @@
 
-import CountryRepository from '../repository/CountryRepository.js'
-import {CountryService} from '../services/CountryService.js'
-import {CountrySchema} from "../schemas/CountrySchema.js";
+import CountryRepository from '../../repository/CountryRepository.js'
+import {CountryService} from '../../services/CountryService.js'
+import {CountrySchema} from "../../schemas/CountrySchema.js";
 
 class CountryServiceFactory {
     private static service: CountryService;

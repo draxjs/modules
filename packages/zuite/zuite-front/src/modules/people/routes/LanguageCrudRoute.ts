@@ -1,5 +1,5 @@
 
-import LanguageCrudPage from "../pages/LanguageCrudPage.vue";
+import LanguageCrudPage from "../pages/crud/LanguageCrudPage.vue";
 
 
 const LanguageCrudRoute = [

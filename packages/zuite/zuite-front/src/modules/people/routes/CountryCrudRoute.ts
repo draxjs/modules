@@ -1,5 +1,5 @@
 
-import CountryCrudPage from "../pages/CountryCrudPage.vue";
+import CountryCrudPage from "../pages/crud/CountryCrudPage.vue";
 
 
 const CountryCrudRoute = [

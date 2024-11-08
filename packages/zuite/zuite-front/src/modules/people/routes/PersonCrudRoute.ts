@@ -1,5 +1,5 @@
 
-import PersonCrudPage from "../pages/PersonCrudPage.vue";
+import PersonCrudPage from "../pages/crud/PersonCrudPage.vue";
 
 
 const PersonCrudRoute = [

@@ -10,7 +10,7 @@ class CountryMongoRepository extends AbstractMongoRepository<ICountry, ICountryB
     constructor() {
         super();
         this._model = CountryModel;
-        this._searchFields = ['name'];
+        this._searchFields = ['name', 'description'];
          this._populateFields = [];
     }
 

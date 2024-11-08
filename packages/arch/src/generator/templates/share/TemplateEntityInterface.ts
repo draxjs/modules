@@ -10,6 +10,7 @@ const generateEntityInterface = (schema: ISchema) => {
             case "string":
             case "password":
             case "enum":
+            case "longString":
             case "file":
                 fields.push(`    ${field}: string`)
                 break;

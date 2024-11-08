@@ -1,5 +1,5 @@
 
-import LanguageServiceFactory from "../factory/LanguageServiceFactory.js";
+import LanguageServiceFactory from "../factory/services/LanguageServiceFactory.js";
 import {AbstractFastifyController} from "@drax/crud-back";
 import LanguagePermissions from "../permissions/LanguagePermissions.js";
 import type {ILanguage, ILanguageBase} from "../interfaces/ILanguage";

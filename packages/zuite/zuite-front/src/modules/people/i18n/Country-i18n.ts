@@ -8,6 +8,7 @@ const messages = {
           crud: 'Manage Country',
           field:{
                        name:'name',
+           description:'description',
            flag:'flag'
           }
       },
@@ -26,6 +27,7 @@ const messages = {
           crud: 'Gestionar Country',
           field:{
                        name:'name',
+           description:'description',
            flag:'flag'
           }
       },

@@ -1,5 +1,5 @@
 
-import CountryServiceFactory from "../factory/CountryServiceFactory.js";
+import CountryServiceFactory from "../factory/services/CountryServiceFactory.js";
 import {AbstractFastifyController} from "@drax/crud-back";
 import CountryPermissions from "../permissions/CountryPermissions.js";
 import type {ICountry, ICountryBase} from "../interfaces/ICountry";

@@ -6,8 +6,6 @@ import {ZodSchema} from "zod";
 
 class LanguageService extends AbstractService<ILanguage, ILanguageBase, ILanguageBase> {
 
-    _repository: ILanguageRepository
-
     constructor(LanguageRepository: ILanguageRepository, schema?: ZodSchema) {
         super(LanguageRepository, schema);
     }

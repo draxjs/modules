@@ -7,6 +7,7 @@ import type {ICountry} from '../interfaces/ICountry'
 
 const CountrySchema = new mongoose.Schema<ICountry>({
             name: {type: String,   required: true, index: true, unique: true },
+            description: {type: String,   required: true, index: true, unique: true },
             flag: {type: String,   required: false, index: false, unique: false }
 }, {timestamps: true});
 

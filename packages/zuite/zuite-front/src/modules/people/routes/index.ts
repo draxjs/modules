@@ -1,8 +1,8 @@
-import {PersonCrudRoute} from "./PersonCrudRoute"
-import {CountryCrudRoute} from "./CountryCrudRoute"
-import {LanguageCrudRoute} from "./LanguageCrudRoute"
+import CountryCrudRoute from "./CountryCrudRoute"
+import LanguageCrudRoute from "./LanguageCrudRoute"
+import PersonCrudRoute from "./PersonCrudRoute"
+import merge from 'deepmerge'
 
+const messages =  merge.all([CountryCrudRoute,LanguageCrudRoute,PersonCrudRoute])
 
-export default [
-  ...PersonCrudRoute, ...CountryCrudRoute, ...LanguageCrudRoute
-]
+export default messages

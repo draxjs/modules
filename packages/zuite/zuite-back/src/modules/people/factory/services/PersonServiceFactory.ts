@@ -1,7 +1,7 @@
 
-import PersonRepository from '../repository/PersonRepository.js'
-import {PersonService} from '../services/PersonService.js'
-import {PersonSchema} from "../schemas/PersonSchema.js";
+import PersonRepository from '../../repository/PersonRepository.js'
+import {PersonService} from '../../services/PersonService.js'
+import {PersonSchema} from "../../schemas/PersonSchema.js";
 
 class PersonServiceFactory {
     private static service: PersonService;

@@ -1,7 +1,7 @@
 import {IEntitySchema} from "../../../interfaces/IEntitySchema";
 
 export const TemplateCrudRoute = (entity: IEntitySchema) => `
-import ${entity.name}CrudPage from "../pages/${entity.name}CrudPage.vue";
+import ${entity.name}CrudPage from "../pages/crud/${entity.name}CrudPage.vue";
 
 
 const ${entity.name}CrudRoute = [

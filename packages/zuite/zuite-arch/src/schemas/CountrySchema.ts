@@ -5,6 +5,7 @@ const schema: IEntitySchema = {
     name: "Country",
     schema: {
         name: {type: 'string', required: true, unique: true, index: true, search:true, header: true},
+        description: {type: 'longString', required: true, unique: true, index: true, search:true, header: true},
         flag: {type: 'file', required: false, index:false, unique:false, header: true},
     }
 }

@@ -6,8 +6,6 @@ import {ZodSchema} from "zod";
 
 class CountryService extends AbstractService<ICountry, ICountryBase, ICountryBase> {
 
-    _repository: ICountryRepository
-
     constructor(CountryRepository: ICountryRepository, schema?: ZodSchema) {
         super(CountryRepository, schema);
     }
