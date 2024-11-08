@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.7.0",
+  "version": "0.7.12",
   "description": "Crud share across modules",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
