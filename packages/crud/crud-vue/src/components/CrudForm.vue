@@ -4,7 +4,7 @@ import type {IEntityCrud, IEntityCrudField, IEntityCrudOperation} from "@drax/cr
 import {useFormUtils} from "../composables/UseFormUtils";
 import CrudFormField from "./CrudFormField.vue";
 import {computed, defineEmits, defineModel, defineProps, ref} from "vue";
-import type { PropType} from "vue";
+import type {PropType} from "vue";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useAuth} from '@drax/identity-vue'
 
@@ -27,13 +27,13 @@ const store = useCrudStore()
 const formRef = ref()
 
 const fields = computed(() => {
-  if(operation === 'create') {
+  if (operation === 'create') {
     return entity.createFields
-  }else if(operation === 'edit') {
+  } else if (operation === 'edit') {
     return entity.updateFields
-  }else if(operation === 'delete') {
+  } else if (operation === 'delete') {
     return entity.deleteFields
-  }else if(operation === 'view') {
+  } else if (operation === 'view') {
     return entity.viewFields
   }
   return []
@@ -41,22 +41,22 @@ const fields = computed(() => {
 
 
 const aFields = computed(() => {
-  return fields.value.filter((field:IEntityCrudField) => !field.permission || hasPermission(field.permission))
+  return fields.value.filter((field: IEntityCrudField) => !field.permission || hasPermission(field.permission))
 })
 
 async function submit() {
   store.resetErrors()
 
-  if(operation === 'delete') {
-    emit('submit',valueModel.value)
+  if (operation === 'delete') {
+    emit('submit', valueModel.value)
     return
   }
 
   const {valid, errors} = await formRef.value.validate()
 
-  if(valid) {
-    emit('submit',valueModel.value)
-  }else{
+  if (valid) {
+    emit('submit', valueModel.value)
+  } else {
     console.log('Invalid form', errors)
   }
 }
@@ -65,7 +65,7 @@ function cancel() {
   emit('cancel')
 }
 
-const  {
+const {
   variant, submitColor, readonly
 } = useFormUtils(operation)
 
@@ -73,30 +73,40 @@ const  {
 </script>
 
 <template>
-  <v-form ref="formRef"  @submit.prevent >
+  <v-form ref="formRef" @submit.prevent>
     <v-card flat>
 
-      <v-card-subtitle v-if="valueModel._id">ID: {{valueModel._id}}</v-card-subtitle>
+      <v-card-subtitle v-if="valueModel._id">ID: {{ valueModel._id }}</v-card-subtitle>
 
       <v-card-text v-if="error">
         <v-alert color="error">{{ te(error) ? t(error) : error }}</v-alert>
       </v-card-text>
 
       <v-card-text>
-        <template v-for="field in aFields" :key="field.name">
-          <crud-form-field
-              :field="field"
-              :entity="entity"
-              v-model="valueModel[field.name]"
-              :clearable="false"
-              :readonly="readonly"
-              :variant="variant"
-              :prepend-inner-icon="field?.prependInnerIcon"
-              :prepend-icon="field?.prependIcon"
-              :append-icon="field?.appendIcon"
-              :append-inner-icon="field?.appendInnerIcon"
-          />
-        </template>
+        <v-row>
+          <v-col
+              v-for="field in aFields"
+              :key="field.name"
+              :cols="field.cols ? field.cols : 12"
+              :sm="field.sm ? field.sm : 12"
+              :md="field.md ? field.md : 12"
+              :lg="field.lg ? field.lg : 12"
+              :xl="field.xl ? field.xl : 12"
+          >
+            <crud-form-field
+                :field="field"
+                :entity="entity"
+                v-model="valueModel[field.name]"
+                :clearable="false"
+                :readonly="readonly"
+                :variant="variant"
+                :prepend-inner-icon="field?.prependInnerIcon"
+                :prepend-icon="field?.prependIcon"
+                :append-icon="field?.appendIcon"
+                :append-inner-icon="field?.appendInnerIcon"
+            />
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-card-actions>

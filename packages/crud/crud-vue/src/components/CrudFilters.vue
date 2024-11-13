@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import type {PropType} from "vue";
+import {computed, type PropType} from "vue";
 import CrudFormField from "./CrudFormField.vue";
-import type {IEntityCrud} from "@drax/crud-share";
+import type {IEntityCrud, IEntityCrudFilter} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
+import {useAuth} from "@drax/identity-vue";
 
 const {t} = useI18n()
 const valueModel = defineModel({type: [Object]})
-
+const {hasPermission} = useAuth()
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   actions: {type: Boolean, default: false},
+})
+
+const aFields = computed(() => {
+  return entity.filters.filter((field:IEntityCrudFilter) => !field.permission || hasPermission(field.permission))
 })
 
 
@@ -29,9 +34,14 @@ const emit = defineEmits(['filter', 'clear','updateValue'])
 
 <template>
   <v-card flat >
-        <v-row dense class="mt-1" justify="space-between">
-          <v-col v-for="(filter,index) in entity.filters" :key="filter.name"
-                 cols="12" sm="6" md="4"
+        <v-row dense class="mt-1">
+          <v-col v-for="(filter,index) in aFields"
+                 :key="filter.name"
+                 :cols="filter.cols ? filter.cols : 12"
+                 :sm="filter.sm ? filter.sm : 6"
+                 :md="filter.md ? filter.md : 6"
+                 :lg="filter.lg ? filter.lg : 4"
+                 :xl="filter.xl ? filter.xl : 3"
           >
             <crud-form-field
                 :field="filter"
