@@ -17,6 +17,8 @@ type CustomRequest = FastifyRequest<{
         id?: string
         ids?: string
         format?: string
+        field?: string
+        value?: string
     };
     Querystring: {
         format?: string
@@ -182,7 +184,7 @@ class AbstractFastifyController<T, C, U> {
         }
     }
 
-    async findById(request: CustomRequest, reply: FastifyReply) {
+    async findById(request: CustomRequest, reply: FastifyReply) : Promise<T> {
         try {
             request.rbac.assertPermission(this.permission.View)
             if (!request.params.id) {
@@ -214,7 +216,7 @@ class AbstractFastifyController<T, C, U> {
         }
     }
 
-    async findByIds(request: CustomRequest, reply: FastifyReply) {
+    async findByIds(request: CustomRequest, reply: FastifyReply):Promise<T[]> {
         try {
             request.rbac.assertPermission(this.permission.View)
             if (!request.params.ids) {
@@ -224,6 +226,70 @@ class AbstractFastifyController<T, C, U> {
             const ids = request.params.ids.split(",")
             let items = await this.service.findByIds(ids)
             return items
+        } catch (e) {
+            console.error(e)
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+            }
+        }
+    }
+
+    async findBy(request: CustomRequest, reply: FastifyReply):Promise<T[]> {
+        try {
+            request.rbac.assertPermission(this.permission.View)
+            if (!request.params.field || !request.params.value) {
+                reply.statusCode = 400
+                reply.send({error: 'BAD REQUEST'})
+            }
+
+            const field = request.params.field
+            const value = request.params.value
+            let items = await this.service.findBy(field,value)
+
+            if (this.tenantAssert) {
+                items = items.filter(item => request.rbac.tenantId === item[this.tenantField].id)
+            }
+
+            return items
+        } catch (e) {
+            console.error(e)
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message, inputErrors: e.errors})
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            } else {
+                reply.statusCode = 500
+                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+            }
+        }
+    }
+
+    async findOneBy(request: CustomRequest, reply: FastifyReply):Promise<T> {
+        try {
+            request.rbac.assertPermission(this.permission.View)
+            if (!request.params.field || !request.params.value) {
+                reply.statusCode = 400
+                reply.send({error: 'BAD REQUEST'})
+            }
+
+            const field = request.params.field
+            const value = request.params.value
+            let item = await this.service.findOneBy(field,value)
+
+            if (this.tenantAssert) {
+                request.rbac.assertTenantId(item[this.tenantField].id)
+            }
+
+            return item
         } catch (e) {
             console.error(e)
             if (e instanceof ValidationError) {

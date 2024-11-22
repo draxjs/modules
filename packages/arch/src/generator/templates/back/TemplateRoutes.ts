@@ -14,6 +14,10 @@ async function ${entity.name}FastifyRoutes(fastify, options) {
     fastify.get('/api/${entity.name.toLowerCase()}', (req,rep) => controller.paginate(req,rep) )
 
     fastify.get('/api/${entity.name.toLowerCase()}/search', (req,rep) => controller.search(req,rep) )
+    
+    fastify.get('/api/${entity.name.toLowerCase()}/oneby/:field/:value', (req,rep) => controller.findOneBy(req,rep) )
+
+    fastify.get('/api/${entity.name.toLowerCase()}/by/:field/:value', (req,rep) => controller.findBy(req,rep) )
 
     fastify.post('/api/${entity.name.toLowerCase()}', (req,rep) =>controller.create(req,rep))
 
