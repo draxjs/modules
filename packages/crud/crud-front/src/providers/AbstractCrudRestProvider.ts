@@ -53,10 +53,21 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
 
     async findByIds(ids: Array<string>): Promise<T[]> {
         const url = this.basePath + '/ids/' + ids.join(',')
-        const item = await this.httpClient.get(url)
-        return item as T[]
+        const items = await this.httpClient.get(url)
+        return items as T[]
     }
 
+    async findOneBy(field:string, value:string): Promise<T> {
+        const url = `${this.basePath}/oneby/${field}/${value}`
+        const item : T = await this.httpClient.get(url) as T
+        return item
+    }
+
+    async findBy(field:string, value:string): Promise<T[]> {
+        const url = `${this.basePath}/by/${field}/${value}`
+        const items : T[] = await this.httpClient.get(url) as T[]
+        return items
+    }
 
 
     prepareFilters(filters: IDraxFieldFilter[]) {
