@@ -256,7 +256,6 @@ class AbstractFastifyController<T, C, U> {
             if (this.tenantAssert) {
                 items = items.filter(item => request.rbac.tenantId === item[this.tenantField].id)
             }
-
             return items
         } catch (e) {
             console.error(e)

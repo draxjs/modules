@@ -24,6 +24,7 @@ async function ${entity.name}FastifyRoutes(fastify, options) {
     fastify.put('/api/${entity.name.toLowerCase()}/:id', (req,rep) =>controller.update(req,rep))
 
     fastify.delete('/api/${entity.name.toLowerCase()}/:id', (req,rep) =>controller.delete(req,rep))
+    
 }
 
 export default ${entity.name}FastifyRoutes;
