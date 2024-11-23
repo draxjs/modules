@@ -7,6 +7,7 @@ import type {IDraxFieldFilter} from "./interfaces/IDraxFieldFilter";
 import type {IDraxPaginateResult} from "./interfaces/IDraxPaginateResult";
 import type {IDraxPaginateOptions} from "./interfaces/IDraxPaginateOptions";
 import type {IDraxFindOptions} from "./interfaces/IDraxFindOptions";
+import type {IDraxFindOneOptions} from "./interfaces/IDraxFindOneOptions";
 import type {IDraxPermission} from "./interfaces/IDraxPermission";
 import type {IDraxExportOptions} from "./interfaces/IDraxExportOptions";
 import type {IDraxExportResult} from "./interfaces/IDraxExportResult";
@@ -24,6 +25,7 @@ import type {IEntityCrudRefs} from "./interfaces/IEntityCrudRefs";
 
 
 
+
 export type {
     IDraxCrud,
     IDraxCrudRepository,
@@ -34,6 +36,7 @@ export type {
     IDraxPaginateResult,
     IDraxPaginateOptions,
     IDraxFindOptions,
+    IDraxFindOneOptions,
     IDraxExportOptions,
     IDraxExportResult,
     IDraxPermission,

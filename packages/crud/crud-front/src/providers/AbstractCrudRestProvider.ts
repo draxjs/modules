@@ -3,8 +3,9 @@ import type {IHttpClient} from '@drax/common-front'
 import type {
     IDraxCrudProvider, IDraxCrudProviderExportResult,
     IDraxPaginateResult, IDraxPaginateOptions,
-    IDraxFieldFilter, IDraxExportOptions
+    IDraxFieldFilter, IDraxExportOptions, IDraxFindOptions, IDraxFindOneOptions
 } from "@drax/crud-share";
+
 
 class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
 
@@ -57,14 +58,14 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
         return items as T[]
     }
 
-    async find(search: string, filters: IDraxFieldFilter[]): Promise<T[]> {
+    async find({limit = 100, orderBy = "",order = false,search = "", filters = []}: IDraxFindOptions): Promise<T[]> {
         const url = this.basePath + '/find'
-        const params = {search,filters: this.prepareFilters(filters)}
+        const params = {limit, orderBy, order, search,filters: this.prepareFilters(filters)}
         const items = await this.httpClient.get(url, {params})
         return items as T[]
     }
 
-    async findOne(search: string, filters: IDraxFieldFilter[]): Promise<T> {
+    async findOne({search = "", filters = []}: IDraxFindOneOptions): Promise<T> {
         const url = this.basePath + '/find-one'
         const params = {search, filters: this.prepareFilters(filters)}
         const items = await this.httpClient.get(url, {params})
