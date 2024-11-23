@@ -9,13 +9,13 @@ async function ${entity.name}FastifyRoutes(fastify, options) {
     
     fastify.get('/api/${entity.name.toLowerCase()}/ids/:ids', (req,rep) => controller.findByIds(req,rep))
 
-    fastify.get('/api/${entity.name.toLowerCase()}', (req,rep) => controller.paginate(req,rep) )
+    fastify.get('/api/${entity.name.toLowerCase()}', (req,rep) => controller.paginate(req,rep))
 
-    fastify.get('/api/${entity.name.toLowerCase()}/search', (req,rep) => controller.search(req,rep) )
+    fastify.get('/api/${entity.name.toLowerCase()}/search', (req,rep) => controller.search(req,rep))
     
-    fastify.get('/api/${entity.name.toLowerCase()}/find', (req,rep) => controller.find(req,rep) )
+    fastify.get('/api/${entity.name.toLowerCase()}/find', (req,rep) => controller.find(req,rep))
       
-    fastify.get('/api/${entity.name.toLowerCase()}/find-one', (req,rep) => controller.findOne(req,rep) 
+    fastify.get('/api/${entity.name.toLowerCase()}/find-one', (req,rep) => controller.findOne(req,rep))
 
     fastify.post('/api/${entity.name.toLowerCase()}', (req,rep) =>controller.create(req,rep))
 
