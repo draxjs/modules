@@ -244,10 +244,6 @@ class AbstractFastifyController<T, C, U> {
     async find(request: CustomRequest, reply: FastifyReply):Promise<T[]> {
         try {
             request.rbac.assertPermission(this.permission.View)
-            if (!request.params.field || !request.params.value) {
-                reply.statusCode = 400
-                reply.send({error: 'BAD REQUEST'})
-            }
 
             const search = request.query.search ??= undefined
             const filters = this.parseFilters(request.query.filters)
@@ -278,10 +274,6 @@ class AbstractFastifyController<T, C, U> {
     async findOne(request: CustomRequest, reply: FastifyReply):Promise<T> {
         try {
             request.rbac.assertPermission(this.permission.View)
-            if (!request.params.field || !request.params.value) {
-                reply.statusCode = 400
-                reply.send({error: 'BAD REQUEST'})
-            }
 
             const search = request.query.search ??= undefined
             const filters = this.parseFilters(request.query.filters)
