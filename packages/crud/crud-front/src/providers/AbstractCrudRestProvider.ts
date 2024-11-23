@@ -59,14 +59,14 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
 
     async find(search: string, filters: IDraxFieldFilter[]): Promise<T[]> {
         const url = this.basePath + '/find'
-        const params = {search,filters}
+        const params = {search,filters: this.prepareFilters(filters)}
         const items = await this.httpClient.get(url, {params})
         return items as T[]
     }
 
     async findOne(search: string, filters: IDraxFieldFilter[]): Promise<T> {
         const url = this.basePath + '/find-one'
-        const params = {search,filters}
+        const params = {search, filters: this.prepareFilters(filters)}
         const items = await this.httpClient.get(url, {params})
         return items as T
     }
