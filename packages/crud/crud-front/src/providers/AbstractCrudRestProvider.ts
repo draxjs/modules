@@ -57,18 +57,19 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
         return items as T[]
     }
 
-    async findOneBy(field:string, value:string): Promise<T> {
-        const url = `${this.basePath}/oneby/${field}/${value}`
-        const item : T = await this.httpClient.get(url) as T
-        return item
+    async find(search: string, filters: IDraxFieldFilter[]): Promise<T[]> {
+        const url = this.basePath + '/find'
+        const params = {search,filters}
+        const items = await this.httpClient.get(url, {params})
+        return items as T[]
     }
 
-    async findBy(field:string, value:string): Promise<T[]> {
-        const url = `${this.basePath}/by/${field}/${value}`
-        const items : T[] = await this.httpClient.get(url) as T[]
-        return items
+    async findOne(search: string, filters: IDraxFieldFilter[]): Promise<T> {
+        const url = this.basePath + '/find-one'
+        const params = {search,filters}
+        const items = await this.httpClient.get(url, {params})
+        return items as T
     }
-
 
     prepareFilters(filters: IDraxFieldFilter[]) {
         const isDate = (value: any): value is Date => value instanceof Date;
