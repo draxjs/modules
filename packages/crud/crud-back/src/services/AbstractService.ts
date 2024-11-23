@@ -12,6 +12,7 @@ import {IDraxCrudService} from "@drax/crud-share";
 import ExportCsv from "../exports/ExportCsv.js";
 import ExportJson from "../exports/ExportJson.js";
 import {IDraxExportResult} from "@drax/crud-share";
+import {IDraxFindOneOptions} from "@drax/crud-share/types/interfaces/IDraxFindOneOptions";
 
 abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
@@ -59,6 +60,21 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                 data = await this.transformUpdate(data)
             }
             const item: T = await this._repository.update(id, data)
+            return item
+        } catch (e) {
+            console.error("Error updating", e)
+            if (e instanceof ZodError) {
+                throw ZodErrorToValidationError(e, data)
+            }
+            throw e
+        }
+    }
+
+    async updatePartial(id: string, data: any): Promise<T> {
+        try {
+
+            const item: T = await this._repository.updatePartial(id, data)
+
             return item
         } catch (e) {
             console.error("Error updating", e)
@@ -198,7 +214,21 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             let items = await this._repository.find({orderBy, order, search, filters});
             return items;
         } catch (e) {
-            console.error("Error paginating", e)
+            console.error("Error find", e)
+            throw e;
+        }
+
+    }
+
+    async findOne({
+                   search = '',
+                   filters = []
+               }: IDraxFindOneOptions): Promise<T> {
+        try {
+            let item = await this._repository.findOne({ search, filters});
+            return item;
+        } catch (e) {
+            console.error("Error findOne", e)
             throw e;
         }
 

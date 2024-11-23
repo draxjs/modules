@@ -42,6 +42,18 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         }
     }
 
+    async updatePartial(id: string, data: any): Promise<T> {
+        try {
+            const item: mongoose.HydratedDocument<T> = await this._model.findOneAndUpdate({_id: id}, data, {new: true}).populate(this._populateFields).exec()
+            return item
+        } catch (e) {
+            if (e instanceof mongoose.Error.ValidationError) {
+                throw MongooseErrorToValidationError(e)
+            }
+            throw e
+        }
+    }
+
     async delete(id: string): Promise<boolean> {
         const result: DeleteResult = await this._model.deleteOne({_id: id}).exec()
         return result.deletedCount == 1
@@ -116,6 +128,23 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             total: items.totalDocs,
             items: items.docs
         }
+    }
+
+    async findOne({
+                   search = '',
+                   filters = []
+               }: IDraxFindOptions): Promise<T> {
+
+        const query = {}
+
+        if (search) {
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search, 'i')}))
+        }
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        const populate = this._populateFields
+        return this._model.findOne(query).populate(populate)
     }
 
     async find({
