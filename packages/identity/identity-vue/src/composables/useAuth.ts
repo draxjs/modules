@@ -17,6 +17,15 @@ export function useAuth() {
         authStore.setAuthUser(authUser)
     }
 
+    const loginWithToken = async (token: string) => {
+        authStore.setAccessToken(token)
+        if(tokenIsValid()){
+            const authUser = await authSystem.me()
+            authStore.setAuthUser(authUser)
+        }
+
+    }
+
     const changeOwnPassword = async (currentPassword: string, newPassword: string) => {
         return await authSystem.changeOwnPassword(currentPassword, newPassword)
     }
@@ -64,6 +73,6 @@ export function useAuth() {
 
     }
 
-    return {hasPermission, logout, tokenIsValid, isAuthenticated, fetchAuthUser, login, changeOwnPassword, changeAvatar}
+    return {hasPermission, logout, loginWithToken, tokenIsValid, isAuthenticated, fetchAuthUser, login, changeOwnPassword, changeAvatar}
 
 }

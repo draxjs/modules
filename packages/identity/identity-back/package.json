@@ -6,7 +6,7 @@
   "version": "0.8.0",
   "description": "Identity module for user management, authentication and authorization.",
   "main": "dist/index.js",
-  "types": "dist/types/index.d.ts",
+  "types": "types/index.d.ts",
   "type": "module",
   "scripts": {
     "prepublish": "tsc && npm run copygql",
