@@ -8,8 +8,8 @@ import UserApiKeyCrudPage from '../pages/crud/UserApiKeyCrudPage.vue'
 
 const routes = [
     {
-        name: 'Login',
-        path: '/login',
+        name: 'IdentityLogin',
+        path: '/identity-login',
         component: LoginPage,
         meta: {
             auth: false,

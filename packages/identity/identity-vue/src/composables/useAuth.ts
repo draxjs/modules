@@ -37,9 +37,13 @@ export function useAuth() {
     }
 
     function logout() {
+        clearAuth()
+        router.push({name: 'Login'})
+    }
+
+    function clearAuth(){
         authSystem.logout()
         authStore.clearAuth()
-        router.push({name: 'Login'})
     }
 
     function hasPermission(permission: string) {
@@ -50,13 +54,11 @@ export function useAuth() {
         return authStore.accessToken ? AuthHelper.isJWTValid(authStore.accessToken) : false
     }
 
-    function isAuthenticated(forceLogout : boolean = false) {
+    function isAuthenticated() {
         if (tokenIsValid()) {
             return true
         } else {
-            if(forceLogout){
-                logout()
-            }
+            clearAuth()
             return false
         }
 
