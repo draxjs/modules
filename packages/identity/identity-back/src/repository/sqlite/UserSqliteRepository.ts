@@ -27,6 +27,7 @@ const tableFields: SqliteTableField[] = [
     {name: "tenant", type: "TEXT", unique: false, primary: false},
     {name: "groups", type: "TEXT", unique: false, primary: false},
     {name: "avatar", type: "TEXT", unique: false, primary: false},
+    {name: "origin", type: "TEXT", unique: false, primary: false},
     {name: "createdAt", type: "TEXT", unique: false, primary: false},
     {name: "updatedAt", type: "TEXT", unique: false, primary: false}
 ]
@@ -142,6 +143,16 @@ class UserSqliteRepository implements IUserRepository {
 
     async findByUsername(username: string): Promise<IUser> {
         const user = this.db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+        if (!user) {
+            return null
+        }
+        user.role = await this.findRoleById(user.role)
+        user.tenant = await this.findTenantById(user.tenant)
+        return user
+    }
+
+    async findByEmail(email: string): Promise<IUser> {
+        const user = this.db.prepare('SELECT * FROM users WHERE email = ?').get(email);
         if (!user) {
             return null
         }

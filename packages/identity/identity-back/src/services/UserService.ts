@@ -33,6 +33,26 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate>{
         }
     }
 
+    async authByEmail(email: string, createIfNotFound: boolean = false, userData: IUserCreate) {
+        let user = null
+        console.log("auth email", email)
+        user = await this.findByEmail(email)
+
+        if(!user && createIfNotFound){
+            userData.password = userData.password ? userData.password : randomUUID()
+            userData.active = userData.active === undefined ? true : userData.active
+            user = await this.create(userData)
+        }
+
+        if (user && user.active) {
+            const session = randomUUID()
+            const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, user.role.id, user.tenant?.id, session)
+            return {accessToken: accessToken}
+        } else {
+                throw new BadCredentialsError()
+        }
+    }
+
     async changeUserPassword(userId: string, newPassword: string) {
         const user = await this.findById(userId)
         if (user) {
@@ -99,8 +119,6 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate>{
             }
             throw e
         }
-
-
     }
 
     async update(id: string, userData: IUserUpdate) {
@@ -158,6 +176,16 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate>{
             throw e
         }
 
+    }
+
+    async findByEmail(email: string): Promise<IUser | null> {
+        try {
+            const user: IUser = await this._repository.findByEmail(email);
+            return user
+        } catch (e) {
+            console.error("Error finding user by username", e)
+            throw e
+        }
     }
 
     async paginate({

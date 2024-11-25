@@ -49,6 +49,7 @@ const UserSchema = new mongoose.Schema<IUser>({
         }
     },
     avatar: {type: String, required: false, index:false},
+
     role: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role',
@@ -61,6 +62,7 @@ const UserSchema = new mongoose.Schema<IUser>({
         required: false,
         index: false
     },
+    origin: {type: String, required: false, index:false},
     groups: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Group',

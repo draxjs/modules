@@ -140,6 +140,8 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 payload.tenant = request.rbac.getAuthUser.tenantId
             }
 
+            payload.origin ??= 'Admin'
+
             const userService = UserServiceFactory()
             let user = await userService.create(payload)
             return user

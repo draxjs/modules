@@ -74,6 +74,11 @@ class UserMongoRepository implements IUserRepository {
         return user
     }
 
+    async findByEmail(email: string): Promise<IUser> {
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({email: email}).populate(['role','tenant']).exec()
+        return user
+    }
+
     async paginate({
                        page= 1,
                        limit= 5,

@@ -12,10 +12,24 @@ interface IUser{
     phone: string
     avatar: string
     role: IRole
+    origin?: string
     createdAt?: string
     updatedAt?: string
     tenant?: ITenant
     groups?: IUserGroup[]
+}
+
+interface IUserEmailCreate {
+    name: string
+    username: string
+    email: string
+    active: boolean | number
+    phone: string
+    role: string
+    origin?: string
+    tenant?: string
+    groups?: string[] | string
+    createdAt?: string
 }
 
 interface IUserCreate {
@@ -27,6 +41,7 @@ interface IUserCreate {
     active: boolean | number
     phone: string
     role: string
+    origin?: string
     tenant?: string
     groups?: string[] | string
     createdAt?: string
@@ -46,4 +61,4 @@ interface IUserUpdate {
     updatedAt?: string
 }
 
-export {IUser, IUserCreate, IUserUpdate}
+export {IUser, IUserCreate, IUserUpdate, IUserEmailCreate}
