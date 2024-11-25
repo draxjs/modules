@@ -50,11 +50,13 @@ export function useAuth() {
         return authStore.accessToken ? AuthHelper.isJWTValid(authStore.accessToken) : false
     }
 
-    function isAuthenticated() {
+    function isAuthenticated(forceLogout : boolean = false) {
         if (tokenIsValid()) {
             return true
         } else {
-            logout()
+            if(forceLogout){
+                logout()
+            }
             return false
         }
 
