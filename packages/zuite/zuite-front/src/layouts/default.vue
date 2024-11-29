@@ -28,6 +28,7 @@ const {isAuthenticated} = useAuth()
     <v-navigation-drawer v-model="drawer" temporary>
       <sidebar-menu :menu="menu"></sidebar-menu>
     </v-navigation-drawer>
+
     <v-app-bar v-if="isAuthenticated()" >
       <v-app-bar-nav-icon v-model="menu" @click="drawer=!drawer"/>
       <slot name="toolbar-left">
@@ -42,7 +43,7 @@ const {isAuthenticated} = useAuth()
       <identity-profile-avatar class="cursor-pointer" @click="profileDrawer = !profileDrawer"></identity-profile-avatar>
     </v-app-bar>
 
-    <identity-profile-drawer v-model="profileDrawer" ></identity-profile-drawer>
+    <identity-profile-drawer v-if="isAuthenticated()" v-model="profileDrawer" ></identity-profile-drawer>
 
     <animated-background></animated-background>
 

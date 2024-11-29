@@ -79,5 +79,12 @@ export default defineConfig({
       '.vue',
     ],
   },
+  css: {
+    preprocessorOptions: {
+      sass: {
+        api: 'modern',
+      },
+    },
+  },
 
 })

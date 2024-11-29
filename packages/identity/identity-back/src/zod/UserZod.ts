@@ -16,7 +16,7 @@ export const createUserSchema = userBaseSchema.extend({
     password: string({ required_error: "validation.required" })
         .min(1, "validation.required")
         .min(8, "validation.password.min8")
-        .max(32, "validation.password.max32"),
+        .max(64, "validation.password.max64"),
 });
 
 

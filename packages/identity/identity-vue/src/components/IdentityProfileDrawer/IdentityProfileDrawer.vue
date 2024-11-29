@@ -4,11 +4,12 @@ import {defineModel} from "vue";
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
+import { useDisplay } from 'vuetify'
 
 const {t} = useI18n()
 const router = useRouter()
 
-
+const {mobile} = useDisplay()
 const auth = useAuth()
 const valueModel = defineModel<boolean>()
 
@@ -16,17 +17,14 @@ const valueModel = defineModel<boolean>()
 </script>
 
 <template>
-
-
   <v-navigation-drawer
       v-model="valueModel"
-      location="right"
+      :location="mobile ? 'top' : 'right'"
   >
 
     <template v-if="auth.isAuthenticated()">
       <identity-profile-view></identity-profile-view>
       <v-divider></v-divider>
-
       <v-list>
         <v-list-item
             @click="router.push({name:'Profile'})"

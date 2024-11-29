@@ -1,7 +1,6 @@
 import Fastify, {FastifyInstance, FastifyRequest, FastifyReply} from "fastify";
 import {createSchema, createYoga} from 'graphql-yoga'
-import {Rbac} from "@drax/identity-back";
-import {IJwtUser} from "@drax/identity-share";
+import {IJwtUser, IRbac} from "@drax/identity-share";
 import fastifyStatic from '@fastify/static';
 import fastifyMultipart from '@fastify/multipart';
 import path from 'path';
@@ -12,7 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 declare module 'fastify' {
     interface FastifyRequest {
         authUser?: IJwtUser;
-        rbac?: Rbac;
+        rbac?: IRbac;
     }
 }
 
