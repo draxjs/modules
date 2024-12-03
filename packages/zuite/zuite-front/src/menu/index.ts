@@ -72,29 +72,8 @@ const menu: MenuItem[] = [
         permission: 'userApiKey:manage'
       },
     ]
-  },
-  {
-    icon: 'mdi-information-box',
-    text:'INFO',
-    gallery: true,
-    auth: false,
-    children: [
-      {
-        icon: 'mdi-information-outline',
-        text:'ABOUT',
-        link: { name: "InfoAbout" },
-        gallery: true,
-        auth: true
-      },
-      {
-        icon: 'mdi-frequently-asked-questions',
-        text:'FAQ',
-        link: { name: "InfoFaq" },
-        gallery: true,
-        auth: false
-      },
-    ]
   }
+
 ]
 
 export default menu

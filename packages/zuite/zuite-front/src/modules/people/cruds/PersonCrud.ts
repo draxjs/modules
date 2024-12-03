@@ -145,8 +145,13 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   get filters(): IEntityCrudFilter[] {
     return [
       {name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
-      {name: 'fullname', type: 'string', label: 'fullname', default: '', operator: 'eq'},
+      {name: 'fullname', type: 'string', label: 'fullname', default: '', operator: 'like'},
       {name: 'nationality', type: 'ref', ref: 'Country', refDisplay: 'name', label: 'nationality', default: null, operator: 'eq', permission:'country:view'},
+      {name: 'birthdate', type: 'date',  label: 'birthdate from', default: null, operator: 'gte'},
+      {name: 'birthdate', type: 'date',  label: 'birthdate to', default: null, operator: 'lte'},
+      {name: 'birthdate', type: 'date',  label: 'birthdate from', default: null, operator: 'gt'},
+      {name: 'birthdate', type: 'date',  label: 'birthdate to', default: null, operator: 'lt'},
+      {name: 'hobbies', type: 'array.string',  label: 'hobbies', default: null, operator: 'in'},
     ]
   }
 

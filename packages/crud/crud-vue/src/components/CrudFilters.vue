@@ -18,6 +18,33 @@ const aFields = computed(() => {
   return entity.filters.filter((field:IEntityCrudFilter) => !field.permission || hasPermission(field.permission))
 })
 
+const icon = computed(() => {
+  return (field: IEntityCrudFilter) => {
+    switch(field.operator){
+      case 'eq':
+        return 'mdi-equal'
+      case 'ne':
+        return 'mdi-not-equal'
+      case 'gt':
+        return 'mdi-greater-than'
+      case 'gte':
+        return 'mdi-greater-than-or-equal'
+      case 'lt':
+        return 'mdi-less-than'
+      case 'lte':
+        return 'mdi-less-than-or-equal'
+      case 'in':
+        return 'mdi-code-array'
+      case 'nin':
+        return 'mdi-not-equal'
+      case 'like':
+        return 'mdi-contain'
+      default:
+        return ''
+    }
+  }
+})
+
 
 async function filter() {
   emit('filter')
@@ -50,6 +77,7 @@ const emit = defineEmits(['filter', 'clear','updateValue'])
                 :clearable="true"
                 density="compact"
                 variant="outlined"
+                :prepend-inner-icon="icon(filter)"
                 hide-details single-line disable-rules
                 @updateValue="$emit('updateValue')"
             />

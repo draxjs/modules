@@ -1,40 +1,11 @@
-import HomePage from '../pages/home/index.vue'
+import baseRoutes from '../modules/base/routes/index'
+import peopleRoutes from '../modules/people/routes/index'
+import {IdentityRoutes} from "@drax/identity-vue";
 
 const routes = [
-  {
-    name: 'Root',
-    path: '/',
-    component: HomePage,
-    meta: {
-      auth: true,
-    }
-  },
-  {
-    name: 'Home',
-    path: '/home',
-    component: HomePage,
-    meta: {
-      auth: true,
-    }
-  },
-  {
-    name: 'InfoAbout',
-    path: '/info/about',
-    component: () => import('../pages/info/about/index.vue'),
-    meta: {
-      auth: true,
-    }
-  },
-  {
-    name: 'InfoFaq',
-    path: '/info/faq',
-    component: () => import('../pages/info/faq/index.vue'),
-    meta: {
-      auth: false,
-    },
-
-  }
+  ...IdentityRoutes,
+  ...baseRoutes,
+  ...peopleRoutes
 ]
-
 
 export default routes
