@@ -123,7 +123,7 @@ class YogaFastifyServer {
     }
 
     async start(port: number, baseUrl: string = 'http://localhost') {
-        await this.fastifyServer.listen({port: port});
+        await this.fastifyServer.listen({port: port, host: '0.0.0.0'});
         console.log(`🚀 Server FastifyYoga ready at ${baseUrl}:${port}`);
     }
 

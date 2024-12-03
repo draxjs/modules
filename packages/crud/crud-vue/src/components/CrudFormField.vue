@@ -46,7 +46,7 @@ const show = ref(false)
 const name = computed(() => index >= 0 ? `${parentField ? parentField + "_" : ""}${field.name}_${index}` : `${parentField ? parentField + "_" : ""}${field.name}`)
 
 const label = computed(() => {
-  const i18n = `${entity.name}.field.${field.name}`
+  const i18n = `${entity.name.toLowerCase()}.field.${field.name}`
   return te(i18n) ? t(i18n) : field.label
 })
 
