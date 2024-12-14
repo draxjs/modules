@@ -12,41 +12,41 @@ const generateEntityInterface = (schema: ISchema) => {
             case "enum":
             case "longString":
             case "file":
-                fields.push(`    ${field}: string`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: string`)
                 break;
             case "number":
-                fields.push(`    ${field}: number`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: number`)
                 break;
             case "boolean":
-                fields.push(`    ${field}: boolean`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: boolean`)
                 break;
             case "date":
-                fields.push(`    ${field}: Date`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Date`)
                 break;
             case "ref":
-                fields.push(`    ${field}: any`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: any`)
                 break;
             case "object":
                 if(!schema[field].schema){
                     throw new Error("object fields must have a schema")
                 }
-                fields.push(`    ${field}: {${generateEntityInterface(schema[field].schema)}}`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: {${generateEntityInterface(schema[field].schema)}}`)
                 break;
             case "array.string":
             case "array.enum":
-                fields.push(`    ${field}: Array<string>`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<string>`)
                 break;
             case "array.number":
-                fields.push(`    ${field}: Array<number>`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<number>`)
                 break;
             case "array.ref":
-                fields.push(`    ${field}: Array<any>`)
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<any>`)
                 break;
             case "array.object":
                 if(!schema[field].schema){
                     throw new Error("array.object fields must have a schema")
                 }
-                fields.push(`    ${field}: Array<{
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<{
 ${generateEntityInterface(schema[field].schema)}
     }>`)
                 break;
