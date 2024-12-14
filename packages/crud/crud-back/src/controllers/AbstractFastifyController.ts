@@ -83,7 +83,7 @@ class AbstractFastifyController<T, C, U> {
             filters.push({field: this.tenantField, operator: 'eq', value: rbac.tenantId})
         }
 
-        if (this.userFilter && rbac.userId && !rbac.hasPermission('user:manage')) {
+        if (this.userFilter && rbac.userId) {
             filters.push({field: this.userField, operator: 'eq', value: rbac.userId})
         }
     }
@@ -93,7 +93,7 @@ class AbstractFastifyController<T, C, U> {
             payload[this.tenantField] = rbac.tenantId
         }
 
-        if (this.userSetter && rbac.userId && !payload.user && !rbac.hasPermission('user:manage') ) {
+        if (this.userSetter && rbac.userId) {
             payload[this.userField] = rbac.userId
         }
     }
@@ -129,7 +129,7 @@ class AbstractFastifyController<T, C, U> {
             }
             const id = request.params.id
             const payload = request.body
-            this.applyUserAndTenantSetters(payload, request.rbac)
+            //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.update(id, payload as U)
             return item
         } catch (e) {

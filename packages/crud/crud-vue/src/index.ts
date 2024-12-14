@@ -6,6 +6,7 @@ import CrudFormList from "./components/CrudFormList.vue";
 import CrudList from "./components/CrudList.vue";
 import CrudNotify from "./components/CrudNotify.vue";
 import CrudSearch from "./components/CrudSearch.vue";
+import CrudAutocomplete from "./components/CrudAutocomplete.vue";
 import {useCrudStore} from "./stores/UseCrudStore";
 import {useCrud} from "./composables/UseCrud";
 import {useFormUtils} from "./composables/UseFormUtils";
@@ -21,6 +22,7 @@ export {
     CrudList,
     CrudNotify,
     CrudSearch,
+    CrudAutocomplete,
     useCrud,
     useFormUtils,
     useCrudStore,

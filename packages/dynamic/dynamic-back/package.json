@@ -1,0 +1,48 @@
+{
+  "name": "@drax/dynamic-back",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.8.3",
+  "description": "Dynamic Forms",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prepublish": "tsc && npm run copygql",
+    "tscrun": "tsc",
+    "clean": "rm -rf dist",
+    "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
+    "tsc": "tsc -b tsconfig.json",
+    "test": "node --import tsx --test test/**/*",
+    "testService": "node --import tsx --test test/services/*.ts",
+    "testExports": "node --import tsx --test test/exports/*.ts",
+    "testWorkers": "node --import tsx --test test/workers/*.ts"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "dependencies": {
+    "@drax/common-back": "^0.8.3",
+    "@drax/common-share": "^0.8.3",
+    "@drax/identity-share": "^0.8.3",
+    "@drax/media-back": "^0.8.3",
+    "@graphql-tools/load-files": "^7.0.0",
+    "@graphql-tools/merge": "^9.0.4",
+    "mongoose": "^8.6.3",
+    "mongoose-paginate-v2": "^1.8.3"
+  },
+  "peerDependencies": {
+    "dayjs": "^1.11.13",
+    "mongoose-paginate-v2": "^1.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.10",
+    "copyfiles": "^2.4.1",
+    "mongoose-paginate-v2": "^1.8.3",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.6.2"
+  },
+  "gitHead": "11b6831c57bf4d576ef01baa15af765cef43e8c2"
+}

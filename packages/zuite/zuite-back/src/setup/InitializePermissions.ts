@@ -1,6 +1,7 @@
 import {LoadPermissions} from "@drax/identity-back";
-import {IdentityPermissions} from "@drax/identity-back";
+import {UserPermissions, RolePermissions, TenantPermissions, UserApiKeyPermissions} from "@drax/identity-back";
 import {MediaPermissions} from "@drax/media-back";
+import {DynamicFormPermissions} from "@drax/dynamic-back";
 import {PersonPermissions} from "../modules/people/permissions/PersonPermissions.js";
 import {CountryPermissions} from "../modules/people/permissions/CountryPermissions.js";
 import {LanguagePermissions} from "../modules/people/permissions/LanguagePermissions.js";
@@ -8,20 +9,18 @@ import {LanguagePermissions} from "../modules/people/permissions/LanguagePermiss
 
 function InitializePermissions() {
 
-    //Load Identity Permissions
-    const identityPermissions = Object.values(IdentityPermissions)
-    const mediaPermissions = Object.values(MediaPermissions)
-    const personPermissions = Object.values(PersonPermissions)
-    const countryPermissions = Object.values(CountryPermissions)
-    const languagePermissions = Object.values(LanguagePermissions)
 
     //Merge All Permissions
     const permissions = [
-        ...identityPermissions,
-        ...mediaPermissions,
-        ...personPermissions,
-        ...countryPermissions,
-        ...languagePermissions
+        ...Object.values(UserPermissions),
+        ...Object.values(RolePermissions),
+        ...Object.values(TenantPermissions),
+        ...Object.values(UserApiKeyPermissions),
+        ...Object.values(MediaPermissions),
+        ...Object.values(PersonPermissions),
+        ...Object.values(CountryPermissions),
+        ...Object.values(LanguagePermissions),
+        ...Object.values(DynamicFormPermissions)
     ]
 
     //Load All Permissions

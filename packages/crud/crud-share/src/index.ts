@@ -23,6 +23,8 @@ import type {IEntityCrudPermissions} from "./interfaces/IEntityCrudPermissions";
 import type {IEntityCrudRules} from "./interfaces/IEntityCrudRules";
 import type {IEntityCrudRefs} from "./interfaces/IEntityCrudRefs";
 
+import type {IDynamicForm,IDynamicFormBase} from "./interfaces/IDynamicForm";
+
 
 
 
@@ -50,5 +52,9 @@ export type {
     IEntityCrudHeader,
     IEntityCrudPermissions,
     IEntityCrudRules,
-    IEntityCrudRefs
+    IEntityCrudRefs,
+
+
+    IDynamicForm,
+    IDynamicFormBase
 }

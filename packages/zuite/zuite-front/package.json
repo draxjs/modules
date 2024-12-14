@@ -19,6 +19,8 @@
     "@drax/i18n-share": "^0.8.3",
     "@drax/identity-front": "^0.8.3",
     "@drax/identity-vue": "^0.8.4",
+    "@drax/dynamic-front": "^0.8.3",
+    "@drax/dynamic-vue": "^0.8.3",
     "@mdi/font": "7.4.47",
     "core-js": "^3.34.0",
     "deepmerge": "^4.3.1",

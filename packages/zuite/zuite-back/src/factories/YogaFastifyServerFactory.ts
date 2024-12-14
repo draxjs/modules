@@ -5,6 +5,7 @@ import {PersonFastifyRoutes} from "../modules/people/routes/PersonRoutes.js"
 import {CountryFastifyRoutes} from "../modules/people/routes/CountryRoutes.js"
 import {LanguageFastifyRoutes} from "../modules/people/routes/LanguageRoutes.js"
 import ModuleMerger from "../merge/ModuleMerger.js";
+import {DynamicFormRoutes} from "@drax/dynamic-back";
 const {typeDefs, resolvers} = await ModuleMerger()
 
 function YogaFastifyServerFactory(rootDir:string) {
@@ -21,6 +22,8 @@ function YogaFastifyServerFactory(rootDir:string) {
     server.fastifyRegister(PersonFastifyRoutes)
     server.fastifyRegister(CountryFastifyRoutes)
     server.fastifyRegister(LanguageFastifyRoutes)
+
+    server.fastifyRegister(DynamicFormRoutes)
     return server
 }
 
