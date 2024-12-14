@@ -75,7 +75,14 @@ onBeforeMount(() => {
             :readonly="operation === 'delete'"
             @submit="onSubmit"
             @cancel="onCancel"
-        />
+        >
+
+          <template v-for="ifield in entity.fields" :key="ifield.name" v-slot:[`field.${ifield.name}`]="{field}">
+            <slot :name="`field.${ifield.name}`" v-bind="{field}">
+            </slot>
+          </template>
+
+        </crud-form>
       </slot>
 
     </crud-dialog>

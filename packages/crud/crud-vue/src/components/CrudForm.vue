@@ -93,18 +93,21 @@ const {
               :lg="field.lg ? field.lg : 12"
               :xl="field.xl ? field.xl : 12"
           >
-            <crud-form-field
-                :field="field"
-                :entity="entity"
-                v-model="valueModel[field.name]"
-                :clearable="false"
-                :readonly="readonly"
-                :variant="variant"
-                :prepend-inner-icon="field?.prependInnerIcon"
-                :prepend-icon="field?.prependIcon"
-                :append-icon="field?.appendIcon"
-                :append-inner-icon="field?.appendInnerIcon"
-            />
+            <slot :name="`field.${field.name}`" v-bind="{field}">
+              <crud-form-field
+                  :field="field"
+                  :entity="entity"
+                  v-model="valueModel[field.name]"
+                  :clearable="false"
+                  :readonly="readonly"
+                  :variant="variant"
+                  :prepend-inner-icon="field?.prependInnerIcon"
+                  :prepend-icon="field?.prependIcon"
+                  :append-icon="field?.appendIcon"
+                  :append-inner-icon="field?.appendInnerIcon"
+              />
+            </slot>
+
           </v-col>
         </v-row>
       </v-card-text>
