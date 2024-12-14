@@ -27,7 +27,7 @@ const generateEntitySchema = (schema: ISchema) => {
                 fields.push(`    ${field}: z.boolean()`)
                 break;
             case "date":
-                fields.push(`    ${field}: ${schema[field].required ? 'z.coerce.date({message: "validation.required"})' : 'z.coerce.date().nullable()'}`)
+                fields.push(`    ${field}: ${schema[field].required ? 'z.coerce.date({message: "validation.required"})' : 'z.coerce.date().nullable().optional()'}`)
                 break;
             case "ref":
                 fields.push(`    ${field}: z.string()${schema[field].required ? ".min(1,'validation.required')" : ".optional().nullable()"}`)
@@ -58,8 +58,8 @@ const generateEntitySchema = (schema: ISchema) => {
                     throw new Error("array.object fields must have a schema")
                 }
                 fields.push(`    ${field}: z.array(
-z.object({${generateEntitySchema(schema[field].schema)}})${schema[field].required ? "" : ".optional()"}
-    )`)
+z.object({${generateEntitySchema(schema[field].schema)}})
+    )${schema[field].required ? "" : ".optional()"}`)
                 break;
             default:
                 throw new Error("Unsupported type " + schema[field].type)
