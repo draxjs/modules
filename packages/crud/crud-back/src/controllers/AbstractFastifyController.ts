@@ -68,7 +68,7 @@ class AbstractFastifyController<T, C, U> {
             const filterArray = stringFilters.split("|")
             const filters: IDraxFieldFilter[] = []
             filterArray.forEach((filter) => {
-                const [field, operator, value] = filter.split(",")
+                const [field, operator, value] = filter.split(";")
                 filters.push({field, operator, value})
             })
             return filters
@@ -401,6 +401,8 @@ class AbstractFastifyController<T, C, U> {
             const search = request.query.search
             const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac);
+
+            //console.log("FILTERS",filters)
 
             let paginateResult = await this.service.paginate({page, limit, orderBy, order, search, filters})
             return paginateResult

@@ -152,6 +152,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
       {name: 'birthdate', type: 'date',  label: 'birthdate from', default: null, operator: 'gt'},
       {name: 'birthdate', type: 'date',  label: 'birthdate to', default: null, operator: 'lt'},
       {name: 'hobbies', type: 'array.string',  label: 'hobbies', default: null, operator: 'in'},
+      {name: 'nationality', type: 'array.ref', ref: 'Country', refDisplay: 'name', label: 'nationality', default: null, operator: 'in'},
     ]
   }
 

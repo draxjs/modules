@@ -25,6 +25,7 @@ const {index, entity, field, disableRules, parentField} = defineProps({
   readonly: {type: Boolean, default: false},
   hideDetails: {type: Boolean, default: false},
   singleLine: {type: Boolean, default: false},
+  multiple: {type: Boolean, default: false},
   clearable: {type: Boolean, default: false},
   disableRules: {type: Boolean, default: false},
   parentField: {type: String, default: null, required: false},
@@ -154,6 +155,7 @@ defineEmits(['updateValue'])
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+
     >
     </v-combobox>
 

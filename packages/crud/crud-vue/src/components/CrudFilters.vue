@@ -74,6 +74,7 @@ const emit = defineEmits(['filter', 'clear','updateValue'])
                 :field="filter"
                 :entity="entity"
                 v-model="valueModel[index].value"
+                :multiple="filter?.multiple"
                 :clearable="true"
                 density="compact"
                 variant="outlined"

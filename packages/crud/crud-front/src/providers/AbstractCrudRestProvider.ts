@@ -78,8 +78,8 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
         return filters
             .filter((filter: IDraxFieldFilter) => filter.value != null && filter.value != '' && filter.value != undefined)
             .map((filter: IDraxFieldFilter) => {
-                let value = isDate(filter.value)? filter.value.toISOString() : filter.value
-                return `${filter.field},${filter.operator},${value}`
+                let value = isDate(filter.value)? filter.value.toISOString() : (Array.isArray(filter.value) ? filter.value.join(',') : filter.value)
+                return `${filter.field};${filter.operator};${value}`
             })
             .join('|')
     }

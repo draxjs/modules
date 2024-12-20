@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import type {PropType} from "vue";
+import {computed, type PropType} from "vue";
 import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
+import {useI18n} from "vue-i18n";
 
+const {t, te} = useI18n()
 const valueModel = defineModel({type: Array, default: () => []});
 
-const {field} = defineProps({
+const {field, entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField>, required: true},
   readonly: {type: Boolean, default: false},
@@ -42,6 +44,11 @@ function removeItem(index: number) {
   valueModel.value.splice(index, 1);
 }
 
+const label = computed(() => {
+  const i18n = `${entity.name.toLowerCase()}.field.${field.label ? field.label : field.name}`
+  return te(i18n) ? t(i18n) : field.label
+})
+
 defineEmits(['updateValue'])
 
 </script>
@@ -49,7 +56,7 @@ defineEmits(['updateValue'])
 <template>
   <v-card class="mt-3" variant="flat" border>
 
-    <v-card-title class="text-h5">{{ field.label }}</v-card-title>
+    <v-card-title class="text-h5">{{ label }}</v-card-title>
     <v-card-text>
       <v-expansion-panels>
         <v-expansion-panel v-for="(item,index) in valueModel" :key="index">
