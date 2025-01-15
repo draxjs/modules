@@ -11,7 +11,7 @@ import {PaginateResult} from "mongoose";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {IUserApiKeyRepository} from "../../interfaces/IUserApiKeyRepository";
 
-class UserMongoRepository implements IUserApiKeyRepository {
+class UserApiKeyMongoRepository implements IUserApiKeyRepository {
 
 
     constructor() {
@@ -101,4 +101,4 @@ class UserMongoRepository implements IUserApiKeyRepository {
 
 }
 
-export default UserMongoRepository
+export default UserApiKeyMongoRepository

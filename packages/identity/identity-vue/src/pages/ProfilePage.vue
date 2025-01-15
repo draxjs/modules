@@ -15,7 +15,7 @@ const { t } = useI18n();
         <v-card>
           <identity-profile-view> </identity-profile-view>
           <v-card-text class="text-center">
-            <v-btn color="blue" variant="tonal" @click="router.push({name: 'Password'})">
+            <v-btn color="blue" variant="tonal" @click="router.push({name: 'PasswordChange'})">
               {{t('user.action.changeOwnPassword')}}
             </v-btn>
           </v-card-text>

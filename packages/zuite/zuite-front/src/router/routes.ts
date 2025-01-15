@@ -4,8 +4,8 @@ import {IdentityRoutes} from "@drax/identity-vue";
 import {DynamicFormCrudRoute} from "@drax/dynamic-vue";
 
 const routes = [
-  ...IdentityRoutes,
   ...baseRoutes,
+  ...IdentityRoutes,
   ...peopleRoutes,
   ...DynamicFormCrudRoute
 ]

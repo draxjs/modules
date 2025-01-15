@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema<IUser>({
             message: "Invalid email format"
         }
     },
-    password: {type: String, required: true,  index: false},
+    password: {type: String, required: true,  index: false, select: false},
     name: {type: String, required: false,  index: false},
     active: {type: Boolean, required: true, default: false,  index: false},
     phone: {
@@ -69,6 +69,11 @@ const UserSchema = new mongoose.Schema<IUser>({
         required: false,
         index: false
     }],
+    emailVerified: {type: Boolean, required: true, default: false,  index: false},
+    phoneVerified: {type: Boolean, required: true, default: false,  index: false},
+    emailCode: {type: String, required: false, index: false, select: false},
+    phoneCode: {type: String, required: false, index: false, select: false},
+    recoveryCode: {type: String, required: false, index: false, select: false},
 }, {timestamps: true});
 
 UserSchema.set('toJSON', {getters: true});

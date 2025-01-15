@@ -3,6 +3,7 @@ import type {IHttpClient} from '@drax/common-front'
 import type {IAuthProvider} from "../../interfaces/IAuthProvider";
 import type {IAuthUser} from "../../interfaces/IAuthUser";
 import type {ILoginResponse} from "../../interfaces/ILoginResponse";
+import type {IUserRegistration} from "@/interfaces/IUserRegistration";
 
 
 class AuthRestProvider implements IAuthProvider {
@@ -22,7 +23,7 @@ class AuthRestProvider implements IAuthProvider {
     }
 
     async login(username: string, password: string): Promise<ILoginResponse> {
-            const url = '/api/auth'
+            const url = '/api/auth/login'
             const data = {username, password}
             let {accessToken} = await this.httpClient.post(url, data) as ILoginResponse
             this.setHttpClientToken(accessToken)
@@ -34,20 +35,41 @@ class AuthRestProvider implements IAuthProvider {
     }
 
     async me(): Promise<IAuthUser> {
-            const url = '/api/me'
+            const url = '/api/auth/me'
             let r = await this.httpClient.get(url) as IAuthUser
             return r
     }
 
     async changeOwnPassword(currentPassword: string, newPassword: string): Promise<boolean> {
-        const url = '/api/password'
+        const url = '/api/users/password/change'
         const data = {currentPassword, newPassword}
         let r = await this.httpClient.post(url, data)
         return /true/i.test(r as string)
     }
 
+    async recoveryPasswordRequest(email: string): Promise<boolean> {
+        const url = '/api/users/password/recovery/request'
+        const data = {email}
+        let r = await this.httpClient.post(url, data)
+        return /true/i.test(r as string)
+    }
+
+
+    async recoveryPasswordComplete(recoveryCode: string, newPassword: string): Promise<boolean> {
+        const url = '/api/users/password/recovery/complete'
+        const data = {recoveryCode, newPassword}
+        let r = await this.httpClient.post(url, data)
+        return /true/i.test(r as string)
+    }
+
+    async register(form: IUserRegistration): Promise<boolean> {
+        const url = '/api/users/register'
+        let r = await this.httpClient.post(url, form)
+        return /true/i.test(r as string)
+    }
+
     async changeAvatar(file: File): Promise<boolean> {
-        const url = '/api/user/avatar'
+        const url = '/api/users/avatar'
         const data = new FormData()
         data.append('file', file)
         let r = await this.httpClient.post(url, data, {removeHeaders: ['content-type']})

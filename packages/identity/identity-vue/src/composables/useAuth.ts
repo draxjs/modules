@@ -30,6 +30,18 @@ export function useAuth() {
         return await authSystem.changeOwnPassword(currentPassword, newPassword)
     }
 
+    const recoveryPasswordRequest = async (email: string) => {
+        return await authSystem.recoveryPasswordRequest(email)
+    }
+
+    const recoveryPasswordComplete = async (recoveryCode: string, newPassword: string) => {
+        return await authSystem.recoveryPasswordComplete(recoveryCode, newPassword)
+    }
+
+    const register = async (form: any) => {
+        return await authSystem.register(form)
+    }
+
     const changeAvatar = async (file: File) => {
         if (file) {
             await authSystem.changeAvatar(file)
@@ -73,6 +85,13 @@ export function useAuth() {
 
     }
 
-    return {hasPermission, logout, loginWithToken, tokenIsValid, isAuthenticated, fetchAuthUser, login, changeOwnPassword, changeAvatar}
+    return {
+        login, logout, loginWithToken,
+        tokenIsValid, hasPermission,
+        isAuthenticated, fetchAuthUser,
+        changeOwnPassword, changeAvatar,
+        recoveryPasswordRequest, recoveryPasswordComplete,
+        register
+    }
 
 }

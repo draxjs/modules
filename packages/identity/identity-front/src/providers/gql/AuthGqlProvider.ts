@@ -2,6 +2,9 @@ import type {IGqlClient} from '@drax/common-front'
 import type {IAuthProvider} from "../../interfaces/IAuthProvider.ts";
 import type {IAuthUser} from "../../interfaces/IAuthUser";
 import type {ILoginResponse} from "../../interfaces/ILoginResponse";
+import type {IUserRegistration} from "../../interfaces/IUserRegistration";
+import type {Promise} from "cypress/types/cy-bluebird";
+import type {File} from "vitest";
 
 class AuthGqlProvider implements IAuthProvider {
 
@@ -65,6 +68,18 @@ class AuthGqlProvider implements IAuthProvider {
         data.append("0", file)
         let r = await this.gqlClient.upload(data)
         return /true/i.test(r as string)
+    }
+
+    recoveryPasswordComplete(recoveryCode: string, newPassword: string): Promise<boolean> {
+        throw new Error('Not implemented')
+    }
+
+    recoveryPasswordRequest(email: string): Promise<boolean> {
+        throw new Error('Not implemented')
+    }
+
+    register(form: IUserRegistration): Promise<boolean> {
+        throw new Error('Not implemented')
     }
 }
 

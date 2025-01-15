@@ -1,6 +1,6 @@
 import {describe, test} from "vitest";
 import {EmailLayoutService} from '../src/services/EmailLayoutService.js'
-import {EmailService} from '../src/services/EmailService.js'
+import {EmailTransportService} from '../src/services/EmailTransportService'
 import previewEmail from 'preview-email';
 import {fileURLToPath} from "url";
 import path from "path";
@@ -12,7 +12,7 @@ let body = `
         <p style="font-size: 16px; line-height: 1.6; color: #555555; margin: 0;">Si tienes alguna duda, no dudes en contactarnos. Estamos aquí para ayudarte.</p>
         `
 
-//I Need the absolute path of template.pug file in the same directory as this file with nodejs 20 and type module
+//@ts-ignore
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const templatePath = path.join(__dirname, 'template.pug');
@@ -171,7 +171,7 @@ describe("Email Layout", function () {
         })
 
 
-        let emailService = new EmailService('gmail', {
+        let emailService = new EmailTransportService('gmail', {
             auth: {
                 user: process.env.EMAIL_AUTH_USERNAME,
                 pass: process.env.EMAIL_AUTH_PASSWORD

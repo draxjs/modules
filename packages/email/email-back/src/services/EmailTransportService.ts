@@ -4,7 +4,7 @@ import type {Transporter, SendMailOptions} from "nodemailer";
 import type {TransportGmailConfig, TransportSmtpConfig} from "../interfaces/ITransportConfig";
 
 
-class EmailService {
+class EmailTransportService {
 
     transporter: Transporter;
     transporterConfig : TransportGmailConfig | TransportSmtpConfig;
@@ -77,5 +77,5 @@ class EmailService {
 
 }
 
-export default EmailService
-export {EmailService}
+export default EmailTransportService
+export {EmailTransportService}

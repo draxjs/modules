@@ -12,7 +12,6 @@ import type {IUserRepository} from "../../interfaces/IUserRepository";
 import {Cursor, PaginateResult} from "mongoose";
 import RoleMongoRepository from "./RoleMongoRepository.js";
 import {IDraxFindOptions, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
-import {IRole, ITenant} from "@drax/identity-share";
 import type {IDraxFieldFilter} from "@drax/crud-share/dist";
 
 class UserMongoRepository implements IUserRepository {
@@ -58,6 +57,18 @@ class UserMongoRepository implements IUserRepository {
         }
     }
 
+    async updatePartial(id: string, data: any): Promise<IUser> {
+        try {
+            const item: mongoose.HydratedDocument<IUser> = await UserModel.findOneAndUpdate({_id: id}, data, {new: true}).populate(['role','tenant']).exec()
+            return item
+        } catch (e) {
+            if (e instanceof mongoose.Error.ValidationError) {
+                throw MongooseErrorToValidationError(e)
+            }
+            throw e
+        }
+    }
+
     async delete(id: string): Promise<boolean> {
         const result: DeleteResult = await UserModel.deleteOne({_id: id}).exec()
         return result.deletedCount == 1
@@ -74,8 +85,28 @@ class UserMongoRepository implements IUserRepository {
         return user
     }
 
+    async findByUsernameWithPassword(username: string): Promise<IUser> {
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({username: username}).select('+password').populate(['role','tenant']).exec()
+        return user
+    }
+
     async findByEmail(email: string): Promise<IUser> {
         const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({email: email}).populate(['role','tenant']).exec()
+        return user
+    }
+
+    async findByEmailCode(code: string): Promise<IUser> {
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({emailCode: {$eq: code}, emailVerified: {$eq: false} }).populate(['role','tenant']).exec()
+        return user
+    }
+
+    async findByPhoneCode(code: string): Promise<IUser> {
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({phoneCode: {$eq: code}, phoneVerified: {$eq: false} }).populate(['role','tenant']).exec()
+        return user
+    }
+
+    async findByRecoveryCode(code: string): Promise<IUser> {
+        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({recoveryCode: {$eq: code}, active: {$eq: true} }).populate(['role','tenant']).exec()
         return user
     }
 

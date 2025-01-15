@@ -7,6 +7,13 @@ const {t, te} = useI18n()
 
 const {login, isAuthenticated} = useAuth()
 
+
+defineProps({
+  recovery: {type: Boolean, default: false},
+  register: {type: Boolean, default: false},
+}
+)
+
 const username = ref('')
 const password = ref('')
 const authError = ref('')
@@ -51,7 +58,7 @@ function togglePasswordVisibility() {
   <template v-else>
 
         <v-form @submit.prevent="submitLogin">
-          <v-card variant="elevated" class="pa-6">
+          <v-card variant="elevated" class="pa-6 pb-0">
             <v-card-title class="pa-4 text-center">{{ te('auth.signIn') ? t('auth.signIn') : 'Sign In' }}</v-card-title>
             <v-card-text v-if="authError">
               <v-alert type="error">
@@ -84,7 +91,7 @@ function togglePasswordVisibility() {
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
-                  class="mb-8"
+                  class="mb-4"
                   color="blue"
                   size="large"
                   variant="tonal"
@@ -97,8 +104,20 @@ function togglePasswordVisibility() {
                 {{ te('auth.login') ? t('auth.login') : 'Login' }}
               </v-btn>
             </v-card-actions>
+
+            <v-divider></v-divider>
+            <v-card-actions v-if="recovery || register" class="pa-0 ma-0">
+              <v-btn v-if="register" size="small" color="grey" variant="text" href="/registration">
+                {{ te('auth.register') ? t('auth.register') : 'Registro' }}
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn v-if="recovery" size="small" color="grey" variant="text" href="/password/recovery/request">
+                {{ te('auth.recoveryPassword') ? t('auth.recoveryPassword') : 'Recovery Password' }}
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-form>
+
   </template>
 </template>
 

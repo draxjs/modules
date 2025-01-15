@@ -1,6 +1,7 @@
 import type {IAuthProvider} from "../interfaces/IAuthProvider";
 import type {IAuthUser} from "../interfaces/IAuthUser";
 import type {ILoginResponse} from "../interfaces/ILoginResponse";
+import type {IUserRegistration} from "@/interfaces/IUserRegistration";
 
 class AuthSystem implements IAuthProvider {
 
@@ -27,6 +28,21 @@ class AuthSystem implements IAuthProvider {
 
     async changeOwnPassword(currentPassword:string, newPassword:string):Promise<boolean> {
         const result: boolean = await this._provider.changeOwnPassword(currentPassword,newPassword)
+        return result
+    }
+
+    async recoveryPasswordRequest(email:string):Promise<boolean> {
+        const result: boolean = await this._provider.recoveryPasswordRequest(email)
+        return result
+    }
+
+    async recoveryPasswordComplete(recoveryCode:string, newPassword:string):Promise<boolean> {
+        const result: boolean = await this._provider.recoveryPasswordComplete(recoveryCode,newPassword)
+        return result
+    }
+
+    async register(form: IUserRegistration):Promise<boolean> {
+        const result: boolean = await this._provider.register(form)
         return result
     }
 

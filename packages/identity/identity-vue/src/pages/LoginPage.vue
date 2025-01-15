@@ -31,7 +31,7 @@ function onLoginSuccess(){
         <span class="pa-3 font-weight-medium rounded logo">{{TITLE_MAIN}}</span> {{TITLE_SEC}}
       </h2>
 
-      <IdentityLogin @loginSuccess="onLoginSuccess"></IdentityLogin>
+      <IdentityLogin @loginSuccess="onLoginSuccess" recovery register></IdentityLogin>
       </v-col>
     </v-row>
 

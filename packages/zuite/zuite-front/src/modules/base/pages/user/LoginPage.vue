@@ -34,8 +34,7 @@ function onLoginSuccess(){
           <span class="pa-3 font-weight-medium rounded logo">{{ TITLE_MAIN }}</span> {{ TITLE_SEC }}
         </h2>
 
-
-        <IdentityLogin @loginSuccess="onLoginSuccess"></IdentityLogin>
+        <IdentityLogin @loginSuccess="onLoginSuccess" recovery register></IdentityLogin>
 
         <div class="d-flex justify-center mt-4 mb-2">
           <google-login @loginSuccess="onLoginSuccess"></google-login>

@@ -13,7 +13,7 @@ import RoleCrudPage from "./pages/crud/RoleCrudPage.vue";
 
 import LoginPage from "./pages/LoginPage.vue";
 import ProfilePage from "./pages/ProfilePage.vue";
-import PasswordPage from "./pages/PasswordPage.vue";
+import PasswordPage from "./pages/PasswordChangePage.vue";
 
 import TenantView from "./views/TenantView.vue";
 import TenantCrudPage from "./pages/crud/TenantCrudPage.vue";
@@ -39,6 +39,8 @@ import RoleCrud from "./cruds/role-crud/RoleCrud"
 
 import {useAuthStore} from "./stores/auth/AuthStore.js";
 
+import IdentityAuthRoutes from "./routes/IdentityAuthRoutes.js";
+import IdentityCrudRoutes from "./routes/IdentityCrudRoutes.js";
 import IdentityRoutes from "./routes/IdentityRoutes.js";
 
 export {
@@ -90,5 +92,7 @@ export {
     useAuthStore,
 
     //Routes
-    IdentityRoutes
+    IdentityCrudRoutes,
+    IdentityAuthRoutes,
+    IdentityRoutes,
 }

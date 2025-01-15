@@ -20,7 +20,7 @@ class EmailLayoutService {
             headerLogoStyle: "max-height: 50px; display: block; margin: 10px auto;",
             footerBgColor: "#f4f4f4",
             footerCopyright: "Your Company. All rights reserved.",
-            footerContent: "Default footer content",
+            footerContent: "",
             footerUnsubscribe: "",
         };
         this.options = { ...defaultOptions, ...options };
@@ -75,7 +75,7 @@ class EmailLayoutService {
         <td style="text-align: center; padding: 20px; font-size: 12px; color: #888888;">`
 
         if (this.options.footerCopyright) {
-            footer += ` <p style="margin: 0;">&copy; ${new Date().getFullYear()} ${this.options.footerCopyright}.</p>`
+            footer += ` <p style="margin: 0;">&copy; ${new Date().getFullYear()} ${this.options.footerCopyright}</p>`
         }
 
         if (this.options.footerContent) {

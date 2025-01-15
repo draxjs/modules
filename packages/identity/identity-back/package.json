@@ -32,6 +32,7 @@
     "@drax/crud-back": "^0.9.0",
     "@drax/crud-share": "^0.9.0",
     "@drax/identity-share": "^0.9.0",
+    "@drax/email-back": "^0.9.0",
     "bcryptjs": "^2.4.3",
     "express-jwt": "^8.4.1",
     "graphql": "^16.8.2",

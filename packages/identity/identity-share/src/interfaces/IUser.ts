@@ -17,6 +17,11 @@ interface IUser{
     updatedAt?: string
     tenant?: ITenant
     groups?: IUserGroup[]
+    emailVerified?: boolean
+    phoneVerified?: boolean
+    emailCode?: string
+    phoneCode?: string
+    recoveryCode?: string
 }
 
 interface IUserEmailCreate {
@@ -45,6 +50,10 @@ interface IUserCreate {
     tenant?: string
     groups?: string[] | string
     createdAt?: string
+    emailVerified?: boolean
+    phoneVerified?: boolean
+    emailCode?: string
+    phoneCode?: string
 }
 
 interface IUserUpdate {
@@ -59,6 +68,10 @@ interface IUserUpdate {
     groups?: string[] | string
     password?: string
     updatedAt?: string
+    emailVerified?: boolean
+    phoneVerified?: boolean
+    emailCode?: string
+    phoneCode?: string
 }
 
 export {IUser, IUserCreate, IUserUpdate, IUserEmailCreate}

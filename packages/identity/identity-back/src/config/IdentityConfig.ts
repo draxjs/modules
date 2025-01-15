@@ -13,6 +13,8 @@ enum IdentityConfig {
 
     AvatarDir = "DRAX_AVATAR_DIR",
 
+    defaultRole = "DRAX_DEFAULT_ROLE",
+
 
 }
 

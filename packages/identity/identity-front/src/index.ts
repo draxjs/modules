@@ -39,6 +39,7 @@ import type {IUserApiKeyProvider} from "./interfaces/IUserApiKeyProvider"
 import type {IAuthUser} from "./interfaces/IAuthUser"
 import type {IUserPassword} from "./interfaces/IUserPassword"
 import type {ILoginResponse} from "./interfaces/ILoginResponse"
+import type {IUserRegistration} from "./interfaces/IUserRegistration"
 
 export type {
     IAuthProvider,
@@ -48,7 +49,8 @@ export type {
     IUserApiKeyProvider,
     IAuthUser,
     IUserPassword,
-    ILoginResponse
+    ILoginResponse,
+    IUserRegistration
 }
 
 export {

@@ -2,7 +2,7 @@ import {describe, test} from "vitest";
 import {EmailLayoutService} from '../src/services/EmailLayoutService.js'
 import {fileURLToPath} from "url";
 import path from "path";
-import {EmailServiceFactory} from "../src/factory/EmailServiceFactory.js";
+import {EmailTransportServiceFactory} from "../src/factory/EmailTransportServiceFactory";
 
 
 let body = `
@@ -12,6 +12,7 @@ let body = `
         `
 
 //I Need the absolute path of template.pug file in the same directory as this file with nodejs 20 and type module
+//@ts-ignore
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const templatePath = path.join(__dirname, 'template.pug');
@@ -39,7 +40,7 @@ describe("Email Service", function () {
             text: ''
         }
 
-        let emailService = EmailServiceFactory.instance
+        let emailService = EmailTransportServiceFactory.instance
 
         const r = await emailService.sendEmail({
             from: 'ci.sys.virtual@gmail.com',
@@ -66,7 +67,7 @@ describe("Email Service", function () {
         })
 
 
-        let emailService = EmailServiceFactory.instance
+        let emailService = EmailTransportServiceFactory.instance
 
         const r = await emailService.sendEmail({
             from: 'ci.sys.virtual@gmail.com',

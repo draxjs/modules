@@ -4,9 +4,9 @@ async function UserRoutes(fastify, options) {
 
     const controller: UserController = new UserController()
 
-    fastify.post('/api/auth', (req,rep) => controller.auth(req,rep))
+    fastify.post('/api/auth/login', (req,rep) => controller.auth(req,rep))
 
-    fastify.get('/api/me', (req,rep) => controller.me(req,rep))
+    fastify.get('/api/auth/me', (req,rep) => controller.me(req,rep))
 
     fastify.get('/api/users/search', (req,rep) => controller.search(req,rep) )
 
@@ -20,13 +20,23 @@ async function UserRoutes(fastify, options) {
 
     fastify.delete('/api/users/:id', (req,rep) => controller.delete(req,rep))
 
-    fastify.post('/api/password', (req,rep) => controller.myPassword(req,rep))
+    fastify.post('/api/users/register', (req,rep) => controller.register(req,rep))
 
-    fastify.post('/api/password/:id', (req,rep) => controller.password(req,rep))
+    fastify.get('/api/users/verify-email/:code', (req,rep) => controller.verifyEmail(req,rep))
 
-    fastify.post('/api/user/avatar', (req,rep) => controller.updateAvatar(req,rep))
+    fastify.get('/api/users/verify-phone/:code', (req,rep) => controller.verifyPhone(req,rep))
 
-    fastify.get('/api/user/avatar/:filename', (req,rep) => controller.getAvatar(req,rep))
+    fastify.post('/api/users/password/change', (req,rep) => controller.changeMyPassword(req,rep))
+
+    fastify.post('/api/users/password/change/:id', (req,rep) => controller.changePassword(req,rep))
+
+    fastify.post('/api/users/password/recovery/request', (req,rep) => controller.passwordRecoveryRequest(req,rep))
+
+    fastify.post('/api/users/password/recovery/complete', (req,rep) => controller.recoveryPasswordComplete(req,rep))
+
+    fastify.post('/api/users/avatar', (req,rep) => controller.updateAvatar(req,rep))
+
+    fastify.get('/api/users/avatar/:filename', (req,rep) => controller.getAvatar(req,rep))
 
 }
 

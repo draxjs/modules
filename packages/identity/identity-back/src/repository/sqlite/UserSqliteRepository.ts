@@ -29,7 +29,11 @@ const tableFields: SqliteTableField[] = [
     {name: "avatar", type: "TEXT", unique: false, primary: false},
     {name: "origin", type: "TEXT", unique: false, primary: false},
     {name: "createdAt", type: "TEXT", unique: false, primary: false},
-    {name: "updatedAt", type: "TEXT", unique: false, primary: false}
+    {name: "updatedAt", type: "TEXT", unique: false, primary: false},
+    {name: "emailVerified", type: "INTEGER", unique: false, primary: false},
+    {name: "phoneVerified", type: "INTEGER", unique: false, primary: false},
+    {name: "emailCode", type: "TEXT", unique: false, primary: false},
+    {name: "phoneCode", type: "TEXT", unique: false, primary: false},
 ]
 
 class UserSqliteRepository implements IUserRepository {
@@ -95,6 +99,10 @@ class UserSqliteRepository implements IUserRepository {
 
     }
 
+    async updatePartial(id: string, userData: IUserUpdate): Promise<IUser> {
+        return this.update(id, userData)
+    }
+
     async update(id: string, userData: IUserUpdate): Promise<IUser> {
         try {
             if (!await this.findRoleById(userData.role)) {
@@ -108,7 +116,9 @@ class UserSqliteRepository implements IUserRepository {
             const setClauses = Object.keys(userData)
                 .map(field => `${field} = @${field}`)
                 .join(', ');
+
             userData.id = id
+
             const stmt = this.db.prepare(`UPDATE users
                                           SET ${setClauses}
                                           WHERE id = @id `);
@@ -151,8 +161,48 @@ class UserSqliteRepository implements IUserRepository {
         return user
     }
 
+    async findByUsernameWithPassword(username: string): Promise<IUser> {
+        const user = this.db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+        if (!user) {
+            return null
+        }
+        user.role = await this.findRoleById(user.role)
+        user.tenant = await this.findTenantById(user.tenant)
+        return user
+    }
+
     async findByEmail(email: string): Promise<IUser> {
         const user = this.db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+        if (!user) {
+            return null
+        }
+        user.role = await this.findRoleById(user.role)
+        user.tenant = await this.findTenantById(user.tenant)
+        return user
+    }
+
+    async findByEmailCode(code: string): Promise<IUser> {
+        const user = this.db.prepare('SELECT * FROM users WHERE emailVerifyCode = ? AND emailVerified = 0').get(code);
+        if (!user) {
+            return null
+        }
+        user.role = await this.findRoleById(user.role)
+        user.tenant = await this.findTenantById(user.tenant)
+        return user
+    }
+
+    async findByRecoveryCode(code: string): Promise<IUser> {
+        const user = this.db.prepare('SELECT * FROM users WHERE recoveryCode = ? AND active = 1').get(code);
+        if (!user) {
+            return null
+        }
+        user.role = await this.findRoleById(user.role)
+        user.tenant = await this.findTenantById(user.tenant)
+        return user
+    }
+
+    async findByPhoneCode(code: string): Promise<IUser> {
+        const user = this.db.prepare('SELECT * FROM users WHERE phoneCode = ? AND phoneVerified = 0').get(code);
         if (!user) {
             return null
         }

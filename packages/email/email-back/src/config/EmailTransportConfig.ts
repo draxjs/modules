@@ -1,4 +1,4 @@
-enum EmailConfig {
+enum EmailTransportConfig {
     type = "EMAIL_TYPE",
     service = "EMAIL_SERVICE",
     smtpHost = "EMAIL_HOST",
@@ -10,5 +10,5 @@ enum EmailConfig {
     ignoreTLS = "EMAIL_IGNORE_TLS",
 }
 
-export default EmailConfig;
-export {EmailConfig};
+export default EmailTransportConfig;
+export {EmailTransportConfig};

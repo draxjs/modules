@@ -10,6 +10,7 @@ const messages = {
             rememberMe: 'Remember Me',
             forgotPassword: 'Forgot Password?',
             invalidCredentials: 'Invalid credentials',
+            recoveryPassword: 'Recovery Password',
         }
     },
     es: {
@@ -21,8 +22,9 @@ const messages = {
             username: 'Usuario',
             password: 'Clave',
             rememberMe: 'Recordarme',
-            forgotPassword: '¿Olvidaste tu clave?',
+            forgotPassword: '¿Olvidaste tu Contraseña?',
             invalidCredentials: 'Credenciales Inválidas',
+            recoveryPassword: 'Recuperar Contraseña',
         }
     }
 }

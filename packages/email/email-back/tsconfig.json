@@ -3,9 +3,10 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "declarationDir": "./types",
+    "declarationDir": "types",
+    "module": "ESNext"
   },
-  "exclude": ["test", "types","dist"],
+  "exclude": ["test", "types","dist","node_modules"],
   "ts-node": {
     "esm": true
   },

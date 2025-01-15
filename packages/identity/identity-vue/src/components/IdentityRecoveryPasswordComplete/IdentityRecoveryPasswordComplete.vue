@@ -1,41 +1,56 @@
 <script setup lang="ts">
-import {computed, ref} from 'vue'
+import {computed, ref, onMounted} from 'vue'
 import {useAuth} from "../../composables/useAuth.js";
 import {ClientError} from "@drax/common-front";
 import type {IClientInputError} from "@drax/common-front";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
+import {useRoute, useRouter} from "vue-router"
 
 const {t,te} = useI18n()
 const {$ta} = useI18nValidation()
 
-const {changeOwnPassword} = useAuth()
+const route = useRoute()
+const router = useRouter()
 
-const currentPassword = ref('')
+const {recoveryPasswordComplete} = useAuth()
+
+const recoveryCode = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
 const inputErrors = ref<IClientInputError|undefined>({currentPassword: [], newPassword: [], confirmPassword: []})
 const errorMsg = ref('')
 const loading = ref(false)
-const changed = ref(false)
+const success = ref(false)
 
-let currentPasswordVisibility = ref(false)
+let recoveryCodeVisibility = ref(false)
 let newPasswordVisibility = ref(false)
 
+
 const isFormValid = computed(() =>
-    currentPassword.value.trim() !== '' && newPassword.value.trim() !== ''
+    recoveryCode.value.trim() !== '' && newPassword.value.trim() !== ''
     && newPassword.value.trim() === confirmPassword.value.trim()
 )
+
+const recoveryCodeParam = computed(() => {
+  return route.params.code
+})
+
+onMounted(() => {
+  if (recoveryCodeParam.value) {
+    recoveryCode.value = recoveryCodeParam.value as string
+  }
+})
 
 function confirmPasswordRule(value: string) {
   return newPassword.value.trim() === confirmPassword.value.trim() || t('validation.password.confirmed')
 }
 
-async function submitChangePassword() {
+async function submitResetPassword() {
   try {
     loading.value = true
-    await changeOwnPassword(currentPassword.value.trim(), newPassword.value.trim())
-    changed.value = true
+    await recoveryPasswordComplete(recoveryCode.value.trim(), newPassword.value.trim())
+    success.value = true
   } catch (err) {
     if (err instanceof ClientError) {
       inputErrors.value = err.inputErrors
@@ -55,37 +70,44 @@ async function submitChangePassword() {
 <template>
   <v-sheet>
 
-    <template v-if="changed">
-      <v-alert type="success">
-        {{ t('user.events.passwordChanged') }}
-      </v-alert>
+    <template v-if="success">
+      <v-card>
+        <v-card-text>
+          <v-alert type="success">
+            {{ t('user.passwordChanged') }}
+          </v-alert>
+        </v-card-text>
+        <v-card-text class="text-center">
+          <v-btn color="primary" @click="router.push('/login')">{{ t('user.action.login') }}</v-btn>
+        </v-card-text>
+      </v-card>
+
     </template>
 
     <template v-else>
 
-          <v-form @submit.prevent="submitChangePassword">
+          <v-form @submit.prevent="submitResetPassword">
             <v-card variant="elevated">
-              <v-card-title class="pa-4">{{ t('user.action.changeOwnPassword') }}</v-card-title>
+              <v-card-title class="pa-4">{{ t('user.action.recoveryPassword') }}</v-card-title>
               <v-card-text v-if="errorMsg">
                 <v-alert type="error">
                   {{ te(errorMsg) ?t(errorMsg) : errorMsg }}
                 </v-alert>
               </v-card-text>
               <v-card-text>
-                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.currentPassword') }}</div>
+                <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.recoveryCode') }}</div>
                 <v-text-field
                     variant="outlined"
-                    id="current-password-input"
-                    v-model="currentPassword"
-                    prepend-inner-icon="mdi-lock-outline"
+                    id="recovery-code-input"
+                    v-model="recoveryCode"
+                    prepend-inner-icon="mdi-code-braces-box"
                     required
-                    :type="currentPasswordVisibility ? 'text': 'password'"
-                    :append-inner-icon="currentPasswordVisibility ? 'mdi-eye-off': 'mdi-eye'"
-                    @click:append-inner="currentPasswordVisibility = !currentPasswordVisibility"
-                    autocomplete="new-password"
-                    :error-messages="$ta(inputErrors?.currentPassword)"
+                    readonly
+                    :error-messages="$ta(inputErrors?.recoveryCode)"
                 ></v-text-field>
+
                 <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.newPassword') }}</div>
+                <!-- NEW PASSWORD-->
                 <v-text-field
                     variant="outlined"
                     id="new-password-input"
@@ -99,6 +121,7 @@ async function submitChangePassword() {
                     :error-messages="$ta(inputErrors?.newPassword)"
                 ></v-text-field>
                 <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.confirmPassword') }}</div>
+                <!-- CONFIRM PASSWORD-->
                 <v-text-field
                     variant="outlined"
                     id="confirm-password-input"
