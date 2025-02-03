@@ -1,4 +1,3 @@
-
 import {AbstractMongoRepository} from "@drax/crud-back";
 import {CountryModel} from "../models/CountryModel.js";
 import type {ICountryRepository} from '../interfaces/ICountryRepository'
@@ -11,7 +10,7 @@ class CountryMongoRepository extends AbstractMongoRepository<ICountry, ICountryB
         super();
         this._model = CountryModel;
         this._searchFields = ['name', 'description'];
-         this._populateFields = [];
+        this._populateFields = [];
     }
 
 }

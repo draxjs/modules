@@ -1,38 +1,38 @@
-
+type SettingTypes = 'string' | 'longString' | 'number' | 'enum' | 'boolean' | 'password' |'stringList' | 'numberList' | 'enumList' |'ref' |'secret'
 
 interface ISettingBase{
     id?: string
-    name: string
+    key: string
     value: string
-    type: "string" | "number" | "boolean" | "entity"
-    multiple: boolean
-    obfuscate: boolean
-    category: string
-    options?: string[] | number[]
-    regexValidation?: string
+    //valueList?: string[]
+    label: string
+    group: string
+    type: SettingTypes
+    options?: string[]
+    regex?: string
+    entity?: string
+    entityValue?: string
+    entityText?: string
     prefix?: string
     suffix?: string
-    entity?: string
-    entityText?: string
-    entityValue?: string
 }
 
 interface ISetting{
     id: string
-    name: string
+    key: string
     value: string
-    type: "string" | "number" | "boolean" | "entity"
-    multiple: boolean
-    obfuscate: boolean
-    category: string
-    options?: string[] | number[]
-    regexValidation?: string
+    //valueList?: string[]
+    label: string
+    group: string
+    type: SettingTypes
+    options?: string[]
+    regex?: string
+    entity?: string
+    entityValue?: string
+    entityText?: string
     prefix?: string
     suffix?: string
-    entity?: string
-    entityText?: string
-    entityValue?: string
 }
 
 
-export {ISetting, ISettingBase}
+export type { ISetting, ISettingBase, SettingTypes }

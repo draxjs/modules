@@ -6,6 +6,7 @@ import {CountryFastifyRoutes} from "../modules/people/routes/CountryRoutes.js"
 import {LanguageFastifyRoutes} from "../modules/people/routes/LanguageRoutes.js"
 import ModuleMerger from "../merge/ModuleMerger.js";
 import {DynamicFormRoutes} from "@drax/dynamic-back";
+import {SettingRoutes} from "@drax/settings-back";
 const {typeDefs, resolvers} = await ModuleMerger()
 
 function YogaFastifyServerFactory(rootDir:string) {
@@ -14,11 +15,14 @@ function YogaFastifyServerFactory(rootDir:string) {
     server.fastifyHook('onRequest',jwtMiddleware)
     server.fastifyHook('onRequest',apiKeyMiddleware)
     server.fastifyHook('onRequest',rbacMiddleware)
-    server.fastifyRegister(MediaRoutes)
     server.fastifyRegister(UserRoutes)
     server.fastifyRegister(RoleRoutes)
     server.fastifyRegister(TenantRoutes)
     server.fastifyRegister(UserApiKeyRoutes)
+
+    server.fastifyRegister(MediaRoutes)
+    server.fastifyRegister(SettingRoutes)
+
     server.fastifyRegister(PersonFastifyRoutes)
     server.fastifyRegister(CountryFastifyRoutes)
     server.fastifyRegister(LanguageFastifyRoutes)
