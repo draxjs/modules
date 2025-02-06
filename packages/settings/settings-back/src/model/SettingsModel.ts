@@ -21,13 +21,13 @@ const SettingSchema = new mongoose.Schema<ISetting>({
 })
 
 SettingSchema.virtual("id").get(function () {
-    return this._id.toHexString();
+    return this._id.toString();
 });
 
 
-SettingSchema.set('toJSON', {getters: true, virtuals: true,});
+SettingSchema.set('toJSON', {getters: true, virtuals: true});
 
-SettingSchema.set('toObject', {getters: true, virtuals: true,});
+SettingSchema.set('toObject', {getters: true, virtuals: true});
 
 SettingSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 

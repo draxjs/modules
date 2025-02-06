@@ -20,11 +20,13 @@ const tableFields: SqliteTableField[] = [
 
 class SettingSqliteRepository implements ISettingRepository{
 
-    private db: any;
-    private dataBaseFile: string;
+    protected db: any;
+    protected dataBaseFile: string;
+    protected _searchFields: string[] = []
 
     constructor(dataBaseFile:string, verbose:boolean = false) {
         this.dataBaseFile = dataBaseFile;
+        this._searchFields = ['_id', 'key'];
         this.db = new sqlite(dataBaseFile, {verbose: verbose ? console.log : null});
         this.table()
     }
@@ -141,8 +143,8 @@ class SettingSqliteRepository implements ISettingRepository{
         return undefined
     }
 
-    async findByName(name: string): Promise<ISetting | null>{
-        const setting = this.db.prepare('SELECT * FROM settings WHERE name = ?').get(name);
+    async findByKey(key: string): Promise<ISetting | null>{
+        const setting = this.db.prepare('SELECT * FROM settings WHERE key = ?').get(key);
         if(setting){
             return setting
         }
@@ -155,14 +157,15 @@ class SettingSqliteRepository implements ISettingRepository{
     }
 
 
-
-    async findWithoutPopulateById(id: string): Promise<ISetting | null>{
-        const setting = this.db.prepare('SELECT * FROM settings WHERE id = ?').get(id);
-        if(setting){
-            return setting
+    async search(value: any, limit: number = 1000): Promise<any[]>{
+        let where=""
+        if (value && this.searchFields.length > 0) {
+            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${value}%'`).join(" OR ")}`
         }
-        return undefined
+        const items = this.db.prepare(`SELECT * FROM ${this.tableName} ${where}`).all();
+        return items
     }
+
 
 
 
@@ -170,3 +173,4 @@ class SettingSqliteRepository implements ISettingRepository{
 }
 
 export default SettingSqliteRepository
+export {SettingSqliteRepository}
