@@ -15,7 +15,7 @@ const {setting, editing} = defineProps({
 const visible = ref(false)
 
 const variant = computed(() => {
-  return editing ? 'filled' : 'plain'
+  return editing ? 'filled' : 'underlined'
 })
 
 const validateRegex = computed(() => {
