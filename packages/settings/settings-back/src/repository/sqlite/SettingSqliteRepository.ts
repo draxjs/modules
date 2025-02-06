@@ -159,10 +159,10 @@ class SettingSqliteRepository implements ISettingRepository{
 
     async search(value: any, limit: number = 1000): Promise<any[]>{
         let where=""
-        if (value && this.searchFields.length > 0) {
-            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${value}%'`).join(" OR ")}`
+        if (value && this._searchFields.length > 0) {
+            where = ` WHERE ${this._searchFields.map(field => `${field} LIKE '%${value}%'`).join(" OR ")}`
         }
-        const items = this.db.prepare(`SELECT * FROM ${this.tableName} ${where}`).all();
+        const items = this.db.prepare(`SELECT * FROM settings ${where}`).all();
         return items
     }
 

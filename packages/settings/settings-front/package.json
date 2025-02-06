@@ -23,5 +23,6 @@
     "typescript": "^5.4.2",
     "vite": "^5.1.5",
     "vitest": "^0.34.6"
-  }
+  },
+  "gitHead": "0e3b68f899b6ab7e6d57393cea1879aaebec1a05"
 }
