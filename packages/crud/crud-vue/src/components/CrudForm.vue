@@ -99,7 +99,7 @@ const {
                   :entity="entity"
                   v-model="valueModel[field.name]"
                   :clearable="false"
-                  :readonly="readonly"
+                  :readonly="readonly || field.readonly"
                   :variant="variant"
                   :prepend-inner-icon="field?.prependInnerIcon"
                   :prepend-icon="field?.prependIcon"
