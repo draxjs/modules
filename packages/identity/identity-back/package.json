@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "Identity module for user management, authentication and authorization.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -29,8 +29,8 @@
   "license": "ISC",
   "dependencies": {
     "@drax/common-back": "^0.11.3",
-    "@drax/crud-back": "^0.11.3",
-    "@drax/crud-share": "^0.11.3",
+    "@drax/crud-back": "^0.11.4",
+    "@drax/crud-share": "^0.11.4",
     "@drax/email-back": "^0.11.3",
     "@drax/identity-share": "^0.11.3",
     "bcryptjs": "^2.4.3",
