@@ -29,6 +29,7 @@ interface IEntityCrud {
   isExportable: boolean
   isImportable: boolean
   dialogFullscreen: boolean
+  dialogMaxWidth?: string
   exportFormats: string[]
   importFormats: string[]
   exportHeaders: string[]

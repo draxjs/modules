@@ -19,10 +19,9 @@ import TenantView from "./views/TenantView.vue";
 import TenantCrudPage from "./pages/crud/TenantCrudPage.vue";
 
 
-import UserApiKeyForm from "./forms/UserApiKeyForm.vue";
+import UserApiKeyForm from "./cruds/user-api-key-crud/UserApiKeyForm.vue";
+import UserApiKeyCreated from "./cruds/user-api-key-crud/UserApiKeyCreated.vue";
 import UserApiKeyView from "./views/UserApiKeyView.vue";
-import UserApiKeyCrud from "./cruds/user-api-key-crud/UserApiKeyCrud.vue";
-import UserApiKeyList from "./cruds/user-api-key-crud/UserApiKeyList.vue";
 import UserApiKeyCrudPage from "./pages/crud/UserApiKeyCrudPage.vue";
 
 import {useAuth} from "./composables/useAuth.js";
@@ -83,8 +82,7 @@ export {
     //UserApiKey
     UserApiKeyView,
     UserApiKeyForm,
-    UserApiKeyCrud,
-    UserApiKeyList,
+    UserApiKeyCreated,
     UserApiKeyCrudPage,
     useUserApiKey,
 

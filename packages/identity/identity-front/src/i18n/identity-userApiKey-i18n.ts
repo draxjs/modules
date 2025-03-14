@@ -1,32 +1,40 @@
 const messages = {
     en: {
-        userApiKey: {
-            name: "Reference Name",
-            secret: "Secret",
+        userapikey: {
+            entity: 'ApiKey',
+            menu: 'ApiKey',
+            crud: 'Manage UserApiKey',
+            field:{
+                name: "Reference Name",
+                secret: "Secret",
+                ipv4: "Allowed IPV4",
+                ipv6: "Allowed IPV6",
+                user: "User",
+                createdAt: 'Created At',
+                createdBy: 'Created By',
+            },
             secretWarning: "ApiKey only shows once. Keep the ApiKey securely.",
-            ipv4: "Allowed IPV4",
-            ipv6: "Allowed IPV6",
-            user: "User",
-            createdAt: 'Created At',
-            updating: "Updating API Key",
-            creating: "Creating API Key",
-            deleting: "Deleting API Key",
-            managing: 'Managing API Key',
+            created: 'ApiKey created successfully',
+
         }
     },
     es: {
-        userApiKey:{
-            name: "Nombre de referencia",
-            secret: "Secreto",
+        userapikey:{
+            entity: 'ApiKey',
+            menu: 'ApiKey',
+            crud: 'Gestionar ApiKey',
+            field:{
+                name: "Nombre de referencia",
+                secret: "Secreto",
+                ipv4: "IPv4 permitidos",
+                ipv6: "IPv6 permitidos",
+                user: "Usuario",
+                createdAt: 'Fecha Creación',
+                createdBy: 'Creado por',
+            },
             secretWarning: "La ApiKey solo se muestra una vez. Guarde la ApiKey de forma segura.",
-            ipv4: "IPv4 permitidos",
-            ipv6: "IPv6 permitidos",
-            user: "Usuario",
-            createdAt: 'Creado',
-            updating: "Actualizando API Key",
-            creating: "Creando API Key",
-            deleting: "Eliminando API Key",
-            managing: 'Administrando API Key',
+            created: 'ApiKey creado con éxito',
+
         }
     }
 }

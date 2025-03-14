@@ -22,6 +22,28 @@ onBeforeMount(() => {
   prepareFilters()
 })
 
+const emit = defineEmits(['created', 'updated', 'deleted', 'viewed'])
+
+async function submit() {
+  let result = await onSubmit(form.value)
+  switch (result.status) {
+    case "created":
+      emit("created", result.item)
+      break
+    case "updated":
+      emit("updated", result.item)
+      break
+    case "deleted":
+      emit("deleted")
+      break
+    case "viewed":
+      emit("deleted")
+      break
+  }
+
+
+}
+
 </script>
 
 <template>
@@ -73,7 +95,7 @@ onBeforeMount(() => {
             :error="error"
             :operation="operation"
             :readonly="operation === 'delete'"
-            @submit="onSubmit"
+            @submit="submit"
             @cancel="onCancel"
         >
 

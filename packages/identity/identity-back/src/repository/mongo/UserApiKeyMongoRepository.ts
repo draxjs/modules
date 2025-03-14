@@ -22,7 +22,10 @@ class UserApiKeyMongoRepository implements IUserApiKeyRepository {
 
             const userApiKey: mongoose.HydratedDocument<IUserApiKey> = new UserApiKeyModel(data)
             await userApiKey.save()
-            await userApiKey.populate({path: 'user', populate: {path: 'tenant role'} })
+            await userApiKey.populate([
+                {path: 'user', populate: {path: 'tenant role'} },
+                {path: 'createdBy', populate: {path: 'tenant role'} },
+            ])
             return userApiKey
         } catch (e) {
             if (e instanceof mongoose.Error.ValidationError) {
@@ -88,7 +91,7 @@ class UserApiKeyMongoRepository implements IUserApiKeyRepository {
 
         const sort = MongooseSort.applySort(orderBy, order)
 
-        const options = {populate: ['user', 'user.tenant', 'user.role'], page, limit, sort}
+        const options = {populate: ['user', 'user.tenant', 'user.role', 'createdBy'], page, limit, sort}
 
         const userApiKeyPaginated: PaginateResult<IUserApiKey> = await UserApiKeyModel.paginate(query, options)
         return {

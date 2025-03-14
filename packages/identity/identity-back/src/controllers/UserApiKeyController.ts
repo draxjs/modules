@@ -58,9 +58,14 @@ class UserApiKeyController extends AbstractFastifyController<IUserApiKey, IUserA
 
     async create(request, reply) {
         try {
-            request.rbac.assertPermission(UserApiKeyPermissions.Create)
+            request.rbac.assertOrPermissions([UserApiKeyPermissions.Create, UserApiKeyPermissions.CreateMy])
             const payload = request.body
-            payload.user = request.rbac.authUser.id
+
+            if(!request.rbac.hasPermission(UserApiKeyPermissions.Create) || !payload.user){
+                payload.user = request.rbac.authUser.id
+            }
+
+            payload.createdBy = request.rbac.authUser.id
 
             const userApiKeyService = UserApiKeyServiceFactory()
 

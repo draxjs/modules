@@ -6,9 +6,9 @@ interface IUserApiKeyBase{
     secret?: string
     ipv4?: string[] | string
     ipv6?: string[] | string
+    createdBy?: string
     createdAt?: string
 }
-
 
 interface IUserApiKey {
     id: string
@@ -17,6 +17,7 @@ interface IUserApiKey {
     user: IUser
     ipv4?: string[]
     ipv6?: string[]
+    createdBy: IUser
     createdAt?: string
     deleted?: boolean
 }

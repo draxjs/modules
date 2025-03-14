@@ -20,7 +20,7 @@ class UserApiKeyGqlProvider implements IUserApiKeyProvider {
     }
 
     get gqlFields(){
-        return `id name secret ipv4 ipv6 createdAt updatedAt`
+        return `id name secret ipv4 ipv6 createdAt updatedAt createdBy`
     }
 
     async search(value: any): Promise<IUserApiKey[]> {

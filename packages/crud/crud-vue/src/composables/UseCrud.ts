@@ -1,6 +1,6 @@
 import type {IDraxPaginateResult, IEntityCrud} from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
-import {computed} from "vue";
+import {computed, toRaw} from "vue";
 
 export function useCrud(entity: IEntityCrud) {
 
@@ -242,22 +242,20 @@ export function useCrud(entity: IEntityCrud) {
         store.setInputErrors(null)
     }
 
-    function onSubmit(formData: any) {
+    async function onSubmit(formData: any): Promise<{status:string,item?:any}> {
         store.setInputErrors(null)
         switch (store.operation) {
             case "view":
                 closeDialog()
-                break
+                return {status: 'viewed'}
             case "create":
-                doCreate(formData)
-                break
+                return doCreate(formData)
             case "edit":
-                doUpdate(formData)
-                break
+                return doUpdate(formData)
             case "delete":
-                doDelete(formData)
-                break
+                return doDelete(formData)
         }
+        return {status: 'unknown'}
     }
 
     function openDialog() {
@@ -270,26 +268,33 @@ export function useCrud(entity: IEntityCrud) {
 
     async function doCreate(formData: any) {
         try {
-            await entity?.provider.create(formData)
+            store.setLoading(true)
+            let item = await entity?.provider.create(toRaw(formData))
             await doPaginate()
             closeDialog()
             store.showMessage("Entity created successfully!")
+            return {status: 'created', item: item}
         } catch (e: any) {
             if (e.inputErrors) {
                 store.setInputErrors(e.inputErrors)
             }
             store.setError(e.message || "An error occurred while creating the entity")
             console.error("Error creating entity", e)
+            return {status: 'error'}
+        } finally {
+            store.setLoading(false)
         }
 
     }
 
     async function doUpdate(formData: any) {
         try {
-            await entity?.provider.update(formData._id, formData)
+            store.setLoading(true)
+            let item = await entity?.provider.update(formData.id, toRaw(formData))
             await doPaginate()
             closeDialog()
             store.showMessage("Entity updated successfully!")
+            return {status: 'updated', item: item}
         } catch (e: any) {
             //console.log("inputErrors", e.inputErrors)
             if (e.inputErrors) {
@@ -297,19 +302,27 @@ export function useCrud(entity: IEntityCrud) {
             }
             store.setError(e.message || "An error occurred while updating the entity")
             console.error("Error updating entity", e)
+            return {status: 'error'}
+        } finally {
+            store.setLoading(false)
         }
 
     }
 
     async function doDelete(formData: any) {
         try {
-            await entity?.provider.delete(formData._id)
+            store.setLoading(true)
+            await entity?.provider.delete(formData.id)
             await doPaginate()
             closeDialog()
             store.showMessage("Entity deleted successfully!")
+            return {status: 'deleted'}
         } catch (e: any) {
             store.setError(e.message || "An error occurred while deleting the entity")
             console.error("Error updating entity", e)
+            return {status: 'error'}
+        } finally {
+            store.setLoading(false)
         }
 
     }

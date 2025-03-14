@@ -73,7 +73,7 @@ class RoleCrud extends EntityCrud implements IEntityCrud {
   }
 
   get exportHeaders(){
-    return ['_id', 'name','permissions','childRoles','readonly']
+    return ['id', 'name','permissions','childRoles','readonly']
   }
 
   get isExportable(){

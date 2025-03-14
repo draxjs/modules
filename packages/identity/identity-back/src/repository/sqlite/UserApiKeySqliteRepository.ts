@@ -15,6 +15,7 @@ const tableFields: SqliteTableField[] = [
     {name: "user", type: "TEXT", unique: false, primary: false},
     {name: "ipv4", type: "TEXT", unique: false, primary: false},
     {name: "ipv6", type: "TEXT", unique: false, primary: false},
+    {name: "createdBy", type: "TEXT", unique: false, primary: false},
     {name: "createdAt", type: "TEXT", unique: false, primary: false}
 ]
 
@@ -170,6 +171,7 @@ class UserApiKeySqliteRepository implements IUserApiKeyRepository {
             userApiKey.ipv4 = userApiKey.ipv4 != "" ? userApiKey.ipv4.split(',') : []
             userApiKey.ipv6 = userApiKey.ipv6 != "" ? userApiKey.ipv6.split(',') : []
             userApiKey.user = await this.findUserById(userApiKey.user)
+            userApiKey.createdBy = await this.findUserById(userApiKey.createdBy)
         }
 
         return {

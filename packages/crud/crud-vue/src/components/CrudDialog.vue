@@ -30,7 +30,7 @@ const title = computed(() => {
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :fullscreen="entity.dialogFullscreen">
+  <v-dialog v-model="dialog" :fullscreen="entity.dialogFullscreen" :max-width="entity.dialogMaxWidth">
     <v-card>
       <v-toolbar>
         <v-toolbar-title>{{title}}</v-toolbar-title>

@@ -35,6 +35,11 @@ const UserApiKeySchema = new mongoose.Schema<IUserApiKey>({
         required: false,
         index: false,
     }],
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
 }, {timestamps: true});
 
 UserApiKeySchema.set('toJSON', {getters: true});

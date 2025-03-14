@@ -5,6 +5,7 @@ type UserApiKey {
     ipv4: [String]
     ipv6: [String]
     user: User
+    createdBy: User
     createdAt: Date
     updatedAt: Date
 }

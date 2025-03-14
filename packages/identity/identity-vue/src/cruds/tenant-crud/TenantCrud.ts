@@ -70,7 +70,7 @@ class TenantCrud extends EntityCrud implements IEntityCrud {
   }
 
   get exportHeaders(){
-    return ['_id', 'name']
+    return ['id', 'name']
   }
 
   get isExportable(){
@@ -79,6 +79,10 @@ class TenantCrud extends EntityCrud implements IEntityCrud {
 
   get isImportable(){
     return false
+  }
+
+  get dialogMaxWidth(){
+    return '800'
   }
 
 }

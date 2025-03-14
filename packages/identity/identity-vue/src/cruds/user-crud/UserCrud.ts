@@ -92,7 +92,7 @@ class UserCrud extends EntityCrud implements IEntityCrud {
   }
 
   get exportHeaders(){
-    return ['_id', 'name','username','email','phone','role.name','tenant.name','active']
+    return ['id', 'name','username','email','phone','role.name','tenant.name','active']
   }
 
   get exportFormats(){

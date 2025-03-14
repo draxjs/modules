@@ -177,6 +177,9 @@ class EntityCrud implements IEntityCrud{
     return false
   }
 
+  get dialogMaxWidth(){
+    return ''
+  }
 
 }
 
