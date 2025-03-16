@@ -1,5 +1,5 @@
 import sqlite from "better-sqlite3";
-import type {IDraxCrud, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import type {IDraxCrud, IDraxFindOptions, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {randomUUID} from "node:crypto";
 import {
     SqlSort, SqlQueryFilter, SqliteTableBuilder, SqliteTableField,
@@ -71,20 +71,7 @@ class AbstractSqliteRepository<T> implements IDraxCrud<T, T, T>{
         }
     }
 
-    async findById(id: string): Promise<T | null>{
-        const item = this.db.prepare(`SELECT * FROM ${this.tableName} WHERE ${this.identifier} = ?`).get(id);
-        return item
-    }
 
-    async findBy(field: string, value: any): Promise<T[] | null>{
-        const item = this.db.prepare(`SELECT * FROM ${this.tableName} WHERE ${field} = ?`).all(value);
-        return item
-    }
-
-    async findOneBy(field: string, value: any): Promise<T | null>{
-        const item = this.db.prepare(`SELECT * FROM ${this.tableName} WHERE ${field} = ?`).get(value);
-        return item
-    }
 
     async update(id: string, data: any): Promise<T> {
         try{
@@ -159,6 +146,40 @@ class AbstractSqliteRepository<T> implements IDraxCrud<T, T, T>{
         }
     }
 
+    async find({
+                       limit= 5,
+                       orderBy= '',
+                       order= 'desc',
+                       search= '',
+                       filters= []} : IDraxFindOptions): Promise<any[]>{
+
+
+        let where=""
+        if (search && this.searchFields.length > 0) {
+            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${search}%'`).join(" OR ")}`
+        }
+
+        if (filters.length > 0) {
+            where = SqlQueryFilter.applyFilters(where, filters)
+        }
+
+        const sort = SqlSort.applySort(orderBy, order)
+
+        const rCount = this.db.prepare(`SELECT COUNT(*) as count FROM ${this.tableName} ${where}`).get();
+        const items = this.db.prepare(`SELECT * FROM ${this.tableName} ${where} ${sort} LIMIT ? `).all([limit]) as T[];
+
+        for(const item of items){
+            for(const key in item) {
+                if (this.booleanFields.includes(key)) {
+                    //@ts-ignore
+                    item[key] = item[key] ? true : false
+                }
+            }
+        }
+
+        return items
+    }
+
     async fetchAll(): Promise<any[]>{
         const items = this.db.prepare(`SELECT * FROM ${this.tableName}`).all();
         return items
@@ -169,10 +190,24 @@ class AbstractSqliteRepository<T> implements IDraxCrud<T, T, T>{
         if (value && this.searchFields.length > 0) {
             where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${value}%'`).join(" OR ")}`
         }
-        const items = this.db.prepare(`SELECT * FROM ${this.tableName} ${where}`).all();
+        const items = this.db.prepare(`SELECT * FROM ${this.tableName} ${where} LIMIT ${limit}`).all();
         return items
     }
 
+    async findById(id: string): Promise<T | null>{
+        const item = this.db.prepare(`SELECT * FROM ${this.tableName} WHERE ${this.identifier} = ?`).get(id);
+        return item
+    }
+
+    async findBy(field: string, value: any, limit: number = 0): Promise<T[] | null>{
+        const item = this.db.prepare(`SELECT * FROM ${this.tableName} WHERE ${field} = ?  LIMIT ${limit}`).all(value);
+        return item
+    }
+
+    async findOneBy(field: string, value: any): Promise<T | null>{
+        const item = this.db.prepare(`SELECT * FROM ${this.tableName} WHERE ${field} = ?`).get(value);
+        return item
+    }
 }
 
 export default AbstractSqliteRepository

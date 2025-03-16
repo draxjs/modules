@@ -1,4 +1,4 @@
-import {before, after, describe, it, test} from "node:test"
+import {beforeAll, afterAll, describe, it, test} from "vitest"
 import assert, {equal} from "assert";
 import UserApiKeyMongoRepository from "../../../src/repository/mongo/UserApiKeyMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
@@ -9,14 +9,14 @@ import type {IDraxPaginateResult} from "@drax/crud-share";
 import {mongoose, ValidationError} from "@drax/common-back";
 
 
-test.describe("UserApiKeyRepositoryTest", function () {
+describe("UserApiKeyRepositoryTest", function () {
 
     let userApiKeyRepository = new UserApiKeyMongoRepository()
     let data
     let adminRole
     let rootUser
 
-    before(async () => {
+    beforeAll(async () => {
         await MongoInMemory.connect()
         adminRole = await RoleMongoInitializer.initAdminRole()
         rootUser = await UserMongoInitializer.initRootUser()
@@ -25,7 +25,7 @@ test.describe("UserApiKeyRepositoryTest", function () {
         return
     })
 
-    after(async () => {
+    afterAll(async () => {
         await MongoInMemory.DropAndClose()
         //console.log("AFTER USER", MongoInMemory.status, MongoInMemory.serverStatus)
         return
@@ -33,6 +33,7 @@ test.describe("UserApiKeyRepositoryTest", function () {
 
     test("Create mongo user apikey successfully", async function () {
         data = (await import("../../data-obj/apikey/root-mongo-user-apikey")).default
+        console.log("Data:",data)
         let userApiKeyCreated = await userApiKeyRepository.create(data)
         equal(userApiKeyCreated.name, data.name)
     })

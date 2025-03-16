@@ -13,6 +13,7 @@ import {IUserApiKeyRepository} from "../../interfaces/IUserApiKeyRepository";
 
 class UserApiKeyMongoRepository implements IUserApiKeyRepository {
 
+    protected _searchFields=['name']
 
     constructor() {
     }
@@ -81,10 +82,12 @@ class UserApiKeyMongoRepository implements IUserApiKeyRepository {
             deleted: false
         }
 
-        if (search) {
-            query['$or'] = [
-                {name: new RegExp(search, 'i')},
-            ]
+        if(search){
+            if(mongoose.Types.ObjectId.isValid(search)) {
+                query['_id'] = new mongoose.Types.ObjectId(search)
+            }else{
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+            }
         }
 
         MongooseQueryFilter.applyFilters(query, filters)

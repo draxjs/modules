@@ -1,17 +1,17 @@
-import {ITenantRepository} from "../interfaces/ITenantRepository";
-import {ValidationError, ZodErrorToValidationError} from "@drax/common-back"
-import {tenantSchema} from "../zod/TenantZod.js";
-import {ZodError} from "zod";
-import {ITenantBase, ITenant, IRole} from "@drax/identity-share";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import {ZodErrorToValidationError} from "@drax/common-back"
 import {AbstractService} from "@drax/crud-back";
+import {TenantBaseSchema} from "../zod/TenantSchema.js";
+import {ZodError} from "zod";
+import type {ITenantBase, ITenant} from "@drax/identity-share";
+import type {ITenantRepository} from "../interfaces/ITenantRepository";
+import type {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 class TenantService extends AbstractService<ITenant,ITenantBase,ITenantBase> {
 
     _repository: ITenantRepository
 
     constructor(tenantRepostitory: ITenantRepository) {
-        super(tenantRepostitory, tenantSchema)
+        super(tenantRepostitory, TenantBaseSchema)
         this._repository = tenantRepostitory
         console.log("TenantService constructor")
     }
@@ -19,7 +19,7 @@ class TenantService extends AbstractService<ITenant,ITenantBase,ITenantBase> {
     async create(tenantData: ITenantBase): Promise<ITenant> {
         try {
             tenantData.name = tenantData?.name?.trim()
-            await tenantSchema.parseAsync(tenantData)
+            await TenantBaseSchema.parseAsync(tenantData)
             const tenant = await this._repository.create(tenantData)
             return tenant
         } catch (e) {
@@ -34,7 +34,7 @@ class TenantService extends AbstractService<ITenant,ITenantBase,ITenantBase> {
     async update(id: string, tenantData: ITenantBase) {
         try {
             tenantData.name = tenantData?.name?.trim()
-            await tenantSchema.parseAsync(tenantData)
+            await TenantBaseSchema.parseAsync(tenantData)
             const tenant = await this._repository.update(id, tenantData)
             return tenant
         } catch (e) {

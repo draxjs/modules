@@ -1,10 +1,11 @@
-import Fastify, {FastifyInstance, FastifyRequest, FastifyReply} from "fastify";
+import type {FastifyRequest, FastifyReply} from "fastify";
 import {createSchema, createYoga} from 'graphql-yoga'
 import {IJwtUser, IRbac} from "@drax/identity-share";
-import fastifyStatic from '@fastify/static';
-import fastifyMultipart from '@fastify/multipart';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
+
+import FastifyServer from "./FastifyServer.js";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
@@ -16,55 +17,29 @@ declare module 'fastify' {
 }
 
 
-class YogaFastifyServer {
+class YogaFastifyServer extends FastifyServer {
 
-    fastifyServer: FastifyInstance
-    yoga: any
-    typeDefs: any
-    resolvers: any
-    rootDir: string;
+    protected yoga: any
+    protected typeDefs: any
+    protected resolvers: any
 
     constructor(typeDefs: any, resolvers: any, rootDir: string) {
+        super(rootDir)
         this.typeDefs = typeDefs
         this.resolvers = resolvers
         this.rootDir = rootDir ? rootDir : path.join(__dirname);
-        this.setup()
-    }
-
-    setup(){
-        this.setupFastifyServer()
-        this.setupMultipart()
-        this.setupStatusRoute()
         this.setupYogaServer()
         this.linkFastifyYoga()
-        this.setupWebFiles()
     }
 
 
-
-    setupWebFiles() {
-        this.fastifyServer.register(fastifyStatic, {
-            root: path.join(this.rootDir, 'web'),
-            prefix: '/',
-            index: 'index.html'
-        });
-
-        this.fastifyServer.setNotFoundHandler(function (request, reply) {
-            reply.sendFile("index.html");
-        });
-    }
-
-    setupFastifyServer(): void {
-        this.fastifyServer = Fastify({ logger: true })
-    }
-
-    setupYogaServer(){
+    setupYogaServer() {
         this.yoga = createYoga<{
             req: FastifyRequest
             reply: FastifyReply
         }>({
             // Integrate Fastify logger
-            schema: createSchema({typeDefs:  this.typeDefs, resolvers: this.resolvers}),
+            schema: createSchema({typeDefs: this.typeDefs, resolvers: this.resolvers}),
             logging: {
                 debug: (...args) => args.forEach(arg => this.fastifyServer.log.debug(arg)),
                 info: (...args) => args.forEach(arg => this.fastifyServer.log.info(arg)),
@@ -74,7 +49,7 @@ class YogaFastifyServer {
         })
     }
 
-    linkFastifyYoga(){
+    linkFastifyYoga() {
         this.fastifyServer.route({
             url: this.yoga.graphqlEndpoint,
             method: ['GET', 'POST', 'OPTIONS'],
@@ -97,34 +72,6 @@ class YogaFastifyServer {
                 return reply
             }
         })
-    }
-
-    setupMultipart() {
-        this.fastifyServer.register(fastifyMultipart)
-        //this.fastifyServer.addContentTypeParser('multipart/form-data', {}, (req, payload, done) => done(null))
-    }
-
-    fastifyDecorateRequest(prop: string, defaultValue: any) {
-        this.fastifyServer.decorateRequest(prop, defaultValue)
-    }
-
-    fastifyHook(hookName: any, hookFunction: any) {
-        this.fastifyServer.addHook(hookName, hookFunction)
-    }
-
-    fastifyRegister(route) {
-        this.fastifyServer.register(route)
-    }
-
-    setupStatusRoute(): void {
-        this.fastifyServer.get('/status', async (request, reply) => {
-            return 'Running'
-        })
-    }
-
-    async start(port: number, baseUrl: string = 'http://localhost') {
-        await this.fastifyServer.listen({port: port, host: '0.0.0.0'});
-        console.log(`🚀 Server FastifyYoga ready at ${baseUrl}:${port}`);
     }
 
 }

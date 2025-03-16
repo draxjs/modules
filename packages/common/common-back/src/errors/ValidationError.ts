@@ -1,6 +1,6 @@
 import type {IValidationFieldError} from "../interfaces/IValidationFieldError";
-
-class ValidationError extends Error {
+import type {IError} from "../interfaces/IError";
+class ValidationError extends Error implements IError {
     public errors: IValidationFieldError[];
 
     constructor(errors: IValidationFieldError[]) {
@@ -13,6 +13,23 @@ class ValidationError extends Error {
         return 422 // 422 Unprocessable Entity
     }
 
+    get message(){
+        return `Validation error: ${this.errors.map(error => `${error.field}: ${error.reason}`).join(', ')}`
+    }
+
+    get i18nMessage(){
+        return 'error.validation_error'
+    }
+
+    get body(){
+        return {
+            statusCode: this.statusCode,
+            error: this.name,
+            message: this.message,
+            i18nMessage: this.i18nMessage,
+            inputErrors: this.errors
+        }
+    }
 
 }
 

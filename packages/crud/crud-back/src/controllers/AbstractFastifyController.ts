@@ -1,5 +1,12 @@
 import AbstractService from "../services/AbstractService";
-import {CommonConfig, DraxConfig, ValidationError} from "@drax/common-back";
+import {
+    CommonConfig,
+    DraxConfig,
+    InternalServerError,
+    InvalidIdError,
+    LimitError,
+    ValidationError
+} from "@drax/common-back";
 import {UnauthorizedError} from "@drax/common-back";
 import {IRbac} from "@drax/identity-share";
 import type {FastifyReply, FastifyRequest} from "fastify";
@@ -53,6 +60,9 @@ class AbstractFastifyController<T, C, U> {
 
     protected tenantAssert: boolean = false
     protected userAssert: boolean = false
+
+    protected defaultLimit: number = 1000
+    protected maximumLimit: number = 10000
 
     constructor(service: AbstractService<T, C, U>, permission: IDraxPermission) {
         this.service = service
@@ -109,13 +119,14 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
@@ -136,13 +147,48 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
+            } else if (e instanceof InvalidIdError) {
+                reply.statusCode = e.statusCode
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
+            }
+        }
+    }
+
+    async updatePartial(request: CustomRequest, reply: FastifyReply) {
+        try {
+            request.rbac.assertPermission(this.permission.Update)
+            if (!request.params.id) {
+                reply.statusCode = 400
+                reply.send({error: 'BAD REQUEST'})
+            }
+            const id = request.params.id
+            const payload = request.body
+            //this.applyUserAndTenantSetters(payload, request.rbac)
+            let item = await this.service.updatePartial(id, payload as U)
+            return item
+        } catch (e) {
+            console.error(e)
+            if (e instanceof ValidationError) {
+                reply.statusCode = e.statusCode
+                reply.send(e.body)
+            } else if (e instanceof UnauthorizedError) {
+                reply.statusCode = e.statusCode
+                reply.send(e.body)
+            } else if (e instanceof InvalidIdError) {
+                reply.statusCode = e.statusCode
+                reply.send(e.body)
+            } else {
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
@@ -158,7 +204,7 @@ class AbstractFastifyController<T, C, U> {
 
             let item = await this.service.findById(id)
 
-            if(!item) {
+            if (!item) {
                 reply.statusCode = 404
                 reply.send({error: 'NOT_FOUND'})
             }
@@ -173,18 +219,22 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
+            } else if (e instanceof InvalidIdError) {
+                reply.statusCode = e.statusCode
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
 
-    async findById(request: CustomRequest, reply: FastifyReply) : Promise<T> {
+    async findById(request: CustomRequest, reply: FastifyReply): Promise<T> {
         try {
             request.rbac.assertPermission(this.permission.View)
             if (!request.params.id) {
@@ -205,18 +255,19 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
 
-    async findByIds(request: CustomRequest, reply: FastifyReply):Promise<T[]> {
+    async findByIds(request: CustomRequest, reply: FastifyReply): Promise<T[]> {
         try {
             request.rbac.assertPermission(this.permission.View)
             if (!request.params.ids) {
@@ -230,27 +281,34 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
 
-    async find(request: CustomRequest, reply: FastifyReply):Promise<T[]> {
+    async find(request: CustomRequest, reply: FastifyReply): Promise<T[]> {
         try {
             request.rbac.assertPermission(this.permission.View)
 
+            if (request.query.limit > this.maximumLimit) {
+                throw new LimitError(this.maximumLimit, request.query.limit)
+            }
+            const limit = request.query.limit ? request.query.limit : this.defaultLimit
+            const orderBy = request.query.orderBy
+            const order = request.query.order
             const search = request.query.search ??= undefined
             const filters = this.parseFilters(request.query.filters)
 
             this.applyUserAndTenantFilters(filters, request.rbac);
 
-            let items = await this.service.find({search,filters})
+            let items = await this.service.find({search, filters, order, orderBy, limit})
 
             if (this.tenantAssert) {
                 items = items.filter(item => request.rbac.tenantId === item[this.tenantField].id)
@@ -260,18 +318,22 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
+            } else if (e instanceof LimitError) {
+                reply.statusCode = e.statusCode
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
 
-    async findOne(request: CustomRequest, reply: FastifyReply):Promise<T> {
+    async findOne(request: CustomRequest, reply: FastifyReply): Promise<T> {
         try {
             request.rbac.assertPermission(this.permission.View)
 
@@ -280,10 +342,14 @@ class AbstractFastifyController<T, C, U> {
 
             this.applyUserAndTenantFilters(filters, request.rbac);
 
-            let item = await this.service.findOne({search,filters})
+            let item = await this.service.findOne({search, filters})
 
             if (this.tenantAssert) {
                 request.rbac.assertTenantId(item[this.tenantField].id)
+            }
+
+            if (this.userAssert) {
+                request.rbac.assertUserId(item[this.userField].id)
             }
 
             return item
@@ -291,18 +357,19 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
 
-    async findBy(request: CustomRequest, reply: FastifyReply):Promise<T[]> {
+    async findBy(request: CustomRequest, reply: FastifyReply): Promise<T[]> {
         try {
             request.rbac.assertPermission(this.permission.View)
             if (!request.params.field || !request.params.value) {
@@ -310,30 +377,37 @@ class AbstractFastifyController<T, C, U> {
                 reply.send({error: 'BAD REQUEST'})
             }
 
+            const limit = this.defaultLimit
             const field = request.params.field
             const value = request.params.value
-            let items = await this.service.findBy(field,value)
+            let items = await this.service.findBy(field, value, limit)
 
             if (this.tenantAssert) {
                 items = items.filter(item => request.rbac.tenantId === item[this.tenantField].id)
             }
+
+            if (this.userAssert) {
+                items = items.filter(item => request.rbac.userId === item[this.userField].id)
+            }
+
             return items
         } catch (e) {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
 
-    async findOneBy(request: CustomRequest, reply: FastifyReply):Promise<T> {
+    async findOneBy(request: CustomRequest, reply: FastifyReply): Promise<T> {
         try {
             request.rbac.assertPermission(this.permission.View)
             if (!request.params.field || !request.params.value) {
@@ -343,10 +417,14 @@ class AbstractFastifyController<T, C, U> {
 
             const field = request.params.field
             const value = request.params.value
-            let item = await this.service.findOneBy(field,value)
+            let item = await this.service.findOneBy(field, value)
 
             if (this.tenantAssert) {
                 request.rbac.assertTenantId(item[this.tenantField].id)
+            }
+
+            if (this.userAssert) {
+                request.rbac.assertUserId(item[this.userField].id)
             }
 
             return item
@@ -354,13 +432,14 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
@@ -369,8 +448,8 @@ class AbstractFastifyController<T, C, U> {
         try {
             request.rbac.assertPermission(this.permission.View)
             const search = request.query.search
-            const limit = 1000;
-            const filters = this.parseFilters(request.query.filters)
+            const filters = []
+            const limit = this.defaultLimit
 
             this.applyUserAndTenantFilters(filters, request.rbac);
 
@@ -380,13 +459,14 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
@@ -394,6 +474,12 @@ class AbstractFastifyController<T, C, U> {
     async paginate(request: CustomRequest, reply: FastifyReply) {
         try {
             request.rbac.assertPermission(this.permission.View)
+
+
+            if (request.query.limit > this.maximumLimit) {
+                throw new LimitError(this.maximumLimit, request.query.limit)
+            }
+
             const page = request.query.page
             const limit = request.query.limit
             const orderBy = request.query.orderBy
@@ -410,13 +496,17 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
+            } else if (e instanceof LimitError) {
+                reply.statusCode = e.statusCode
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }
@@ -468,13 +558,14 @@ class AbstractFastifyController<T, C, U> {
             console.error(e)
             if (e instanceof ValidationError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
+                reply.send(e.body)
             } else if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
-                reply.send({error: e.message})
+                reply.send(e.body)
             } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.send(serverError.body)
             }
         }
     }

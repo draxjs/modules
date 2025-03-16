@@ -3,6 +3,7 @@ import type {IValidationFieldError} from './interfaces/IValidationFieldError'
 import type {IDraxConfig} from './interfaces/IDraxConfig'
 import type {IQueryFilter} from './interfaces/IQueryFilter'
 import type {IUploadFile, IUploadFileResult, IUploadFileOptions} from './interfaces/IUploadFile'
+import type {IError} from './interfaces/IError'
 
 
 //Mongoose
@@ -26,7 +27,10 @@ import ValidationFieldError from "./errors/ValidationFieldError.js";
 import UnauthorizedError from "./errors/UnauthorizedError.js";
 import NotFoundError from "./errors/NotFoundError.js";
 import SecuritySensitiveError from "./errors/SecuritySensitiveError.js";
-import {UploadFileError} from "./errors/UploadFileError.js";
+import UploadFileError from "./errors/UploadFileError.js";
+import LimitError from "./errors/LimitError.js";
+import InvalidIdError from "./errors/InvalidIdError.js";
+import InternalServerError from "./errors/InternalServerError.js";
 
 import MongooseErrorToValidationError from "./errors/adapters/MongooseErrorToValidationError.js";
 import MongoServerErrorToValidationError from "./errors/adapters/MongoServerErrorToValidationError.js";
@@ -53,13 +57,12 @@ import {StoreManager} from "./store/StoreManager.js";
 import {StreamFileStore} from "./store/StreamFileStore.js";
 import {StreamSizeValidator} from "./store/StreamSizeValidator.js";
 
+
 //GQL
 import GraphqlMerger from "./utils/GraphqlMerger.js";
 const graphqlMergeResult = await commonGraphql()
 const commonTypeDefs : TypeSource = await graphqlMergeResult.typeDefs;
 const commonResolvers: IResolvers = await graphqlMergeResult.resolvers;
-
-
 
 export {
 
@@ -115,6 +118,10 @@ export {
     UnauthorizedError,
     NotFoundError,
     SecuritySensitiveError,
+    LimitError,
+    InvalidIdError,
+    InternalServerError
+
 }
 
 export type{
@@ -126,6 +133,7 @@ export type{
     IUploadFileResult,
     IUploadFileOptions,
 
-    SqliteTableField
+    SqliteTableField,
+    IError
 }
 

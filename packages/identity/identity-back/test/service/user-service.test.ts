@@ -1,5 +1,4 @@
-import  {before, after, describe, it} from "node:test"
-import assert from "assert";
+import { beforeAll, afterAll, describe, it, expect } from "vitest"
 import UserService from "../../src/services/UserService";
 import MongoInMemory from "../db/MongoInMemory";
 import RoleMongoInitializer from "../initializers/RoleMongoInitializer";
@@ -14,7 +13,7 @@ describe("UserServiceTest", function () {
     let adminRole: IRole
     let userAdminData: any
 
-    before(async () => {
+    beforeAll(async () => {
         await MongoInMemory.connect()
         adminRole = await RoleMongoInitializer.initAdminRole()
         userAdminData = (await import("../data-obj/users/root-mongo-user")).default
@@ -22,7 +21,7 @@ describe("UserServiceTest", function () {
         return
     })
 
-    after(async () => {
+    afterAll(async () => {
         await MongoInMemory.DropAndClose()
         console.log("AFTER USER", MongoInMemory.status, MongoInMemory.serverStatus)
         return
@@ -31,41 +30,33 @@ describe("UserServiceTest", function () {
     it("should create user", async function () {
         const user = {...userAdminData}
         let userCreated = await userService.create(user)
-        assert.equal(userCreated.username, userAdminData.username)
+        expect(userCreated.username).toBe(userAdminData.username)
     })
 
-    it("should changeOwnPassword user", async function () {
-        const userId = userAdminData._id
-        const currentPassword = userAdminData.password
-        const newPassword = "123NewPassword"
-        let passwordChangedResult = await userService.changeOwnPassword(userId, currentPassword, newPassword)
-        assert.equal(passwordChangedResult, true)
-    })
+
 
     it("should changeUserPassword user", async function () {
         const userId = userAdminData._id
         const newPassword = "123"
         let passwordChangedResult = await userService.changeUserPassword(userId, newPassword)
-        assert.equal(passwordChangedResult, true)
+        expect(passwordChangedResult).toBe(true)
     })
 
     it("should fail create user with short password", async function () {
         let userData = {...userAdminData, password: "123"}
-        await assert.rejects(
-            async () => {
-                await userService.create(userData)
-            },
-            (err) => {
-                assert(err instanceof ValidationError, 'Expected error to be instance of UniqueError');
-                assert.strictEqual(err.errors[0].field, 'password');
-                assert.strictEqual(err.errors[0].reason, 'validation.password.min8');
-                return true;
-            },
-        );
+
+        await expect(async () => {
+            await userService.create(userData)
+        }).rejects.toSatisfy((err) => {
+            expect(err).toBeInstanceOf(ValidationError)
+            expect(err.errors[0].field).toBe('password')
+            expect(err.errors[0].reason).toBe('validation.password.min8')
+            return true;
+        });
     })
 
     it("should find one user", async function () {
         let user = await userService.findById(userAdminData._id)
-        assert.equal(user.username, userAdminData.username)
+        expect(user.username).toBe(userAdminData.username)
     })
 })

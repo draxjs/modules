@@ -76,7 +76,7 @@ const {
   <v-form ref="formRef" @submit.prevent>
     <v-card flat>
 
-      <v-card-subtitle v-if="valueModel._id">ID: {{ valueModel._id }}</v-card-subtitle>
+      <v-card-subtitle v-if="valueModel.id">ID: {{ valueModel.id }}</v-card-subtitle>
 
       <v-card-text v-if="error">
         <v-alert color="error">{{ te(error) ? t(error) : error }}</v-alert>

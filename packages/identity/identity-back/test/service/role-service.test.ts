@@ -1,4 +1,4 @@
-import  {describe,it, before, after} from "node:test"
+import  {describe,it, beforeAll, afterAll} from "vitest"
 import assert from "assert";
 import RoleService from "../../src/services/RoleService";
 import MongoInMemory from "../db/MongoInMemory";
@@ -9,13 +9,13 @@ import {IRoleRepository} from "../../src/interfaces/IRoleRepository";
 describe("RoleServiceTest",  function() {
     let roleRepository: IRoleRepository = new RoleMongoRepository()
     let roleService = new RoleService(roleRepository)
-    before(async () => {
+    beforeAll(async () => {
         await MongoInMemory.connect()
         console.log("BEFORE ROLE", MongoInMemory.mongooseStatus, MongoInMemory.serverStatus)
         return
     })
 
-    after(async () => {
+    afterAll(async () => {
         await MongoInMemory.DropAndClose()
         console.log("AFTER ROLE", MongoInMemory.status, MongoInMemory.serverStatus)
         return

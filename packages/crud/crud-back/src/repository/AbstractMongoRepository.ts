@@ -4,6 +4,7 @@ import {MongooseQueryFilter, MongooseSort, MongooseErrorToValidationError} from 
 import type {DeleteResult} from "mongodb";
 import type {IDraxPaginateOptions, IDraxPaginateResult, IDraxFindOptions, IDraxCrud, IDraxFieldFilter} from "@drax/crud-share";
 import type {PaginateModel, PaginateOptions, PaginateResult} from "mongoose";
+import {InvalidIdError} from "@drax/common-back";
 
 
 class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
@@ -12,14 +13,24 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     protected _searchFields: string[] = []
     protected _populateFields: string[] = []
 
+    assertId(id: string): void {
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            console.log("ASSERT ID INVALID")
+            throw new InvalidIdError(id)
+        }
+    }
+
 
     async create(data: C): Promise<T> {
         try {
             const item: mongoose.HydratedDocument<T> = new this._model(data)
             await item.save()
 
-            //@ts-ignore
-            await item.populate(this._populateFields)
+
+            if(this._populateFields && this._populateFields.length > 0){
+                //@ts-ignore
+                await item.populate(this._populateFields)
+            }
 
             return item
         } catch (e) {
@@ -31,8 +42,16 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async update(id: string, data: U): Promise<T> {
+
+        this.assertId(id)
+
         try {
             const item: mongoose.HydratedDocument<T> = await this._model.findOneAndUpdate({_id: id}, data, {new: true}).populate(this._populateFields).exec()
+
+            if(this._populateFields && this._populateFields.length > 0){
+
+            }
+
             return item
         } catch (e) {
             if (e instanceof mongoose.Error.ValidationError) {
@@ -43,7 +62,11 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async updatePartial(id: string, data: any): Promise<T> {
+
+        this.assertId(id)
+
         try {
+
             const item: mongoose.HydratedDocument<T> = await this._model.findOneAndUpdate({_id: id}, data, {new: true}).populate(this._populateFields).exec()
             return item
         } catch (e) {
@@ -55,6 +78,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async delete(id: string): Promise<boolean> {
+        this.assertId(id)
         const result: DeleteResult = await this._model.deleteOne({_id: id}).exec()
         return result.deletedCount == 1
     }
@@ -75,9 +99,9 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return item
     }
 
-    async findBy(field: string, value: any): Promise<T[]> {
+    async findBy(field: string, value: any, limit: number  = 0): Promise<T[]> {
         const filter: any = {[field]: value}
-        const items: mongoose.HydratedDocument<T>[] = await this._model.find(filter).populate(this._populateFields).exec()
+        const items: mongoose.HydratedDocument<T>[] = await this._model.find(filter).limit(limit).populate(this._populateFields).exec()
         return items
     }
 
@@ -90,7 +114,9 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const query = {}
 
-        if (value) {
+        if(mongoose.Types.ObjectId.isValid(value)) {
+            query['_id'] = new mongoose.Types.ObjectId(value)
+        }else if (value) {
             query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
         }
 
@@ -112,8 +138,12 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const query = {}
 
-        if (search) {
-            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search, 'i')}))
+        if(search){
+            if(mongoose.Types.ObjectId.isValid(search)) {
+                query['_id'] = new mongoose.Types.ObjectId(search)
+            }else{
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+            }
         }
 
         MongooseQueryFilter.applyFilters(query, filters)
@@ -137,8 +167,12 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const query = {}
 
-        if (search) {
-            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search, 'i')}))
+        if(search){
+            if(mongoose.Types.ObjectId.isValid(search)) {
+                query['_id'] = new mongoose.Types.ObjectId(search)
+            }else{
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+            }
         }
 
         MongooseQueryFilter.applyFilters(query, filters)
@@ -157,8 +191,12 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const query = {}
 
-        if (search) {
-            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search, 'i')}))
+        if(search){
+            if(mongoose.Types.ObjectId.isValid(search)) {
+                query['_id'] = new mongoose.Types.ObjectId(search)
+            }else{
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+            }
         }
 
         MongooseQueryFilter.applyFilters(query, filters)

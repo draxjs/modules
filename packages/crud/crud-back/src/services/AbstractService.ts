@@ -1,6 +1,6 @@
 import {ZodErrorToValidationError} from "@drax/common-back"
 import {ZodError} from "zod";
-import type {ZodSchema} from "zod";
+import type {ZodObject, ZodRawShape} from "zod";
 import type {
     IDraxPaginateOptions,
     IDraxPaginateResult,
@@ -17,7 +17,7 @@ import {IDraxFindOneOptions} from "@drax/crud-share/types/interfaces/IDraxFindOn
 abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     protected _repository: IDraxCrudRepository<T, C, U>
-    protected _schema?: ZodSchema | undefined
+    protected _schema?: ZodObject<ZodRawShape> | undefined
     protected _defaultOrder?: string | undefined
 
     transformCreate?: (data: C) => Promise<C>;
@@ -25,8 +25,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     transformRead?: (data: T) => Promise<T>;
 
 
-
-    constructor(repository: IDraxCrudRepository<T, C, U>, schema?: ZodSchema) {
+    constructor(repository: IDraxCrudRepository<T, C, U>, schema?: ZodObject<ZodRawShape>) {
         this._repository = repository
         this._schema = schema
     }
@@ -37,7 +36,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             if (this._schema) {
                 await this._schema.parseAsync(data)
             }
-            if(this.transformCreate){
+            if (this.transformCreate) {
                 data = await this.transformCreate(data)
             }
             const item: T = await this._repository.create(data)
@@ -56,7 +55,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             if (this._schema) {
                 await this._schema.parseAsync(data)
             }
-            if(this.transformUpdate){
+            if (this.transformUpdate) {
                 data = await this.transformUpdate(data)
             }
             const item: T = await this._repository.update(id, data)
@@ -73,6 +72,10 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async updatePartial(id: string, data: any): Promise<T> {
         try {
 
+            if (this._schema) {
+                await this._schema.partial().parseAsync(data)
+            }
+
             const item: T = await this._repository.updatePartial(id, data)
 
             return item
@@ -88,7 +91,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async delete(id: string): Promise<boolean> {
         try {
             const result: boolean = await this._repository.delete(id);
-            if(!result){
+            if (!result) {
                 throw new Error("error.deletionFailed");
             }
             return result;
@@ -102,7 +105,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async findById(id: string): Promise<T | null> {
         try {
             let item: T = await this._repository.findById(id);
-            if(this.transformRead){
+            if (this.transformRead) {
                 item = await this.transformRead(item)
             }
             return item
@@ -115,8 +118,8 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async findByIds(ids: Array<string>): Promise<T[]> {
         try {
             let items: T[] = await this._repository.findByIds(ids);
-            if(this.transformRead){
-                items = await Promise.all(items.map( item =>  this.transformRead(item)))
+            if (this.transformRead) {
+                items = await Promise.all(items.map(item => this.transformRead(item)))
             }
             return items
         } catch (e) {
@@ -128,7 +131,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async findOneBy(field: string, value: string): Promise<T | null> {
         try {
             let item: T = await this._repository.findOneBy(field, value);
-            if(this.transformRead){
+            if (this.transformRead) {
                 item = await this.transformRead(item)
             }
             return item
@@ -139,11 +142,12 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     }
 
-    async findBy(field: string, value: string): Promise<T[] | null> {
+    async findBy(field: string, value: string, limit: number = 1000): Promise<T[] | null> {
         try {
-            let items: T[] = await this._repository.findBy(field, value);
-            if(this.transformRead){
-                items = await Promise.all(items.map( item =>  this.transformRead(item)))
+
+            let items: T[] = await this._repository.findBy(field, value, limit);
+            if (this.transformRead) {
+                items = await Promise.all(items.map(item => this.transformRead(item)))
             }
             return items
         } catch (e) {
@@ -156,8 +160,8 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async fetchAll(): Promise<T[]> {
         try {
             let items: T[] = await this._repository.fetchAll();
-            if(this.transformRead){
-                items = await Promise.all(items.map( item =>  this.transformRead(item)))
+            if (this.transformRead) {
+                items = await Promise.all(items.map(item => this.transformRead(item)))
             }
             return items
         } catch (e) {
@@ -169,9 +173,10 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[]> {
         try {
+
             let items: T[] = await this._repository.search(value, limit, filters);
-            if(this.transformRead){
-                items = await Promise.all(items.map( item =>  this.transformRead(item)))
+            if (this.transformRead) {
+                items = await Promise.all(items.map(item => this.transformRead(item)))
             }
             return items
         } catch (e) {
@@ -190,10 +195,12 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<T>> {
         try {
+
+
             const pagination = await this._repository.paginate({page, limit, orderBy, order, search, filters});
 
-            if(this.transformRead){
-                pagination.items = await Promise.all(pagination.items.map( item =>  this.transformRead(item)))
+            if (this.transformRead) {
+                pagination.items = await Promise.all(pagination.items.map(item => this.transformRead(item)))
             }
 
             return pagination;
@@ -208,10 +215,12 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                    orderBy = '',
                    order = false,
                    search = '',
-                   filters = []
+                   filters = [],
+                   limit = 0,
                }: IDraxFindOptions): Promise<T[]> {
         try {
-            let items = await this._repository.find({orderBy, order, search, filters});
+
+            let items = await this._repository.find({orderBy, order, search, filters, limit});
             return items;
         } catch (e) {
             console.error("Error find", e)
@@ -221,11 +230,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     }
 
     async findOne({
-                   search = '',
-                   filters = []
-               }: IDraxFindOneOptions): Promise<T> {
+                      search = '',
+                      filters = []
+                  }: IDraxFindOneOptions): Promise<T> {
         try {
-            let item = await this._repository.findOne({ search, filters});
+            let item = await this._repository.findOne({search, filters});
             return item;
         } catch (e) {
             console.error("Error findOne", e)
@@ -246,12 +255,12 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                  destinationPath: string): Promise<IDraxExportResult> {
         try {
 
-            let cursor:any
-            let exporter:any
+            let cursor: any
+            let exporter: any
 
-            if(this._repository.findCursor){
+            if (this._repository.findCursor) {
                 cursor = await this._repository.findCursor({orderBy, order, search, filters});
-            }else{
+            } else {
                 cursor = await this._repository.find({orderBy, order, search, filters});
             }
 

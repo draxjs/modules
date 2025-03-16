@@ -5,7 +5,7 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 import {PaginateModel} from "mongoose";
 
 // Defining user Mongoose Schema
-const UserApiKeySchema = new mongoose.Schema<IUserApiKey>({
+const UserApiKeyMongoSchema = new mongoose.Schema<IUserApiKey>({
     name: {
         type: String,
         unique: false,
@@ -42,21 +42,21 @@ const UserApiKeySchema = new mongoose.Schema<IUserApiKey>({
     },
 }, {timestamps: true});
 
-UserApiKeySchema.set('toJSON', {getters: true});
+UserApiKeyMongoSchema.set('toJSON', {getters: true});
 
-UserApiKeySchema.plugin(uniqueValidator, {message: 'validation.unique'});
+UserApiKeyMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 
-UserApiKeySchema.plugin(MongooseSoftDelete);
-UserApiKeySchema.plugin(mongoosePaginate);
+UserApiKeyMongoSchema.plugin(MongooseSoftDelete);
+UserApiKeyMongoSchema.plugin(mongoosePaginate);
 
 const MODEL_NAME = 'UserApiKey';
 const COLLECTION_NAME = 'userApiKeys';
 
-const UserApiKeyModel = mongoose.model<IUserApiKey,PaginateModel<IUserApiKey>>(MODEL_NAME, UserApiKeySchema,COLLECTION_NAME);
+const UserApiKeyModel = mongoose.model<IUserApiKey,PaginateModel<IUserApiKey>>(MODEL_NAME, UserApiKeyMongoSchema,COLLECTION_NAME);
 
 
 export {
-    UserApiKeySchema,
+    UserApiKeyMongoSchema,
     UserApiKeyModel
 }
 

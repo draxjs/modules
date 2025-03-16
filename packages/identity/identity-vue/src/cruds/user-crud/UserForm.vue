@@ -62,6 +62,8 @@ let passwordVisibility = ref(false)
         {{ t('role.readonly') }}
       </v-alert>
 
+      <v-card-subtitle v-if="valueModel.id">ID: {{ valueModel.id }}</v-card-subtitle>
+
       <v-card-text v-if="store.error">
         <v-alert color="error">{{ te(store.error) ? t(store.error) : store.error }}</v-alert>
       </v-card-text>

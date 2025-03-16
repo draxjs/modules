@@ -6,7 +6,7 @@ import {PaginateModel} from "mongoose";
 
 
 // Defining user Mongoose Schema
-const UserSchema = new mongoose.Schema<IUser>({
+const UserMongoSchema = new mongoose.Schema<IUser>({
     username: {
         type: String,
         unique: true,
@@ -76,20 +76,20 @@ const UserSchema = new mongoose.Schema<IUser>({
     recoveryCode: {type: String, required: false, index: false, select: false},
 }, {timestamps: true});
 
-UserSchema.set('toJSON', {getters: true});
+UserMongoSchema.set('toJSON', {getters: true});
 
-UserSchema.plugin(uniqueValidator, {message: 'validation.unique'});
+UserMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 
-UserSchema.plugin(MongooseSoftDelete);
-UserSchema.plugin(mongoosePaginate);
+UserMongoSchema.plugin(MongooseSoftDelete);
+UserMongoSchema.plugin(mongoosePaginate);
 
 const USER_MODEL_NAME = 'User';
 const USER_COLLECTION_NAME = 'users';
 
-const UserModel = mongoose.model<IUser,PaginateModel<IUser>>(USER_MODEL_NAME, UserSchema,USER_COLLECTION_NAME);
+const UserModel = mongoose.model<IUser,PaginateModel<IUser>>(USER_MODEL_NAME, UserMongoSchema,USER_COLLECTION_NAME);
 
 export {
-    UserSchema,
+    UserMongoSchema,
     UserModel
 }
 

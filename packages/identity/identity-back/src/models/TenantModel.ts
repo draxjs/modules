@@ -6,23 +6,23 @@ const Schema = mongoose.Schema
 import {PaginateModel} from "mongoose";
 
 
-const TenantSchema = new Schema<ITenant>({
+const TenantMongoSchema = new Schema<ITenant>({
     name: {type: String, unique: true, required: true, index: true,},
 }, {timestamps: true});
 
-TenantSchema.plugin(uniqueValidator, {message: 'validation.unique'});
-TenantSchema.plugin(MongooseSoftDelete);
-TenantSchema.plugin(mongoosePaginate);
+TenantMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
+TenantMongoSchema.plugin(MongooseSoftDelete);
+TenantMongoSchema.plugin(mongoosePaginate);
 
 
-TenantSchema.set('toJSON', {getters: true});
+TenantMongoSchema.set('toJSON', {getters: true});
 
 const TENANT_MODEL_NAME = 'Tenant';
 const TENANT_COLLECTION_NAME = 'tenants';
-const TenantModel = mongoose.model<ITenant, PaginateModel<ITenant>>(TENANT_MODEL_NAME, TenantSchema,TENANT_COLLECTION_NAME);
+const TenantModel = mongoose.model<ITenant, PaginateModel<ITenant>>(TENANT_MODEL_NAME, TenantMongoSchema,TENANT_COLLECTION_NAME);
 
 export {
-    TenantSchema,
+    TenantMongoSchema,
     TenantModel
 }
 

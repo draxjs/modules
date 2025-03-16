@@ -44,7 +44,9 @@ class RoleMongoRepository implements IRoleRepository {
 
     async search(value: string, limit: number = 1000): Promise<IRole[]> {
         const query = {}
-        if (value) {
+        if(mongoose.Types.ObjectId.isValid(value)) {
+            query['_id'] = new mongoose.Types.ObjectId(value)
+        }else if(value){
             query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
         }
         const items: mongoose.HydratedDocument<IRole>[] = await RoleModel.find(query).limit(limit).exec()
@@ -61,8 +63,12 @@ class RoleMongoRepository implements IRoleRepository {
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         const query = {}
 
-        if (search) {
-            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+        if(search){
+            if(mongoose.Types.ObjectId.isValid(search)) {
+                query['_id'] = new mongoose.Types.ObjectId(search)
+            }else{
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+            }
         }
 
         MongooseQueryFilter.applyFilters(query, filters)
@@ -89,10 +95,12 @@ class RoleMongoRepository implements IRoleRepository {
 
         const query = {}
 
-        if (search) {
-            query['$or'] = [
-                {name: new RegExp(search, 'i')},
-            ]
+        if(search){
+            if(mongoose.Types.ObjectId.isValid(search)) {
+                query['_id'] = new mongoose.Types.ObjectId(search)
+            }else{
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+            }
         }
 
         MongooseQueryFilter.applyFilters(query, filters)
@@ -112,10 +120,12 @@ class RoleMongoRepository implements IRoleRepository {
         console.log("RoleMongoRepository.findCursor called")
         const query = {}
 
-        if (search) {
-            query['$or'] = [
-                {name: new RegExp(search, 'i')},
-            ]
+        if(search){
+            if(mongoose.Types.ObjectId.isValid(search)) {
+                query['_id'] = new mongoose.Types.ObjectId(search)
+            }else{
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+            }
         }
 
         MongooseQueryFilter.applyFilters(query, filters)

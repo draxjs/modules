@@ -41,7 +41,7 @@
   },
   "peerDependencies": {
     "better-sqlite3": "^11.0.0",
-    "fastify": "^4.27.0",
+    "fastify": "^5.2.1",
     "mongoose": "^8.6.3",
     "mongoose-paginate-v2": "^1.8.3",
     "mongoose-unique-validator": "^5.0.1"
@@ -56,7 +56,8 @@
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
     "tsx": "^3.12.7",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^3.0.8"
   },
   "config": {
     "mongodbMemoryServer": {

@@ -1,4 +1,4 @@
-import  {before, after, describe, it, test} from "node:test"
+import  {beforeAll, afterAll, describe, test} from "vitest"
 import assert, {equal} from "assert";
 import UserMongoRepository from "../../../src/repository/mongo/UserMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
@@ -8,13 +8,13 @@ import type {IDraxPaginateResult} from "@drax/crud-share";
 import {mongoose, ValidationError} from "@drax/common-back";
 
 
-test.describe("UserRepositoryTest", function () {
+describe("UserRepositoryTest", function () {
 
     let userRepository = new UserMongoRepository()
     let adminRole
     let userAdminData
 
-    before(async () => {
+    beforeAll(async () => {
         await MongoInMemory.connect()
         adminRole = await RoleMongoInitializer.initAdminRole()
 
@@ -22,7 +22,7 @@ test.describe("UserRepositoryTest", function () {
         return
     })
 
-    after(async () => {
+    afterAll(async () => {
         await MongoInMemory.DropAndClose()
         //console.log("AFTER USER", MongoInMemory.status, MongoInMemory.serverStatus)
         return

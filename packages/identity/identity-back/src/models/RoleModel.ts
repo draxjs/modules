@@ -6,7 +6,7 @@ const Schema = mongoose.Schema
 import {PaginateModel} from "mongoose";
 
 
-const RoleSchema = new Schema<IRole>({
+const RoleMongoSchema = new Schema<IRole>({
     name: {
         type: String, unique: true, required: true, index: true,
     },
@@ -19,19 +19,19 @@ const RoleSchema = new Schema<IRole>({
     readonly: {type: Boolean, required: false, default: false},
 });
 
-RoleSchema.plugin(uniqueValidator, {message: 'validation.unique'});
-RoleSchema.plugin(MongooseSoftDelete);
-RoleSchema.plugin(mongoosePaginate);
+RoleMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
+RoleMongoSchema.plugin(MongooseSoftDelete);
+RoleMongoSchema.plugin(mongoosePaginate);
 
 
-RoleSchema.set('toJSON', {getters: true});
+RoleMongoSchema.set('toJSON', {getters: true});
 
 const ROLE_MODEL_NAME = 'Role';
 const ROLE_COLLECTION_NAME = 'roles';
-const RoleModel = mongoose.model<IRole, PaginateModel<IRole>>(ROLE_MODEL_NAME, RoleSchema,ROLE_COLLECTION_NAME);
+const RoleModel = mongoose.model<IRole, PaginateModel<IRole>>(ROLE_MODEL_NAME, RoleMongoSchema,ROLE_COLLECTION_NAME);
 
 export {
-    RoleSchema,
+    RoleMongoSchema,
     RoleModel
 }
 

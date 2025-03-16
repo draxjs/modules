@@ -6,7 +6,7 @@ import {PaginateModel} from "mongoose";
 
 
 // Defining user Mongoose Schema
-const UserGroupSchema = new mongoose.Schema<IUserGroup>({
+const UserGroupMongoSchema = new mongoose.Schema<IUserGroup>({
     name: {
         type: String,
         unique: true,
@@ -27,20 +27,20 @@ const UserGroupSchema = new mongoose.Schema<IUserGroup>({
     }],
 }, {timestamps: true});
 
-UserGroupSchema.set('toJSON', {getters: true});
+UserGroupMongoSchema.set('toJSON', {getters: true});
 
-UserGroupSchema.plugin(uniqueValidator, {message: 'validation.unique'});
+UserGroupMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 
-UserGroupSchema.plugin(MongooseSoftDelete);
-UserGroupSchema.plugin(mongoosePaginate);
+UserGroupMongoSchema.plugin(MongooseSoftDelete);
+UserGroupMongoSchema.plugin(mongoosePaginate);
 
 const USERGROUP_MODEL_NAME = 'UserGroup';
 const USERGROUP_COLLECTION_NAME = 'userGroups';
 
-const UserGroupModel = mongoose.model<IUserGroup,PaginateModel<IUserGroup>>(USERGROUP_MODEL_NAME, UserGroupSchema,USERGROUP_COLLECTION_NAME);
+const UserGroupModel = mongoose.model<IUserGroup,PaginateModel<IUserGroup>>(USERGROUP_MODEL_NAME, UserGroupMongoSchema,USERGROUP_COLLECTION_NAME);
 
 export {
-    UserGroupSchema,
+    UserGroupMongoSchema,
     UserGroupModel
 }
 
