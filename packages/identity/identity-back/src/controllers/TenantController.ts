@@ -14,30 +14,7 @@ class TenantController extends AbstractFastifyController<ITenant, ITenantBase, I
         super(TenantServiceFactory(), TenantPermissions)
     }
 
-    async findByName(request, reply) {
-        try {
-            request.rbac.assertPermission(this.permission.View)
-            if(!request.params.id){
-                reply.statusCode = 400
-                reply.send({error: 'BAD REQUEST'})
-            }
-            const name = request.params.name
-            let item = await this.service.findByName(name)
-            return item
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
-        }
-    }
+
 
     async all(request, reply) {
         try {

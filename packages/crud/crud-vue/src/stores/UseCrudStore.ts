@@ -14,7 +14,7 @@ export const useCrudStore = defineStore('CrudStore', {
             filters: [] as any[],
             items: [] as any[],
             totalItems: 0 as number,
-            itemsPerPage: 5 as number,
+            itemsPerPage: 10 as number,
             page: 1 as number,
             search: '' as string,
             sortBy: [] as any[],

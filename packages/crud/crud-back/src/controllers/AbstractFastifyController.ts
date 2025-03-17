@@ -2,9 +2,11 @@ import AbstractService from "../services/AbstractService";
 import {
     CommonConfig,
     DraxConfig,
+    ForbiddenError,
     InternalServerError,
     InvalidIdError,
     LimitError,
+    NotFoundError,
     ValidationError
 } from "@drax/common-back";
 import {UnauthorizedError} from "@drax/common-back";
@@ -108,6 +110,25 @@ class AbstractFastifyController<T, C, U> {
         }
     }
 
+    handleError(e: unknown, reply: FastifyReply) {
+        console.error(e);
+
+        if (
+            e instanceof ValidationError ||
+            e instanceof NotFoundError ||
+            e instanceof UnauthorizedError ||
+            e instanceof ForbiddenError ||
+            e instanceof InvalidIdError ||
+            e instanceof LimitError
+        ) {
+            reply.status(e.statusCode).send(e.body);
+        } else {
+            const serverError = new InternalServerError()
+            reply.statusCode = serverError.statusCode
+            reply.status(500).send(serverError.body);
+        }
+    }
+
     async create(request: CustomRequest, reply: FastifyReply) {
         try {
             request.rbac.assertPermission(this.permission.Create)
@@ -116,18 +137,7 @@ class AbstractFastifyController<T, C, U> {
             let item = await this.service.create(payload as C)
             return item
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -144,21 +154,7 @@ class AbstractFastifyController<T, C, U> {
             let item = await this.service.update(id, payload as U)
             return item
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof InvalidIdError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -175,21 +171,7 @@ class AbstractFastifyController<T, C, U> {
             let item = await this.service.updatePartial(id, payload as U)
             return item
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof InvalidIdError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -214,23 +196,14 @@ class AbstractFastifyController<T, C, U> {
             }
 
             await this.service.delete(id)
-            reply.send({message: 'Item deleted successfully'})
+            reply.send({
+                id: id,
+                message: 'Item deleted successfully',
+                deleted: true,
+                deletedAt: new Date(),
+            })
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof InvalidIdError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -246,24 +219,17 @@ class AbstractFastifyController<T, C, U> {
             const id = request.params.id
             let item = await this.service.findById(id)
 
+            if(!item) {
+                throw new NotFoundError()
+            }
+
             if (this.tenantAssert) {
                 request.rbac.assertTenantId(item[this.tenantField].id)
             }
 
             return item
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -276,20 +242,14 @@ class AbstractFastifyController<T, C, U> {
             }
             const ids = request.params.ids.split(",")
             let items = await this.service.findByIds(ids)
+
+            if(!items || items.length === 0) {
+                throw new NotFoundError()
+            }
+
             return items
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -315,21 +275,7 @@ class AbstractFastifyController<T, C, U> {
             }
             return items
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof LimitError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -354,18 +300,7 @@ class AbstractFastifyController<T, C, U> {
 
             return item
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -392,18 +327,7 @@ class AbstractFastifyController<T, C, U> {
 
             return items
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -429,18 +353,7 @@ class AbstractFastifyController<T, C, U> {
 
             return item
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -456,18 +369,7 @@ class AbstractFastifyController<T, C, U> {
             let item = await this.service.search(search, limit, filters)
             return item
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -480,8 +382,8 @@ class AbstractFastifyController<T, C, U> {
                 throw new LimitError(this.maximumLimit, request.query.limit)
             }
 
-            const page = request.query.page
-            const limit = request.query.limit
+            const page = request.query.page ? request.query.page : 1
+            const limit = request.query.limit ? request.query.limit : 10
             const orderBy = request.query.orderBy
             const order = request.query.order
             const search = request.query.search
@@ -493,21 +395,7 @@ class AbstractFastifyController<T, C, U> {
             let paginateResult = await this.service.paginate({page, limit, orderBy, order, search, filters})
             return paginateResult
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof LimitError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 
@@ -555,18 +443,7 @@ class AbstractFastifyController<T, C, U> {
             }
 
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send(e.body)
-            } else {
-                const serverError = new InternalServerError()
-                reply.statusCode = serverError.statusCode
-                reply.send(serverError.body)
-            }
+            this.handleError(e, reply)
         }
     }
 }

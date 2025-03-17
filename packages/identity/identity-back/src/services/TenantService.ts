@@ -1,6 +1,6 @@
 import {ZodErrorToValidationError} from "@drax/common-back"
 import {AbstractService} from "@drax/crud-back";
-import {TenantBaseSchema} from "../zod/TenantSchema.js";
+import {TenantBaseSchema} from "../schemas/TenantSchema";
 import {ZodError} from "zod";
 import type {ITenantBase, ITenant} from "@drax/identity-share";
 import type {ITenantRepository} from "../interfaces/ITenantRepository";

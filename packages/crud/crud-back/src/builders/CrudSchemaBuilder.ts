@@ -33,6 +33,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
         200: zodToJsonSchema(this.entitySchema),
         400: zodToJsonSchema(ErrorBodyResponseSchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     };
@@ -50,6 +51,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
         200: zodToJsonSchema(z.array(this.entitySchema)),
         400: zodToJsonSchema(ErrorBodyResponseSchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     };
@@ -65,6 +67,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
         200: zodToJsonSchema(z.array(this.entitySchema)),
         400: zodToJsonSchema(ErrorBodyResponseSchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     }
@@ -80,6 +83,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
         200: zodToJsonSchema(z.array(this.entitySchema)),
         400: zodToJsonSchema(ErrorBodyResponseSchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     }
@@ -94,6 +98,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
       response: {
         200: zodToJsonSchema(this.entitySchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     };
@@ -108,6 +113,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
       response: {
         200: zodToJsonSchema(z.array(this.entitySchema)),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     };
@@ -122,6 +128,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
       response: {
         200: zodToJsonSchema(this.entitySchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     };
@@ -139,6 +146,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
         })),
         400: zodToJsonSchema(ErrorBodyResponseSchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     };
@@ -152,6 +160,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
       response: {
         200: zodToJsonSchema(z.array(this.entitySchema)),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     };
@@ -166,6 +175,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
       response: {
         200: zodToJsonSchema(this.entitySchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         422: zodToJsonSchema(ValidationErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
@@ -182,6 +192,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
       response: {
         200: zodToJsonSchema(this.entitySchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         422: zodToJsonSchema(ValidationErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
@@ -198,6 +209,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
       response: {
         200: zodToJsonSchema(this.entitySchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         422: zodToJsonSchema(ValidationErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
@@ -214,6 +226,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
         200: zodToJsonSchema(DeleteBodyResponseSchema),
         400: zodToJsonSchema(ErrorBodyResponseSchema),
         401: zodToJsonSchema(ErrorBodyResponseSchema),
+        403: zodToJsonSchema(ErrorBodyResponseSchema),
         500: zodToJsonSchema(ErrorBodyResponseSchema)
       }
     };

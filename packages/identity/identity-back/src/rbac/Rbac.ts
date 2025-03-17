@@ -1,5 +1,5 @@
 import type {IJwtUser, IRole, IRbac} from "@drax/identity-share";
-import {UnauthorizedError} from "@drax/common-back";
+import {UnauthorizedError, ForbiddenError} from "@drax/common-back";
 
 class Rbac implements IRbac{
     private role: IRole;
@@ -26,6 +26,12 @@ class Rbac implements IRbac{
         return this.authUser.tenantId
     }
 
+    assertAuthenticated() {
+        if (!this.authUser) {
+            throw new UnauthorizedError()
+        }
+    }
+
     hasPermission(requiredPermission: string): boolean {
         if (!this.authUser || !this.role || !this.role.permissions || this.role.permissions.length === 0) {
             return false;
@@ -35,27 +41,24 @@ class Rbac implements IRbac{
     }
 
     assertPermission(requiredPermission: string) {
+        this.assertAuthenticated()
         if (!this.hasPermission(requiredPermission)) {
-            throw new UnauthorizedError()
+            throw new ForbiddenError()
         }
     }
 
     assertOrPermissions(requiredPermissions: string[]) {
-
+        this.assertAuthenticated()
         for(let requiredPermission of requiredPermissions){
             if (this.hasPermission(requiredPermission)) {
                 return true
             }
         }
 
-        throw new UnauthorizedError()
+        throw new ForbiddenError()
     }
 
-    assertAuthenticated() {
-        if (!this.authUser) {
-            throw new UnauthorizedError()
-        }
-    }
+
 
     assertUserId(userId: string) {
         if (this.userId != userId) {

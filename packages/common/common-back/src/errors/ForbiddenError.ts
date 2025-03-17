@@ -1,20 +1,20 @@
 import type {IError} from "../interfaces/IError";
-class UnauthorizedError extends Error implements IError  {
-    constructor(message: string = 'UNAUTHORIZED') {
-        super(message);
-        this.name = 'UnauthorizedError';
+class ForbiddenError extends Error implements IError  {
+    constructor() {
+        super();
+        this.name = 'ForbiddenError';
     }
 
     get statusCode(){
-        return 401
+        return 403
     }
 
     get message(){
-        return `Unauthorized`
+        return `Forbidden. Insufficient permissions.`
     }
 
     get i18nMessage(){
-        return 'error.unauthorized'
+        return 'error.forbidden'
     }
 
     get body(){
@@ -28,4 +28,4 @@ class UnauthorizedError extends Error implements IError  {
 
 }
 
-export default UnauthorizedError
+export default ForbiddenError

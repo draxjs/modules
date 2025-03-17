@@ -13,8 +13,13 @@ const TenantSchema = TenantBaseSchema.extend({
     updatedAt: date()
 });
 
+const TenantByNameSchema = object({
+    name: string()
+});
+
 
 export {
     TenantSchema,
-    TenantBaseSchema
+    TenantBaseSchema,
+    TenantByNameSchema
 }

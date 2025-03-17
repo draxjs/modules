@@ -1,12 +1,17 @@
 import type {IError} from "../interfaces/IError";
 class NotFoundError extends Error implements IError  {
-    constructor(message: string = 'NOT_FOUND') {
+    constructor(message: string = 'Not found') {
         super(message);
         this.name = 'NotFoundError';
+        this.message = message;
     }
 
-    get message(){
-        return `Resource not found`
+    get getMessage(){
+        return this.message
+    }
+
+    get getName(){
+        return this.name
     }
 
     get statusCode(){
@@ -20,8 +25,8 @@ class NotFoundError extends Error implements IError  {
     get body(){
         return {
             statusCode: this.statusCode,
-            error: this.name,
-            message: this.message,
+            error: this.getName,
+            message: this.getMessage,
             i18nMessage: this.i18nMessage,
         }
 

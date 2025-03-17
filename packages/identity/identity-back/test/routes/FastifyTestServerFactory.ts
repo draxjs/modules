@@ -12,7 +12,7 @@ const FastifyTestServerFactory = () => {
     fastify.setValidatorCompiler(() => () => true)
     fastify.addHook('preHandler', async (request, reply) => {
         //@ts-ignore
-        request.rbac = {assertPermission: () => true,};
+        request.rbac = {assertPermission: () => true, getAuthUser: {username: 'admin', tenantId: ''}};
     });
 
     return fastify

@@ -188,7 +188,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async paginate({
                        page = 1,
-                       limit = 5,
+                       limit = 10,
                        orderBy = this._defaultOrder,
                        order = false,
                        search = '',
