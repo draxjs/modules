@@ -15,7 +15,6 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
     assertId(id: string): void {
         if(!mongoose.Types.ObjectId.isValid(id)){
-            console.log("ASSERT ID INVALID")
             throw new InvalidIdError(id)
         }
     }
@@ -48,9 +47,6 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         try {
             const item: mongoose.HydratedDocument<T> = await this._model.findOneAndUpdate({_id: id}, data, {new: true}).populate(this._populateFields).exec()
 
-            if(this._populateFields && this._populateFields.length > 0){
-
-            }
 
             return item
         } catch (e) {

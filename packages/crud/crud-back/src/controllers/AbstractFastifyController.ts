@@ -152,6 +152,11 @@ class AbstractFastifyController<T, C, U> {
             const payload = request.body
             //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.update(id, payload as U)
+
+            if(!item){
+                throw new NotFoundError()
+            }
+
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -169,6 +174,9 @@ class AbstractFastifyController<T, C, U> {
             const payload = request.body
             //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.updatePartial(id, payload as U)
+            if(!item){
+                throw new NotFoundError()
+            }
             return item
         } catch (e) {
             this.handleError(e, reply)

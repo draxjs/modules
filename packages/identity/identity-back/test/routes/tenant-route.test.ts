@@ -89,6 +89,17 @@ describe("Tenant Route Test", function () {
     })
 
     it("should update an existing tenant", async () => {
+
+        const newTenant = {
+            name: "ExistTenant"
+        };
+
+        const resp = await FastifyTestServer.inject({
+            method: 'POST',
+            url: '/api/tenants',
+            payload: newTenant
+        });
+
         // First, get existing tenants to extract the id
         const getResp = await FastifyTestServer.inject({
             method: 'GET',
@@ -124,6 +135,17 @@ describe("Tenant Route Test", function () {
         const verifiedTenant = await verifyResp.json()
         expect(verifyResp.statusCode).toBe(200)
         expect(verifiedTenant.name).toBe("UpdatedTenantName")
+
+        // Send update inexistingId should return 404
+        const updateRespNotFound = await FastifyTestServer.inject({
+            method: 'PUT',
+            url: `/api/tenants/66761bed94d57a42c3277bab`,
+            payload: updateData
+        })
+
+        // Verify update response
+        expect(updateRespNotFound.statusCode).toBe(404)
+
     })
 
     it("should delete an existing tenant", async () => {
