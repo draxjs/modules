@@ -3,11 +3,12 @@ import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
 import {ValidationError, ValidationErrorToGraphQLError, UnauthorizedError} from "@drax/common-back";
 import {GraphQLError} from "graphql";
 import * as crypto from "node:crypto";
+import {IDraxPaginateOptions} from "@drax/crud-share";
 
 
 export default {
     Query: {
-        paginateUserApiKey: async (_, {options= {page:1, limit:5, orderBy:"", order:false, search:"", filters: []} }, {rbac, authUser}) => {
+        paginateUserApiKey: async (_, {options= {page:1, limit:5, orderBy:"", order:"asc", search:"", filters: []} as IDraxPaginateOptions }, {rbac, authUser}) => {
             try {
                 rbac.assertAuthenticated()
 
@@ -22,7 +23,7 @@ export default {
                 }
 
                 if(!rbac.hasPermission(IdentityPermissions.ViewUserApiKey)){
-                    options.filters.push({field: "user", operator: "eq", value: rbac.authUser.id})
+                    options.filters.push({field: "user", operator: "eq", value: rbac.userId})
                 }
 
                 const userApiKeyService = UserApiKeyServiceFactory()

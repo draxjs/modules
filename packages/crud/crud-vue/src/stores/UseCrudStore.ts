@@ -25,15 +25,16 @@ export const useCrudStore = defineStore('CrudStore', {
             exportListVisible: false,
         }
     ),
-    getters:{
-      getInputErrors(state: any) {
-          return (fieldName:string) => {
-              if (state.inputErrors && state.inputErrors[fieldName]) {
-                  return state.inputErrors[fieldName]
-              }
-              return []
-          }
-      }
+    getters: {
+        getInputErrors(state: any) {
+            return (fieldName: string) => {
+                if (state.inputErrors && state.inputErrors[fieldName]) {
+                    return state.inputErrors[fieldName]
+                }
+                return []
+            }
+        },
+
     },
     actions: {
         setOperation(operation: IEntityCrudOperation) {
@@ -85,7 +86,7 @@ export const useCrudStore = defineStore('CrudStore', {
         setInputErrors(inputErrors: any) {
             this.inputErrors = inputErrors
         },
-        resetErrors(){
+        resetErrors() {
             this.inputErrors = null
             this.error = ''
         },

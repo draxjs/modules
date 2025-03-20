@@ -10,7 +10,7 @@ async function CreateOrUpdateRole(roleData: IRoleBase) {
         roleData.childRoles = await Promise.all(roleData.childRoles.map(async (childRole) => {
             const role = await roleService.findByName(childRole)
             if(role){
-                return role.id
+                return role._id.toString()
             }else{
                 return childRole
             }
@@ -18,7 +18,8 @@ async function CreateOrUpdateRole(roleData: IRoleBase) {
     }
 
     if(role){
-        const r = await roleService.systemUpdate(role.id, roleData)
+        console.log("RoleData",roleData)
+        const r = await roleService.systemUpdate(role._id.toString(), roleData)
         console.log("Role Updated. Name: "+ roleData.name)
     }else{
         const r = await roleService.create(roleData)

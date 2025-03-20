@@ -42,6 +42,11 @@ import {TenantPermissions} from "./permissions/TenantPermissions.js";
 import {UserPermissions} from "./permissions/UserPermissions.js";
 import {UserApiKeyPermissions} from "./permissions/UserApiKeyPermissions.js";
 
+import {UserSchema, UserBaseSchema} from "./schemas/UserSchema.js";
+import {TenantSchema,TenantBaseSchema} from "./schemas/TenantSchema.js";
+import {RoleSchema, RoleBaseSchema} from "./schemas/RoleSchema.js";
+import {UserApiKeySchema, UserApiKeyBaseSchema} from "./schemas/UserApiKeySchema.js";
+
 
 const graphqlMergeResult = await GraphqlMerge()
 const identityTypeDefs = await graphqlMergeResult.typeDefs;
@@ -56,6 +61,17 @@ export type {
 }
 
 export {
+
+    //Schemas
+    UserSchema,
+    UserBaseSchema,
+    TenantSchema,
+    TenantBaseSchema,
+    RoleSchema,
+    RoleBaseSchema,
+    UserApiKeyBaseSchema,
+    UserApiKeySchema,
+
     //Service
     UserService,
     RoleService,

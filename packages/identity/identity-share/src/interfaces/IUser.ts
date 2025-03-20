@@ -3,7 +3,8 @@ import {IUserGroup} from "./IUserGroup";
 import {ITenant} from "./ITenant";
 
 interface IUser{
-    id: string
+    _id: string
+    id?: string
     username: string
     email: string
     password: string
@@ -25,6 +26,8 @@ interface IUser{
 }
 
 interface IUserEmailCreate {
+    _id?: string
+    id?: string
     name: string
     username: string
     email: string
@@ -38,6 +41,7 @@ interface IUserEmailCreate {
 }
 
 interface IUserCreate {
+    _id?: string
     id?: string
     name: string
     username: string

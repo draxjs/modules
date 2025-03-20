@@ -4,7 +4,7 @@ import type {IUserRepository} from "../interfaces/IUserRepository";
 import {ZodError} from "zod";
 import {SecuritySensitiveError, ValidationError, ZodErrorToValidationError} from "@drax/common-back";
 import AuthUtils from "../utils/AuthUtils.js";
-import {createUserSchema, editUserSchema, userBaseSchema} from "../zod/UserZod.js";
+import {UserCreateSchema, UserUpdateSchema, UserBaseSchema} from "../schemas/UserSchema.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {AbstractService} from "@drax/crud-back";
@@ -15,7 +15,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     _repository: IUserRepository
 
     constructor(userRepository: IUserRepository) {
-        super(userRepository, userBaseSchema);
+        super(userRepository, UserBaseSchema);
         this._repository = userRepository;
         console.log("UserService constructor")
     }
@@ -27,7 +27,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
             //TODO: Generar session
             const session = randomUUID()
-            const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, user.role.id, user.tenant?.id, session)
+            const accessToken = AuthUtils.generateToken(user._id.toString(), user.username, user.role._id, user.tenant?._id, session)
             return {accessToken: accessToken}
         } else {
             throw new BadCredentialsError()
@@ -47,7 +47,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
         if (user && user.active) {
             const session = randomUUID()
-            const accessToken = AuthUtils.generateToken(user.id.toString(), user.username, user.role.id, user.tenant?.id, session)
+            const accessToken = AuthUtils.generateToken(user._id.toString(), user.username, user.role._id, user.tenant?._id, session)
             return {accessToken: accessToken}
         } else {
             throw new BadCredentialsError()
@@ -104,7 +104,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             const recoveryCode = randomUUID()
             const user = await this._repository.findByEmail(email)
             if(user && user.active){
-                await this._repository.updatePartial(user.id, {recoveryCode: recoveryCode})
+                await this._repository.updatePartial(user._id, {recoveryCode: recoveryCode})
                 return recoveryCode
             }else{
                 throw new SecuritySensitiveError()
@@ -122,8 +122,8 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             console.log("changeUserPasswordByCode user", user)
             if (user && user.active) {
                 newPassword = AuthUtils.hashPassword(newPassword)
-                await this._repository.changePassword(user.id, newPassword)
-                await this._repository.updatePartial(user.id, {recoveryCode: null})
+                await this._repository.changePassword(user._id, newPassword)
+                await this._repository.updatePartial(user._id, {recoveryCode: null})
                 return true
             } else {
                 throw new ValidationError([{field:'recoveryCode', reason: 'validation.notFound'}])
@@ -160,7 +160,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     async verifyEmail(emailCode: string): Promise<boolean> {
         const user = await this._repository.findByEmailCode(emailCode)
         if (user && user.emailVerified === false) {
-            await this._repository.updatePartial(user.id, {
+            await this._repository.updatePartial(user._id, {
                 emailVerified: true,
                 active: true
             })
@@ -173,7 +173,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     async verifyPhone(phoneCode: string): Promise<boolean> {
         const user = await this._repository.findByPhoneCode(phoneCode)
         if (user && user.phoneVerified === false) {
-            await this._repository.updatePartial(user.id, {
+            await this._repository.updatePartial(user._id, {
                 phoneVerified: true,
                 active: true
             })
@@ -190,7 +190,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             userData.password = userData?.password.trim()
             userData.tenant = userData.tenant === "" ? null : userData.tenant
 
-            await createUserSchema.parseAsync(userData)
+            await UserCreateSchema.parseAsync(userData)
 
             userData.password = AuthUtils.hashPassword(userData.password.trim())
 
@@ -212,7 +212,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             delete userData.password
             userData.tenant = userData.tenant === "" ? null : userData.tenant
 
-            await editUserSchema.parseAsync(userData)
+            await UserUpdateSchema.parseAsync(userData)
 
 
             const user: IUser = await this._repository.update(id, userData)
@@ -287,7 +287,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
                        page = 1,
                        limit = 5,
                        orderBy = '',
-                       order = false,
+                       order = "asc",
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {

@@ -1,6 +1,6 @@
 import {IUserApiKeyRepository} from "../interfaces/IUserApiKeyRepository";
 import {DraxConfig, ValidationError, ZodErrorToValidationError} from "@drax/common-back"
-import {userApiKeyBaseSchema} from "../zod/UserApiKeyZod.js";
+import {UserApiKeyBaseSchema} from "../schemas/UserApiKeySchema.js";
 import {ZodError} from "zod";
 import {IUserApiKeyBase, IUserApiKey} from "@drax/identity-share";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
@@ -14,7 +14,7 @@ class UserApiKeyService extends AbstractService<IUserApiKey, IUserApiKeyBase, IU
     _repository: IUserApiKeyRepository
 
     constructor(userApiKeyRepostitory: IUserApiKeyRepository) {
-        super(userApiKeyRepostitory,userApiKeyBaseSchema)
+        super(userApiKeyRepostitory,UserApiKeyBaseSchema)
         this._repository = userApiKeyRepostitory
         console.log("UserApiKeyService constructor")
     }
@@ -28,7 +28,7 @@ class UserApiKeyService extends AbstractService<IUserApiKey, IUserApiKeyBase, IU
                 throw new Error('ApiKey miss configuration')
             }
             userApiKeyData.secret = AuthUtils.generateHMAC(APIKEY_SECRET, secret)
-            await userApiKeyBaseSchema.parseAsync(userApiKeyData)
+            await UserApiKeyBaseSchema.parseAsync(userApiKeyData)
             const userApiKey = await this._repository.create(userApiKeyData)
             userApiKey.secret = secret
             return userApiKey
@@ -45,7 +45,7 @@ class UserApiKeyService extends AbstractService<IUserApiKey, IUserApiKeyBase, IU
         try {
             userApiKeyData.name = userApiKeyData?.name?.trim()
             delete userApiKeyData.secret
-            await userApiKeyBaseSchema.parseAsync(userApiKeyData)
+            await UserApiKeyBaseSchema.parseAsync(userApiKeyData)
             const userApiKey = await this._repository.update(id, userApiKeyData)
             return userApiKey
         } catch (e) {
@@ -102,7 +102,7 @@ class UserApiKeyService extends AbstractService<IUserApiKey, IUserApiKeyBase, IU
                        page = 1,
                        limit = 5,
                        orderBy = '',
-                       order = false,
+                       order = "asc",
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {

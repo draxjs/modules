@@ -8,20 +8,21 @@ let userService: UserApiKeyService
 
 const UserApiKeyServiceFactory = (verbose: boolean = false): UserApiKeyService => {
     if (!userService) {
-        let userRepository: IUserApiKeyRepository
+        let userApiKeyRepository: IUserApiKeyRepository
         switch (DraxConfig.getOrLoad(CommonConfig.DbEngine)) {
             case COMMON.DB_ENGINES.MONGODB:
-                userRepository = new UserApiKeyMongoRepository()
+                userApiKeyRepository = new UserApiKeyMongoRepository()
                 break;
             case COMMON.DB_ENGINES.SQLITE:
                 const dbFile = DraxConfig.getOrLoad(CommonConfig.SqliteDbFile)
-                userRepository = new UserApiKeySqliteRepository(dbFile, verbose)
+                userApiKeyRepository = new UserApiKeySqliteRepository(dbFile, verbose)
+                userApiKeyRepository.build()
                 break;
             default:
                 throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
         }
 
-        userService = new UserApiKeyService(userRepository)
+        userService = new UserApiKeyService(userApiKeyRepository)
     }
 
     return userService

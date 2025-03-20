@@ -15,7 +15,7 @@ class HttpTimeoutError extends HttpError implements IRestError {
   }
 
   consoleError() {
-    console.error(`HttpClientTimeoutError - statusCode: ${this.statusCode} message: ${this.message} body: ${this.body}`)
+    console.error(`HttpClientTimeoutError - statusCode: ${this.statusCode} message: ${this.message}`)
   }
 
 }

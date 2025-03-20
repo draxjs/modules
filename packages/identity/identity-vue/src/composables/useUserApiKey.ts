@@ -3,6 +3,7 @@ import type {IUserApiKey, IUserApiKeyBase} from "@drax/identity-share";
 import { UserApiKeySystemFactory} from "@drax/identity-front";
 import {ClientError} from "@drax/common-front";
 import type { IClientInputError} from "@drax/common-front";
+import type {IDraxPaginateOptions} from "@drax/crud-share";
 
 
 export function useUserApiKey() {
@@ -14,7 +15,7 @@ export function useUserApiKey() {
     let loading = ref(false);
 
 
-    async function paginateUserApiKey({page= 1, limit= 5, orderBy="", order=false, search = ""}) {
+    async function paginateUserApiKey({page= 1, limit= 5, orderBy="", order="asc", search = ""}: IDraxPaginateOptions) {
         loading.value = true
         let paginateduserApiKey = userApiKeySystem.paginate({page, limit, orderBy, order, search})
         loading.value = false

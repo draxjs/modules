@@ -2,6 +2,7 @@
 import {useI18n} from "vue-i18n";
 import type {IEntityCrud, IEntityCrudField, IEntityCrudOperation} from "@drax/crud-share";
 import {useFormUtils} from "../composables/UseFormUtils";
+import {getItemId} from "../helpers/getItemId";
 import CrudFormField from "./CrudFormField.vue";
 import {computed, defineEmits, defineModel, defineProps, ref} from "vue";
 import type {PropType} from "vue";
@@ -11,6 +12,8 @@ import {useAuth} from '@drax/identity-vue'
 const {hasPermission} = useAuth()
 const {t, te} = useI18n()
 
+
+
 const valueModel = defineModel({type: [Object]})
 
 const {entity, operation} = defineProps({
@@ -19,6 +22,7 @@ const {entity, operation} = defineProps({
   readonly: {type: Boolean, default: false},
   error: {type: String, required: false},
 })
+
 
 const emit = defineEmits(['submit', 'cancel'])
 
@@ -76,7 +80,7 @@ const {
   <v-form ref="formRef" @submit.prevent>
     <v-card flat>
 
-      <v-card-subtitle v-if="valueModel.id">ID: {{ valueModel.id }}</v-card-subtitle>
+      <v-card-subtitle v-if="getItemId(valueModel)">ID: {{ getItemId(valueModel) }}</v-card-subtitle>
 
       <v-card-text v-if="error">
         <v-alert color="error">{{ te(error) ? t(error) : error }}</v-alert>

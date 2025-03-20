@@ -15,7 +15,7 @@ class HttpStatusError extends HttpError implements IRestError{
   }
 
   consoleError() {
-    console.error(`HttpClientStatusError - statusCode: ${this.statusCode} message: ${this.message} body: ${this.body}`)
+    console.error(`HttpClientStatusError - statusCode: ${this.statusCode} message: ${this.message} body: ${JSON.stringify(this.body)}`)
   }
 
 }

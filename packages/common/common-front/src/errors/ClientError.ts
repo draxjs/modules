@@ -22,6 +22,14 @@ class ClientError extends Error {
       return 'error.validation'
     }
 
+    if ('body' in error && error.body && error.body.i18nMessage) {
+      return error.body.i18nMessage
+    }
+
+    if ('body' in error && error.body && error.body.message) {
+      return error.body.message
+    }
+
     if ('body' in error && error.body && error.body.error) {
       return error.body.error
     }

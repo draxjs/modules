@@ -1,4 +1,5 @@
 interface ITenantBase{
+    _id?: string
     id?: string
     name: string
     createdAt?: string
@@ -6,7 +7,8 @@ interface ITenantBase{
 }
 
 interface ITenant{
-    id: string
+    _id: string
+    id?: string
     name: string
     createdAt?: string
     updatedAt?: string

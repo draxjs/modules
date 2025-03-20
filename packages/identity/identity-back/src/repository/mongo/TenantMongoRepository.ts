@@ -8,18 +8,18 @@ import {AbstractMongoRepository} from "@drax/crud-back";
 
 class TenantMongoRepository extends AbstractMongoRepository<ITenant, ITenantBase, ITenantBase> implements ITenantRepository {
 
-
-    constructor() {
-        super();
-        this._model = TenantModel;
-        this._searchFields = ['name'];
-        this._populateFields = [];
-    }
+    protected _model = TenantModel
+    protected _searchFields: string[] = ['name']
+    protected _populateFields: string[] = []
+    protected _lean: boolean = true
 
 
     async findByName(name: string): Promise<ITenant | null> {
-        const tenant: mongoose.HydratedDocument<ITenant> | null = await TenantModel.findOne({name}).exec()
-        return tenant
+        const tenant  = await TenantModel
+            .findOne({name})
+            .lean(this._lean)
+            .exec()
+        return tenant as ITenant
     }
 
 

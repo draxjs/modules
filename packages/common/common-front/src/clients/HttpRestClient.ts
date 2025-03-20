@@ -36,7 +36,7 @@ class HttpRestClient implements IHttpClient {
 
 
   errorHandler(error: Error): Error {
-    console.error('HttpRestClient Error:', error);
+    // console.error('HttpRestClient Error:', error);
     if (error instanceof HttpStatusError && error.statusCode >= 400 && error.statusCode <= 599) {
       if(error.statusCode >= 400 && error.statusCode <= 499){
         return new ClientError(error)

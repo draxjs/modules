@@ -18,6 +18,7 @@ const RoleServiceFactory = (verbose: boolean = false): RoleService => {
             case COMMON.DB_ENGINES.SQLITE:
                 const dbFile = DraxConfig.getOrLoad(CommonConfig.SqliteDbFile)
                 roleRepository = new RoleSqliteRepository(dbFile, verbose)
+                roleRepository.build()
                 break;
             default:
                 throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));

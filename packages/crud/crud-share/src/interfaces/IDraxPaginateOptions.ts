@@ -4,7 +4,7 @@ interface IDraxPaginateOptions {
   page: number;
   limit: number;
   orderBy?: string;
-  order?: 'asc' | 'desc' | boolean;
+  order?: 'asc' | 'desc';
   search?: string;
   filters?: IDraxFieldFilter[];
 }

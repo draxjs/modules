@@ -17,8 +17,9 @@ const schema: IEntitySchema = {
             type: 'object', header: true, schema: {
                 country: {type: 'string', required: false, unique: false, index: false},
                 city: {type: 'string', required: false, unique: false, index: false},
-                street: {type: 'string', required: true, unique: false, index: false},
-                zip: {type: 'string', required: false, unique: false, index: false},
+                street: {type: 'longString', required: true, unique: false, index: false},
+                zip: {type: 'number', required: false, unique: false, index: false},
+                casa: {type: 'boolean', required: false, unique: false, index: false},
             }
         },
         skills: {

@@ -14,6 +14,8 @@ defineProps({
   rules: {type: Array as PropType<any[]>, default: () => []},
   multiple: {type: Boolean, default: false},
   clearable: {type: Boolean, default: false},
+  itemTitle: {type: String, default: "name"},
+  itemValue: {type: String, default: "_id"},
   readonly: {type: Boolean, default: false},
   label: {type: String, default: 'role.entity'},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
@@ -35,8 +37,8 @@ onMounted(async () => {
       v-model="model"
       :label="te(label) ? t(label) : label"
       :items="items"
-      item-title="name"
-      item-value="id"
+      :item-title="itemTitle"
+      :item-value="itemValue"
       :variant="variant"
       :error-messages="errorMessages"
       :multiple="multiple"

@@ -16,6 +16,7 @@ const UserServiceFactory = (verbose:boolean = false) : UserService => {
             case COMMON.DB_ENGINES.SQLITE:
                 const dbFile = DraxConfig.getOrLoad(CommonConfig.SqliteDbFile)
                 userRepository = new UserSqliteRepository(dbFile,verbose)
+                userRepository.build()
                 break;
             default:
                 throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));

@@ -190,7 +190,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                        page = 1,
                        limit = 10,
                        orderBy = this._defaultOrder,
-                       order = false,
+                       order = "asc",
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<T>> {

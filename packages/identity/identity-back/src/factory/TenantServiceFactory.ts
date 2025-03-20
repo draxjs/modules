@@ -18,6 +18,7 @@ const TenantServiceFactory = (verbose: boolean = false): TenantService => {
             case COMMON.DB_ENGINES.SQLITE:
                 const dbFile = DraxConfig.getOrLoad(CommonConfig.SqliteDbFile)
                 tenantRepository = new TenantSqliteRepository(dbFile, verbose)
+                tenantRepository.build()
                 break;
             default:
                 throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));

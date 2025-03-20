@@ -5,7 +5,7 @@ async function InitializeSettings() {
     const settingService = SettingServiceFactory()
 
     await settingService.createOrUpdate({
-        group: 'Grupo 1',
+        category: 'Grupo 1',
         key: 'STRING',
         value: 'ASD',
         label: 'String',
@@ -15,7 +15,7 @@ async function InitializeSettings() {
     })
 
     await settingService.createOrUpdate({
-        group: 'Grupo 1',
+        category: 'Grupo 1',
         key: 'NUMBER',
         value: '2',
         label: 'Number',
@@ -26,7 +26,7 @@ async function InitializeSettings() {
 
 
     await settingService.createOrUpdate({
-        group: 'Grupo 1',
+        category: 'Grupo 1',
         key: 'BOOLEAN',
         value: 'true',
         label: 'Boolean',
@@ -36,7 +36,7 @@ async function InitializeSettings() {
     })
 
     await settingService.createOrUpdate({
-        group: 'Grupo 1',
+        category: 'Grupo 1',
         key: 'LONG_STRING',
         value: 'LONGOOOSSS',
         label: 'LongString',
@@ -47,7 +47,7 @@ async function InitializeSettings() {
 
 
     await settingService.createOrUpdate({
-        group: 'Grupo 2',
+        category: 'Grupo 2',
         key: 'ENUM',
         value: null,
         label: 'Enum',
@@ -59,7 +59,7 @@ async function InitializeSettings() {
 
 
     await settingService.createOrUpdate({
-        group: 'Grupo 2',
+        category: 'Grupo 2',
         key: 'PASSWORD',
         value: null,
         label: 'Password',
@@ -69,7 +69,7 @@ async function InitializeSettings() {
     })
 
     await settingService.createOrUpdate({
-        group: 'Grupo 3',
+        category: 'Grupo 3',
         key: 'STRINGLIST',
         value: null,
         label: 'StringList',
@@ -79,7 +79,7 @@ async function InitializeSettings() {
     })
 
     await settingService.createOrUpdate({
-        group: 'Grupo 3',
+        category: 'Grupo 3',
         key: 'NUMBERLIST',
         value: null,
         label: 'NumberList',
@@ -89,7 +89,7 @@ async function InitializeSettings() {
     })
 
     await settingService.createOrUpdate({
-        group: 'Grupo 3',
+        category: 'Grupo 3',
         key: 'ENUMLIST',
         value: null,
         label: 'EnumList',

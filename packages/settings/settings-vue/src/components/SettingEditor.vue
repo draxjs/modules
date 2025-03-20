@@ -27,7 +27,7 @@ const emit = defineEmits(['updateValue'])
 async function updateValue() {
   try {
     loading.value = true
-    await updateSettingValue(setting.id, value.value)
+    await updateSettingValue(setting._id, value.value)
     emit('updateValue', value.value)
   } catch (e) {
     console.error(e)

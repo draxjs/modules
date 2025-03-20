@@ -2,6 +2,7 @@
 import {debounce} from "@drax/common-front"
 import { type PropType, type Ref} from "vue";
 import {ref, onBeforeMount} from "vue";
+import {getItemId} from "../helpers/getItemId"
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 
 const valueModel = defineModel<string | string[]>({type: [String, Array], required: false})
@@ -57,7 +58,6 @@ async function search(value: any) {
 }
 
 onBeforeMount(async () => {
-
   await search('')
   await checkIds()
 })
@@ -68,7 +68,7 @@ async function checkIds(ids: Array<string> = []) {
     if(valueModel.value) {
       let ids = Array.isArray(valueModel.value) ? valueModel.value : [valueModel.value]
       for (let id of ids) {
-        if (!items.value.some((item: any) => item._id === id)) {
+        if (!items.value.some((item: any) => getItemId(item) === id)) {
           if (!entity) {
             throw new Error('CrudAutocomplete Entity is required')
           }
@@ -87,9 +87,6 @@ async function checkIds(ids: Array<string> = []) {
     console.error(e)
   }
 }
-
-
-
 
 defineEmits(['updateValue'])
 

@@ -8,6 +8,9 @@ import fastifySwaggerUi from '@fastify/swagger-ui'
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {InternalServerError} from "@drax/common-back";
+import builderStringify from "fast-json-stringify"
+
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
@@ -28,6 +31,7 @@ class FastifyServer {
         this.rootDir = rootDir ? rootDir : path.join(__dirname);
         this.setupFastifyServer()
         this.disableValidations()
+        //this.debugSerialization()
         this.setupErrorHandler()
         this.setupMultipart()
         this.setupStatusRoute()
@@ -35,10 +39,96 @@ class FastifyServer {
         this.setupSwagger()
     }
 
+    setupFastifyServer(): void {
+        this.fastifyServer = Fastify({
+            logger: true,
+            ajv:{
+                customOptions:{
+                    // strict: "log",
+                    // strictSchema: "log",
+                    // strictRequired: "log",
+                    // verbose: true,
+                    // validateSchema: "log",
+
+                    allErrors: true, // Muestra todos los errores de validación
+                    verbose: true, // Proporciona más contexto
+
+                    // strict: false,
+                    // strictSchema: false,
+                    // strictRequired: false,
+                    // verbose: true,
+                    // validateSchema: false,
+                }
+            }
+        })
+    }
+
+    disableValidations(){
+        this.fastifyServer.setValidatorCompiler(() => () => true);
+    }
+
+    debugSerialization(){
+        this.fastifyServer.setSerializerCompiler(({ schema, method, url, httpStatus, contentType }) => {
+            return (data) => {
+                console.log("Schema:", schema)
+                console.log("Method:", method)
+                console.log("URL:", url)
+                console.log("HTTP Status:", httpStatus)
+                console.log("Content Type:", contentType)
+                console.log("Data:", data)
+
+                //@ts-ignore
+                const stringify = builderStringify(schema.response, { debug: true });
+                return stringify(data)
+            }
+        })
+
+    }
+
 
 
     setupSwagger(){
-        this.fastifyServer.register(fastifySwagger as any);
+        this.fastifyServer.register(fastifySwagger as any, {
+            openapi: {
+                openapi: '3.0.0',
+                info: {
+                    title: 'Drax Swagger',
+                    description: 'Drax swagger API',
+                    version: '1.0.0'
+                },
+                // servers: [
+                //     {
+                //         url: 'http://localhost:3000',
+                //         description: 'Development server'
+                //     }
+                // ],
+                tags: [
+                    { name: 'Auth', description: 'Auth related end-points' },
+                    { name: 'Identity', description: 'Identity, User, Role, Tenant related end-points' },
+                    { name: 'Media', description: 'File Media related end-points' },
+                    { name: 'Settings', description: 'Settings related end-points' },
+
+                ],
+                components: {
+                    securitySchemes: {
+                        bearerAuth: {
+                            type: 'http',
+                            scheme: 'bearer',
+                            bearerFormat: 'JWT',
+                        },
+                        apiKeyAuth: {
+                            type: 'apiKey',
+                            name: 'x-api-key',
+                            in: 'header'
+                        }
+                    }
+                },
+                security: [
+                    { bearerAuth: [] },  // Opción 1: JWT
+                    { apiKeyAuth: [] },   // Opción 2: API Key
+                ],
+            }
+        });
         this.fastifyServer.register(fastifySwaggerUi as any, { routePrefix: '/api/docs' });
     }
 
@@ -55,15 +145,7 @@ class FastifyServer {
         });
     }
 
-    setupFastifyServer(): void {
-        this.fastifyServer = Fastify({
-            logger: true,
-        })
-    }
 
-    disableValidations(){
-        this.fastifyServer.setValidatorCompiler(() => () => true);
-    }
 
     setupErrorHandler(){
         this.fastifyServer.setErrorHandler((error, request, reply) => {

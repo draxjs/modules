@@ -8,6 +8,8 @@ defineProps({
   errorMessages: {type: String as PropType<string | string[] | undefined>,},
   clearable: {type: Boolean, default: false},
   readonly: {type: Boolean, default: false},
+  itemTitle: {type: String, default: "name"},
+  itemValue: {type: String, default: "_id"},
   rules: {type: Array as PropType<any[]>, default: () => []},
   label: {type: String, default: 'tenant.entity'},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
@@ -31,8 +33,8 @@ onMounted(async () => {
       v-model="model"
       :label="te(label) ? t(label) : label"
       :items="items"
-      item-title="name"
-      item-value="id"
+      :item-title="itemTitle"
+      :item-value="itemValue"
       :variant="variant"
       :error-messages="errorMessages"
       :clearable="clearable"

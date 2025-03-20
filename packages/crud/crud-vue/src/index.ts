@@ -10,6 +10,7 @@ import CrudAutocomplete from "./components/CrudAutocomplete.vue";
 import {useCrudStore} from "./stores/UseCrudStore";
 import {useCrud} from "./composables/UseCrud";
 import {useFormUtils} from "./composables/UseFormUtils";
+import {useInputErrorI18n} from "./composables/UseInputErrorI18n";
 import {EntityCrud} from "./EntityCrud";
 
 
@@ -26,6 +27,7 @@ export {
     useCrud,
     useFormUtils,
     useCrudStore,
+    useInputErrorI18n,
     EntityCrud
 
 }

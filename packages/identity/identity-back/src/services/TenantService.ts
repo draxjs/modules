@@ -1,6 +1,6 @@
 import {ZodErrorToValidationError} from "@drax/common-back"
 import {AbstractService} from "@drax/crud-back";
-import {TenantBaseSchema} from "../schemas/TenantSchema";
+import {TenantBaseSchema} from "../schemas/TenantSchema.js";
 import {ZodError} from "zod";
 import type {ITenantBase, ITenant} from "@drax/identity-share";
 import type {ITenantRepository} from "../interfaces/ITenantRepository";
@@ -99,7 +99,7 @@ class TenantService extends AbstractService<ITenant,ITenantBase,ITenantBase> {
                        page = 1,
                        limit = 5,
                        orderBy = '',
-                       order = false,
+                       order = "asc",
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {

@@ -1,7 +1,7 @@
 import {IUserApiKey, IUserApiKeyBase} from '@drax/identity-share'
-import {IDraxCrud} from "@drax/crud-share";
+import {IDraxCrudRepository} from "@drax/crud-share";
 
-interface IUserApiKeyRepository extends IDraxCrud<IUserApiKey, IUserApiKeyBase, IUserApiKeyBase>{
+interface IUserApiKeyRepository extends IDraxCrudRepository<IUserApiKey, IUserApiKeyBase, IUserApiKeyBase>{
     findBySecret(username: string): Promise<IUserApiKey | null>;
 }
 

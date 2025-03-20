@@ -19,6 +19,7 @@ import BadCredentialsError from "../errors/BadCredentialsError.js";
 import {join} from "path";
 import {IdentityConfig} from "../config/IdentityConfig.js";
 import UserEmailService from "../services/UserEmailService.js";
+import {IDraxFieldFilter} from "@drax/crud-share";
 
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const AVATAR_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatar';
@@ -42,8 +43,8 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
         } catch (e) {
             console.error('/api/auth error', e)
             if (e instanceof BadCredentialsError) {
-                reply.code(401)
-                reply.send({error: e.message})
+                reply.code(e.statusCode)
+                reply.send(e.body)
             }
             reply.code(500)
             reply.send({error: 'error.server'})
@@ -54,7 +55,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
         try {
             if (request.authUser) {
                 const userService = UserServiceFactory()
-                let user = await userService.findById(request.authUser.id)
+                let user = await userService.findById(request.rbac.userId)
                 user.password = undefined
                 delete user.password
                 return user
@@ -63,16 +64,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
             }
         } catch (e) {
-            if (e instanceof UnauthorizedError) {
-                reply.code(401)
-                reply.send({error: "Unauthorized"})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -85,7 +77,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const order = request.query.order
             const search = request.query.search
             const userService = UserServiceFactory()
-            const filters = []
+            const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             if (request.rbac.getAuthUser.tenantId) {
                 filters.push({field: 'tenant', operator: 'eq', value: request.rbac.getAuthUser.tenantId})
             }
@@ -96,16 +88,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             }
             return paginateResult
         } catch (e) {
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -121,17 +104,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             let item = await this.service.search(search, 1000, filters)
             return item
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -158,28 +131,25 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 payload.tenant = null
             }
 
-            payload.role = role.id
+            payload.role = role._id
             payload.origin ??= 'Registry'
 
             const userService = UserServiceFactory()
             let user = await userService.register(payload)
 
-            //SEND EMAIL FOR EMAIL VERIFICATION
-            await UserEmailService.emailVerifyCode(user.emailCode, user.email)
+            if(user){
+                //SEND EMAIL FOR EMAIL VERIFICATION
+                await UserEmailService.emailVerifyCode(user.emailCode, user.email)
 
-            return user
-        } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
+                return {
+                    success: true,
+                    message: 'User registered successfully.'
+                }
             }
+
+
+        } catch (e) {
+            this.handleError(e,reply)
         }
     }
 
@@ -193,13 +163,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 reply.header('Content-Type', 'text/html; charset=utf-8').send(html)
             }
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            }
-            reply.code(500)
-            reply.send({error: 'error.server'})
+            this.handleError(e,reply)
         }
     }
 
@@ -209,13 +173,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             return await userService.verifyPhone(phoneCode)
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            }
-            reply.code(500)
-            reply.send({error: 'error.server'})
+            this.handleError(e,reply)
         }
     }
 
@@ -240,17 +198,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             let user = await userService.create(payload)
             return user
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -275,21 +223,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             let user = await userService.update(id, payload)
             return user
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            }
-            if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -300,22 +234,22 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             let r: boolean = await userService.delete(id)
             if (r) {
-                reply.send({message: 'Deleted successfully'})
+                reply.send({
+                    id: id,
+                    message: 'Item deleted successfully',
+                    deleted: true,
+                    deletedAt: new Date(),
+                })
             } else {
-                reply.statusCode(400).send({message: 'Not deleted'})
+                reply.send({
+                    id: id,
+                    message: 'Item not deleted',
+                    deleted: false,
+                    deletedAt: new Date(),
+                })
             }
         } catch (e) {
-            console.error(e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -341,17 +275,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             reply.send({message})
 
         } catch (e) {
-            console.error('recoveryPassword error', e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            }else if (e instanceof SecuritySensitiveError) {
-                reply.statusCode = e.statusCode
-                reply.send({message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -379,14 +303,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             }
 
         } catch (e) {
-            console.error('recoveryPassword error', e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -402,17 +319,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             return await userService.changeOwnPassword(userId, currentPassword, newPassword)
         } catch (e) {
-            console.error('changeMyPassword error', e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -427,17 +334,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             return await userService.changeUserPassword(userId, newPassword)
         } catch (e) {
-            console.error('/api/password error', e)
-            if (e instanceof ValidationError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message, inputErrors: e.errors})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'error.server'})
-            }
+            this.handleError(e,reply)
         }
     }
 
@@ -445,7 +342,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
     async updateAvatar(request, reply) {
         try {
             request.rbac.assertAuthenticated()
-            const userId = request.rbac.getAuthUser.id
+            const userId = request.rbac.userId
 
             const data = await request.file()
 
@@ -470,17 +367,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 url: urlFile,
             }
         } catch (e) {
-            console.error(e)
-            if (e instanceof UploadFileError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
+            this.handleError(e,reply)
         }
 
     }
@@ -493,14 +380,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             //console.log("FILE_DIR: ",fileDir, " FILENAME:", filename)
             return reply.sendFile(filename, fileDir)
         } catch (e) {
-            console.error(e)
-            if (e instanceof UnauthorizedError) {
-                reply.statusCode = e.statusCode
-                reply.send({error: e.message})
-            } else {
-                reply.statusCode = 500
-                reply.send({error: 'INTERNAL_SERVER_ERROR'})
-            }
+            this.handleError(e,reply)
         }
 
     }

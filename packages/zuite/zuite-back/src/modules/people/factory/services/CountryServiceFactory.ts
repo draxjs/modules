@@ -1,7 +1,7 @@
 
 import CountryRepository from '../../repository/CountryRepository.js'
 import {CountryService} from '../../services/CountryService.js'
-import {CountrySchema} from "../../schemas/CountrySchema.js";
+import {CountryBaseSchema} from "../../schemas/CountrySchema.js";
 
 class CountryServiceFactory {
     private static service: CountryService;
@@ -9,7 +9,7 @@ class CountryServiceFactory {
     public static get instance(): CountryService {
         if (!CountryServiceFactory.service) {
             const repository = new CountryRepository();
-            const schema = CountrySchema;
+            const schema = CountryBaseSchema;
             CountryServiceFactory.service = new CountryService(repository, schema);
         }
         return CountryServiceFactory.service;

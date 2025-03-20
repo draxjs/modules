@@ -1,6 +1,6 @@
 import {array, object, string} from "zod"
 
-const userApiKeyBaseSchema = object({
+const UserApiKeyBaseSchema = object({
     name: string({ required_error: "validation.required" })
         .min(1, "validation.required"),
     ipv4: array(string().ip({version: "v4", message: 'validation.invalidIpv4'})),
@@ -8,12 +8,13 @@ const userApiKeyBaseSchema = object({
 
 })
 
-const userApiKeySchema = userApiKeyBaseSchema.extend({
-    id: string(),
+const UserApiKeySchema = UserApiKeyBaseSchema.extend({
+    _id: string(),
+    id: string().optional(),
     createdBy: string(),
 })
 
 
-export default userApiKeyBaseSchema
+export default UserApiKeyBaseSchema
 
-export {userApiKeyBaseSchema, userApiKeySchema}
+export {UserApiKeyBaseSchema, UserApiKeySchema}

@@ -4,6 +4,7 @@ import  {UserSystemFactory} from "@drax/identity-front";
 import type {IClientInputError} from "@drax/common-front";
 import {ClientError} from "@drax/common-front";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
+import type {IDraxPaginateOptions} from "@drax/crud-share";
 
 
 export function useUser() {
@@ -14,7 +15,7 @@ export function useUser() {
     let inputErrors = ref<IClientInputError>()
     let loading = ref(false);
 
-    async function paginateUser({page= 1, limit= 5, orderBy="", order=false, search = ""}) {
+    async function paginateUser({page= 1, limit= 5, orderBy="", order = "asc", search = ""}:IDraxPaginateOptions) {
         loading.value = true
         let paginatedUser = userSystem.paginate({page, limit, orderBy, order, search})
         loading.value = false

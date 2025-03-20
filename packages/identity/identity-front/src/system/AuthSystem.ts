@@ -41,8 +41,8 @@ class AuthSystem implements IAuthProvider {
         return result
     }
 
-    async register(form: IUserRegistration):Promise<boolean> {
-        const result: boolean = await this._provider.register(form)
+    async register(form: IUserRegistration):Promise<{success:boolean, message: string}> {
+        const result = await this._provider.register(form)
         return result
     }
 

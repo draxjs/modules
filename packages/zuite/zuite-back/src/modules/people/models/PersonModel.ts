@@ -19,7 +19,8 @@ const PersonSchema = new mongoose.Schema<IPerson>({
             country: {type: String,   required: false, index: false, unique: false },
             city: {type: String,   required: false, index: false, unique: false },
             street: {type: String,   required: true, index: false, unique: false },
-            zip: {type: String,   required: false, index: false, unique: false } 
+            zip: {type: Number,   required: false, index: false, unique: false },
+            casa: {type: Boolean,   required: false, index: false, unique: false } 
             },
             skills: [{ 
                         name: {type: String,   required: true, index: false, unique: false },
@@ -31,6 +32,15 @@ const PersonSchema = new mongoose.Schema<IPerson>({
 
 PersonSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 PersonSchema.plugin(mongoosePaginate);
+
+PersonSchema.virtual("id").get(function () {
+    return this._id.toString();
+});
+
+
+PersonSchema.set('toJSON', {getters: true, virtuals: true});
+
+PersonSchema.set('toObject', {getters: true, virtuals: true});
 
 const MODEL_NAME = 'Person';
 const COLLECTION_NAME = 'Person';

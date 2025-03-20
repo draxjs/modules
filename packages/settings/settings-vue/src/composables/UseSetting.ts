@@ -31,10 +31,10 @@ export function useSetting() {
 
     const settingsGrouped = computed(() => {
         return settings.value.reduce((acc, item) => {
-            if (!acc[item.group]) {
-                acc[item.group] = [];
+            if (!acc[item.category]) {
+                acc[item.category] = [];
             }
-            acc[item.group].push(item);
+            acc[item.category].push(item);
             return acc;
         }, {} as { [key: string]: ISetting[] });
     })

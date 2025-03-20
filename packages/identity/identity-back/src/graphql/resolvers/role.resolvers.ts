@@ -3,6 +3,7 @@ import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
 import {ValidationError, ValidationErrorToGraphQLError, UnauthorizedError} from "@drax/common-back";
 import {GraphQLError} from "graphql";
 import {PermissionService} from "../../services/PermissionService.js";
+import {IDraxPaginateOptions} from "@drax/crud-share";
 
 
 export default {
@@ -37,7 +38,7 @@ export default {
                 const roleService = RoleServiceFactory()
                 const roles = await roleService.fetchAll()
                 if(rbac.getRole?.childRoles?.length > 0) {
-                    return roles.filter(role => rbac.getRole.childRoles.some(childRole => childRole.id === role.id));
+                    return roles.filter(role => rbac.getRole.childRoles.some(childRole => childRole._id === role._id));
                 }else{
                     return roles
                 }
@@ -61,7 +62,7 @@ export default {
                 throw new GraphQLError('error.server')
             }
         },
-        paginateRole: async (_, {options= {page:1, limit:5, orderBy:"", order:false, search:"", filters: []} }, {rbac}) => {
+        paginateRole: async (_, {options= {page:1, limit:5, orderBy:"", order:"asc", search:"", filters: []} as IDraxPaginateOptions }, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewRole)
                 const roleService = RoleServiceFactory()

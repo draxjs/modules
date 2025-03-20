@@ -30,8 +30,8 @@ async function apiKeyMiddleware (request, reply) {
                 const userApiKey = await draxCache.getOrLoad(apiKey, userApiKeyLoader)
                 if(userApiKey && userApiKey.user){
                     request.authUser = userApiKey.user
-                    request.authUser.roleId = userApiKey.user.role.id
-                    request.authUser.tenantId = userApiKey.user?.tenant?.id
+                    request.authUser.roleId = userApiKey.user.role._id
+                    request.authUser.tenantId = userApiKey.user?.tenant?._id
                 }
             }
             return

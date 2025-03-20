@@ -59,8 +59,7 @@ const rules = computed(() => {
 const inputErrors = computed(() => {
       let sIndex = (index != null && index >= 0) ? `${index}.` : ''
       let name = parentField ? `${parentField}.${sIndex}${field.name}` : field.name
-      //console.log("inputErrors name",name, index, sIndex)
-      return store.getInputErrors(name).map((error: string) => t(te(error) ? t(error) : error))
+      return store.getInputErrors(name).map((error: string) =>te(error) ? t(error) : error)
     }
 )
 

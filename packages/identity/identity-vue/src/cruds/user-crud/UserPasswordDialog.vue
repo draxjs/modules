@@ -25,7 +25,7 @@ let userError = ref<string>('')
 
 async function savePassword() {
   if (passwordForm.value.newPassword === passwordForm.value.confirmPassword) {
-    passwordChanged.value = await changeUserPassword(user.id, passwordForm.value.newPassword)
+    passwordChanged.value = await changeUserPassword(user._id, passwordForm.value.newPassword)
     return
   } else {
     return

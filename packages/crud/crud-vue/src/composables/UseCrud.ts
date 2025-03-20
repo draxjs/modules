@@ -1,10 +1,12 @@
 import type {IDraxPaginateResult, IEntityCrud} from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {computed, toRaw} from "vue";
+import getItemId from "../helpers/getItemId";
 
 export function useCrud(entity: IEntityCrud) {
 
     const store = useCrudStore()
+
 
     const dialog = computed({
         get() {
@@ -198,13 +200,16 @@ export function useCrud(entity: IEntityCrud) {
 
         entity.fields.filter(field => field.type === 'ref')
             .forEach(field => {
-                item[field.name] = item[field.name]?._id ? item[field.name]._id : item[field.name]
+                item[field.name] = getItemId(item[field.name]) ? getItemId(item[field.name]) : item[field.name]
+
             })
 
         entity.fields.filter(field => field.type === 'array.ref')
             .forEach(field => {
                 if (item[field.name] && Array.isArray(item[field.name])) {
-                    item[field.name] = item[field.name].map(((i: any) => i?._id ? i._id : i))
+                    item[field.name] = item[field.name].map(((i: any) => getItemId(i) ? getItemId(i) : i))
+                }else{
+                    item[field.name] = []
                 }
             })
 
@@ -290,7 +295,7 @@ export function useCrud(entity: IEntityCrud) {
     async function doUpdate(formData: any) {
         try {
             store.setLoading(true)
-            let item = await entity?.provider.update(formData.id, toRaw(formData))
+            let item = await entity?.provider.update(getItemId(formData), toRaw(formData))
             await doPaginate()
             closeDialog()
             store.showMessage("Entity updated successfully!")
@@ -312,7 +317,7 @@ export function useCrud(entity: IEntityCrud) {
     async function doDelete(formData: any) {
         try {
             store.setLoading(true)
-            await entity?.provider.delete(formData.id)
+            await entity?.provider.delete(getItemId(formData))
             await doPaginate()
             closeDialog()
             store.showMessage("Entity deleted successfully!")

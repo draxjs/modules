@@ -9,11 +9,10 @@ class HttpError extends Error implements IRestError{
     this.name = 'HttpClientError'
     this.statusCode = statusCode
     this.body = body
-    this.consoleError()
   }
 
   consoleError() {
-    console.error(`HttpClientError - statusCode: ${this.statusCode} message: ${this.message} body: ${this.body}`)
+    console.error(`HttpError - statusCode: ${this.statusCode} message: ${this.message} body: ${this.body}`)
   }
 
 }

@@ -1,5 +1,6 @@
-import { z } from 'zod';
+import z from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
+import type { Targets } from 'zod-to-json-schema';
 import {
   IdParamSchema,
   DeleteBodyResponseSchema,
@@ -9,18 +10,107 @@ import {
   SearchQuerySchema,
   FindByParamSchema,
   ErrorBodyResponseSchema,
-  ValidationErrorBodyResponseSchema
+  ValidationErrorBodyResponseSchema,
+  ExportBodyResponseSchema
 } from '../index.js';
 
-export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase extends z.ZodObject<z.ZodRawShape>> {
+export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate extends z.ZodObject<z.ZodRawShape>, TUpdate extends z.ZodObject<z.ZodRawShape>> {
   private entitySchema: T;
-  private entityBaseSchema: TBase;
+  private entityCreateSchema: TCreate;
+  private entityUpdateSchema: TUpdate;
   private entityName: string;
+  private tags: string[];
+  private target: Targets = 'openApi3'; //"jsonSchema7" | "jsonSchema2019-09" | "openApi3" | "openAi"
 
-  constructor(entitySchema: T, entityBaseSchema: TBase, entityName: string) {
+  constructor(entitySchema: T, entityCreateSchema: TCreate, entityUpdateSchema: TUpdate, entityName: string, target:Targets = 'openApi3', tags: string[] = []) {
     this.entitySchema = entitySchema;
-    this.entityBaseSchema = entityBaseSchema;
+    this.entityCreateSchema = entityCreateSchema;
+    this.entityUpdateSchema = entityUpdateSchema;
     this.entityName = entityName;
+    this.tags = tags
+    this.target = target
+  }
+
+  get getTags(){
+    if(this.tags.length > 0){
+      return {tags: this.tags}
+    }
+    return []
+  }
+
+  get jsonEntityCreateSchema(){
+    return zodToJsonSchema(this.entityCreateSchema, {target: this.target})
+  }
+
+  get jsonEntityUpdateSchema(){
+    return zodToJsonSchema(this.entityUpdateSchema, {target: this.target})
+  }
+
+  get jsonEntitySchema() {
+    return zodToJsonSchema(this.entitySchema, {target: this.target})
+  }
+
+  get jsonEntityArraySchema() {
+    return zodToJsonSchema(z.array(this.entitySchema), {target: this.target})
+  }
+
+  get jsonExportBodyResponse() {
+    return zodToJsonSchema(ExportBodyResponseSchema, {target: this.target})
+  }
+
+  get jsonErrorBodyResponse() {
+    return zodToJsonSchema(ErrorBodyResponseSchema, {target: this.target})
+  }
+
+  get jsonValidationErrorBodyResponse() {
+    return zodToJsonSchema(ValidationErrorBodyResponseSchema, {target: this.target})
+  }
+
+  get jsonFindQuerySchema(){
+    return zodToJsonSchema(FindQuerySchema, {target: this.target})
+  }
+
+  get jsonSearchQuerySchema(){
+    return zodToJsonSchema(SearchQuerySchema, {target: this.target})
+  }
+
+  get jsonPaginateQuerySchema(){
+    return zodToJsonSchema(PaginateQuerySchema, {target: this.target})
+  }
+
+  get jsonDeleteBodyResponseSchema(){
+    return zodToJsonSchema(DeleteBodyResponseSchema, {target: this.target})
+  }
+
+  get jsonFindByParamSchema(){
+    return zodToJsonSchema(FindByParamSchema, {target: this.target})
+  }
+
+  get jsonPaginateBodyResponseSchema(){
+    return zodToJsonSchema(PaginateBodyResponseSchema.extend({
+      items: z.array(this.entitySchema)
+    }), {target: this.target})
+  }
+
+  get jsonIdParamSchema(){
+    return zodToJsonSchema(IdParamSchema, {target: this.target})
+  }
+
+  /**
+   * Get JSON schema for export
+   */
+  get exportSchema(){
+    return {
+      ...(this.getTags),
+      query: this.jsonFindQuerySchema,
+      response: {
+        200: this.jsonExportBodyResponse,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
+      }
+    };
   }
 
   /**
@@ -28,13 +118,14 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get findByIdSchema() {
     return {
-      params: zodToJsonSchema(IdParamSchema),
+      ...(this.getTags),
+      params: this.jsonIdParamSchema,
       response: {
-        200: zodToJsonSchema(this.entitySchema),
-        400: zodToJsonSchema(ErrorBodyResponseSchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntitySchema,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -44,15 +135,16 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get findByIdsSchema() {
     return {
+      ...(this.getTags),
       params: zodToJsonSchema(z.object({
         ids: z.string().regex(/^[^,]+(,[^,]+)*$/, "Debe ser una lista de valores separados por coma sin comas consecutivas")
-      })),
+      }), {target: this.target}),
       response: {
-        200: zodToJsonSchema(z.array(this.entitySchema)),
-        400: zodToJsonSchema(ErrorBodyResponseSchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntityArraySchema,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -62,13 +154,14 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get searchSchema() {
     return {
-      query: zodToJsonSchema(SearchQuerySchema),
+      ...(this.getTags),
+      query: this.jsonSearchQuerySchema,
       response: {
-        200: zodToJsonSchema(z.array(this.entitySchema)),
-        400: zodToJsonSchema(ErrorBodyResponseSchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntityArraySchema,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     }
   }
@@ -78,13 +171,14 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get findSchema() {
     return {
-      query: zodToJsonSchema(FindQuerySchema),
+      ...(this.getTags),
+      query: this.jsonFindQuerySchema,
       response: {
-        200: zodToJsonSchema(z.array(this.entitySchema)),
-        400: zodToJsonSchema(ErrorBodyResponseSchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntityArraySchema,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     }
   }
@@ -94,12 +188,14 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get findOneSchema() {
     return {
-      params: zodToJsonSchema(FindQuerySchema),
+      ...(this.getTags),
+      params: this.jsonFindQuerySchema,
       response: {
-        200: zodToJsonSchema(this.entitySchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntitySchema,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -109,12 +205,13 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get findBySchema() {
     return {
-      params: zodToJsonSchema(FindByParamSchema),
+      ...(this.getTags),
+      params: this.jsonFindByParamSchema,
       response: {
-        200: zodToJsonSchema(z.array(this.entitySchema)),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntityArraySchema,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -124,12 +221,13 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get findOneBySchema() {
     return {
-      params: zodToJsonSchema(FindByParamSchema),
+      ...(this.getTags),
+      params: this.jsonFindByParamSchema,
       response: {
-        200: zodToJsonSchema(this.entitySchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntitySchema,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -139,15 +237,14 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get paginateSchema() {
     return {
-      query: zodToJsonSchema(PaginateQuerySchema),
+      ...(this.getTags),
+      query: this.jsonPaginateQuerySchema,
       response: {
-        200: zodToJsonSchema(PaginateBodyResponseSchema.extend({
-          items: z.array(this.entitySchema)
-        })),
-        400: zodToJsonSchema(ErrorBodyResponseSchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonPaginateBodyResponseSchema,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -157,11 +254,12 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get allSchema() {
     return {
+      ...(this.getTags),
       response: {
-        200: zodToJsonSchema(z.array(this.entitySchema)),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntityArraySchema,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -171,13 +269,14 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get createSchema() {
     return {
-      body: zodToJsonSchema(this.entityBaseSchema),
+      ...(this.getTags),
+      body: this.jsonEntityCreateSchema,
       response: {
-        200: zodToJsonSchema(this.entitySchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        422: zodToJsonSchema(ValidationErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntitySchema,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        422: this.jsonValidationErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -187,14 +286,15 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get updateSchema() {
     return {
-      params: zodToJsonSchema(IdParamSchema),
-      body: zodToJsonSchema(this.entityBaseSchema),
+      ...(this.getTags),
+      params: this.jsonIdParamSchema,
+      body: this.jsonEntityUpdateSchema,
       response: {
-        200: zodToJsonSchema(this.entitySchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        422: zodToJsonSchema(ValidationErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntitySchema,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        422: this.jsonValidationErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -204,14 +304,15 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get updatePartialSchema() {
     return {
-      params: zodToJsonSchema(IdParamSchema),
-      body: zodToJsonSchema(this.entityBaseSchema.partial()),
+      ...(this.getTags),
+      params: this.jsonIdParamSchema,
+      body: zodToJsonSchema(this.entityUpdateSchema.partial(), {target: this.target}),
       response: {
-        200: zodToJsonSchema(this.entitySchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        422: zodToJsonSchema(ValidationErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonEntitySchema,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        422: this.jsonValidationErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }
@@ -221,13 +322,14 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TBase exten
    */
   get deleteSchema() {
     return {
-      params: zodToJsonSchema(IdParamSchema),
+      ...(this.getTags),
+      params: this.jsonIdParamSchema,
       response: {
-        200: zodToJsonSchema(DeleteBodyResponseSchema),
-        400: zodToJsonSchema(ErrorBodyResponseSchema),
-        401: zodToJsonSchema(ErrorBodyResponseSchema),
-        403: zodToJsonSchema(ErrorBodyResponseSchema),
-        500: zodToJsonSchema(ErrorBodyResponseSchema)
+        200: this.jsonDeleteBodyResponseSchema,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
       }
     };
   }

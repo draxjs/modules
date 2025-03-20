@@ -35,7 +35,7 @@ class SqliteTableBuilder {
         return this.tableFields.filter(field => field.unique)
     }
 
-    build(identifier:string = 'id') {
+    build(identifier:string = '_id') {
 
         let createSql = `CREATE TABLE IF NOT EXISTS ${this.tableName} (${identifier} TEXT PRIMARY KEY`
 

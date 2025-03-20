@@ -27,7 +27,7 @@ class UserSystem implements IUserProvider{
         return this._provider.search(value)
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = "", filters = []}: IDraxPaginateOptions):Promise<IDraxPaginateResult<IUser>> {
+    async paginate({page= 1, limit= 5, orderBy= "", order= "asc", search = "", filters = []}: IDraxPaginateOptions):Promise<IDraxPaginateResult<IUser>> {
         return this._provider.paginate({page, limit, orderBy, order, search, filters})
     }
 

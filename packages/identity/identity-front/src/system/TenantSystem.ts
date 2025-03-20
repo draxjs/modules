@@ -35,7 +35,7 @@ class TenantSystem implements IDraxCrudProvider<ITenant, ITenantBase, ITenantBas
                        page = 1,
                        limit = 5,
                        orderBy = "",
-                       order = false,
+                       order = "asc",
                        search = "",
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {

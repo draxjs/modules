@@ -1,7 +1,7 @@
 import {IRoleRepository} from "../interfaces/IRoleRepository";
 import {UnauthorizedError, ValidationError, ZodErrorToValidationError} from "@drax/common-back"
 import { AbstractService } from "@drax/crud-back"
-import {roleSchema} from "../zod/RoleZod.js";
+import {RoleBaseSchema} from "../schemas/RoleSchema.js";
 import {ZodError} from "zod";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import type {IRoleBase, IRole} from "@drax/identity-share";
@@ -11,7 +11,7 @@ class RoleService extends AbstractService<IRole, IRoleBase, IRoleBase> {
     _repository: IRoleRepository
 
     constructor(roleRepostitory: IRoleRepository) {
-        super(roleRepostitory, roleSchema)
+        super(roleRepostitory, RoleBaseSchema)
         this._repository = roleRepostitory
         console.log("RoleService constructor")
     }
@@ -19,7 +19,7 @@ class RoleService extends AbstractService<IRole, IRoleBase, IRoleBase> {
     async create(roleData: IRoleBase): Promise<IRole> {
         try {
             roleData.name = roleData?.name?.trim()
-            await roleSchema.parseAsync(roleData)
+            await RoleBaseSchema.parseAsync(roleData)
             const role = await this._repository.create(roleData)
             return role
         } catch (e) {
@@ -34,7 +34,7 @@ class RoleService extends AbstractService<IRole, IRoleBase, IRoleBase> {
     async update(id: string, roleData: IRoleBase): Promise<IRole> {
         try {
             roleData.name = roleData?.name?.trim()
-            await roleSchema.parseAsync(roleData)
+            await RoleBaseSchema.parseAsync(roleData)
             const currentRole = await this.findById(id)
             if(currentRole.readonly){
                 throw new ValidationError([{field:'name', reason:"role.readonly", value:roleData.name}])
@@ -53,7 +53,7 @@ class RoleService extends AbstractService<IRole, IRoleBase, IRoleBase> {
     async systemUpdate(id: string, roleData: IRoleBase): Promise<IRole> {
         try {
             roleData.name = roleData?.name?.trim()
-            await roleSchema.parseAsync(roleData)
+            await RoleBaseSchema.parseAsync(roleData)
             const role: IRole = await this._repository.update(id, roleData)
             return role
         } catch (e) {
@@ -125,7 +125,7 @@ class RoleService extends AbstractService<IRole, IRoleBase, IRoleBase> {
                        page = 1,
                        limit = 5,
                        orderBy = '',
-                       order = false,
+                       order = "asc",
                        search = '',
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {

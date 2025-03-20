@@ -58,7 +58,9 @@ class RoleCrud extends EntityCrud implements IEntityCrud {
 
   get fields(): IEntityCrudField[]{
     return [
-        {name: 'name', type: 'string', label: 'name', default:'', prependInnerIcon:'mdi-text-short'  }
+        {name: 'name', type: 'string', label: 'name', default:'', prependInnerIcon:'mdi-text-short'  },
+        {name: 'childRoles', type: 'array.ref', ref:'Role', refDisplay: 'name', label: 'childRoles', default:[], prependInnerIcon:'mdi-text-short'  },
+        {name: 'permissions', type: 'array.string',  label: 'childRoles', default:[], prependInnerIcon:'mdi-text-short'  }
     ]
   }
 

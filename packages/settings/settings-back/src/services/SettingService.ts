@@ -41,10 +41,10 @@ class SettingService extends AbstractService<ISetting, ISettingBase, ISettingBas
     async fetchGrouped(): Promise<{ [key: string]: ISetting[] }> {
         const settings = await this._repository.fetchAll()
         return settings.reduce((acc, setting) => {
-            if (!acc[setting.group]) {
-                acc[setting.group] = [];
+            if (!acc[setting.category]) {
+                acc[setting.category] = [];
             }
-            acc[setting.group].push(setting);
+            acc[setting.category].push(setting);
             return acc;
         }, {} as { [key: string]: ISetting[] });
     }
@@ -92,7 +92,7 @@ class SettingService extends AbstractService<ISetting, ISettingBase, ISettingBas
             const setting = await this._repository.findOneBy("key", data.key)
             if (setting) {
                 delete data.value
-                return await this._repository.updatePartial(setting.id, data)
+                return await this._repository.updatePartial(setting._id, data)
             } else {
                 return await this._repository.create(data)
             }

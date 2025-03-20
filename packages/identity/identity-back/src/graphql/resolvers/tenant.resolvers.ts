@@ -2,6 +2,7 @@ import TenantServiceFactory from "../../factory/TenantServiceFactory.js";
 import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
 import {ValidationError, ValidationErrorToGraphQLError, UnauthorizedError} from "@drax/common-back";
 import {GraphQLError} from "graphql";
+import {IDraxPaginateOptions} from "@drax/crud-share";
 
 
 export default {
@@ -36,7 +37,7 @@ export default {
                 const tenantService = TenantServiceFactory()
                 const tenants =  await tenantService.fetchAll()
                 if(rbac.getAuthUser.tenantId){
-                    return tenants.filter(t => t.id === rbac.getAuthUser.tenantId)
+                    return tenants.filter(t => t._id === rbac.getAuthUser.tenantId)
                 }else{
                     return tenants
                 }
@@ -48,7 +49,7 @@ export default {
                 throw new GraphQLError('error.server')
             }
         },
-        paginateTenant: async (_, {options= {page:1, limit:5, orderBy:"", order:false, search:"", filters: []} }, {rbac}) => {
+        paginateTenant: async (_, {options= {page:1, limit:5, orderBy:"", order:"asc", search:"", filters: []} as IDraxPaginateOptions }, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewTenant)
                 const tenantService = TenantServiceFactory()

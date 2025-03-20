@@ -42,7 +42,12 @@ const UserApiKeyMongoSchema = new mongoose.Schema<IUserApiKey>({
     },
 }, {timestamps: true});
 
-UserApiKeyMongoSchema.set('toJSON', {getters: true});
+UserApiKeyMongoSchema.virtual("id").get(function () {
+    return this._id.toString();
+});
+
+
+UserApiKeyMongoSchema.set('toJSON', {getters: true, virtuals: true});
 
 UserApiKeyMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 

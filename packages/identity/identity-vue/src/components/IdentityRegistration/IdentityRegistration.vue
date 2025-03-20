@@ -44,8 +44,8 @@ function confirmPasswordRule(value: string) {
 async function submitRegistration() {
   try {
     loading.value = true
-    await register(form.value)
-    success.value = true
+    const result = await register(form.value)
+    success.value = result.success
   } catch (err) {
     if (err instanceof ClientError) {
       inputErrors.value = err.inputErrors

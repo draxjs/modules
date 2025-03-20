@@ -26,7 +26,7 @@ export const useSettingStore = defineStore('SettingStore', {
             this.settings = settings
         },
         updateSetting(setting: ISetting): void {
-            const index = this.settings.findIndex((s) => s.id === setting.id)
+            const index = this.settings.findIndex((s) => s._id === setting._id)
             if (index > -1) {
                 this.settings[index] = setting
             } else {

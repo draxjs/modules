@@ -62,10 +62,10 @@ class AuthRestProvider implements IAuthProvider {
         return /true/i.test(r as string)
     }
 
-    async register(form: IUserRegistration): Promise<boolean> {
+    async register(form: IUserRegistration): Promise<{success: boolean; message: string}> {
         const url = '/api/users/register'
         let r = await this.httpClient.post(url, form)
-        return /true/i.test(r as string)
+        return r as {success: boolean; message: string}
     }
 
     async changeAvatar(file: File): Promise<boolean> {

@@ -12,6 +12,7 @@ import {UnauthorizedError} from "@drax/common-back";
 import BadCredentialsError from "../../errors/BadCredentialsError.js";
 import {join} from "path";
 import IdentityConfig from "../../config/IdentityConfig.js";
+import {IDraxPaginateOptions} from "@drax/crud-share";
 
 export default {
     Query: {
@@ -45,7 +46,7 @@ export default {
             }
 
         },
-        paginateUser: async (_, { options= {page:1, limit:5, orderBy:"", order:false, search:"", filters: []} }, {rbac}) => {
+        paginateUser: async (_, { options= {page:1, limit:5, orderBy:"", order:"asc", search:"", filters: []} as IDraxPaginateOptions }, {rbac}) => {
             try {
                 rbac.assertPermission(IdentityPermissions.ViewUser)
                 let userService = UserServiceFactory()

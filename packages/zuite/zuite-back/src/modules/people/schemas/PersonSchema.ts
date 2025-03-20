@@ -1,27 +1,41 @@
+import {z} from 'zod';
 
-import { z } from 'zod';
 
-const PersonSchema = z.object({
-      fullname: z.string().min(1,'validation.required'),
+const PersonBaseSchema = z.object({
+    fullname: z.string().min(1, 'validation.required'),
     live: z.boolean(),
-    birthdate: z.coerce.date().nullable(),
-    secret: z.string(),
-    nationality: z.string().nullable(),
-    hobbies: z.array(z.string()),
-    race: z.enum(['human', 'elf', 'orc']),
-    interests: z.array(z.enum(['sports', 'music', 'reading', 'travel', 'cooking', 'technology'])),
-    languages: z.array(z.string()),
-    address: z.object({    country: z.string(),
-    city: z.string(),
-    street: z.string().min(1,'validation.required'),
-    zip: z.string()}),
+    birthdate: z.coerce.date().nullable().optional(),
+    secret: z.string().optional(),
+    nationality: z.string().optional().nullable(),
+    hobbies: z.array(z.string()).optional(),
+    race: z.enum(['human', 'elf', 'orc']).optional(),
+    interests: z.array(z.enum(['sports', 'music', 'reading', 'travel', 'cooking', 'technology'])).optional(),
+    languages: z.array(z.string()).optional(),
+    address: z.object({
+        country: z.string().optional(),
+        city: z.string().optional(),
+        street: z.string().min(1, 'validation.required'),
+        zip: z.number().nullable().optional(),
+        casa: z.boolean().optional()
+    }),
     skills: z.array(
-z.object({    name: z.string().min(1,'validation.required'),
-    level: z.number()})
-    ),
-    tenant: z.string().nullable(),
-    user: z.string().nullable()
+        z.object({
+            name: z.string().min(1, 'validation.required'),
+            level: z.number().nullable().optional()
+        })
+    ).optional(),
+    tenant: z.string().optional().nullable(),
+    user: z.string().optional().nullable()
 });
 
+const PersonSchema = PersonBaseSchema
+    .extend({
+        _id: z.string(),
+        nationality: z.object({_id: z.string(), name: z.string()}).optional(),
+        languages: z.array(z.object({_id: z.string(), name: z.string()})).optional(),
+        tenant: z.object({_id: z.string(), name: z.string()}).optional(),
+        user: z.object({_id: z.string(), username: z.string()}).optional()
+    })
+
 export default PersonSchema;
-export {PersonSchema}
+export {PersonSchema, PersonBaseSchema}

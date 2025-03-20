@@ -35,7 +35,7 @@ class RoleSystem implements IRoleProvider {
         return this._provider.fetchPermissions()
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = "", filters = []}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
+    async paginate({page= 1, limit= 5, orderBy="", order="asc", search = "", filters = []}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         return this._provider.paginate({page, limit, orderBy, order, search, filters})
     }
 

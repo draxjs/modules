@@ -104,8 +104,8 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 
   get fields(): IEntityCrudField[] {
     return [
-      {name: 'fullname', type: 'string', label: 'fullname', default: '', xl:6},
-      {name: 'live', type: 'boolean', label: 'live', default: false, xl:6},
+      {name: 'fullname', type: 'string', label: 'fullname', default: '', xl: 6},
+      {name: 'live', type: 'boolean', label: 'live', default: false, xl: 6},
       {name: 'birthdate', type: 'date', label: 'birthdate', default: null},
       {name: 'secret', type: 'password', label: 'secret', default: ''},
       {name: 'nationality', type: 'ref', ref: 'Country', refDisplay: 'name', label: 'nationality', default: null},
@@ -123,11 +123,12 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         name: 'address',
         type: 'object',
         label: 'address',
-        default: {},
+        default: {"country": "", "city": "", "street": "", "zip": null, "casa": false},
         objectFields: [{name: 'country', type: 'string', label: 'country', default: ''},
           {name: 'city', type: 'string', label: 'city', default: ''},
-          {name: 'street', type: 'string', label: 'street', default: ''},
-          {name: 'zip', type: 'string', label: 'zip', default: ''}]
+          {name: 'street', type: 'longString', label: 'street', default: ''},
+          {name: 'zip', type: 'number', label: 'zip', default: 0},
+          {name: 'casa', type: 'boolean', label: 'casa', default: false}]
       },
       {
         name: 'skills',
@@ -144,15 +145,32 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 
   get filters(): IEntityCrudFilter[] {
     return [
-      {name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
+      {name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq'},
       {name: 'fullname', type: 'string', label: 'fullname', default: '', operator: 'like'},
-      {name: 'nationality', type: 'ref', ref: 'Country', refDisplay: 'name', label: 'nationality', default: null, operator: 'eq', permission:'country:view'},
-      {name: 'birthdate', type: 'date',  label: 'birthdate from', default: null, operator: 'gte'},
-      {name: 'birthdate', type: 'date',  label: 'birthdate to', default: null, operator: 'lte'},
-      {name: 'birthdate', type: 'date',  label: 'birthdate from', default: null, operator: 'gt'},
-      {name: 'birthdate', type: 'date',  label: 'birthdate to', default: null, operator: 'lt'},
-      {name: 'hobbies', type: 'array.string',  label: 'hobbies', default: null, operator: 'in'},
-      {name: 'nationality', type: 'array.ref', ref: 'Country', refDisplay: 'name', label: 'nationality', default: null, operator: 'in'},
+      {
+        name: 'nationality',
+        type: 'ref',
+        ref: 'Country',
+        refDisplay: 'name',
+        label: 'nationality',
+        default: null,
+        operator: 'eq',
+        permission: 'country:view'
+      },
+      {name: 'birthdate', type: 'date', label: 'birthdate from', default: null, operator: 'gte'},
+      {name: 'birthdate', type: 'date', label: 'birthdate to', default: null, operator: 'lte'},
+      {name: 'birthdate', type: 'date', label: 'birthdate from', default: null, operator: 'gt'},
+      {name: 'birthdate', type: 'date', label: 'birthdate to', default: null, operator: 'lt'},
+      {name: 'hobbies', type: 'array.string', label: 'hobbies', default: null, operator: 'in'},
+      {
+        name: 'nationality',
+        type: 'array.ref',
+        ref: 'Country',
+        refDisplay: 'name',
+        label: 'nationality',
+        default: null,
+        operator: 'in'
+      },
     ]
   }
 

@@ -1,24 +1,25 @@
 
 interface IPersonBase {
     fullname: string
-    live: boolean
-    birthdate: Date
-    secret: string
-    nationality: any
-    hobbies: Array<string>
-    race: string
-    interests: Array<string>
-    languages: Array<any>
-    address: {    country: string
-    city: string
+    live?: boolean
+    birthdate?: Date
+    secret?: string
+    nationality?: any
+    hobbies?: Array<string>
+    race?: string
+    interests?: Array<string>
+    languages?: Array<any>
+    address?: {    country?: string
+    city?: string
     street: string
-    zip: string}
-    skills: Array<{
+    zip?: number
+    casa?: boolean}
+    skills?: Array<{
     name: string
-    level: number
+    level?: number
     }>
-    tenant: any
-    user: any
+    tenant?: any
+    user?: any
     createdAt?: Date
     updatedAt?: Date
 }
@@ -26,24 +27,25 @@ interface IPersonBase {
 interface IPerson {
     id: string
     fullname: string
-    live: boolean
-    birthdate: Date
-    secret: string
-    nationality: any
-    hobbies: Array<string>
-    race: string
-    interests: Array<string>
-    languages: Array<any>
-    address: {    country: string
-    city: string
+    live?: boolean
+    birthdate?: Date
+    secret?: string
+    nationality?: any
+    hobbies?: Array<string>
+    race?: string
+    interests?: Array<string>
+    languages?: Array<any>
+    address?: {    country?: string
+    city?: string
     street: string
-    zip: string}
-    skills: Array<{
+    zip?: number
+    casa?: boolean}
+    skills?: Array<{
     name: string
-    level: number
+    level?: number
     }>
-    tenant: any
-    user: any
+    tenant?: any
+    user?: any
     createdAt?: Date
     updatedAt?: Date
 }

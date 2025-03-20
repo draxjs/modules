@@ -1,11 +1,11 @@
 import {IEntitySchema, ISchema} from "../../../interfaces/IEntitySchema";
 
 const generateRefs = (schema: ISchema) => {
- let content: string = ""
+    let content: string = ""
     let refs: Array<string> = []
 
-    for(const field in schema){
-        if(['ref','array.ref'].includes(schema[field].type) && schema[field].ref){
+    for (const field in schema) {
+        if (['ref', 'array.ref'].includes(schema[field].type) && schema[field].ref) {
             refs.push(`${schema[field].ref}: ${schema[field].ref}Crud.instance `)
         }
     }
@@ -17,12 +17,12 @@ const generateImportRefs = (schema: ISchema) => {
     let content: string = ""
     let refs: Array<string> = []
 
-    for(const field in schema){
-        if(['ref','array.ref'].includes(schema[field].type) && schema[field].ref){
+    for (const field in schema) {
+        if (['ref', 'array.ref'].includes(schema[field].type) && schema[field].ref) {
 
-            if(['Tenant','User','Role'].includes(schema[field].ref as string)){
+            if (['Tenant', 'User', 'Role'].includes(schema[field].ref as string)) {
                 refs.push(`import {${schema[field].ref}Crud} from "@drax/identity-vue"`)
-            }else{
+            } else {
                 refs.push(`import ${schema[field].ref}Crud from "./${schema[field].ref}Crud";`)
             }
 
@@ -38,10 +38,10 @@ const generateRules = (schema: ISchema) => {
     let fields: Array<string> = []
 
 
-    for(const field in schema){
-        if(schema[field].required){
+    for (const field in schema) {
+        if (schema[field].required) {
             fields.push(`${field}: [(v: any) => !!v || 'validation.required']`)
-        }else{
+        } else {
             fields.push(`${field}: []`)
         }
     }
@@ -54,8 +54,8 @@ const generateHeaders = (schema: ISchema) => {
     let fields: Array<string> = []
 
 
-    for(const field in schema){
-        if(schema[field].header){
+    for (const field in schema) {
+        if (schema[field].header) {
             fields.push(`{title: '${field}',key:'${field}', align: 'start'}`)
         }
     }
@@ -63,16 +63,53 @@ const generateHeaders = (schema: ISchema) => {
     return content;
 }
 
-const generateFields = (schema: ISchema|undefined) => {
+const generateDefault = (schemaType: string) => {
+        switch (schemaType) {
+            case "string":
+            case "longString":
+            case "password":
+            case "file":
+                return ''
+            case "number":
+                return null
+            case "boolean":
+                return false
+            case "ref":
+            case "date":
+            case "enum":
+                return null
+            case "array.string":
+            case "array.number":
+            case "array.file":
+            case "array.ref":
+            case "array.object":
+            case "array.enum":
+                return []
+            case "object":
+
+            default:
+                    return null
+        }
+}
+
+const generateObjectDefault = (schema: ISchema | undefined) => {
+    let objDefault: any = {}
+    for (const field in schema) {
+        objDefault[field] = generateDefault(schema[field].type)
+    }
+    return JSON.stringify(objDefault)
+}
+
+const generateFields = (schema: ISchema | undefined) => {
     let content: string = ""
     let fields: Array<string> = []
 
-    if(schema === undefined){
+    if (schema === undefined) {
         throw new Error("generateFields: schema is undefined")
     }
 
 
-    for(const field in schema){
+    for (const field in schema) {
         switch (schema[field].type) {
             case "string":
                 fields.push(`{name: '${field}', type: 'string', label: '${field}', default:'' }`)
@@ -102,10 +139,10 @@ const generateFields = (schema: ISchema|undefined) => {
                 fields.push(`{name: '${field}', type: 'enum', enum: ['${schema[field].enum?.join("', '")}'], label: '${field}', default:null }`)
                 break;
             case "object":
-                if(!schema[field].schema){
+                if (!schema[field].schema) {
                     throw new Error("object fields must have a schema")
                 }
-                fields.push(`{name: '${field}', type: 'object', label: '${field}', default:{}, objectFields: [${generateFields(schema[field].schema)}] }`)
+                fields.push(`{name: '${field}', type: 'object', label: '${field}', default:${generateObjectDefault(schema[field].schema)}, objectFields: [${generateFields(schema[field].schema)}] }`)
                 break;
             case "array.string":
                 fields.push(`{name: '${field}', type: 'array.string', label: '${field}', default:[] }`)
@@ -120,7 +157,7 @@ const generateFields = (schema: ISchema|undefined) => {
                 fields.push(`{name: '${field}', type: 'array.ref', ref: '${schema[field].ref}', label: '${field}', default:[] }`)
                 break;
             case "array.object":
-                if(!schema[field].schema){
+                if (!schema[field].schema) {
                     throw new Error("array.object fields must have a schema")
                 }
                 fields.push(`{name: '${field}', type: 'array.object', label: '${field}', default:[], objectFields: [${generateFields(schema[field].schema)}] }`)

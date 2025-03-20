@@ -15,7 +15,7 @@ class HttpNetworkError extends HttpError implements IRestError{
   }
 
   consoleError() {
-    console.error(`HttpClientNetworkError - statusCode: ${this.statusCode} message: ${this.message} body: ${this.body}`)
+    console.error(`HttpClientNetworkError - statusCode: ${this.statusCode} message: ${this.message}`)
   }
 
 }

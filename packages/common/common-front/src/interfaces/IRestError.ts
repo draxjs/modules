@@ -4,8 +4,11 @@ interface IRestError {
   message: string;
   statusCode: number;
   body?: {
+    statusCode?: number
     error ?: string
-    inputErrors?:  IInputError[]
+    message?: string
+    i18nMessage?: string
+    inputErrors?:  IInputError[],
   }
 }
 

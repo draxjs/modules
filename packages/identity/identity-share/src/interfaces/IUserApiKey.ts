@@ -1,6 +1,7 @@
 import {IUser} from "./IUser";
 
 interface IUserApiKeyBase{
+    _id?: string
     id?: string
     name: string
     secret?: string
@@ -11,7 +12,8 @@ interface IUserApiKeyBase{
 }
 
 interface IUserApiKey {
-    id: string
+    _id: string
+    id?: string
     name: string
     secret: string
     user: IUser

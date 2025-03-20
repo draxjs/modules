@@ -1,7 +1,7 @@
 import {IUser, IUserCreate, IUserUpdate} from '@drax/identity-share'
-import {IDraxCrud, IDraxFieldFilter} from "@drax/crud-share";
+import {IDraxCrudRepository} from "@drax/crud-share";
 
-interface IUserRepository extends IDraxCrud<IUser, IUserCreate, IUserUpdate>{
+interface IUserRepository extends IDraxCrudRepository<IUser, IUserCreate, IUserUpdate>{
     findById(id: string): Promise<IUser | null>;
     findByUsername(username: string): Promise<IUser | null>;
     findByUsernameWithPassword(username: string): Promise<IUser | null>;

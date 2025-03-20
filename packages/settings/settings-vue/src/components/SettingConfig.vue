@@ -38,13 +38,13 @@ function clearEdit() {
     ></setting-editor>
 
     <v-row >
-      <v-col cols="12" v-for="(group,k) in settingsGrouped">
+      <v-col cols="12" v-for="(category,k) in settingsGrouped">
         <v-card>
           <v-card-title>
             {{ k }}
           </v-card-title>
           <v-card-text>
-            <v-row  v-for="(setting, i) in group" :key="i">
+            <v-row  v-for="(setting, i) in category" :key="i">
               <v-col cols="9">
                 <setting-field
 

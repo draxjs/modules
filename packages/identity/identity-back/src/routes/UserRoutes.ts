@@ -1,51 +1,112 @@
 import UserController from "../controllers/UserController.js";
-import {loginBodyRequestSchema, loginBodyResponseSchema} from "../zod/EndpointZod.js"
 import {zodToJsonSchema} from "zod-to-json-schema";
+import {CrudSchemaBuilder} from "@drax/crud-back";
+import {LoginBodyRequestSchema, LoginBodyResponseSchema} from "../schemas/LoginSchema.js"
+import {UserSchema, UserCreateSchema, UserUpdateSchema} from "../schemas/UserSchema.js";
+import {RegisterBodyRequestSchema, RegisterBodyResponseSchema} from "../schemas/RegisterSchema.js";
 
 async function UserRoutes(fastify, options) {
 
     const controller: UserController = new UserController()
+    const schemas = new CrudSchemaBuilder(UserSchema, UserCreateSchema, UserUpdateSchema, 'tenant','openApi3',  ['Identity']);
+
+
+    fastify.get('/api/users/search', {schema: schemas.searchSchema}, async (req, rep) => await controller.search(req, rep))
+
+    fastify.get('/api/users/export', {schema: schemas.exportSchema}, (req, rep) => controller.export(req, rep))
+
+    fastify.get('/api/users', {schema: schemas.paginateSchema}, (req, rep) => controller.paginate(req, rep))
+
+    fastify.post('/api/users', {schema: schemas.createSchema}, (req, rep) => controller.create(req, rep))
+
+    fastify.put('/api/users/:id', {schema: schemas.updateSchema}, (req, rep) => controller.update(req, rep))
+
+    fastify.delete('/api/users/:id', {schema: schemas.deleteSchema}, (req, rep) => controller.delete(req, rep))
 
     fastify.post('/api/auth/login',
         {
             schema: {
-                body: zodToJsonSchema(loginBodyRequestSchema),
-                response: {200: zodToJsonSchema(loginBodyResponseSchema)},
+                tags: ['Auth'],
+                body: zodToJsonSchema(LoginBodyRequestSchema),
+                response: {
+                    200: zodToJsonSchema(LoginBodyResponseSchema),
+                    400: schemas.jsonErrorBodyResponse,
+                },
             },
         },
         (req, rep) => controller.auth(req, rep))
 
-    fastify.get('/api/auth/me', (req, rep) => controller.me(req, rep))
+    fastify.get('/api/auth/me', {
+        schema: {
+            tags: ['Auth'],
+            response: {
+                200: schemas.jsonEntitySchema,
+                401: schemas.jsonErrorBodyResponse,
+                500: schemas.jsonErrorBodyResponse,
+            },
+        },
+    }, (req, rep) => controller.me(req, rep))
 
-    fastify.get('/api/users/search', (req, rep) => controller.search(req, rep))
 
-    fastify.get('/api/users/export', (req, rep) => controller.export(req, rep))
+    fastify.post('/api/users/register', {
+        schema: {
+            tags: ['Auth'],
+            body: zodToJsonSchema(RegisterBodyRequestSchema),
+            response: {
+                200: zodToJsonSchema(RegisterBodyResponseSchema),
+                400: schemas.jsonErrorBodyResponse,
+                500: schemas.jsonErrorBodyResponse,
+            },
+        },
+    }, (req, rep) => controller.register(req, rep))
 
-    fastify.get('/api/users', (req, rep) => controller.paginate(req, rep))
+    fastify.get('/api/users/verify-email/:code', {
+        schema: {
+            tags: ['Auth'],
+        }
+    }, (req, rep) => controller.verifyEmail(req, rep))
 
-    fastify.post('/api/users', (req, rep) => controller.create(req, rep))
+    fastify.get('/api/users/verify-phone/:code', {
+        schema: {
+            tags: ['Auth'],
+        }
+    }, (req, rep) => controller.verifyPhone(req, rep))
 
-    fastify.put('/api/users/:id', (req, rep) => controller.update(req, rep))
+    fastify.post('/api/users/password/change', {
+        schema: {
+            tags: ['Auth'],
+        }
+    }, (req, rep) => controller.changeMyPassword(req, rep))
 
-    fastify.delete('/api/users/:id', (req, rep) => controller.delete(req, rep))
+    fastify.post('/api/users/password/change/:id', {
+        schema: {
+            tags: ['Auth'],
+        }
+    }, (req, rep) => controller.changePassword(req, rep))
 
-    fastify.post('/api/users/register', (req, rep) => controller.register(req, rep))
+    fastify.post('/api/users/password/recovery/request', {
+        schema: {
+            tags: ['Auth'],
+        }
+    }, (req, rep) => controller.passwordRecoveryRequest(req, rep))
 
-    fastify.get('/api/users/verify-email/:code', (req, rep) => controller.verifyEmail(req, rep))
+    fastify.post('/api/users/password/recovery/complete', {
+        schema: {
+            tags: ['Auth'],
+        }
+    }, (req, rep) => controller.recoveryPasswordComplete(req, rep))
 
-    fastify.get('/api/users/verify-phone/:code', (req, rep) => controller.verifyPhone(req, rep))
+    fastify.post('/api/users/avatar', {
+        schema: {
+            tags: ['Auth'],
+        }
+    }, (req, rep) => controller.updateAvatar(req, rep))
 
-    fastify.post('/api/users/password/change', (req, rep) => controller.changeMyPassword(req, rep))
-
-    fastify.post('/api/users/password/change/:id', (req, rep) => controller.changePassword(req, rep))
-
-    fastify.post('/api/users/password/recovery/request', (req, rep) => controller.passwordRecoveryRequest(req, rep))
-
-    fastify.post('/api/users/password/recovery/complete', (req, rep) => controller.recoveryPasswordComplete(req, rep))
-
-    fastify.post('/api/users/avatar', (req, rep) => controller.updateAvatar(req, rep))
-
-    fastify.get('/api/users/avatar/:filename', (req, rep) => controller.getAvatar(req, rep))
+    fastify.get('/api/users/avatar/:filename', {
+        schema: {
+            tags: ['Auth'],
+        }
+    }, (req, rep) => controller.getAvatar(req, rep))
 
 }
 

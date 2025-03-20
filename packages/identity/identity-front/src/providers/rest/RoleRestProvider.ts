@@ -46,7 +46,7 @@ class RoleRestProvider implements IRoleProvider {
         return user
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
+    async paginate({page= 1, limit= 5, orderBy="", order= "asc", search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         const url = '/api/roles'
         const params = {page, limit, orderBy, order, search}
         let paginatedRoles = await this.httpClient.get(url, {params})

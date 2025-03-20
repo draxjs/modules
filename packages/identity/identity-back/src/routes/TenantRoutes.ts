@@ -1,14 +1,13 @@
 import {CrudSchemaBuilder} from "@drax/crud-back";
 import TenantController from '../controllers/TenantController.js'
-import {TenantSchema, TenantBaseSchema, TenantByNameSchema} from '../schemas/TenantSchema.js'
-import {zodToJsonSchema} from "zod-to-json-schema";
-import {ErrorBodyResponseSchema} from "@drax/crud-back";
+import {TenantSchema, TenantBaseSchema} from '../schemas/TenantSchema.js'
+
 
 
 async function TenantRoutes(fastify, options) {
 
     const controller: TenantController = new TenantController()
-    const schemas = new CrudSchemaBuilder(TenantSchema, TenantBaseSchema, 'tenant');
+    const schemas = new CrudSchemaBuilder(TenantSchema, TenantBaseSchema,TenantBaseSchema, 'tenant', 'openApi3', ['Identity']);
 
     //Getters
     fastify.get('/api/tenants/search', {schema: schemas.searchSchema}, (req, rep) => controller.search(req, rep))
@@ -35,7 +34,7 @@ async function TenantRoutes(fastify, options) {
     fastify.delete('/api/tenants/:id', {schema: schemas.deleteSchema}, (req, rep) => controller.delete(req, rep))
 
     //Others
-    fastify.get('/api/tenants/export', (req, rep) => controller.export(req, rep))
+    fastify.get('/api/tenants/export', {schema: schemas.exportSchema}, (req, rep) => controller.export(req, rep))
 
 
 

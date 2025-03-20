@@ -9,7 +9,7 @@ async function CreateUserIfNotExist(userData: IUserCreate) {
     if (user) {
     } else {
         const role = await roleService.findByName(userData.role as string)
-        userData.role = role.id as string
+        userData.role = role._id as string
         const r = await userService.create(userData)
         console.log("User Created. Username: " + userData.username)
     }

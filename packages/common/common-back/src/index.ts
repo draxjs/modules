@@ -27,6 +27,7 @@ import ValidationFieldError from "./errors/ValidationFieldError.js";
 import UnauthorizedError from "./errors/UnauthorizedError.js";
 import ForbiddenError from "./errors/ForbiddenError.js";
 import NotFoundError from "./errors/NotFoundError.js";
+import BadRequestError from "./errors/BadRequestError.js";
 import SecuritySensitiveError from "./errors/SecuritySensitiveError.js";
 import UploadFileError from "./errors/UploadFileError.js";
 import LimitError from "./errors/LimitError.js";
@@ -119,6 +120,7 @@ export {
     UnauthorizedError,
     ForbiddenError,
     NotFoundError,
+    BadRequestError,
     SecuritySensitiveError,
     LimitError,
     InvalidIdError,

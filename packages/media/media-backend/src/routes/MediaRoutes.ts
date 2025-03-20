@@ -5,9 +5,9 @@ import {StoreManager, UploadFileError, DraxConfig, CommonConfig, UnauthorizedErr
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
 
-function validateDir(dir:string){
+function validateDir(dir: string) {
     let dirRegExp = /^[a-zA-Z0-9_-]+$/
-    if(!dir || dirRegExp.test(dir) === false) {
+    if (!dir || dirRegExp.test(dir) === false) {
         return false
     }
     return true
@@ -16,12 +16,16 @@ function validateDir(dir:string){
 async function MediaRoutes(fastify, options) {
 
 
-    fastify.post('/api/file/:dir', async (request, reply): Promise<any> => {
+    fastify.post('/api/file/:dir', {
+        schema: {
+            tags: ['Media'],
+        }
+    }, async (request, reply): Promise<any> => {
         try {
             request.rbac.assertPermission(MediaPermissions.UploadFile)
 
             const dir = request.params.dir
-            if(!validateDir(dir)) {
+            if (!validateDir(dir)) {
                 reply.statusCode = 400
                 reply.send({error: 'Invalid directory name'})
                 return
@@ -63,7 +67,11 @@ async function MediaRoutes(fastify, options) {
     })
 
 
-    fastify.get('/api/file/:dir/:year/:month/:filename', async (request, reply): Promise<any> => {
+    fastify.get('/api/file/:dir/:year/:month/:filename', {
+        schema: {
+            tags: ['Media'],
+        }
+    }, async (request, reply): Promise<any> => {
         try {
 
             const dir = request.params.dir
@@ -73,26 +81,26 @@ async function MediaRoutes(fastify, options) {
 
             console.log("dir: ", dir, " year: ", year, " month: ", month, " filename: ", filename)
 
-            if(validateDir(dir) == false) {
+            if (validateDir(dir) == false) {
                 reply.statusCode = 400
                 reply.send({error: 'Invalid directory name'})
                 return
             }
 
-            if(/[0-9]{4}/.test(year) == false) {
+            if (/[0-9]{4}/.test(year) == false) {
                 reply.statusCode = 400
                 reply.send({error: 'Invalid year'})
                 return
             }
 
-            if(/[0-9]{2}/.test(month) == false) {
+            if (/[0-9]{2}/.test(month) == false) {
                 reply.statusCode = 400
                 reply.send({error: 'Invalid month'})
                 return
             }
 
             const fileDir = join(BASE_FILE_DIR, dir, year, month)
-            console.log("FILE_DIR: ",fileDir, " FILENAME:", filename)
+            console.log("FILE_DIR: ", fileDir, " FILENAME:", filename)
             return reply.sendFile(filename, fileDir)
         } catch (e) {
             console.error(e)

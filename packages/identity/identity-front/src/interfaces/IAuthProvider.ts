@@ -9,7 +9,7 @@ interface IAuthProvider {
     changeOwnPassword(currentPassword:string, newPassword:string):Promise<boolean>
     recoveryPasswordRequest(email:string):Promise<boolean>
     recoveryPasswordComplete(recoveryCode:string, newPassword:string):Promise<boolean>
-    register(form:IUserRegistration):Promise<boolean>
+    register(form:IUserRegistration):Promise<{success:boolean, message: string}>
     changeAvatar(file: File): Promise<boolean>
 }
 

@@ -7,13 +7,17 @@ import {
     InvalidIdError,
     LimitError,
     NotFoundError,
-    ValidationError
+    ValidationError,
+    SecuritySensitiveError,
+    UploadFileError,
+    BadRequestError
 } from "@drax/common-back";
 import {UnauthorizedError} from "@drax/common-back";
 import {IRbac} from "@drax/identity-share";
 import type {FastifyReply, FastifyRequest} from "fastify";
 import {IDraxExportResult, IDraxPermission, IDraxFieldFilter} from "@drax/crud-share";
 import {join} from "path";
+import QueryFilterRegex from "../regexs/QueryFilterRegex.js";
 
 declare module 'fastify' {
     interface FastifyRequest {
@@ -34,7 +38,7 @@ type CustomRequest = FastifyRequest<{
         page?: number
         limit?: number
         orderBy?: string
-        order?: 'asc' | 'desc' | boolean
+        order?: 'asc' | 'desc'
         search?: string
         filters?: string
         headers?: string
@@ -77,6 +81,11 @@ class AbstractFastifyController<T, C, U> {
             if (!stringFilters) {
                 return []
             }
+
+            if (!QueryFilterRegex.test(stringFilters)) {
+                throw new BadRequestError("Invalid filters format")
+            }
+
             const filterArray = stringFilters.split("|")
             const filters: IDraxFieldFilter[] = []
             filterArray.forEach((filter) => {
@@ -85,7 +94,7 @@ class AbstractFastifyController<T, C, U> {
             })
             return filters
         } catch (e) {
-            console.error(e)
+            console.error("parseFilters error",e)
             throw e
         }
     }
@@ -116,9 +125,12 @@ class AbstractFastifyController<T, C, U> {
         if (
             e instanceof ValidationError ||
             e instanceof NotFoundError ||
+            e instanceof BadRequestError ||
             e instanceof UnauthorizedError ||
             e instanceof ForbiddenError ||
             e instanceof InvalidIdError ||
+            e instanceof SecuritySensitiveError ||
+            e instanceof UploadFileError ||
             e instanceof LimitError
         ) {
             reply.status(e.statusCode).send(e.body);
@@ -153,7 +165,7 @@ class AbstractFastifyController<T, C, U> {
             //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.update(id, payload as U)
 
-            if(!item){
+            if (!item) {
                 throw new NotFoundError()
             }
 
@@ -174,7 +186,7 @@ class AbstractFastifyController<T, C, U> {
             const payload = request.body
             //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.updatePartial(id, payload as U)
-            if(!item){
+            if (!item) {
                 throw new NotFoundError()
             }
             return item
@@ -200,7 +212,8 @@ class AbstractFastifyController<T, C, U> {
             }
 
             if (this.tenantAssert) {
-                request.rbac.assertTenantId(item[this.tenantField].id)
+                const tenantId = item[this.tenantField] && item[this.tenantField]._id ? item[this.tenantField]._id : null
+                request.rbac.assertTenantId(tenantId)
             }
 
             await this.service.delete(id)
@@ -227,7 +240,7 @@ class AbstractFastifyController<T, C, U> {
             const id = request.params.id
             let item = await this.service.findById(id)
 
-            if(!item) {
+            if (!item) {
                 throw new NotFoundError()
             }
 
@@ -251,7 +264,7 @@ class AbstractFastifyController<T, C, U> {
             const ids = request.params.ids.split(",")
             let items = await this.service.findByIds(ids)
 
-            if(!items || items.length === 0) {
+            if (!items || items.length === 0) {
                 throw new NotFoundError()
             }
 

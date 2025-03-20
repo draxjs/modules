@@ -27,7 +27,7 @@ class UserApiKeyController extends AbstractFastifyController<IUserApiKey, IUserA
             const filters = []
 
             if(!request.rbac.hasPermission(UserApiKeyPermissions.View)){
-                filters.push({field: "user", operator: "eq", value: request.rbac.authUser.id})
+                filters.push({field: "user", operator: "eq", value: request.rbac.userId})
             }
 
             const page = request.query.page
@@ -62,10 +62,10 @@ class UserApiKeyController extends AbstractFastifyController<IUserApiKey, IUserA
             const payload = request.body
 
             if(!request.rbac.hasPermission(UserApiKeyPermissions.Create) || !payload.user){
-                payload.user = request.rbac.authUser.id
+                payload.user = request.rbac.userId
             }
 
-            payload.createdBy = request.rbac.authUser.id
+            payload.createdBy = request.rbac.userId
 
             const userApiKeyService = UserApiKeyServiceFactory()
 

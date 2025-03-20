@@ -4,6 +4,7 @@ import type { TenantSystem} from "@drax/identity-front";
 import { TenantSystemFactory} from "@drax/identity-front";
 import {ClientError} from "@drax/common-front";
 import type { IClientInputError} from "@drax/common-front";
+import type {IDraxPaginateOptions} from "@drax/crud-share";
 
 
 export function useTenant() {
@@ -21,7 +22,7 @@ export function useTenant() {
         return tenants
     }
 
-    async function paginateTenant({page= 1, limit= 5, orderBy="", order=false, search = ""}) {
+    async function paginateTenant({page= 1, limit= 5, orderBy="", order="asc", search = ""}: IDraxPaginateOptions) {
         loading.value = true
         let paginatedtenant = tenantSystem.paginate({page, limit, orderBy, order, search})
         loading.value = false

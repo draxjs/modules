@@ -36,7 +36,7 @@ class UserRestProvider implements IUserProvider {
             return user
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
+    async paginate({page= 1, limit= 5, orderBy="",order= "asc", search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
         const url = '/api/users'
         const params = {page, limit, orderBy, order, search}
             let paginatedUsers = await this.httpClient.get(url, {params})

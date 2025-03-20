@@ -3,8 +3,6 @@ import type {IAuthProvider} from "../../interfaces/IAuthProvider.ts";
 import type {IAuthUser} from "../../interfaces/IAuthUser";
 import type {ILoginResponse} from "../../interfaces/ILoginResponse";
 import type {IUserRegistration} from "../../interfaces/IUserRegistration";
-import type {Promise} from "cypress/types/cy-bluebird";
-import type {File} from "vitest";
 
 class AuthGqlProvider implements IAuthProvider {
 
@@ -58,7 +56,7 @@ class AuthGqlProvider implements IAuthProvider {
         return /true/i.test(r as string)
     }
 
-    async changeAvatar(file: File): Promise<boolean> {
+    async changeAvatar(file: Blob): Promise<boolean> {
         //const query: string = `mutation changeAvatar( $file: File!) { changeAvatar }`
         const operations = `{ "query": "mutation ($file: File!) { changeAvatar(file: $file) }", "variables": { "file": null } }`
         const data = new FormData()
@@ -78,7 +76,7 @@ class AuthGqlProvider implements IAuthProvider {
         throw new Error('Not implemented')
     }
 
-    register(form: IUserRegistration): Promise<boolean> {
+    register(form: IUserRegistration): Promise<{success: boolean; message: string}> {
         throw new Error('Not implemented')
     }
 }

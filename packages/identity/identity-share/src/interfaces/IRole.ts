@@ -2,17 +2,19 @@
 type IRolePermissions = string[]
 
 interface IRoleBase{
+    _id?: string
     id?: string
     name: string
-    permissions: string[] | string
-    childRoles?: string[] | string
+    permissions: string[]
+    childRoles?: string[]
     readonly: boolean | number
     createdAt?: string
     updatedAt?: string
 }
 
 interface IRole{
-    id: string
+    _id: string
+    id?: string
     name: string
     permissions: IRolePermissions
     childRoles?: IRole[]

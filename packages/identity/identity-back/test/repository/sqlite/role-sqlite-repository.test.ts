@@ -1,4 +1,4 @@
-import  {describe,it, before, after} from "node:test"
+import  {describe,it, beforeAll, afterAll} from "vitest"
 import {equal} from "assert";
 import {IRole} from "../../../../identity-share/src/interfaces/IRole";
 import {IDraxPaginateResult} from "@drax/crud-share";
@@ -7,16 +7,21 @@ import {UUID} from "crypto";
 
 describe("RoleRepositoryTest",  function() {
 
-    const repository = new RoleSqliteRepository("test.db", false)
+    const repository = new RoleSqliteRepository("test.db", true)
 
-    before(async () => {
-        repository.table()
+    beforeAll(async () => {
+        repository.build()
         return
     })
 
-    after(async () => {
-        await repository.deleteAll()
+    afterAll(async () => {
+        //await repository.deleteAll()
         return
+    })
+
+    it("Delete All.",  async function() {
+        let r = await repository.deleteAll()
+        equal(r,true)
     })
 
     it("Create a role successfully.",  async function() {
@@ -33,7 +38,7 @@ describe("RoleRepositoryTest",  function() {
 
     it("Find role by ID successfully.",  async function() {
         let roleData = (await import("../../data-obj/roles/admin-sqlite-role")).default
-        let role: IRole = await repository.findById(roleData.id as UUID)
+        let role: IRole = await repository.findById(roleData._id as UUID)
         equal(role.name,roleData.name)
     })
 
@@ -56,13 +61,20 @@ describe("RoleRepositoryTest",  function() {
     it("Update a role successfully.",  async function() {
         let roleData = (await import("../../data-obj/roles/admin-sqlite-role")).default
         roleData.name = "AdminUpdated"
-        let roleUpdated: IRole = await repository.update(roleData.id as UUID, roleData)
+        let roleUpdated: IRole = await repository.update(roleData._id as UUID, roleData)
         equal(roleUpdated.name,roleData.name)
+    })
+
+    it("UpdatePartial a role successfully.",  async function() {
+        let roleData = (await import("../../data-obj/roles/admin-sqlite-role")).default
+       let partial = {name: "AdminUpdatedPartial"}
+        let roleUpdated: IRole = await repository.updatePartial(roleData._id as UUID, partial)
+        equal(roleUpdated.name,'AdminUpdatedPartial')
     })
 
     it("Delete a role successfully.",  async function() {
         let roleData = (await import("../../data-obj/roles/admin-sqlite-role")).default
-        let roleDeleted: Boolean = await repository.delete(roleData.id as UUID)
+        let roleDeleted: Boolean = await repository.delete(roleData._id as UUID)
         equal(roleDeleted,true)
     })
 

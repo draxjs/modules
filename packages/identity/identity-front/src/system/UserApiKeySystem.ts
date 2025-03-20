@@ -22,7 +22,7 @@ class UserApiKeySystem implements IUserApiKeyProvider{
         return this._provider.search(value)
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = "", filters = []}: IDraxPaginateOptions):Promise<IDraxPaginateResult<IUserApiKey>> {
+    async paginate({page= 1, limit= 5, orderBy="", order="asc", search = "", filters = []}: IDraxPaginateOptions):Promise<IDraxPaginateResult<IUserApiKey>> {
         return this._provider.paginate({page, limit, orderBy, order, search, filters})
     }
 

@@ -1,4 +1,4 @@
-import  {before, after, describe, it, test} from "node:test"
+import  {beforeAll, afterAll, describe, it, test} from "vitest"
 import assert, {equal} from "assert";
 import UserSqliteRepository from "../../../src/repository/sqlite/UserSqliteRepository";
 import {IUser} from "../../../../identity-share/src/interfaces/IUser";
@@ -8,23 +8,29 @@ import {ValidationError} from "@drax/common-back";
 import {UUID} from "crypto";
 import RoleSqliteInitializer from "../../initializers/RoleSqliteInitializer";
 
-test.describe("UserRepositoryTest", function () {
+describe("UserRepositoryTest", function () {
 
     let userRepository = new UserSqliteRepository("test.db", false)
     let userAdminData: any
     let adminRole: IRole
 
-    before(async () => {
-        userRepository.table()
+    beforeAll(async () => {
+        userRepository.build()
         adminRole = (await import("../../data-obj/roles/admin-sqlite-role")).default
         adminRole = await RoleSqliteInitializer()
         return
     })
 
-    after(async () => {
-        await userRepository.deleteAll()
+    afterAll(async () => {
+        // await userRepository.deleteAll()
         return
     })
+
+    it("Delete All.",  async function() {
+        let r = await userRepository.deleteAll()
+        equal(r,true)
+    })
+
 
     test("Create sqlite user successfully", async function () {
         userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
@@ -34,7 +40,7 @@ test.describe("UserRepositoryTest", function () {
 
     test("Find user by ID successfully", async function () {
         userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
-        let userFound = await userRepository.findById(userAdminData.id as UUID)
+        let userFound = await userRepository.findById(userAdminData._id as UUID)
         equal(userFound.username, userAdminData.username)
         //ROLE POPULATED
         let rolefound = userFound.role as IRole
@@ -60,7 +66,7 @@ test.describe("UserRepositoryTest", function () {
 
     test("Create sqlite user fail same username", async function () {
         userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
-        let userData = {...userAdminData, id: '539f51a6-5d40-4ef2-85c4-f480f042f422', email: "asd123@asd123.com" }
+        let userData = {...userAdminData, _id: '539f51a6-5d40-4ef2-85c4-f480f042f422', email: "asd123@asd123.com" }
 
         await assert.rejects(
             async () => {
@@ -78,7 +84,7 @@ test.describe("UserRepositoryTest", function () {
     test("Create sqlite user fail if role doesnt exist", async function () {
         userAdminData = (await import("../../data-obj/users/root-sqlite-user")).default
         let userData = {...userAdminData,
-            id: '539f51a6-5d40-4ef2-85c4-f480f042f422',
+            _id: '539f51a6-5d40-4ef2-85c4-f480f042f422',
             email: "a456@asd567.com",
             username: "rolenotexist",
             role: "notexist"

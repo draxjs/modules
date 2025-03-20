@@ -88,7 +88,7 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
                        page = 1,
                        limit = 5,
                        orderBy = "",
-                       order = false,
+                       order = "asc",
                        search = "",
                        filters = []
                    }: IDraxPaginateOptions): Promise<IDraxPaginateResult<T>> {

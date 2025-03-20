@@ -74,9 +74,11 @@ const UserMongoSchema = new mongoose.Schema<IUser>({
     emailCode: {type: String, required: false, index: false, select: false},
     phoneCode: {type: String, required: false, index: false, select: false},
     recoveryCode: {type: String, required: false, index: false, select: false},
-}, {timestamps: true});
+}, {timestamps: true, toJSON: {  virtuals: true}, toObject: { virtuals: true} });
 
-UserMongoSchema.set('toJSON', {getters: true});
+UserMongoSchema.virtual("id").get(function () {
+    return this._id.toString();
+});
 
 UserMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 

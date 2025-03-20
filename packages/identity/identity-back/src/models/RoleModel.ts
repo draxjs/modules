@@ -17,14 +17,19 @@ const RoleMongoSchema = new Schema<IRole>({
         required: false,
     }],
     readonly: {type: Boolean, required: false, default: false},
+}, {timestamps: true, toJSON: {  virtuals: true}, toObject: {virtuals: true} } );
+
+RoleMongoSchema.virtual("id").get(function () {
+    return this._id.toString();
 });
+
 
 RoleMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 RoleMongoSchema.plugin(MongooseSoftDelete);
 RoleMongoSchema.plugin(mongoosePaginate);
 
 
-RoleMongoSchema.set('toJSON', {getters: true});
+RoleMongoSchema.set('toJSON', {getters: true, virtuals: true});
 
 const ROLE_MODEL_NAME = 'Role';
 const ROLE_COLLECTION_NAME = 'roles';

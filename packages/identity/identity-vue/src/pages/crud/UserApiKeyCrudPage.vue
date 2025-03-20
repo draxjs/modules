@@ -23,7 +23,6 @@ async function submit() {
 }
 
 function onCreated(item:IUserApiKey) {
-  console.log("User API Key created:", item);
   userApiKeyCreated.value = item;
   userApiKeyCreatedDialog.value = true;
 }

@@ -21,7 +21,7 @@ class TenantController extends AbstractFastifyController<ITenant, ITenantBase, I
             request.rbac.assertPermission(this.permission.View)
             let tenants = await this.service.fetchAll()
             if(request.rbac.getAuthUser.tenantId){
-                return tenants.filter(t => t.id === request.rbac.getAuthUser.tenantId)
+                return tenants.filter(t => t._id === request.rbac.getAuthUser.tenantId)
             }else{
                 return tenants
             }

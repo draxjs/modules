@@ -1,7 +1,7 @@
 
 import PersonRepository from '../../repository/PersonRepository.js'
 import {PersonService} from '../../services/PersonService.js'
-import {PersonSchema} from "../../schemas/PersonSchema.js";
+import {PersonBaseSchema} from "../../schemas/PersonSchema.js";
 
 class PersonServiceFactory {
     private static service: PersonService;
@@ -9,7 +9,7 @@ class PersonServiceFactory {
     public static get instance(): PersonService {
         if (!PersonServiceFactory.service) {
             const repository = new PersonRepository();
-            const schema = PersonSchema;
+            const schema = PersonBaseSchema;
             PersonServiceFactory.service = new PersonService(repository, schema);
         }
         return PersonServiceFactory.service;

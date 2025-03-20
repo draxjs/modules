@@ -12,6 +12,15 @@ const LanguageSchema = new mongoose.Schema<ILanguage>({
 LanguageSchema.plugin(uniqueValidator, {message: 'validation.unique'});
 LanguageSchema.plugin(mongoosePaginate);
 
+LanguageSchema.virtual("id").get(function () {
+    return this._id.toString();
+});
+
+
+LanguageSchema.set('toJSON', {getters: true, virtuals: true});
+
+LanguageSchema.set('toObject', {getters: true, virtuals: true});
+
 const MODEL_NAME = 'Language';
 const COLLECTION_NAME = 'Language';
 const LanguageModel = mongoose.model<ILanguage, PaginateModel<ILanguage>>(MODEL_NAME, LanguageSchema,COLLECTION_NAME);

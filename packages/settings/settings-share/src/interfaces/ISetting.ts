@@ -1,12 +1,13 @@
 type SettingTypes = 'string' | 'longString' | 'number' | 'enum' | 'boolean' | 'password' |'stringList' | 'numberList' | 'enumList' |'ref' |'secret'
 
 interface ISettingBase{
+    _id?: string
     id?: string
     key: string
     value: string
     //valueList?: string[]
     label: string
-    group: string
+    category: string
     type: SettingTypes
     options?: string[]
     regex?: string
@@ -18,12 +19,13 @@ interface ISettingBase{
 }
 
 interface ISetting{
-    id: string
+    _id: string
+    id?: string
     key: string
     value: string
     //valueList?: string[]
     label: string
-    group: string
+    category: string
     type: SettingTypes
     options?: string[]
     regex?: string

@@ -1,9 +1,10 @@
 
 <script setup lang="ts">
 import PersonCrud from '../../cruds/PersonCrud'
-import {Crud, useCrudStore} from "@drax/crud-vue";
+import {Crud, useCrudStore, useInputErrorI18n} from "@drax/crud-vue";
 import {formatDate} from "@drax/common-front"
 
+const {inputErrorsI18n} = useInputErrorI18n()
 const store = useCrudStore()
 </script>
 
@@ -17,7 +18,9 @@ const store = useCrudStore()
     <template v-slot:item.user="{value}">{{value?.username}}</template>
 
     <template v-slot:field.fullname>
-      <v-text-field v-model="store.form.fullname" label="FULL NAME" />
+      <v-text-field v-model="store.form.fullname" label="FULL NAME"
+                    :error-messages="inputErrorsI18n('fullname')"
+      />
     </template>
 
   </crud>

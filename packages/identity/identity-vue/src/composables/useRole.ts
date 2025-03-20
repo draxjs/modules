@@ -4,6 +4,7 @@ import {RoleSystemFactory} from "@drax/identity-front";
 import type {IRole, IRoleBase} from "@drax/identity-share";
 import {ClientError} from "@drax/common-front";
 import type {IClientInputError} from "@drax/common-front";
+import type {IDraxPaginateOptions} from "@drax/crud-share";
 
 
 export function useRole() {
@@ -28,7 +29,7 @@ export function useRole() {
         return roles
     }
 
-    async function paginateRole({page = 1, limit = 5, orderBy = "", order = false, search = ""}) {
+    async function paginateRole({page = 1, limit = 5, orderBy = "", order = "asc", search = ""}: IDraxPaginateOptions) {
         loading.value = true
         let paginatedrole = roleSystem.paginate({page, limit, orderBy, order, search})
         loading.value = false

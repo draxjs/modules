@@ -89,7 +89,7 @@ class MongooseConector{
 
     }
 
-    static async disconnect(){
+    async disconnect(){
         await mongoose.disconnect()
     }
 

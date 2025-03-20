@@ -17,7 +17,8 @@ const SettingServiceFactory = (verbose: boolean = false): SettingService => {
                 break;
             case COMMON.DB_ENGINES.SQLITE:
                 const dbFile = DraxConfig.getOrLoad(CommonConfig.SqliteDbFile)
-                settingRepository = new SettingSqliteRepository(dbFile, verbose)
+                settingRepository = new SettingSqliteRepository(dbFile, true)
+                settingRepository.build()
                 break;
             default:
                 throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
