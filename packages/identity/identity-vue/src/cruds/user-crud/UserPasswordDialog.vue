@@ -25,10 +25,8 @@ let userError = ref<string>('')
 
 async function savePassword() {
   if (passwordForm.value.newPassword === passwordForm.value.confirmPassword) {
-    passwordChanged.value = await changeUserPassword(user._id, passwordForm.value.newPassword)
-    return
-  } else {
-    return
+    await changeUserPassword(user._id, passwordForm.value.newPassword)
+    passwordChanged.value = true
   }
 }
 
@@ -54,8 +52,8 @@ async function changeUserPassword(id: string, newPassword: string) {
 <template>
   <v-dialog v-model="valueModel" max-width="800">
     <v-card>
-      <v-card-title>{{t('user.operation.changePassword')}}</v-card-title>
-      <v-card-subtitle>{{t('user.field.username')}}: {{user.username}}</v-card-subtitle>
+      <v-card-title>{{ t('user.operation.changePassword') }}</v-card-title>
+      <v-card-subtitle>{{ t('user.field.username') }}: {{ user.username }}</v-card-subtitle>
       <v-card-text>
         <user-password-form
             v-model="passwordForm"
@@ -80,7 +78,7 @@ async function changeUserPassword(id: string, newPassword: string) {
             @click="savePassword"
             :loading="loading"
         >
-          {{  t('action.change') }}
+          {{ t('action.change') }}
         </v-btn>
       </v-card-actions>
 

@@ -4,11 +4,16 @@ import {CrudSchemaBuilder} from "@drax/crud-back";
 import {LoginBodyRequestSchema, LoginBodyResponseSchema} from "../schemas/LoginSchema.js"
 import {UserSchema, UserCreateSchema, UserUpdateSchema} from "../schemas/UserSchema.js";
 import {RegisterBodyRequestSchema, RegisterBodyResponseSchema} from "../schemas/RegisterSchema.js";
+import {
+    MyPasswordBodyRequestSchema,
+    PasswordBodyRequestSchema,
+    PasswordBodyResponseSchema
+} from "../schemas/PasswordSchema.js";
 
 async function UserRoutes(fastify, options) {
 
     const controller: UserController = new UserController()
-    const schemas = new CrudSchemaBuilder(UserSchema, UserCreateSchema, UserUpdateSchema, 'tenant','openApi3',  ['Identity']);
+    const schemas = new CrudSchemaBuilder(UserSchema, UserCreateSchema, UserUpdateSchema, 'tenant', 'openApi3', ['Identity']);
 
 
     fastify.get('/api/users/search', {schema: schemas.searchSchema}, async (req, rep) => await controller.search(req, rep))
@@ -75,12 +80,20 @@ async function UserRoutes(fastify, options) {
     fastify.post('/api/users/password/change', {
         schema: {
             tags: ['Auth'],
+            body: zodToJsonSchema(MyPasswordBodyRequestSchema),
+            200: zodToJsonSchema(PasswordBodyResponseSchema),
+            400: schemas.jsonErrorBodyResponse,
+            500: schemas.jsonErrorBodyResponse,
         }
     }, (req, rep) => controller.changeMyPassword(req, rep))
 
     fastify.post('/api/users/password/change/:id', {
         schema: {
             tags: ['Auth'],
+            body: zodToJsonSchema(PasswordBodyRequestSchema),
+            200: zodToJsonSchema(PasswordBodyResponseSchema),
+            400: schemas.jsonErrorBodyResponse,
+            500: schemas.jsonErrorBodyResponse,
         }
     }, (req, rep) => controller.changePassword(req, rep))
 

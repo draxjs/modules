@@ -302,7 +302,8 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const currentPassword = request.body.currentPassword
             const newPassword = request.body.newPassword
             const userService = UserServiceFactory()
-            return await userService.changeOwnPassword(userId, currentPassword, newPassword)
+            await userService.changeOwnPassword(userId, currentPassword, newPassword)
+            return {message: 'Password updated successfully'}
         } catch (e) {
             this.handleError(e,reply)
         }
@@ -317,7 +318,8 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             }
             const newPassword = request.body.newPassword
             const userService = UserServiceFactory()
-            return await userService.changeUserPassword(userId, newPassword)
+            await userService.changeUserPassword(userId, newPassword)
+            return {message: 'Password updated successfully'}
         } catch (e) {
             this.handleError(e,reply)
         }
