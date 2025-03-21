@@ -34,7 +34,8 @@ import LimitError from "./errors/LimitError.js";
 import InvalidIdError from "./errors/InvalidIdError.js";
 import InternalServerError from "./errors/InternalServerError.js";
 
-import MongooseErrorToValidationError from "./errors/adapters/MongooseErrorToValidationError.js";
+import MongooseValidationErrorToValidationError from "./errors/adapters/MongooseValidationErrorToValidationError.js";
+import MongooseCastErrorToValidationError from "./errors/adapters/MongooseCastErrorToValidationError.js";
 import MongoServerErrorToValidationError from "./errors/adapters/MongoServerErrorToValidationError.js";
 import SqliteErrorToValidationError from "./errors/adapters/SqliteErrorToValidationError.js";
 import ZodErrorToValidationError from "./errors/adapters/ZodErrorToValidationError.js";
@@ -106,7 +107,8 @@ export {
     SqliteTableBuilder,
 
     //Adapters
-    MongooseErrorToValidationError,
+    MongooseValidationErrorToValidationError,
+    MongooseCastErrorToValidationError,
     MongoServerErrorToValidationError,
     SqliteErrorToValidationError,
     ZodErrorToValidationError,

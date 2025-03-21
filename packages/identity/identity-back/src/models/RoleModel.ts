@@ -33,7 +33,7 @@ RoleMongoSchema.set('toJSON', {getters: true, virtuals: true});
 
 const ROLE_MODEL_NAME = 'Role';
 const ROLE_COLLECTION_NAME = 'roles';
-const RoleModel = mongoose.model<IRole, PaginateModel<IRole>>(ROLE_MODEL_NAME, RoleMongoSchema,ROLE_COLLECTION_NAME);
+const RoleModel = mongoose.models.Role as mongoose.Model<IRole> & PaginateModel<IRole> ||  mongoose.model<IRole, PaginateModel<IRole>>(ROLE_MODEL_NAME, RoleMongoSchema,ROLE_COLLECTION_NAME);
 
 export {
     RoleMongoSchema,

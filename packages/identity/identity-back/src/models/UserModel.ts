@@ -88,7 +88,7 @@ UserMongoSchema.plugin(mongoosePaginate);
 const USER_MODEL_NAME = 'User';
 const USER_COLLECTION_NAME = 'users';
 
-const UserModel = mongoose.model<IUser,PaginateModel<IUser>>(USER_MODEL_NAME, UserMongoSchema,USER_COLLECTION_NAME);
+const UserModel = mongoose.models.User as mongoose.Model<IUser> & PaginateModel<IUser> ||  mongoose.model<IUser,PaginateModel<IUser>>(USER_MODEL_NAME, UserMongoSchema,USER_COLLECTION_NAME);
 
 export {
     UserMongoSchema,

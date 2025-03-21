@@ -56,7 +56,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
 
     async changeUserPassword(userId: string, newPassword: string) {
-        const user = await this.findById(userId)
+        const user = await this._repository.findByIdWithPassword(userId)
         if (user) {
             newPassword = AuthUtils.hashPassword(newPassword)
             await this._repository.changePassword(userId, newPassword)
@@ -68,8 +68,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
 
     async changeOwnPassword(userId: string, currentPassword: string, newPassword: string) {
-        const user = await this.findById(userId)
-
+        const user = await this._repository.findByIdWithPassword(userId)
         if (user && user.active) {
 
             if (currentPassword === newPassword) {
@@ -285,7 +284,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
     async paginate({
                        page = 1,
-                       limit = 5,
+                       limit = 10,
                        orderBy = '',
                        order = "asc",
                        search = '',

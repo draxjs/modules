@@ -4,7 +4,8 @@ import type {Cursor, PopulateOptions} from "mongoose";
 import {
     MongooseQueryFilter,
     MongooseSort,
-    MongooseErrorToValidationError,
+    MongooseValidationErrorToValidationError,
+    MongooseCastErrorToValidationError,
     MongoServerErrorToValidationError
 } from "@drax/common-back";
 import type {DeleteResult} from "mongodb";
@@ -37,11 +38,13 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
                 //@ts-ignore
                 await item.populate(this._populateFields)
             }
-
-            return this._lean ? item.toObject() : item
+            return this._lean ? item : item.toObject()
         } catch (e) {
             if (e instanceof mongoose.Error.ValidationError) {
-                throw MongooseErrorToValidationError(e)
+                throw MongooseValidationErrorToValidationError(e)
+            }
+            if (e instanceof mongoose.Error.CastError) {
+                throw MongooseCastErrorToValidationError(e)
             }
             if(e instanceof MongoServerError || e.name === 'MongoServerError'){
                 throw MongoServerErrorToValidationError(e)
@@ -57,10 +60,13 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         try {
             const item: mongoose.HydratedDocument<T> = await this._model.findOneAndUpdate({_id: id}, data, {new: true}).populate(this._populateFields).exec()
 
-            return this._lean ? item.toObject() : item
+            return this._lean ? item : item.toObject()
         } catch (e) {
             if (e instanceof mongoose.Error.ValidationError) {
-                throw MongooseErrorToValidationError(e)
+                throw MongooseValidationErrorToValidationError(e)
+            }
+            if (e instanceof mongoose.Error.CastError) {
+                throw MongooseCastErrorToValidationError(e)
             }
             if(e instanceof MongoServerError || e.name === 'MongoServerError'){
                 throw MongoServerErrorToValidationError(e)
@@ -76,10 +82,13 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         try {
 
             const item: mongoose.HydratedDocument<T> = await this._model.findOneAndUpdate({_id: id}, data, {new: true}).populate(this._populateFields).exec()
-            return this._lean ? item.toObject() : item
+            return this._lean ? item : item.toObject()
         } catch (e) {
             if (e instanceof mongoose.Error.ValidationError) {
-                throw MongooseErrorToValidationError(e)
+                throw MongooseValidationErrorToValidationError(e)
+            }
+            if (e instanceof mongoose.Error.CastError) {
+                throw MongooseCastErrorToValidationError(e)
             }
             if(e instanceof MongoServerError || e.name === 'MongoServerError'){
                 throw MongoServerErrorToValidationError(e)
@@ -99,9 +108,8 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const item = await this._model
             .findById(id)
             .populate(this._populateFields)
-            .lean(this._lean ? { virtuals: true } : false)
+            .lean(this._lean)
             .exec()
-
 
         return item as T;
     }
@@ -111,7 +119,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const items = await this._model
             .find({_id: {$in: ids}})
             .populate(this._populateFields)
-            .lean(this._lean ? { virtuals: true } : false)
+            .lean(this._lean)
             .exec()
 
 
@@ -124,7 +132,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const item = await this._model
             .findOne(filter)
             .populate(this._populateFields)
-            .lean(this._lean ? { virtuals: true } : false)
+            .lean(this._lean)
             .exec()
 
 
@@ -137,7 +145,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             .find(filter)
             .limit(limit)
             .populate(this._populateFields)
-            .lean(this._lean ? { virtuals: true } : false)
+            .lean(this._lean)
             .exec()
 
 
@@ -149,7 +157,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const items = await this._model
             .find()
             .populate(this._populateFields)
-            .lean(this._lean ? { virtuals: true } : false)
+            .lean(this._lean)
             .exec()
 
 
@@ -172,7 +180,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             .find(query)
             .limit(limit)
             .populate(this._populateFields)
-            .lean(this._lean ? { virtuals: true } : false)
+            .lean(this._lean)
             .exec()
 
 
@@ -204,9 +212,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const sort = MongooseSort.applySort(orderBy, order)
         const populate = this._populateFields
         const lean = this._lean
-        const leanWithId = this._lean
-        const leanWithVirtuals = this._lean
-        const options = {page, limit, sort, populate, lean, leanWithId, leanWithVirtuals} as PaginateOptions
+        const options = {page, limit, sort, populate, lean} as PaginateOptions
         const items: PaginateResult<T> = await this._model.paginate(query, options)
         return {
             page: page,
@@ -236,7 +242,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const item =  this._model
             .findOne(query)
             .populate(this._populateFields)
-            .lean(this._lean ? { virtuals: true } : false)
+            .lean(this._lean)
             .exec()
 
         return item as T
@@ -268,7 +274,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             .limit(limit)
             .sort(sort)
             .populate(this._populateFields)
-            .lean(this._lean ? { virtuals: true } : false)
+            .lean(this._lean)
             .exec()
 
 

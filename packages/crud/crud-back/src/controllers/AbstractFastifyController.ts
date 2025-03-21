@@ -99,13 +99,25 @@ class AbstractFastifyController<T, C, U> {
         }
     }
 
-    private applyUserAndTenantFilters(filters: IDraxFieldFilter[], rbac: any) {
+    private applyUserAndTenantFilters(filters: IDraxFieldFilter[], rbac: IRbac) {
         if (this.tenantFilter && rbac.tenantId) {
             filters.push({field: this.tenantField, operator: 'eq', value: rbac.tenantId})
         }
 
         if (this.userFilter && rbac.userId) {
             filters.push({field: this.userField, operator: 'eq', value: rbac.userId})
+        }
+    }
+
+    private assertUserAndTenant(item: T, rbac: IRbac) {
+        if (this.tenantAssert) {
+            const itemTenantId = item[this.tenantField] && item[this.tenantField]._id ? item[this.tenantField]._id : null
+            rbac.assertTenantId(itemTenantId)
+        }
+
+        if (this.userAssert) {
+            const itemUserId = item[this.userField] && item[this.userField]._id ? item[this.userField]._id : null
+            rbac.assertUserId(itemUserId)
         }
     }
 
@@ -245,7 +257,8 @@ class AbstractFastifyController<T, C, U> {
             }
 
             if (this.tenantAssert) {
-                request.rbac.assertTenantId(item[this.tenantField].id)
+                const itemTenantId = item[this.tenantField] && item[this.tenantField]._id? item[this.tenantField]._id : null
+                request.rbac.assertTenantId(itemTenantId)
             }
 
             return item
@@ -291,9 +304,7 @@ class AbstractFastifyController<T, C, U> {
 
             let items = await this.service.find({search, filters, order, orderBy, limit})
 
-            if (this.tenantAssert) {
-                items = items.filter(item => request.rbac.tenantId === item[this.tenantField].id)
-            }
+
             return items
         } catch (e) {
             this.handleError(e, reply)
@@ -311,13 +322,6 @@ class AbstractFastifyController<T, C, U> {
 
             let item = await this.service.findOne({search, filters})
 
-            if (this.tenantAssert) {
-                request.rbac.assertTenantId(item[this.tenantField].id)
-            }
-
-            if (this.userAssert) {
-                request.rbac.assertUserId(item[this.userField].id)
-            }
 
             return item
         } catch (e) {
@@ -338,12 +342,8 @@ class AbstractFastifyController<T, C, U> {
             const value = request.params.value
             let items = await this.service.findBy(field, value, limit)
 
-            if (this.tenantAssert) {
-                items = items.filter(item => request.rbac.tenantId === item[this.tenantField].id)
-            }
-
-            if (this.userAssert) {
-                items = items.filter(item => request.rbac.userId === item[this.userField].id)
+            for (let item of items) {
+                this.assertUserAndTenant(item, request.rbac)
             }
 
             return items
@@ -363,20 +363,15 @@ class AbstractFastifyController<T, C, U> {
             const field = request.params.field
             const value = request.params.value
             let item = await this.service.findOneBy(field, value)
-
-            if (this.tenantAssert) {
-                request.rbac.assertTenantId(item[this.tenantField].id)
-            }
-
-            if (this.userAssert) {
-                request.rbac.assertUserId(item[this.userField].id)
-            }
+            this.assertUserAndTenant(item, request.rbac);
 
             return item
         } catch (e) {
             this.handleError(e, reply)
         }
     }
+
+
 
     async search(request: CustomRequest, reply: FastifyReply) {
         try {

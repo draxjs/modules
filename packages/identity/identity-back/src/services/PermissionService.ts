@@ -1,22 +1,23 @@
-const permissions: string[] = []
 
 class PermissionService{
 
+    protected static permissions: string[] = []
+
     static addPermission(permission: string){
         if(PermissionService.hasPermission(permission)) return;
-        permissions.push(permission)
+        PermissionService.permissions.push(permission)
     }
 
     static removePermission(permission: string){
-        permissions.splice(permissions.indexOf(permission), 1)
+        PermissionService.permissions.splice(PermissionService.permissions.indexOf(permission), 1)
     }
 
     static hasPermission(permission: string): boolean{
-        return permissions.includes(permission)
+        return PermissionService.permissions.includes(permission)
     }
 
     static getPermissions(): string[]{
-        return permissions
+        return PermissionService.permissions
     }
 
 }

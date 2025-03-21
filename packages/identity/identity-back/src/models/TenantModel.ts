@@ -24,7 +24,7 @@ TenantMongoSchema.set('toJSON', {getters: true, virtuals: true});
 
 const TENANT_MODEL_NAME = 'Tenant';
 const TENANT_COLLECTION_NAME = 'tenants';
-const TenantModel = mongoose.model<ITenant, PaginateModel<ITenant>>(TENANT_MODEL_NAME, TenantMongoSchema,TENANT_COLLECTION_NAME);
+const TenantModel = mongoose.models.Tenant as mongoose.Model<ITenant> & PaginateModel<ITenant> || mongoose.model<ITenant, PaginateModel<ITenant>>(TENANT_MODEL_NAME, TenantMongoSchema,TENANT_COLLECTION_NAME);
 
 export {
     TenantMongoSchema,

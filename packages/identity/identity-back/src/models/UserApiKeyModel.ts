@@ -57,7 +57,7 @@ UserApiKeyMongoSchema.plugin(mongoosePaginate);
 const MODEL_NAME = 'UserApiKey';
 const COLLECTION_NAME = 'userApiKeys';
 
-const UserApiKeyModel = mongoose.model<IUserApiKey,PaginateModel<IUserApiKey>>(MODEL_NAME, UserApiKeyMongoSchema,COLLECTION_NAME);
+const UserApiKeyModel = mongoose.models.UserApiKey as mongoose.Model<IUserApiKey> & PaginateModel<IUserApiKey> ||  mongoose.model<IUserApiKey,PaginateModel<IUserApiKey>>(MODEL_NAME, UserApiKeyMongoSchema,COLLECTION_NAME);
 
 
 export {

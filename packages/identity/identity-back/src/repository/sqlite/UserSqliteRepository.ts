@@ -93,6 +93,15 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
         return user
     }
 
+    async findByIdWithPassword(id: string): Promise<IUser | null> {
+        const user = this.db.prepare('SELECT * FROM users WHERE ${this.identifier} = ?').get(id);
+        if (!user) {
+            return null
+        }
+        await this.decorate(user)
+        return user
+    }
+
     async findByEmail(email: string): Promise<IUser> {
         const user = this.db.prepare('SELECT * FROM users WHERE email = ?').get(email);
         if (!user) {
@@ -153,6 +162,8 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
         stmt.run({id: id, avatar: avatar});
         return true
     }
+
+
 }
 
 export default UserSqliteRepository

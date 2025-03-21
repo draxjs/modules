@@ -1,7 +1,7 @@
-import type {IRoleBase} from "@drax/identity-share"
+import type {IRoleBase, IRole} from "@drax/identity-share"
 import RoleServiceFactory from "../factory/RoleServiceFactory.js"
 
-async function CreateOrUpdateRole(roleData: IRoleBase) {
+async function CreateOrUpdateRole(roleData: IRoleBase):Promise<IRole> {
     const roleService = RoleServiceFactory()
     const role = await roleService.findByName(roleData.name)
 
@@ -21,9 +21,11 @@ async function CreateOrUpdateRole(roleData: IRoleBase) {
         console.log("RoleData",roleData)
         const r = await roleService.systemUpdate(role._id.toString(), roleData)
         console.log("Role Updated. Name: "+ roleData.name)
+        return r
     }else{
         const r = await roleService.create(roleData)
         console.log("Role Created. Name: "+ roleData.name)
+        return r
     }
 }
 

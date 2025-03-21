@@ -5,6 +5,7 @@ interface IUserRepository extends IDraxCrudRepository<IUser, IUserCreate, IUserU
     findById(id: string): Promise<IUser | null>;
     findByUsername(username: string): Promise<IUser | null>;
     findByUsernameWithPassword(username: string): Promise<IUser | null>;
+    findByIdWithPassword(id: string): Promise<IUser | null>;
     findByEmail(email: string): Promise<IUser | null>;
     changePassword(id: string, password:string):Promise<Boolean>;
     changeAvatar(id: string, avatarUrl: string): Promise<Boolean>;

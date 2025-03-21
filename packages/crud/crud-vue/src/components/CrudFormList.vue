@@ -3,7 +3,9 @@ import {computed, type PropType} from "vue";
 import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
+import {useCrudStore} from "../stores/UseCrudStore";
 
+const store = useCrudStore()
 const {t, te} = useI18n()
 const valueModel = defineModel({type: Array, default: () => []});
 
@@ -49,6 +51,14 @@ const label = computed(() => {
   return te(i18n) ? t(i18n) : field.label
 })
 
+const hasError = computed(() => {
+  return (index:number) => {
+    const fieldListName = field.name + '.' + index
+    return store.hasFieldListInputErrors(fieldListName)
+  }
+
+})
+
 defineEmits(['updateValue'])
 
 </script>
@@ -62,7 +72,7 @@ defineEmits(['updateValue'])
         <v-expansion-panel v-for="(item,index) in valueModel" :key="index">
 
           <v-expansion-panel-title>
-            {{ index }} - {{valueModel[index][Object.keys(valueModel[index] as any)[0]]}}
+            <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip> {{valueModel[index][Object.keys(valueModel[index] as any)[0]]}}
 
             <template v-slot:actions="{expanded}">
               <v-icon>{{expanded ? "mdi-menu-down" : "mdi-menu-up"}}</v-icon>

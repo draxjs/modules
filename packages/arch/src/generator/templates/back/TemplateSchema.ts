@@ -79,7 +79,7 @@ const generateEntitySchema = (schema: ISchema) => {
         switch (schema[field].type) {
 
             case "ref":
-                fields.push(`${field}: z.object({_id: z.string(), ${schema[field].refDisplay}: z.string()})${schema[field].required ? "" : ".optional()"}`)
+                fields.push(`${field}: z.object({_id: z.string(), ${schema[field].refDisplay}: z.string()})${schema[field].required ? "" : ".nullable().optional()"}`)
                 break;
 
             case "array.ref":

@@ -69,7 +69,7 @@ async function submitRegistration() {
       <v-card>
         <v-card-text>
           <v-alert type="success">
-            {{ t('user.event.registrationComplete') }}
+            {{ t('user.events.registrationComplete') }}
           </v-alert>
         </v-card-text>
         <v-card-text class="text-center">

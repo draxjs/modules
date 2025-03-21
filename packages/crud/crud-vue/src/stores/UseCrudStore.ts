@@ -26,7 +26,7 @@ export const useCrudStore = defineStore('CrudStore', {
         }
     ),
     getters: {
-        getInputErrors(state: any) {
+        getFieldInputErrors(state: any) {
             return (fieldName: string) => {
                 if (state.inputErrors && state.inputErrors[fieldName]) {
                     return state.inputErrors[fieldName]
@@ -34,6 +34,15 @@ export const useCrudStore = defineStore('CrudStore', {
                 return []
             }
         },
+        hasFieldListInputErrors(state: any) {
+            return (fieldListName: string) => {
+                if(state.inputErrors && typeof state.inputErrors === 'object'){
+                    for(const key in state.inputErrors) {
+                        return key.startsWith(fieldListName)
+                    }
+                }
+            }
+        }
 
     },
     actions: {

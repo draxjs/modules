@@ -10,7 +10,7 @@ export function useInputErrorI18n() {
 
     const inputErrorsI18n = computed(() => {
             return (name:string) => {
-                return store.getInputErrors(name).map((error: string) => te(error) ? t(error) : error)
+                return store.getFieldInputErrors(name).map((error: string) => te(error) ? t(error) : error)
             }
         }
     )

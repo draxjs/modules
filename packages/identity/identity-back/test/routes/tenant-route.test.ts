@@ -4,7 +4,7 @@ import TenantRoute from "../../src/routes/TenantRoutes";
 
 process.env.DRAX_DB_ENGINE = "mongo"
 import TenantServiceFactory from "../../src/factory/TenantServiceFactory";
-import {FastifyTestServerFactory} from './FastifyTestServerFactory'
+import {FastifyTestServerFactory} from './helpers/FastifyTestServerFactory'
 
 
 describe("Tenant Route Test", function () {
@@ -75,7 +75,7 @@ describe("Tenant Route Test", function () {
         const result = await resp.json();
         expect(resp.statusCode).toBe(200);
         expect(result.name).toBe("NewTestTenant");
-        expect(result.id).toBeDefined();
+        expect(result._id).toBeDefined();
 
         // Verify tenant was created by fetching it
         const getResp = await FastifyTestServer.inject({
@@ -210,7 +210,7 @@ describe("Tenant Route Test", function () {
         // Verify the response
         expect(getResp.statusCode).toBe(200);
         const fetchedTenant = await getResp.json();
-        expect(fetchedTenant.id).toBe(tenantId);
+        expect(fetchedTenant._id).toBe(tenantId);
         expect(fetchedTenant.name).toBe("FindByIdTenant");
     })
 

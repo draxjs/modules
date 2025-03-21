@@ -5,10 +5,8 @@ import {
     CommonConfig,
     DraxConfig,
     StoreManager,
-    UploadFileError,
     ValidationError,
     UnauthorizedError,
-    SecuritySensitiveError
 } from "@drax/common-back";
 
 import UserServiceFactory from "../factory/UserServiceFactory.js";
@@ -131,7 +129,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 payload.tenant = null
             }
 
-            payload.role = role._id
+            payload.role = role._id.toString()
             payload.origin ??= 'Registry'
 
             const userService = UserServiceFactory()
@@ -182,13 +180,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             request.rbac.assertPermission(UserPermissions.Create)
             const payload = request.body
 
-            const roleService = RoleServiceFactory()
-            const role = await roleService.findById(payload.role)
-            if (!role) {
-                throw new ValidationError([{field: 'role', reason: 'Role not found'}])
-            } else if (role.name === 'Admin') {
-                payload.tenant = null
-            } else if (request.rbac.getAuthUser.tenantId) {
+            if (request.rbac.getAuthUser.tenantId) {
                 payload.tenant = request.rbac.getAuthUser.tenantId
             }
 
@@ -208,14 +200,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const id = request.params.id
             const payload = request.body
 
-
-            const roleService = RoleServiceFactory()
-            const role = await roleService.findById(payload.role)
-            if (!role) {
-                throw new ValidationError([{field: 'role', reason: 'Role not found'}])
-            } else if (role.name === 'Admin') {
-                payload.tenant = null
-            } else if (request.rbac.getAuthUser.tenantId) {
+            if (request.rbac.getAuthUser.tenantId) {
                 payload.tenant = request.rbac.getAuthUser.tenantId
             }
 

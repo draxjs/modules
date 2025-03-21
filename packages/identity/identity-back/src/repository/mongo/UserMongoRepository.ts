@@ -1,10 +1,10 @@
 import {UserModel} from "../../models/UserModel.js";
 import {
     mongoose,
-    MongooseErrorToValidationError,
+    MongooseValidationErrorToValidationError,
     MongooseQueryFilter,
     MongooseSort,
-    ValidationError
+    ValidationError, MongooseCastErrorToValidationError
 } from "@drax/common-back"
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import type {IUserRepository} from "../../interfaces/IUserRepository";
@@ -39,7 +39,10 @@ class UserMongoRepository extends AbstractMongoRepository<IUser,IUserCreate,IUse
             return user
         }catch (e){
             if(e instanceof mongoose.Error.ValidationError){
-                throw MongooseErrorToValidationError(e)
+                throw MongooseValidationErrorToValidationError(e)
+            }
+            if (e instanceof mongoose.Error.CastError) {
+                throw MongooseCastErrorToValidationError(e)
             }
             throw e
         }
@@ -47,36 +50,68 @@ class UserMongoRepository extends AbstractMongoRepository<IUser,IUserCreate,IUse
     }
 
     async findByUsername(username: string): Promise<IUser> {
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({username: username}).populate(['role','tenant']).exec()
-        return user
+        const user = await UserModel
+            .findOne({username: username})
+            .populate(['role','tenant'])
+            .lean(this._lean)
+            .exec()
+        return user as IUser
     }
 
     async findByUsernameWithPassword(username: string): Promise<IUser> {
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({username: username}).select('+password').populate(['role','tenant']).exec()
-        return user
+        const user = await UserModel
+            .findOne({username: username})
+            .select('+password')
+            .populate(['role','tenant'])
+            .lean(this._lean)
+            .exec()
+        return user as IUser
+    }
+
+    async findByIdWithPassword(id: string): Promise<IUser> {
+        const user = await UserModel.findById(id)
+            .select('+password')
+            .populate(['role','tenant'])
+            .lean(this._lean)
+            .exec()
+        return user as IUser
     }
 
     async findByEmail(email: string): Promise<IUser> {
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({email: email}).populate(['role','tenant']).exec()
-        return user
+        const user = await UserModel
+            .findOne({email: email})
+            .populate(['role','tenant'])
+            .lean(this._lean)
+            .exec()
+        return user as IUser
     }
 
     async findByEmailCode(code: string): Promise<IUser> {
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({emailCode: {$eq: code}, emailVerified: {$eq: false} }).populate(['role','tenant']).exec()
-        return user
+        const user = await UserModel
+            .findOne({emailCode: {$eq: code}, emailVerified: {$eq: false} })
+            .populate(['role','tenant'])
+            .lean(this._lean)
+            .exec()
+        return user as IUser
     }
 
     async findByPhoneCode(code: string): Promise<IUser> {
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({phoneCode: {$eq: code}, phoneVerified: {$eq: false} }).populate(['role','tenant']).exec()
-        return user
+        const user = await UserModel
+            .findOne({phoneCode: {$eq: code}, phoneVerified: {$eq: false} })
+            .populate(['role','tenant'])
+            .lean(this._lean)
+            .exec()
+        return user as IUser
     }
 
     async findByRecoveryCode(code: string): Promise<IUser> {
-        const user: mongoose.HydratedDocument<IUser> = await UserModel.findOne({recoveryCode: {$eq: code}, active: {$eq: true} }).populate(['role','tenant']).exec()
-        return user
+        const user = await UserModel
+            .findOne({recoveryCode: {$eq: code}, active: {$eq: true} })
+            .populate(['role','tenant'])
+            .lean(this._lean)
+            .exec()
+        return user as IUser
     }
-
-
 
     async changePassword(id: string, password: string):Promise<boolean> {
         try{
