@@ -105,7 +105,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async findById(id: string): Promise<T | null> {
         try {
             let item: T = await this._repository.findById(id);
-            if (this.transformRead) {
+            if (item && this.transformRead) {
                 item = await this.transformRead(item)
             }
             return item
@@ -131,7 +131,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async findOneBy(field: string, value: string): Promise<T | null> {
         try {
             let item: T = await this._repository.findOneBy(field, value);
-            if (this.transformRead) {
+            if (item && this.transformRead) {
                 item = await this.transformRead(item)
             }
             return item
@@ -221,6 +221,9 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
         try {
 
             let items = await this._repository.find({orderBy, order, search, filters, limit});
+            if (this.transformRead) {
+                items = await Promise.all(items.map(item => this.transformRead(item)))
+            }
             return items;
         } catch (e) {
             console.error("Error find", e)
