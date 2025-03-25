@@ -1,4 +1,11 @@
 import {IEntitySchema} from "../../../interfaces/IEntitySchema";
+function getApiBasePath(entity: IEntitySchema) {
+      if (entity.apiBasePath) {
+            return '/api/'+ entity.apiBasePath;
+      }else{
+            return '/api/'+ entity.name.toLowerCase()
+      }
+}
 
 export const TemplateRestProvider = (entity: IEntitySchema) => `
 import {AbstractCrudRestProvider} from "@drax/crud-front";
@@ -9,7 +16,7 @@ class ${entity.name}Provider extends AbstractCrudRestProvider<I${entity.name}, I
   static singleton: ${entity.name}Provider
     
   constructor() {
-   super('/api/${entity.name.toLowerCase()}')
+   super('${getApiBasePath(entity)}')
   }
   
   static get instance() {
