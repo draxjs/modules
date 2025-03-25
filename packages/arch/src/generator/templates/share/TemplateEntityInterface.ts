@@ -67,7 +67,7 @@ ${generateEntityInterface(entity.schema)}
 }
 
 interface I${entity.name} {
-    id: string
+    _id: string
 ${generateEntityInterface(entity.schema)}
     createdAt?: Date
     updatedAt?: Date

@@ -18,7 +18,7 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 if(!schema[field].enum){
                     throw new Error("enum fields must have a enum")
                 }
-                fields.push(`    ${field}: z.enum(['${schema[field].enum.join("', '")}'])${schema[field].required? ".min(1,'validation.required')" : ".optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
+                fields.push(`    ${field}: z.enum(['${schema[field].enum.join("', '")}'])${schema[field].required? "" : ".optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
                 break;
             case "number":
                 fields.push(`    ${field}: z.number()${schema[field].required? ".min(0,'validation.required')" : ".nullable().optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
