@@ -5,7 +5,7 @@ import SettingEditor from "./SettingEditor.vue";
 import {onMounted, ref} from "vue";
 import type {ISetting} from "@drax/settings-share";
 
-const {fetchSettings, settingsGrouped, loading} = useSetting()
+const {fetchSettings, settingsGrouped} = useSetting()
 
 onMounted(async () => {
   await fetchSettings()

@@ -11,6 +11,9 @@ class SettingGqlProvider implements ISettingProvider {
         this.httpClient = httpClient
     }
 
+    async fetchGrouped(): Promise<{ [key: string]: ISetting[] }> {
+        throw new Error('SettingGqlProvider.fetchGrouped Not implemented')
+    }
 
     async fetchAll(): Promise<ISetting[]> {
         throw new Error('SettingGqlProvider.fetchAll Not implemented')

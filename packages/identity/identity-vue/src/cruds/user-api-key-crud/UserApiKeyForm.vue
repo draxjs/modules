@@ -2,8 +2,6 @@
 import {useFormUtils, useCrudStore} from "@drax/crud-vue";
 import {defineEmits, defineModel, ref} from "vue";
 import {useI18nValidation} from "@drax/common-vue";
-import PermissionSelector from "../../components/PermissionSelector/PermissionSelector.vue";
-import RoleCombobox from "../../combobox/RoleCombobox.vue";
 import {useI18n} from "vue-i18n";
 
 const {$ta} = useI18nValidation()
@@ -34,7 +32,7 @@ function cancel() {
 }
 
 const {
-  variant, submitColor, readonly
+   submitColor
 } = useFormUtils(store.operation)
 
 

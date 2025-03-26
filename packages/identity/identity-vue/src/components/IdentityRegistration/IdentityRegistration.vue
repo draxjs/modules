@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import {computed, ref, onMounted} from 'vue'
+import {ref} from 'vue'
 import {useAuth} from "../../composables/useAuth.js";
 import {ClientError} from "@drax/common-front";
 import type {IClientInputError} from "@drax/common-front";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
-import {useRoute, useRouter} from "vue-router"
+import {useRouter} from "vue-router"
 
 const {t,te} = useI18n()
 const {$ta} = useI18nValidation()
 
-const route = useRoute()
 const router = useRouter()
 
 const {register} = useAuth()
 
 const rform = ref()
 
-const variant = ref('filled')
+const variant = ref<"outlined" | "plain" | "filled" | "underlined" | "solo" | "solo-inverted" | "solo-filled" | undefined>('filled')
 
 const form = ref({
   username: '',

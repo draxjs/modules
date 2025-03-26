@@ -72,7 +72,10 @@ defineEmits(['updateValue'])
         <v-expansion-panel v-for="(item,index) in valueModel" :key="index">
 
           <v-expansion-panel-title>
-            <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip> {{valueModel[index][Object.keys(valueModel[index] as any)[0]]}}
+            <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
+            {{//@ts-ignore
+              valueModel[index][Object.keys(valueModel[index] as any)[0]]
+            }}
 
             <template v-slot:actions="{expanded}">
               <v-icon>{{expanded ? "mdi-menu-down" : "mdi-menu-up"}}</v-icon>

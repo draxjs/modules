@@ -71,7 +71,7 @@ class RoleGqlProvider implements IRoleProvider {
         return data.deleteRole
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
+    async paginate({page= 1, limit= 5, orderBy="", order='asc', search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IRole>> {
         const query: string = `query paginateRole($options: PaginateOptions) { 
             paginateRole(options: $options) { 
                 total, page, limit, items{ ${this.gqlFields} } 

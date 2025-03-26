@@ -23,7 +23,6 @@ const errorMsg = ref('')
 const loading = ref(false)
 const success = ref(false)
 
-let recoveryCodeVisibility = ref(false)
 let newPasswordVisibility = ref(false)
 
 

@@ -63,7 +63,7 @@ class TenantGqlProvider implements ITenantProvider {
         return data.deleteTenant
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
+    async paginate({page= 1, limit= 5, orderBy="", order='asc', search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<ITenant>> {
         const query: string = `query paginateTenant($options: PaginateOptions) { 
             paginateTenant(options: $options) { 
                 total page limit items{ ${this.gqlFields} } 

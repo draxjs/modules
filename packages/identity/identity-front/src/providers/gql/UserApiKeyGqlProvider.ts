@@ -59,7 +59,7 @@ class UserApiKeyGqlProvider implements IUserApiKeyProvider {
         return data.deleteUserApiKey
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
+    async paginate({page= 1, limit= 5, orderBy="", order='asc', search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
         const query: string = `query paginateUserApiKey($options: PaginateOptions) { 
             paginateUserApiKey(options: $options) { 
                 total page limit items{ ${this.gqlFields} } 

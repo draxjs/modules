@@ -1,7 +1,7 @@
 import type {IAuthProvider} from "../interfaces/IAuthProvider";
 import type {IAuthUser} from "../interfaces/IAuthUser";
 import type {ILoginResponse} from "../interfaces/ILoginResponse";
-import type {IUserRegistration} from "@/interfaces/IUserRegistration";
+import type {IUserRegistration} from "../interfaces/IUserRegistration";
 
 class AuthSystem implements IAuthProvider {
 

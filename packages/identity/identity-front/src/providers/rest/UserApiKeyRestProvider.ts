@@ -31,7 +31,7 @@ class UserApiKeyRestProvider implements IUserApiKeyProvider {
             return result
     }
 
-    async paginate({page= 1, limit= 5, orderBy="", order=false, search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
+    async paginate({page= 1, limit= 5, orderBy="", order="asc", search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserApiKey>> {
         const url = '/api/user-api-keys'
         const params = {page, limit, orderBy, order, search}
             let paginatedUserApiKeys = await this.httpClient.get(url, {params})
