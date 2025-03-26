@@ -26,12 +26,24 @@ const valueModel = defineModel<boolean>()
       <identity-profile-view></identity-profile-view>
       <v-divider></v-divider>
       <v-list>
+
+        <slot name="menu"></slot>
+
         <v-list-item
             @click="router.push({name:'Profile'})"
             prepend-icon="mdi-account-cog"
             :title="t('user.profile')"
         >
         </v-list-item>
+
+        <v-list-item
+            v-if="auth.hasPermission('userApiKey:manage')"
+            @click="router.push({name:'CrudUserApiKey'})"
+            prepend-icon="mdi-table-key"
+            :title="t('userapikey.menu')"
+        >
+        </v-list-item>
+
         <v-list-item
             @click="auth.logout()"
             prepend-icon="mdi-logout"
