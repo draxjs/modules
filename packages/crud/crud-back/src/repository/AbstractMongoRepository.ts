@@ -104,7 +104,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async findById(id: string): Promise<T | null> {
-
+        this.assertId(id)
         const item = await this._model
             .findById(id)
             .populate(this._populateFields)
@@ -115,6 +115,8 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async findByIds(ids: Array<string>): Promise<T[]> {
+
+        ids.map(id =>  this.assertId(id))
 
         const items = await this._model
             .find({_id: {$in: ids}})

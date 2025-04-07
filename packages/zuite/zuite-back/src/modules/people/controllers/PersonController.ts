@@ -11,11 +11,11 @@ class PersonController extends AbstractFastifyController<IPerson, IPersonBase, I
         this.tenantField = "tenant";
         this.userField = "user";
         this.tenantFilter = true;
-        this.userFilter = true;
+        this.userFilter = false;
         this.tenantSetter = true;
-        this.userSetter = true;
+        this.userSetter = false;
         this.tenantAssert = true;
-        this.userAssert = true;
+        this.userAssert = false;
     }
 
 }

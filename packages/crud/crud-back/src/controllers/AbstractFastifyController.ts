@@ -109,16 +109,23 @@ class AbstractFastifyController<T, C, U> {
         }
     }
 
-    private assertUserAndTenant(item: T, rbac: IRbac) {
+    private assertTenant(item: T, rbac: IRbac) {
         if (this.tenantAssert) {
-            const itemTenantId = item[this.tenantField] && item[this.tenantField]._id ? item[this.tenantField]._id : null
+            const itemTenantId = item[this.tenantField]?._id ? item[this.tenantField]._id.toString() : null
             rbac.assertTenantId(itemTenantId)
         }
+    }
 
+    private assertUser(item: T, rbac: IRbac) {
         if (this.userAssert) {
-            const itemUserId = item[this.userField] && item[this.userField]._id ? item[this.userField]._id : null
+            const itemUserId = item[this.userField]?._id ? item[this.userField]._id.toString() : null
             rbac.assertUserId(itemUserId)
         }
+    }
+
+    private assertUserAndTenant(item: T, rbac: IRbac) {
+        this.assertTenant(item, rbac)
+        this.assertUser(item, rbac)
     }
 
     private applyUserAndTenantSetters(payload: any, rbac: any) {
@@ -174,6 +181,8 @@ class AbstractFastifyController<T, C, U> {
             }
             const id = request.params.id
             const payload = request.body
+            delete payload[this.tenantField]
+            //Una vez que un registro se crea con un tenant, no deberia actualizarse nunca mas
             //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.update(id, payload as U)
 
@@ -196,6 +205,8 @@ class AbstractFastifyController<T, C, U> {
             }
             const id = request.params.id
             const payload = request.body
+            delete payload[this.tenantField]
+            //Una vez que un registro se crea con un tenant, no deberia actualizarse nunca mas
             //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.updatePartial(id, payload as U)
             if (!item) {
@@ -223,10 +234,7 @@ class AbstractFastifyController<T, C, U> {
                 reply.send({error: 'NOT_FOUND'})
             }
 
-            if (this.tenantAssert) {
-                const tenantId = item[this.tenantField] && item[this.tenantField]._id ? item[this.tenantField]._id : null
-                request.rbac.assertTenantId(tenantId)
-            }
+            this.assertUserAndTenant(item, request.rbac)
 
             await this.service.delete(id)
             reply.send({
@@ -256,10 +264,7 @@ class AbstractFastifyController<T, C, U> {
                 throw new NotFoundError()
             }
 
-            if (this.tenantAssert) {
-                const itemTenantId = item[this.tenantField] && item[this.tenantField]._id? item[this.tenantField]._id : null
-                request.rbac.assertTenantId(itemTenantId)
-            }
+            this.assertUserAndTenant(item, request.rbac)
 
             return item
         } catch (e) {
