@@ -3,7 +3,6 @@ import MongoInMemory from "../db/MongoInMemory";
 import TenantRoute from "../../src/routes/TenantRoutes";
 
 process.env.DRAX_DB_ENGINE = "mongo"
-import TenantServiceFactory from "../../src/factory/TenantServiceFactory";
 import {FastifyTestServerFactory} from './helpers/FastifyTestServerFactory'
 
 
