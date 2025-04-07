@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "Ai utils",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -17,24 +17,22 @@
   },
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
-  "dependencies": {
-  },
   "peerDependencies": {
-    "openai": "^4.72.0",
     "chromadb": "^2.2.0",
-    "zod": "^3.24.2",
+    "jsdom": "^26.0.0",
     "office-text-extractor": "^3.0.3",
-    "jsdom": "^26.0.0"
+    "openai": "^4.72.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/node": "^20.12.10",
+    "chromadb": "^2.2.0",
+    "jsdom": "^26.0.0",
+    "office-text-extractor": "^3.0.3",
+    "openai": "^4.72.0",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.6.2",
-    "vitest": "^3.0.8",
-    "openai": "^4.72.0",
-    "chromadb": "^2.2.0",
-    "office-text-extractor": "^3.0.3",
-    "jsdom": "^26.0.0"
+    "vitest": "^3.0.8"
   }
 }
