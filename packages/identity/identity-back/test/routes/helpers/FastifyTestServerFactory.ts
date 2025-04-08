@@ -19,14 +19,6 @@ const FastifyTestServerFactory = () => {
     fastify.addHook('onRequest', rbacMiddleware)
     fastify.addHook('onRequest', apiKeyMiddleware)
 
-
-    // fastify.addHook('preHandler', async (request, reply) => {
-    //     //@ts-ignore
-    //     request.rbac = {assertPermission: () => true, getAuthUser: {username: 'admin', tenantId: ''}};
-    //     //@ts-ignore
-    //     request.authUser = {id:USER._id, username: USER.username, tenantId: '', roleId: USER.role};
-    // });
-
     return fastify
 }
 

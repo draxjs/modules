@@ -18,7 +18,7 @@ class UserApiKeyMongoRepository extends AbstractMongoRepository<IUserApiKey,IUse
         {path: 'createdBy', populate: {path: 'tenant role'} },
     ]
     protected _model = UserApiKeyModel
-    protected _lean = false
+    protected _lean = true
 
 
     async delete(id: string): Promise<boolean> {

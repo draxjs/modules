@@ -1,4 +1,4 @@
-import {IUserApiKey} from "@drax/identity-share";
+import {IAuthUser, IUserApiKey} from "@drax/identity-share";
 import {DraxCache, DraxConfig} from "@drax/common-back";
 import UserApiKeyServiceFactory from "../factory/UserApiKeyServiceFactory.js";
 import IdentityConfig from "../config/IdentityConfig.js";
@@ -29,9 +29,13 @@ async function apiKeyMiddleware (request, reply) {
             if(apiKey){
                 const userApiKey = await draxCache.getOrLoad(apiKey, userApiKeyLoader)
                 if(userApiKey && userApiKey.user){
-                    request.authUser = userApiKey.user
-                    request.authUser.roleId = userApiKey.user.role._id
-                    request.authUser.tenantId = userApiKey.user?.tenant?._id
+                    const authUser: IAuthUser = {
+                        id: userApiKey.user._id.toString(),
+                        username: userApiKey.user.username,
+                        roleId:  userApiKey.user.role?._id?.toString(),
+                        tenantId: userApiKey.user?.tenant?._id?.toString(),
+                    }
+                    request.authUser = authUser
                 }
             }
             return

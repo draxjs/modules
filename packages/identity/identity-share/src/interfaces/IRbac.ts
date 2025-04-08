@@ -1,9 +1,9 @@
-import type { IJwtUser } from "./IJwtUser";
 import type { IRole } from "./IRole";
+import {IAuthUser} from "./IAuthUser";
 
 interface IRbac {
     readonly getRole: IRole;
-    readonly getAuthUser: IJwtUser;
+    readonly getAuthUser: IAuthUser;
     readonly userId: string;
     readonly tenantId: string | undefined;
 

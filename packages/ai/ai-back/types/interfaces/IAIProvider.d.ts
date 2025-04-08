@@ -8,9 +8,9 @@ interface IPromptMemory {
     key: string;
     value: string;
 }
-interface IPromptRequest {
+interface IPromptParams {
     systemPrompt: string;
-    userInput: string;
+    userInput?: string;
     history?: IPromptMessage[];
     memory?: IPromptMemory[];
     memoryHeader?: string | '[MEMORY]' | '[MEMORIA]';
@@ -28,7 +28,7 @@ interface IPromptResponse {
     time: number;
 }
 interface IAIProvider {
-    prompt(input: IPromptRequest): Promise<IPromptResponse>;
+    prompt(input: IPromptParams): Promise<IPromptResponse>;
 }
-export type { IAIProvider, IPromptRequest, IPromptResponse, IPromptMessage, IPromptMemory };
+export type { IAIProvider, IPromptParams, IPromptResponse, IPromptMessage, IPromptMemory };
 //# sourceMappingURL=IAIProvider.d.ts.map

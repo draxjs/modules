@@ -4,12 +4,11 @@ import MongoInMemory from "../db/MongoInMemory";
 process.env.DRAX_DB_ENGINE = "mongo"
 process.env.DRAX_JWT_SECRET = "asdasdasd"
 
-// import {InitializePermissions} from "./helpers/InitializePermissions.js"
-// import {CreateRootUserAndAdminRole} from "./helpers/CreateRootUserAndAdminRole.js"
+
 import {SetupIdentityDrax} from "./helpers/SetupIdentityDrax.js"
 import {FastifyTestServerFactory} from './helpers/FastifyTestServerFactory.js'
-import {IRoleBase, IUserCreate} from "@drax/identity-share";
-import {UserRoutes, RoleServiceFactory, UserServiceFactory, PermissionService} from "../../src/index.js"
+import {IUserCreate} from "@drax/identity-share";
+import {UserRoutes} from "../../src/index.js"
 
 
 const USER1: IUserCreate = {

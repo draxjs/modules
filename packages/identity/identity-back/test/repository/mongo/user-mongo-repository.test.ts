@@ -1,4 +1,4 @@
-import  {beforeAll, afterAll, describe, test} from "vitest"
+import  {beforeAll, afterAll, describe, test, expect} from "vitest"
 import assert, {equal} from "assert";
 import UserMongoRepository from "../../../src/repository/mongo/UserMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
@@ -6,6 +6,7 @@ import RoleMongoInitializer from "../../initializers/RoleMongoInitializer";
 import {IUser} from "../../../../identity-share/src/interfaces/IUser";
 import type {IDraxPaginateResult} from "@drax/crud-share";
 import {mongoose, ValidationError} from "@drax/common-back";
+import {object} from "zod";
 
 
 describe("UserRepositoryTest", function () {
@@ -102,7 +103,9 @@ describe("UserRepositoryTest", function () {
     test("Find mongo user by ID successfully", async function () {
         let adminData = (await import("../../data-obj/users/root-mongo-user")).default
         let userFound = await userRepository.findById(adminData._id)
+        console.log("userFound",userFound)
         equal(userFound.username, userAdminData.username)
+        expect(userFound).toBeInstanceOf(Object)
     })
 
     test("Find mongo user by username successfully", async function () {

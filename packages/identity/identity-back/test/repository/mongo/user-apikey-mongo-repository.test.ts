@@ -1,4 +1,4 @@
-import {beforeAll, afterAll, describe, it, test} from "vitest"
+import {beforeAll, afterAll, describe, test, expect} from "vitest"
 import assert, {equal} from "assert";
 import UserApiKeyMongoRepository from "../../../src/repository/mongo/UserApiKeyMongoRepository";
 import MongoInMemory from "../../db/MongoInMemory";
@@ -35,14 +35,13 @@ describe("UserApiKeyRepositoryTest", function () {
         data = (await import("../../data-obj/apikey/root-mongo-user-apikey")).default
         console.log("Data:",data)
         let userApiKeyCreated = await userApiKeyRepository.create(data)
-        equal(userApiKeyCreated.name, data.name)
+        expect(userApiKeyCreated.name).toBe(data.name)
     })
 
     test("Find mongo user by ID successfully", async function () {
         data = (await import("../../data-obj/apikey/root-mongo-user-apikey")).default
         let userApiKeyFound = await userApiKeyRepository.findById(data._id)
-
-        equal(userApiKeyFound.name, data.name)
+        expect(userApiKeyFound.name).toBe(data.name)
     })
 
     test("Find mongo user by secret successfully", async function () {

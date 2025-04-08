@@ -1,4 +1,4 @@
-import type { IAIProvider, IPromptRequest, IPromptResponse } from "../interfaces/IAIProvider";
+import type { IAIProvider, IPromptParams, IPromptResponse } from "../interfaces/IAIProvider";
 declare class OpenAiProvider implements IAIProvider {
     protected _apiKey: string;
     protected _model: any;
@@ -6,7 +6,11 @@ declare class OpenAiProvider implements IAIProvider {
     constructor(apiKey: string, model: string);
     get model(): any;
     get client(): any;
-    prompt(input: IPromptRequest): Promise<IPromptResponse>;
+    generateEmbedding({ text, model }: {
+        text: string;
+        model: string;
+    }): Promise<number[]>;
+    prompt(input: IPromptParams): Promise<IPromptResponse>;
 }
 export default OpenAiProvider;
 export { OpenAiProvider };

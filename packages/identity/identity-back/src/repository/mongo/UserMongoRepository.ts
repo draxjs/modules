@@ -19,7 +19,7 @@ class UserMongoRepository extends AbstractMongoRepository<IUser,IUserCreate,IUse
     protected _searchFields = ['name','username','email','phone']
     protected _populateFields = ['role','tenant']
     protected _model = UserModel
-    protected _lean = false
+    protected _lean = true
 
     constructor() {
         super()
