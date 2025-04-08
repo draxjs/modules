@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.13.0",
+  "version": "0.13.1",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@drax/common-front": "^0.13.0",
     "@drax/crud-share": "^0.13.0",
-    "@drax/identity-share": "^0.13.0"
+    "@drax/identity-share": "^0.13.1"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
