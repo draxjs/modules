@@ -24,6 +24,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     transformUpdate?: (data: U) => Promise<U>;
     transformRead?: (data: T) => Promise<T>;
 
+    onCreated?: (data: T) => Promise<void>;
+    onUpdated?: (data: T) => Promise<void>;
+    onDeleted?: (id: string) => Promise<void>;
+
+
 
     constructor(repository: IDraxCrudRepository<T, C, U>, schema?: ZodObject<ZodRawShape>) {
         this._repository = repository
@@ -40,6 +45,9 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                 data = await this.transformCreate(data)
             }
             const item: T = await this._repository.create(data)
+            if (this.onCreated) {
+                await this.onCreated(item)
+            }
             return item
         } catch (e) {
             console.error("Error creating", e)
@@ -59,6 +67,9 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                 data = await this.transformUpdate(data)
             }
             const item: T = await this._repository.update(id, data)
+            if (this.onUpdated) {
+                await this.onUpdated(item)
+            }
             return item
         } catch (e) {
             console.error("Error updating", e)
@@ -77,7 +88,9 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
 
             const item: T = await this._repository.updatePartial(id, data)
-
+            if (this.onUpdated) {
+                await this.onUpdated(item)
+            }
             return item
         } catch (e) {
             console.error("Error updating", e)
@@ -93,6 +106,9 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             const result: boolean = await this._repository.delete(id);
             if (!result) {
                 throw new Error("error.deletionFailed");
+            }
+            if(this.onDeleted) {
+                await this.onDeleted(id)
             }
             return result;
         } catch (e) {

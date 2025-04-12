@@ -16,5 +16,5 @@ export {
     OpenAiConfig,
     OpenAiProviderFactory,
     OpenAiProvider,
-    KnowledgeService
+    KnowledgeService,
 }

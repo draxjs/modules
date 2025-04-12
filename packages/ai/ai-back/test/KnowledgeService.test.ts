@@ -6,7 +6,18 @@ describe('KnowledgeService Test', () => {
 
     test('KnowledgeService URL', async () => {
         const ks = new KnowledgeService()
-        const content = await ks.getFromUrl('https://exigroup.com.ar/preguntas-frecuentes/')
+        const content = await ks.getFromUrl('http://ghost.showvlad.com/acerca-de-mi/')
+
+        const chunks = ks.chunkTextBySentence(content)
+        console.log(chunks)
+
+        expect(chunks).toBeInstanceOf(Array)
+
+    }, 30000) // 10 seconds timeout
+
+    test('KnowledgeService Optimize with IA', async () => {
+        const ks = new KnowledgeService()
+        const content = await ks.getFromUrl('http://ghost.showvlad.com/acerca-de-mi/')
         console.log(content)
 
         const openAi = OpenAiProviderFactory.instance()
@@ -32,5 +43,6 @@ describe('KnowledgeService Test', () => {
         expect(chunks).toBeInstanceOf(Array)
 
     }, 30000) // 10 seconds timeout
+
 
 })
