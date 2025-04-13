@@ -12,6 +12,7 @@ const generateModelSchema = (schema: ISchema) => {
             case "longString":
             case "file":
                 return "String";
+
             case "number":
                 return "Number";
             case "boolean":
@@ -28,7 +29,17 @@ const generateModelSchema = (schema: ISchema) => {
     }
 
     function generateField(field:IFieldSchema, fieldType: IType){
-        return `{type: ${mapType(fieldType)}, ${fieldType === 'ref' ? "ref: '"+ field.ref + "'," : "" } ${fieldType === 'enum' ? "enum: ['"+ field.enum.join("', '") + "']," : "" } required: ${field.required}, index: ${field.index}, unique: ${field.unique} }`
+        return `{type: ${mapType(fieldType)}, ${fieldType === 'ref' ? "ref: '"+ field.ref + "'," : "" } ${fieldType === 'enum' ? "enum: ['"+ field?.enum?.join("', '") + "']," : "" } required: ${field.required}, index: ${field.index}, unique: ${field.unique} }`
+    }
+
+    function generateFullFile(field:IFieldSchema){
+        return `{
+        filename: {type: String ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
+        filepath: {type: String ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
+        size: {type: Number ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
+        mimetype: {type: String ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
+        url: {type: String ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
+        }`
     }
 
     function generateArrayField(field:IFieldSchema){
@@ -36,6 +47,10 @@ const generateModelSchema = (schema: ISchema) => {
         if(fieldType === "object" && field.schema){
             return `[{ 
             ${generateModelSchema(field.schema)} 
+            }]`
+        }else if(fieldType === "fullFile"){
+            return `[{ 
+            ${generateFullFile(field)} 
             }]`
         }else{
             return `[${generateField(field, fieldType)}]`
@@ -50,6 +65,8 @@ ${generateModelSchema(schema[field].schema)}
             }`)
         }else if(/array/.test(schema[field].type)){
             fields.push(`            ${field}: ${generateArrayField(schema[field])}`)
+        }else if(schema[field].type === 'fullFile'){
+            fields.push(`            ${field}: ${generateFullFile(schema[field])}`)
         }else{
             fields.push(`            ${field}: ${generateField(schema[field], schema[field].type)}`)
         }

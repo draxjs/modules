@@ -34,6 +34,8 @@ import LimitError from "./errors/LimitError.js";
 import InvalidIdError from "./errors/InvalidIdError.js";
 import InternalServerError from "./errors/InternalServerError.js";
 
+import CommonController from "./controllers/CommonController.js";
+
 import MongooseValidationErrorToValidationError from "./errors/adapters/MongooseValidationErrorToValidationError.js";
 import MongooseCastErrorToValidationError from "./errors/adapters/MongooseCastErrorToValidationError.js";
 import MongoServerErrorToValidationError from "./errors/adapters/MongoServerErrorToValidationError.js";
@@ -72,6 +74,9 @@ export {
     //Utils
     createDirIfNotExist,
     WorkerHandler,
+
+    //Controllers
+    CommonController,
 
     //Constants
     COMMON,

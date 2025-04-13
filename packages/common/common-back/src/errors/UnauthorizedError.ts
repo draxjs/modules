@@ -29,3 +29,4 @@ class UnauthorizedError extends Error implements IError  {
 }
 
 export default UnauthorizedError
+export {UnauthorizedError}

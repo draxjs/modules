@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import {MediaSystemFactory} from "@drax/media-front"
-import {type PropType, ref} from "vue";
+import {type PropType, ref, computed} from "vue";
 
 const mediaSystem = MediaSystemFactory.getInstance()
 
-const valueModel = defineModel<any>({type: [String], default: false})
+const valueModel = defineModel<any>({
+  type: Object,
+  default: () => ({filename: '', filepath: '', size: 0, mimetype: '', url: ''})
+})
 
 const {dir, readonly} = defineProps({
   prependIcon: {type: String, default: ''},
   prependInnerIcon: {type: String, default: ''},
   appendIcon: {type: String, default: ''},
   appendInnerIcon: {type: String, default: ''},
-  readonly: {type: Boolean, default: false},
+  readonly: {type: Boolean, default: true},
   hideDetails: {type: Boolean, default: false},
   singleLine: {type: Boolean, default: false},
   clearable: {type: Boolean, default: false},
@@ -40,13 +43,16 @@ function onFileClick() {
   fileInput.value.click();
 }
 
+const valueModelUrl = computed(() =>
+    valueModel.value.url || '')
 
 async function onFileChanged(e: Event) {
   if (e.target && (e.target as HTMLInputElement).files) {
     const files = (e.target as HTMLInputElement).files;
     if (files && files[0]) {
-      const file = await mediaSystem.uploadFile(files[0],dir);
-      valueModel.value = file.url;
+      const file = await mediaSystem.uploadFile(files[0], dir);
+      valueModel.value = file;
+
     }
   }
 }
@@ -58,7 +64,7 @@ const handleDrop = async (event: DragEvent) => {
   isDragOver.value = false;
   const files = event.dataTransfer?.files;
   if (files && files[0]) {
-    const file = await mediaSystem.uploadFile(files[0],dir);
+    const file = await mediaSystem.uploadFile(files[0], dir);
     valueModel.value = file.url;
   }
 };
@@ -83,18 +89,20 @@ defineEmits(['updateValue'])
 
 <template>
   <div
-       :class="{ 'drop-zone': true, 'dragover': isDragOver }"
-       @dragenter.prevent="handleDragEnter"
-       @dragover.prevent="handleDragOver"
-       @dragleave.prevent="handleDragLeave"
-       @drop.prevent="handleDrop"
+
+      :class="{ 'drop-zone': true, 'dragover': isDragOver }"
+      @dragenter.prevent="handleDragEnter"
+      @dragover.prevent="handleDragOver"
+      @dragleave.prevent="handleDragLeave"
+      @drop.prevent="handleDrop"
 
   >
+
     <v-text-field
         type="text"
         :name="name"
         :label="label"
-        v-model="valueModel"
+        v-model="valueModelUrl"
         :readonly="true"
         :error-messages="errorMessages"
         :rules="rules"
@@ -121,7 +129,7 @@ defineEmits(['updateValue'])
         @change="onFileChanged"
     >
 
-    <v-btn  @click="onFileClick" density="compact" color="grey" variant="text">Click | Drag & Drop</v-btn>
+    <v-btn @click="onFileClick" density="compact" color="grey" variant="text">Click | Drag & Drop</v-btn>
 
   </div>
 

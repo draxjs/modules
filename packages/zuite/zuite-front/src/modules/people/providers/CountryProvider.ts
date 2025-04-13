@@ -7,7 +7,7 @@ class CountryProvider extends AbstractCrudRestProvider<ICountry, ICountryBase, I
   static singleton: CountryProvider
     
   constructor() {
-   super('/api/country')
+   super('/api/countries')
   }
   
   static get instance() {

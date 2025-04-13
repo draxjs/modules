@@ -17,6 +17,9 @@ const generateRenders = (schema: ISchema) => {
         if(['file'].includes(schema[field].type) ){
             fields.push(`    <template v-slot:item.${field}="{value}"><v-img :src="value" max-height="30px" class="my-1" /></template>`)
         }
+        if(['fullFile'].includes(schema[field].type) ){
+            fields.push(`    <template v-slot:item.${field}="{value}"><v-img :src="value?.url" max-height="30px" class="my-1" /></template>`)
+        }
         if(['array.string'].includes(schema[field].type) ){
             fields.push(`    <template v-slot:item.${field}="{value}"><v-chip v-for="v in value">{{v}}</v-chip></template>`)
         }

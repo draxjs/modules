@@ -29,3 +29,4 @@ class SecuritySensitiveError extends Error implements IError{
 }
 
 export default SecuritySensitiveError
+export {SecuritySensitiveError}

@@ -29,3 +29,4 @@ class ForbiddenError extends Error implements IError  {
 }
 
 export default ForbiddenError
+export {ForbiddenError}

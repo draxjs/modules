@@ -7,7 +7,8 @@ const messages = {
           menu: 'Language',
           crud: 'Manage Language',
           field:{
-                       name:'name'
+                       name:'name',
+           icon:'icon'
           }
       },
       permission: {
@@ -24,7 +25,8 @@ const messages = {
           menu: 'Language',
           crud: 'Gestionar Language',
           field:{
-                       name:'name'
+                       name:'name',
+           icon:'icon'
           }
       },
      permission: {

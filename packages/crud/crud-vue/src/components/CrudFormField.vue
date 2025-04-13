@@ -7,7 +7,7 @@ import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {VDateInput} from 'vuetify/labs/VDateInput'
 import type {IEntityCrud, IEntityCrudField, IEntityCrudFilter} from "@drax/crud-share";
-import {MediaField} from "@drax/media-vue";
+import {MediaField, MediaFullField} from "@drax/media-vue";
 
 const {t, te} = useI18n()
 
@@ -199,6 +199,25 @@ defineEmits(['updateValue'])
         :append-inner-icon="appendInnerIcon"
     />
 
+    <media-full-field
+        v-if="field.type === 'fullFile'"
+        :name="name"
+        :label="label"
+        v-model.number="valueModel"
+        :readonly="readonly"
+        :error-messages="inputErrors"
+        :rules="rules"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        @update:modelValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
+    />
 
     <v-switch
         v-if="field.type === 'boolean'"

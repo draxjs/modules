@@ -8,7 +8,7 @@ interface ICountryBase {
 }
 
 interface ICountry {
-    id: string
+    _id: string
     name: string
     description?: string
     flag?: string

@@ -35,3 +35,4 @@ class BadRequestError extends Error implements IError  {
 }
 
 export default BadRequestError
+export {BadRequestError}

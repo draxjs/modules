@@ -26,6 +26,15 @@ const generateEntityInterface = (schema: ISchema) => {
             case "ref":
                 fields.push(`    ${field}${!schema[field].required ? "?" : ""}: any`)
                 break;
+            case "fullFile":
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: {
+                filename: string,
+                filepath: string,
+                size: number,
+                mimetype?: string,
+                url: string
+                }`)
+                break;
             case "object":
                 if(!schema[field].schema){
                     throw new Error("object fields must have a schema")
@@ -41,6 +50,15 @@ const generateEntityInterface = (schema: ISchema) => {
                 break;
             case "array.ref":
                 fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<any>`)
+                break;
+            case "array.fullFile":
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<{
+                filename: string,
+                filepath: string,
+                size: number,
+                mimetype?: string,
+                url: string
+                }>`)
                 break;
             case "array.object":
                 if(!schema[field].schema){

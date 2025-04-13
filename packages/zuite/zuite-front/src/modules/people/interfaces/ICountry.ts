@@ -1,17 +1,17 @@
 
 interface ICountryBase {
     name: string
-    description: string
-    flag: string
+    description?: string
+    flag?: string
     createdAt?: Date
     updatedAt?: Date
 }
 
 interface ICountry {
-    id: string
+    _id: string
     name: string
-    description: string
-    flag: string
+    description?: string
+    flag?: string
     createdAt?: Date
     updatedAt?: Date
 }

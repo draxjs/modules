@@ -10,9 +10,10 @@ import {
     ValidationError,
     SecuritySensitiveError,
     UploadFileError,
-    BadRequestError
+    BadRequestError,
+    UnauthorizedError,
+    CommonController
 } from "@drax/common-back";
-import {UnauthorizedError} from "@drax/common-back";
 import {IRbac} from "@drax/identity-share";
 import type {FastifyReply, FastifyRequest} from "fastify";
 import {IDraxExportResult, IDraxPermission, IDraxFieldFilter} from "@drax/crud-share";
@@ -50,7 +51,7 @@ const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
 
 
-class AbstractFastifyController<T, C, U> {
+class AbstractFastifyController<T, C, U> extends CommonController {
 
     protected service: AbstractService<T, C, U>
     protected permission: IDraxPermission
@@ -71,6 +72,7 @@ class AbstractFastifyController<T, C, U> {
     protected maximumLimit: number = 10000
 
     constructor(service: AbstractService<T, C, U>, permission: IDraxPermission) {
+        super();
         this.service = service
         this.permission = permission
         console.log("AbstractFastifyController created. Permissions", this.permission)
@@ -138,27 +140,6 @@ class AbstractFastifyController<T, C, U> {
         }
     }
 
-    handleError(e: unknown, reply: FastifyReply) {
-        console.error(e);
-
-        if (
-            e instanceof ValidationError ||
-            e instanceof NotFoundError ||
-            e instanceof BadRequestError ||
-            e instanceof UnauthorizedError ||
-            e instanceof ForbiddenError ||
-            e instanceof InvalidIdError ||
-            e instanceof SecuritySensitiveError ||
-            e instanceof UploadFileError ||
-            e instanceof LimitError
-        ) {
-            reply.status(e.statusCode).send(e.body);
-        } else {
-            const serverError = new InternalServerError()
-            reply.statusCode = serverError.statusCode
-            reply.status(500).send(serverError.body);
-        }
-    }
 
     async create(request: CustomRequest, reply: FastifyReply) {
         try {

@@ -70,6 +70,8 @@ const generateDefault = (schemaType: string) => {
             case "password":
             case "file":
                 return ''
+            case "fullFile":
+                return {}
             case "number":
                 return null
             case "boolean":
@@ -123,6 +125,9 @@ const generateFields = (schema: ISchema | undefined) => {
             case "file":
                 fields.push(`{name: '${field}', type: 'file', label: '${field}', default:'', prependInnerIcon: 'mdi mdi-attachment' }`)
                 break;
+            case "fullFile":
+                fields.push(`{name: '${field}', type: 'fullFile', label: '${field}', default:'', prependInnerIcon: 'mdi mdi-attachment' }`)
+                break;
             case "number":
                 fields.push(`{name: '${field}', type: 'number', label: '${field}', default: 0 }`)
                 break;
@@ -152,6 +157,9 @@ const generateFields = (schema: ISchema | undefined) => {
                 break;
             case "array.file":
                 fields.push(`{name: '${field}', type: 'array.file', label: '${field}', default:[] }`)
+                break;
+            case "array.fullFile":
+                fields.push(`{name: '${field}', type: 'array.fullFile', label: '${field}', default:[] }`)
                 break;
             case "array.ref":
                 fields.push(`{name: '${field}', type: 'array.ref', ref: '${schema[field].ref}', label: '${field}', default:[] }`)

@@ -35,3 +35,4 @@ class NotFoundError extends Error implements IError  {
 }
 
 export default NotFoundError
+export {NotFoundError }

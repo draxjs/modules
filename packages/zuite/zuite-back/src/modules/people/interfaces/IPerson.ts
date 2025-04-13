@@ -25,7 +25,7 @@ interface IPersonBase {
 }
 
 interface IPerson {
-    id: string
+    _id: string
     fullname: string
     live?: boolean
     birthdate?: Date

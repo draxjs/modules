@@ -32,6 +32,15 @@ const generateEntityBaseSchema = (schema: ISchema) => {
             case "ref":
                 fields.push(`    ${field}: z.string()${schema[field].required ? ".min(1,'validation.required')" : ".optional().nullable()"}`)
                 break;
+            case "fullFile":
+                fields.push(`    ${field}: z.object({
+                filename: z.string().min(1,'validation.required'),
+                filepath: z.string().min(1,'validation.required'),
+                size: z.number().min(1,'validation.required'),
+                mimetype: z.string().optional(),
+                url: z.string().min(1,'validation.required')
+                })${schema[field].required ? "" : ".optional()"}`)
+                break;
             case "object":
                 if(!schema[field].schema){
                     throw new Error("object fields must have a schema")
@@ -52,6 +61,15 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 break;
             case "array.ref":
                 fields.push(`    ${field}: z.array(z.string())${schema[field].required ? "" : ".optional()"}`)
+                break;
+            case "array.fullFile":
+                fields.push(`    ${field}: z.array(z.object({
+                filename: z.string().min(1,'validation.required'),
+                filepath: z.string().min(1,'validation.required'),
+                size: z.number().min(1,'validation.required'),
+                mimetype: z.string().optional(),
+                url: z.string().min(1,'validation.required')
+                }))${schema[field].required ? "" : ".optional()"}`)
                 break;
             case "array.object":
                 if(!schema[field].schema){
