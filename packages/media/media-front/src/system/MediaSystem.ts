@@ -11,8 +11,8 @@ class MediaSystem implements IMediaProvider {
         this.prototype = 'MediaSystem'
     }
 
-    uploadFile(file: File, dir: string): Promise<IMediaFile> {
-        return this._provider.uploadFile(file, dir);
+    uploadFile(file: File, dir: string, timeout: number = 360000): Promise<IMediaFile> {
+        return this._provider.uploadFile(file, dir, timeout);
     }
 
 }

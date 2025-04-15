@@ -9,7 +9,7 @@ const valueModel = defineModel<any>({
   default: () => ({filename: '', filepath: '', size: 0, mimetype: '', url: ''})
 })
 
-const {dir, readonly} = defineProps({
+const {dir, readonly, timeout} = defineProps({
   prependIcon: {type: String, default: ''},
   prependInnerIcon: {type: String, default: ''},
   appendIcon: {type: String, default: ''},
@@ -24,6 +24,7 @@ const {dir, readonly} = defineProps({
   name: {type: String, default: 'file'},
   dir: {type: String, default: 'files'},
   label: {type: String, default: 'media.file'},
+  timeout: {type: Number, default: 360000},
   accept: {type: String, default: '*'},
   errorMessages: {type: Array as PropType<string[]>, default: []},
   rules: {type: Array as PropType<any>, default: []},
@@ -50,7 +51,7 @@ async function onFileChanged(e: Event) {
   if (e.target && (e.target as HTMLInputElement).files) {
     const files = (e.target as HTMLInputElement).files;
     if (files && files[0]) {
-      const file = await mediaSystem.uploadFile(files[0], dir);
+      const file = await mediaSystem.uploadFile(files[0], dir, timeout);
       valueModel.value = file;
 
     }
