@@ -36,9 +36,11 @@ const {dir, readonly, timeout} = defineProps({
 })
 
 let fileInput = ref()
+let loading = ref(false)
+let errorMessage = ref()
 
 function onFileClick() {
-  if(readonly){
+  if (readonly) {
     return;
   }
   fileInput.value.click();
@@ -51,15 +53,25 @@ async function onFileChanged(e: Event) {
   if (e.target && (e.target as HTMLInputElement).files) {
     const files = (e.target as HTMLInputElement).files;
     if (files && files[0]) {
-      const file = await mediaSystem.uploadFile(files[0], dir, timeout);
-      valueModel.value = file;
-
+      try {
+        errorMessage.value = null
+        loading.value = true;
+        const file = await mediaSystem.uploadFile(files[0], dir, timeout);
+        valueModel.value = file;
+      } catch (error) {
+        console.error(error);
+        if (error instanceof Error) {
+          errorMessage.value = error.message;
+        }
+      } finally {
+        loading.value = false;
+      }
     }
   }
 }
 
 const handleDrop = async (event: DragEvent) => {
-  if(readonly){
+  if (readonly) {
     return;
   }
   isDragOver.value = false;
@@ -90,14 +102,14 @@ defineEmits(['updateValue'])
 
 <template>
   <div
-
       :class="{ 'drop-zone': true, 'dragover': isDragOver }"
       @dragenter.prevent="handleDragEnter"
       @dragover.prevent="handleDragOver"
       @dragleave.prevent="handleDragLeave"
       @drop.prevent="handleDrop"
-
   >
+
+    <v-alert v-if="errorMessage" type="error" closable>{{ errorMessage }}</v-alert>
 
     <v-text-field
         type="text"
@@ -118,6 +130,7 @@ defineEmits(['updateValue'])
         :append-inner-icon="appendInnerIcon"
         @update:modelValue="$emit('updateValue')"
         @click:prepend-inner="onFileClick"
+        :loading="loading"
     >
 
     </v-text-field>
@@ -130,7 +143,7 @@ defineEmits(['updateValue'])
         @change="onFileChanged"
     >
 
-    <v-btn @click="onFileClick" density="compact" color="grey" variant="text">Click | Drag & Drop</v-btn>
+    <v-btn @click="onFileClick" :loading="loading" density="compact" color="grey" variant="text">Click | Drag & Drop</v-btn>
 
   </div>
 
