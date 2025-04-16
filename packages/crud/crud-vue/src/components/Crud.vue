@@ -12,7 +12,7 @@ const {entity} = defineProps({
 })
 
 const {
-  onView, onCreate, onEdit, onDelete, onCancel, onSubmit, resetCrudStore,
+  onView, onCreate, onEdit, onDelete, resetCrudStore,
   operation, dialog, form, notify, error, message, doExport,
   prepareFilters
 } = useCrud(entity);
@@ -22,27 +22,8 @@ onBeforeMount(() => {
   prepareFilters()
 })
 
-const emit = defineEmits(['created', 'updated', 'deleted', 'viewed'])
+const emit = defineEmits(['created', 'updated', 'deleted', 'viewed','canceled'])
 
-async function submit() {
-  let result = await onSubmit(form.value)
-  switch (result.status) {
-    case "created":
-      emit("created", result.item)
-      break
-    case "updated":
-      emit("updated", result.item)
-      break
-    case "deleted":
-      emit("deleted")
-      break
-    case "viewed":
-      emit("deleted")
-      break
-  }
-
-
-}
 
 </script>
 
@@ -93,10 +74,12 @@ async function submit() {
             v-model="form"
             :entity="entity"
             :error="error"
-            :operation="operation"
             :readonly="operation === 'delete'"
-            @submit="submit"
-            @cancel="onCancel"
+            @created="item => emit('created', item)"
+            @updated="item => emit('updated', item)"
+            @deleted="emit('deleted')"
+            @viewed="emit('viewed')"
+            @canceled="emit('canceled')"
         >
 
           <template v-for="ifield in entity.fields" :key="ifield.name" v-slot:[`field.${ifield.name}`]="{field}">

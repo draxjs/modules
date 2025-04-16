@@ -1,43 +1,41 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import type {IEntityCrud, IEntityCrudField, IEntityCrudOperation} from "@drax/crud-share";
+import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 import {useFormUtils} from "../composables/UseFormUtils";
 import {getItemId} from "../helpers/getItemId";
 import CrudFormField from "./CrudFormField.vue";
 import {computed, defineEmits, defineModel, defineProps, ref} from "vue";
 import type {PropType} from "vue";
 import {useCrudStore} from "../stores/UseCrudStore";
+import {useCrud} from "../composables/UseCrud";
 import {useAuth} from '@drax/identity-vue'
 
 const {hasPermission} = useAuth()
 const {t, te} = useI18n()
 
-
-
 const valueModel = defineModel({type: [Object]})
 
-const {entity, operation} = defineProps({
+const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-  operation: {type: String as PropType<IEntityCrudOperation>, required: true},
-  readonly: {type: Boolean, default: false},
-  error: {type: String, required: false},
+  readonly: {type: Boolean, default: false}
 })
 
+const {onSubmit, onCancel, operation, error} = useCrud(entity)
 
-const emit = defineEmits(['submit', 'cancel'])
+const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])
 
 const store = useCrudStore()
 
 const formRef = ref()
 
 const fields = computed(() => {
-  if (operation === 'create') {
+  if (operation.value === 'create') {
     return entity.createFields
-  } else if (operation === 'edit') {
+  } else if (operation.value === 'edit') {
     return entity.updateFields
-  } else if (operation === 'delete') {
+  } else if (operation.value === 'delete') {
     return entity.deleteFields
-  } else if (operation === 'view') {
+  } else if (operation.value === 'view') {
     return entity.viewFields
   }
   return []
@@ -51,27 +49,41 @@ const aFields = computed(() => {
 async function submit() {
   store.resetErrors()
 
-  if (operation === 'delete') {
-    emit('submit', valueModel.value)
-    return
+  if (['create', 'edit'].includes(operation.value)) {
+    const {valid, errors} = await formRef.value.validate()
+    if (!valid) {
+      console.log('Invalid form', errors)
+      return
+    }
   }
 
-  const {valid, errors} = await formRef.value.validate()
+  let result = await onSubmit(valueModel.value)
 
-  if (valid) {
-    emit('submit', valueModel.value)
-  } else {
-    console.log('Invalid form', errors)
+  switch (result.status) {
+    case "created":
+      emit("created", result.item)
+      break
+    case "updated":
+      emit("updated", result.item)
+      break
+    case "deleted":
+      emit("deleted")
+      break
+    case "viewed":
+      emit("viewed")
+      break
   }
+
 }
 
 function cancel() {
-  emit('cancel')
+  onCancel()
+  emit('canceled')
 }
 
 const {
   variant, submitColor, readonly
-} = useFormUtils(operation)
+} = useFormUtils(operation.value)
 
 
 </script>
@@ -118,7 +130,9 @@ const {
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn variant="text" color="grey" @click="cancel">{{ t('action.cancel') }}</v-btn>
+        <v-btn variant="text" color="grey" @click="cancel">
+          {{ operation == 'view' ? t('action.close') : t('action.cancel') }}
+        </v-btn>
         <v-btn variant="flat" v-if="operation != 'view'" :color="submitColor" @click="submit" :loading="store.loading">
           {{ operation ? t('action.' + operation) : t('action.sent') }}
         </v-btn>
