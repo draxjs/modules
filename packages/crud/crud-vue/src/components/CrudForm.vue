@@ -4,7 +4,7 @@ import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 import {useFormUtils} from "../composables/UseFormUtils";
 import {getItemId} from "../helpers/getItemId";
 import CrudFormField from "./CrudFormField.vue";
-import {computed, defineEmits, defineModel, defineProps, ref} from "vue";
+import {computed, defineEmits, defineProps, ref} from "vue";
 import type {PropType} from "vue";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useCrud} from "../composables/UseCrud";
@@ -13,14 +13,12 @@ import {useAuth} from '@drax/identity-vue'
 const {hasPermission} = useAuth()
 const {t, te} = useI18n()
 
-const valueModel = defineModel({type: [Object]})
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-  readonly: {type: Boolean, default: false}
 })
 
-const {onSubmit, onCancel, operation, error} = useCrud(entity)
+const {onSubmit, onCancel, operation, error, form} = useCrud(entity)
 
 const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])
 
@@ -57,7 +55,7 @@ async function submit() {
     }
   }
 
-  let result = await onSubmit(valueModel.value)
+  let result = await onSubmit(form.value)
 
   switch (result.status) {
     case "created":
@@ -92,13 +90,14 @@ const {
   <v-form ref="formRef" @submit.prevent>
     <v-card flat>
 
-      <v-card-subtitle v-if="getItemId(valueModel)">ID: {{ getItemId(valueModel) }}</v-card-subtitle>
+      <v-card-subtitle v-if="getItemId(form)">ID: {{ getItemId(form) }}</v-card-subtitle>
 
       <v-card-text v-if="error">
         <v-alert color="error">{{ te(error) ? t(error) : error }}</v-alert>
       </v-card-text>
 
       <v-card-text>
+
         <v-row>
           <v-col
               v-for="field in aFields"
@@ -113,9 +112,9 @@ const {
               <crud-form-field
                   :field="field"
                   :entity="entity"
-                  v-model="valueModel[field.name]"
+                  v-model="form[field.name]"
                   :clearable="false"
-                  :readonly="readonly || field.readonly"
+                  :readonly="['delete','view'].includes(operation) || field.readonly"
                   :variant="variant"
                   :prepend-inner-icon="field?.prependInnerIcon"
                   :prepend-icon="field?.prependIcon"

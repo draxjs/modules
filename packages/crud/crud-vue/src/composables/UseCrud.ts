@@ -224,20 +224,20 @@ export function useCrud(entity: IEntityCrud) {
 
 
     function onCreate() {
-        store.setOperation("create")
         store.setForm(entity.form)
+        store.setOperation("create")
         openDialog()
     }
 
     function onEdit(item: object) {
-        store.setOperation("edit")
         store.setForm(cast({...item}))
+        store.setOperation("edit")
         openDialog()
     }
 
     function onDelete(item: object) {
-        store.setOperation("delete")
         store.setForm(cast({...item}))
+        store.setOperation("delete")
         openDialog()
     }
 

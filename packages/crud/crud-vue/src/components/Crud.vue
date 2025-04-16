@@ -13,7 +13,7 @@ const {entity} = defineProps({
 
 const {
   onView, onCreate, onEdit, onDelete, resetCrudStore,
-  operation, dialog, form, notify, error, message, doExport,
+  operation, dialog, notify, error, message, doExport,
   prepareFilters
 } = useCrud(entity);
 
@@ -71,10 +71,7 @@ const emit = defineEmits(['created', 'updated', 'deleted', 'viewed','canceled'])
 
       <slot name="form">
         <crud-form
-            v-model="form"
             :entity="entity"
-            :error="error"
-            :readonly="operation === 'delete'"
             @created="item => emit('created', item)"
             @updated="item => emit('updated', item)"
             @deleted="emit('deleted')"
