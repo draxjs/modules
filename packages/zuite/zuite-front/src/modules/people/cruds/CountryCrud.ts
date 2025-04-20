@@ -81,9 +81,9 @@ flag: []
 
   get fields(): IEntityCrudField[]{
     return [
-        {name: 'name', type: 'string', label: 'name', default:'' },
-{name: 'description', type: 'longString', label: 'description', default:'' },
-{name: 'flag', type: 'file', label: 'flag', default:'', prependInnerIcon: 'mdi mdi-attachment' }
+        {name:'name',type:'string',label:'name',default:''},
+{name:'description',type:'longString',label:'description',default:'Some Description',menu: 'BASIC'},
+{name:'flag',type:'file',label:'flag',default:'',menu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'}
     ]
   }
   
@@ -132,6 +132,19 @@ flag: []
   get dialogFullscreen(){
     return false
   }
+  
+  get tabs() {
+    return [
+     
+    ]
+  }
+  
+  get menus() {
+    return [
+     'BASIC', 'EXTENDED'
+    ]
+  }
+
 
 }
 

@@ -10,7 +10,7 @@ const PersonBaseSchema = z.object({
     nationality: z.string().optional().nullable(),
     hobbies: z.array(z.string()).optional(),
     race: z.enum(['human', 'elf', 'orc']).optional(),
-    interests: z.array(z.enum(['sports', 'music', 'reading', 'travel', 'cooking', 'technology'])).optional(),
+    interests: z.array(z.enum(['sports', 'music', 'reading', 'travel', 'cooking', 'technology'])).optional().default(["sports","music"]),
     languages: z.array(z.string()).optional(),
     address: z.object({    country: z.string().optional(),
     city: z.string().optional(),

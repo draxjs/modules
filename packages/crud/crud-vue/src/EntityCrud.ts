@@ -185,6 +185,20 @@ class EntityCrud implements IEntityCrud {
         return ''
     }
 
+
+    get tabs():string[]{
+        return []
+    }
+
+
+    get menus():string[]{
+        return []
+    }
+
+    get menuMaxHeight(){
+        return '300px'
+    }
+
 }
 
 export default EntityCrud;

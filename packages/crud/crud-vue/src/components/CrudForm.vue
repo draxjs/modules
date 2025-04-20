@@ -26,6 +26,9 @@ const store = useCrudStore()
 
 const formRef = ref()
 
+const tabSelected = ref()
+const menuSelected = ref(entity?.menus?.length ? entity?.menus[0] : null)
+
 const fields = computed(() => {
   if (operation.value === 'create') {
     return entity.createFields
@@ -42,6 +45,22 @@ const fields = computed(() => {
 
 const aFields = computed(() => {
   return fields.value.filter((field: IEntityCrudField) => !field.permission || hasPermission(field.permission))
+})
+
+const generalFields = computed(() => {
+  return aFields.value.filter((field: IEntityCrudField) => !field.tab && !field.menu)
+})
+
+const tabFields = computed(() => {
+  return (tab: string): IEntityCrudField[] => aFields.value.filter((field: IEntityCrudField) => field.tab === tab)
+})
+
+const menuFields = computed(() => {
+  return (menu: string | null): IEntityCrudField[] => aFields.value.filter((field: IEntityCrudField) => field.menu === menu)
+})
+
+const menuMaxHeight = computed(() => {
+  return entity.menuMaxHeight || '300px'
 })
 
 async function submit() {
@@ -98,15 +117,16 @@ const {
 
       <v-card-text>
 
+        <!--GENERAL-->
         <v-row>
           <v-col
-              v-for="field in aFields"
+              v-for="field in generalFields"
               :key="field.name"
               :cols="field.cols ? field.cols : 12"
-              :sm="field.sm ? field.sm : 12"
-              :md="field.md ? field.md : 12"
-              :lg="field.lg ? field.lg : 12"
-              :xl="field.xl ? field.xl : 12"
+              :sm="field.sm ? field.sm : undefined"
+              :md="field.md ? field.md : undefined"
+              :lg="field.lg ? field.lg : undefined"
+              :xl="field.xl ? field.xl : undefined"
           >
             <slot :name="`field.${field.name}`" v-bind="{field}">
               <crud-form-field
@@ -125,6 +145,100 @@ const {
 
           </v-col>
         </v-row>
+
+        <!--TAB-->
+        <v-card class="mt-4" variant="outlined" v-if="entity.tabs && entity.tabs.length > 0">
+
+            <v-tabs v-model="tabSelected">
+              <v-tab v-for="tab in entity.tabs" :value="tab" :key="tab">
+                {{ te(tab) ? t(tab) : tab }}
+              </v-tab>
+            </v-tabs>
+          <v-card-text>
+            <v-tabs-window v-model="tabSelected">
+              <v-tabs-window-item v-for="tab in entity.tabs" :value="tab">
+                <v-row>
+                  <v-col
+                      v-for="field in tabFields(tab)"
+                      :key="field.name"
+                      :cols="field.cols ? field.cols : 12"
+                      :sm="field.sm ? field.sm : undefined"
+                      :md="field.md ? field.md : undefined"
+                      :lg="field.lg ? field.lg : undefined"
+                      :xl="field.xl ? field.xl : undefined"
+                  >
+                    <slot :name="`field.${field.name}`" v-bind="{field}">
+                      <crud-form-field
+                          :field="field"
+                          :entity="entity"
+                          v-model="form[field.name]"
+                          :clearable="false"
+                          :readonly="['delete','view'].includes(operation) || field.readonly"
+                          :variant="variant"
+                          :prepend-inner-icon="field?.prependInnerIcon"
+                          :prepend-icon="field?.prependIcon"
+                          :append-icon="field?.appendIcon"
+                          :append-inner-icon="field?.appendInnerIcon"
+                      />
+                    </slot>
+
+                  </v-col>
+                </v-row>
+              </v-tabs-window-item>
+            </v-tabs-window>
+          </v-card-text>
+        </v-card>
+
+        <!--MENU-->
+        <v-row v-if="entity.menus && entity.menus.length > 0">
+          <v-col cols="12" sm="4" md="3">
+            <v-card variant="outlined">
+              <v-card-text :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
+                <v-list v-model="menuSelected">
+                  <v-list-item v-for="menu in entity.menus" rounded="shaped" :value="menu" @click="menuSelected = menu">
+                    <v-list-item-title>
+                      {{ te(menu) ? t(menu) : menu }}
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="12" sm="8" md="9">
+            <v-card variant="outlined">
+              <v-card-text>
+                <v-row>
+                  <v-col
+                      v-for="field in menuFields(menuSelected)"
+                      :key="field.name"
+                      :cols="field.cols ? field.cols : 12"
+                      :sm="field.sm ? field.sm : undefined"
+                      :md="field.md ? field.md : undefined"
+                      :lg="field.lg ? field.lg : undefined"
+                      :xl="field.xl ? field.xl : undefined"
+                  >
+                    <slot :name="`field.${field.name}`" v-bind="{field}">
+                      <crud-form-field
+                          :field="field"
+                          :entity="entity"
+                          v-model="form[field.name]"
+                          :clearable="false"
+                          :readonly="['delete','view'].includes(operation) || field.readonly"
+                          :variant="variant"
+                          :prepend-inner-icon="field?.prependInnerIcon"
+                          :prepend-icon="field?.prependIcon"
+                          :append-icon="field?.appendIcon"
+                          :append-inner-icon="field?.appendInnerIcon"
+                      />
+                    </slot>
+
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+
       </v-card-text>
 
       <v-card-actions>

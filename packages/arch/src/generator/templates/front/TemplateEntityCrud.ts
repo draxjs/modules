@@ -1,4 +1,4 @@
-import {IEntitySchema, ISchema} from "../../../interfaces/IEntitySchema";
+import {IEntitySchema, IFieldSchema, ISchema} from "../../../interfaces/IEntitySchema";
 
 const generateRefs = (schema: ISchema) => {
     let content: string = ""
@@ -63,32 +63,32 @@ const generateHeaders = (schema: ISchema) => {
     return content;
 }
 
-const generateDefault = (schemaType: string) => {
-        switch (schemaType) {
+const generateDefault = (field: string, fieldSchema: IFieldSchema) => {
+        switch (fieldSchema.type) {
             case "string":
             case "longString":
             case "password":
             case "file":
-                return ''
+                return fieldSchema.default != undefined ? `'${fieldSchema.default}'` : `''`
             case "fullFile":
-                return {}
+                return `{}`
             case "number":
-                return null
+                return fieldSchema.default != undefined ? fieldSchema.default : null
             case "boolean":
-                return false
+                return fieldSchema.default != undefined ? fieldSchema.default : false
             case "ref":
             case "date":
             case "enum":
-                return null
+                return fieldSchema.default != undefined ? `'${fieldSchema.default}'` : null
             case "array.string":
             case "array.number":
             case "array.file":
             case "array.ref":
             case "array.object":
             case "array.enum":
-                return []
+                return Array.isArray(fieldSchema.default) ? `${JSON.stringify(fieldSchema.default)}` : `[]`
             case "object":
-
+                return generateObjectDefault(fieldSchema.schema)
             default:
                     return null
         }
@@ -97,7 +97,7 @@ const generateDefault = (schemaType: string) => {
 const generateObjectDefault = (schema: ISchema | undefined) => {
     let objDefault: any = {}
     for (const field in schema) {
-        objDefault[field] = generateDefault(schema[field].type)
+        objDefault[field] = generateDefault(field, schema[field])
     }
     return JSON.stringify(objDefault)
 }
@@ -110,76 +110,72 @@ const generateFields = (schema: ISchema | undefined) => {
         throw new Error("generateFields: schema is undefined")
     }
 
+    const tabAttribute = (field: string) => {
+        return schema[field].tab? `tab: '${schema[field].tab}',` : ''
+    }
+
+    const menuAttribute = (field: string) => {
+        return schema[field].menu? `menu: '${schema[field].menu}',` : ''
+    }
 
     for (const field in schema) {
+
+        const compositionField = [
+            `name:'${field}'`,
+            `type:'${schema[field].type}'`,
+            `label:'${field}'`,
+            `default:${generateDefault(field, schema[field])}`,
+        ]
+
+        if(schema[field].menu){
+            compositionField.push(`menu: '${schema[field].menu}'`)
+        }
+
+        if(schema[field].tab){
+            compositionField.push(`tab: '${schema[field].tab}'`)
+        }
+
         switch (schema[field].type) {
-            case "string":
-                fields.push(`{name: '${field}', type: 'string', label: '${field}', default:'' }`)
-                break;
-            case "longString":
-                fields.push(`{name: '${field}', type: 'longString', label: '${field}', default:'' }`)
-                break;
-            case "password":
-                fields.push(`{name: '${field}', type: 'password', label: '${field}', default:'' }`)
-                break;
             case "file":
-                fields.push(`{name: '${field}', type: 'file', label: '${field}', default:'', prependInnerIcon: 'mdi mdi-attachment' }`)
-                break;
             case "fullFile":
-                fields.push(`{name: '${field}', type: 'fullFile', label: '${field}', default:'', prependInnerIcon: 'mdi mdi-attachment' }`)
-                break;
-            case "number":
-                fields.push(`{name: '${field}', type: 'number', label: '${field}', default: 0 }`)
-                break;
-            case "boolean":
-                fields.push(`{name: '${field}', type: 'boolean', label: '${field}', default:false }`)
-                break;
-            case "date":
-                fields.push(`{name: '${field}', type: 'date', label: '${field}', default:null }`)
+                compositionField.push(`prependInnerIcon: 'mdi mdi-attachment'`)
                 break;
             case "ref":
-                fields.push(`{name: '${field}', type: 'ref', ref: '${schema[field].ref}', refDisplay: '${schema[field].refDisplay}',label: '${field}', default:null }`)
+            case "array.ref":
+                compositionField.push(`ref: '${schema[field].ref}'`)
+                compositionField.push(`refDisplay: '${schema[field].refDisplay}'`)
                 break;
             case "enum":
-                fields.push(`{name: '${field}', type: 'enum', enum: ['${schema[field].enum?.join("', '")}'], label: '${field}', default:null }`)
+            case "array.enum":
+                compositionField.push(`enum: ['${schema[field].enum?.join("', '")}']`)
                 break;
             case "object":
+            case "array.object":
                 if (!schema[field].schema) {
                     throw new Error("object fields must have a schema")
                 }
-                fields.push(`{name: '${field}', type: 'object', label: '${field}', default:${generateObjectDefault(schema[field].schema)}, objectFields: [${generateFields(schema[field].schema)}] }`)
+                compositionField.push(`objectFields: [${generateFields(schema[field].schema)}]`)
                 break;
-            case "array.string":
-                fields.push(`{name: '${field}', type: 'array.string', label: '${field}', default:[] }`)
-                break;
-            case "array.number":
-                fields.push(`{name: '${field}', type: 'array.number', label: '${field}', default:[] }`)
-                break;
-            case "array.file":
-                fields.push(`{name: '${field}', type: 'array.file', label: '${field}', default:[] }`)
-                break;
-            case "array.fullFile":
-                fields.push(`{name: '${field}', type: 'array.fullFile', label: '${field}', default:[] }`)
-                break;
-            case "array.ref":
-                fields.push(`{name: '${field}', type: 'array.ref', ref: '${schema[field].ref}', label: '${field}', default:[] }`)
-                break;
-            case "array.object":
-                if (!schema[field].schema) {
-                    throw new Error("array.object fields must have a schema")
-                }
-                fields.push(`{name: '${field}', type: 'array.object', label: '${field}', default:[], objectFields: [${generateFields(schema[field].schema)}] }`)
-                break;
-            case "array.enum":
-                fields.push(`{name: '${field}', type: 'array.enum', enum: ['${schema[field].enum?.join("', '")}'], label: '${field}', default:[] }`)
-                break;
-            default:
-                throw new Error("Unsupported type " + schema[field].type)
+
         }
+
+        fields.push(`{${compositionField.join(',')}}`)
+
     }
     content += fields.join(",\n")
     return content;
 }
+
+const generateTabs = (entity: IEntitySchema) => {
+    if(!entity?.tabs) return ""
+    return entity?.tabs?.map(tab => `'${tab}'`).join(", ")
+}
+
+const generateMenus = (entity: IEntitySchema) => {
+    if(!entity?.menus) return ""
+    return entity?.menus?.map(menu => `'${menu}'`).join(", ")
+}
+
 
 
 export const TemplateEntityCrud = (entity: IEntitySchema) => `
@@ -310,6 +306,19 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
   get dialogFullscreen(){
     return false
   }
+  
+  get tabs() {
+    return [
+     ${generateTabs(entity)}
+    ]
+  }
+  
+  get menus() {
+    return [
+     ${generateMenus(entity)}
+    ]
+  }
+
 
 }
 

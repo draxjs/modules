@@ -7,7 +7,6 @@ interface ILanguageBase {
                 size: number,
                 mimetype?: string,
                 url: string
-                } 
                 }
     createdAt?: Date
     updatedAt?: Date
@@ -22,7 +21,6 @@ interface ILanguage {
                 size: number,
                 mimetype?: string,
                 url: string
-                } 
                 }
     createdAt?: Date
     updatedAt?: Date

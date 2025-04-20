@@ -14,6 +14,10 @@ interface IFieldSchema{
     header?: boolean
     smCol?: number
     mdCol?: number
+    lgCol?: number
+    xlCol?: number
+    tab?: string
+    menu?: string
 }
 
 interface ISchema{
@@ -27,6 +31,8 @@ interface IEntitySchema{
     apiBasePath?: string
     apiTag?: string
     schema: ISchema
+    tabs?: string[]
+    menus?: string[]
 }
 
 export type {IEntitySchema, ISchema, IFieldSchema, IType}

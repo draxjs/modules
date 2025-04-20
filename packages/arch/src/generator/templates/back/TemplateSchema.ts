@@ -12,13 +12,13 @@ const generateEntityBaseSchema = (schema: ISchema) => {
             case "password":
             case "file":
             case "longString":
-                fields.push(`    ${field}: z.string()${schema[field].required? ".min(1,'validation.required')" : ".optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
+                fields.push(`    ${field}: z.string()${schema[field].required? ".min(1,'validation.required')" : ".optional()"}${schema[field].default? ".default('"+schema[field].default+"')" : ""}`)
                 break;
             case "enum":
                 if(!schema[field].enum){
                     throw new Error("enum fields must have a enum")
                 }
-                fields.push(`    ${field}: z.enum(['${schema[field].enum.join("', '")}'])${schema[field].required? "" : ".optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
+                fields.push(`    ${field}: z.enum(['${schema[field].enum.join("', '")}'])${schema[field].required? "" : ".optional()"}${schema[field].default? ".default('"+schema[field].default+"')" : ""}`)
                 break;
             case "number":
                 fields.push(`    ${field}: z.number()${schema[field].required? ".min(0,'validation.required')" : ".nullable().optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
@@ -48,16 +48,16 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 fields.push(`    ${field}: z.object({${generateEntityBaseSchema(schema[field].schema)}})`)
                 break;
             case "array.string":
-                fields.push(`    ${field}: z.array(z.string())${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
+                fields.push(`    ${field}: z.array(z.string())${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+JSON.stringify(schema[field].default)+")" : ""}`)
                 break;
             case "array.enum":
                 if(!schema[field].enum){
                     throw new Error("enum fields must have a enum")
                 }
-                fields.push(`    ${field}: z.array(z.enum(['${schema[field].enum.join("', '")}']))${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
+                fields.push(`    ${field}: z.array(z.enum(['${schema[field].enum.join("', '")}']))${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+JSON.stringify(schema[field].default)+")" : ""}`)
                 break;
             case "array.number":
-                fields.push(`    ${field}: z.array(z.number())${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+schema[field].default+")" : ""}`)
+                fields.push(`    ${field}: z.array(z.number())${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+JSON.stringify(schema[field].default)+")" : ""}`)
                 break;
             case "array.ref":
                 fields.push(`    ${field}: z.array(z.string())${schema[field].required ? "" : ".optional()"}`)

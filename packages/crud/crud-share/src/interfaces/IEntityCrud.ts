@@ -34,6 +34,10 @@ interface IEntityCrud {
   importFormats: string[]
   exportHeaders: string[]
 
+  tabs?: string[]
+  menus?: string[]
+  menuMaxHeight?: string
+
   refs: IEntityCrudRefs
   getRef(ref: string|undefined): IEntityCrud
 
