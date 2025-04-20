@@ -2,16 +2,9 @@ import AbstractService from "../services/AbstractService";
 import {
     CommonConfig,
     DraxConfig,
-    ForbiddenError,
-    InternalServerError,
-    InvalidIdError,
     LimitError,
     NotFoundError,
-    ValidationError,
-    SecuritySensitiveError,
-    UploadFileError,
     BadRequestError,
-    UnauthorizedError,
     CommonController
 } from "@drax/common-back";
 import {IRbac} from "@drax/identity-share";
@@ -163,6 +156,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const id = request.params.id
             const payload = request.body
             delete payload[this.tenantField]
+            delete payload[this.userField]
             //Una vez que un registro se crea con un tenant, no deberia actualizarse nunca mas
             //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.update(id, payload as U)
@@ -187,6 +181,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const id = request.params.id
             const payload = request.body
             delete payload[this.tenantField]
+            delete payload[this.userField]
             //Una vez que un registro se crea con un tenant, no deberia actualizarse nunca mas
             //this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.updatePartial(id, payload as U)
