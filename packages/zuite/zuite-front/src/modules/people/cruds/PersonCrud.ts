@@ -172,6 +172,11 @@ user: []
     return true
   }
 
+  get dialogZindex(){
+    return 5600
+  }
+
+
   get tabs() {
     return [
      'BASIC', 'ADDRESS', 'SKILLS', 'MANAGE'

@@ -62,7 +62,7 @@
     "vitest": "^1.4.0",
     "vue": "^3.5.3",
     "vue-tsc": "^2.1.10",
-    "vuetify": "^3.7.1"
+    "vuetify": "^3.8.2"
   },
   "gitHead": "fc38ec5cfa5715dbd946e97df02258f912ae00d0"
 }
