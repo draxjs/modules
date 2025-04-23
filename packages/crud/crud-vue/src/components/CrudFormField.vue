@@ -93,6 +93,7 @@ defineEmits(['updateValue'])
 
     <v-textarea
         v-if="field.type === 'longString'"
+        :rows="field.rows || 5"
         type="text"
         :name="name"
         :label="label"
