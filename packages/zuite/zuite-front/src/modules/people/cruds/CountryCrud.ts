@@ -5,7 +5,7 @@ import type{
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader, 
+  IEntityCrudHeader,
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
@@ -23,7 +23,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     super();
     this.name = 'Country'
   }
-  
+
   static get instance(): CountryCrud {
     if(!CountryCrud.singleton){
       CountryCrud.singleton = new CountryCrud()
@@ -33,10 +33,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
 
   get permissions(): IEntityCrudPermissions{
     return {
-      manage: 'country:manage', 
-      view: 'country:view', 
-      create: 'country:create', 
-      update: 'country:update', 
+      manage: 'country:manage',
+      view: 'country:view',
+      create: 'country:create',
+      update: 'country:update',
       delete: 'country:delete'
     }
   }
@@ -48,7 +48,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
 {title: 'flag',key:'flag', align: 'start'}
     ]
   }
-  
+
   get actionHeaders():IEntityCrudHeader[]{
     return [
       {
@@ -64,10 +64,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
   get provider(): IDraxCrudProvider<any, any, any>{
     return CountryProvider.instance
   }
-  
+
   get refs(): IEntityCrudRefs{
     return {
-      
+
     }
   }
 
@@ -81,18 +81,18 @@ flag: []
 
   get fields(): IEntityCrudField[]{
     return [
-        {name:'name',type:'string',label:'name',default:''},
+        {name:'name',type:'string',label:'name',default:'', hint:'Aca pone nombre', persistentHint:true},
 {name:'description',type:'longString',label:'description',default:'Some Description',menu: 'BASIC'},
 {name:'flag',type:'file',label:'flag',default:'',menu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'}
     ]
   }
-  
+
   get filters():IEntityCrudFilter[]{
     return [
       //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
     ]
   }
-  
+
   get isViewable(){
     return true
   }
@@ -132,13 +132,13 @@ flag: []
   get dialogFullscreen(){
     return false
   }
-  
+
   get tabs() {
     return [
-     
+
     ]
   }
-  
+
   get menus() {
     return [
      'BASIC', 'EXTENDED'

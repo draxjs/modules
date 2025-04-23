@@ -20,6 +20,8 @@ const {entity, multiple} = defineProps({
   readonly: {type: Boolean, default: false},
   clearable: {type: Boolean, default: true},
   label: {type: String},
+  hint: {type: String},
+  persistentHint: {type: Boolean, default: false},
   itemValue: {type: [String], default: '_id'},
   itemTitle: {type: [String], default: 'name'},
   rules: {type: Array as PropType<any>, default: () => []},
@@ -96,6 +98,8 @@ defineEmits(['updateValue'])
   <v-autocomplete
       v-model="valueModel"
       :label="label ? label : field.label"
+      :hint="field.hint"
+      :persistent-hint="field.persistentHint"
       :placeholder="field.label"
       :items="items"
       :multiple="multiple"

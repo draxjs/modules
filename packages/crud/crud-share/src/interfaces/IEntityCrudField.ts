@@ -13,6 +13,8 @@ interface IEntityCrudField {
     appendInnerIcon?: string
     permission?: string
     readonly?: boolean
+    hint?: string
+    persistentHint?: boolean
     tab?:string
     menu?: string
     rows?:number //longString > textarea
