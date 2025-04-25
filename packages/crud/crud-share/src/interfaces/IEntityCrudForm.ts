@@ -1,5 +1,14 @@
+type FormValue =
+    | string
+    | number
+    | boolean
+    | Date
+    | null
+    | FormValue[]
+    | { [key: string]: FormValue };
+
 interface IEntityCrudForm {
-    [key: string]: string | number | boolean | Date | null
+    [key: string]: FormValue
 }
 
 export type { IEntityCrudForm }
