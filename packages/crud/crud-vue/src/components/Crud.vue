@@ -13,7 +13,7 @@ const {entity} = defineProps({
 
 const {
   onView, onCreate, onEdit, onDelete, resetCrudStore,
-  operation, dialog, notify, error, message, doExport,
+  operation, dialog, notify, message, doExport,
   prepareFilters
 } = useCrud(entity);
 

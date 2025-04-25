@@ -99,7 +99,7 @@ function cancel() {
 }
 
 const {
-  variant, submitColor, readonly
+  variant, submitColor
 } = useFormUtils(operation.value)
 
 
