@@ -104,27 +104,27 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 
   get fields(): IEntityCrudField[] {
     return [
-      {name: 'fullname', type: 'string', label: 'fullname', default: '', tab: 'BASIC'},
-      {name: 'live', type: 'boolean', label: 'live', default: false, tab: 'BASIC'},
-      {name: 'birthdate', type: 'date', label: 'birthdate', default: null, tab: 'BASIC'},
-      {name: 'secret', type: 'password', label: 'secret', default: '', tab: 'BASIC'},
+      {name: 'fullname', type: 'string', label: 'fullname', default: '', groupTab: 'ADDRESS'},
+      {name: 'live', type: 'boolean', label: 'live', default: false, groupTab: 'BASIC'},
+      {name: 'birthdate', type: 'date', label: 'birthdate', default: null, groupTab: 'BASIC'},
+      {name: 'secret', type: 'password', label: 'secret', default: '', groupTab: 'BASIC'},
       {
         name: 'nationality',
         type: 'ref',
         label: 'nationality',
         default: null,
-        tab: 'BASIC',
+        groupTab: 'BASIC',
         ref: 'Country',
         refDisplay: 'name'
       },
-      {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], tab: 'BASIC'},
-      {name: 'race', type: 'enum', label: 'race', default: null, tab: 'BASIC', enum: ['human', 'elf', 'orc']},
+      {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
+      {name: 'race', type: 'enum', label: 'race', default: null, groupTab: 'BASIC', enum: ['human', 'elf', 'orc']},
       {
         name: 'interests',
         type: 'array.enum',
         label: 'interests',
         default: ["sports", "music"],
-        tab: 'BASIC',
+        groupTab: 'BASIC',
         enum: ['sports', 'music', 'reading', 'travel', 'cooking', 'technology']
       },
       {
@@ -132,7 +132,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         type: 'array.ref',
         label: 'languages',
         default: [],
-        tab: 'BASIC',
+        groupTab: 'BASIC',
         ref: 'Language',
         refDisplay: 'name'
       },
@@ -140,8 +140,8 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         name: 'address',
         type: 'object',
         label: 'address',
-        default: {"country": "''", "city": "''", "street": "''", "zip": null, "casa": false},
-        tab: 'ADDRESS',
+        default: {"country": "", "city": "", "street": "", "zip": null, "casa": false},
+        groupTab: 'ADDRESS',
         objectFields: [{name: 'country', type: 'string', label: 'country', default: ''},
           {name: 'city', type: 'string', label: 'city', default: '', hint:'la city', persistentHint:true},
           {name: 'street', type: 'longString', label: 'street', default: ''},
@@ -153,12 +153,12 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         type: 'array.object',
         label: 'skills',
         default: [],
-        tab: 'SKILLS',
+        groupTab: 'SKILLS',
         objectFields: [{name: 'name', type: 'string', label: 'name', default: ''},
           {name: 'level', type: 'number', label: 'level', default: null}]
       },
-      {name: 'tenant', type: 'ref', label: 'tenant', default: null, tab: 'MANAGE', ref: 'Tenant', refDisplay: 'name'},
-      {name: 'user', type: 'ref', label: 'user', default: null, tab: 'MANAGE', ref: 'User', refDisplay: 'username'}
+      {name: 'tenant', type: 'ref', label: 'tenant', default: null, groupTab: 'MANAGE', ref: 'Tenant', refDisplay: 'name'},
+      {name: 'user', type: 'ref', label: 'user', default: null, groupTab: 'MANAGE', ref: 'User', refDisplay: 'username'}
     ]
   }
 

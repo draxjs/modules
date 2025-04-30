@@ -27,7 +27,7 @@ const store = useCrudStore()
 const formRef = ref()
 
 const tabSelected = ref()
-const menuSelected = ref(entity?.menus?.length ? entity?.menus[0] : null)
+const menuSelected = ref<string>()
 
 const fields = computed(() => {
   if (operation.value === 'create') {
@@ -48,15 +48,15 @@ const aFields = computed(() => {
 })
 
 const generalFields = computed(() => {
-  return aFields.value.filter((field: IEntityCrudField) => !field.tab && !field.menu)
+  return aFields.value.filter((field: IEntityCrudField) => !field.groupTab && !field.groupMenu)
 })
 
 const tabFields = computed(() => {
-  return (tab: string): IEntityCrudField[] => aFields.value.filter((field: IEntityCrudField) => field.tab === tab)
+  return (tab: string): IEntityCrudField[] => aFields.value.filter((field: IEntityCrudField) => field.groupTab === tab)
 })
 
 const menuFields = computed(() => {
-  return (menu: string | null): IEntityCrudField[] => aFields.value.filter((field: IEntityCrudField) => field.menu === menu)
+  return (menu: string | null): IEntityCrudField[] => aFields.value.filter((field: IEntityCrudField) => field.groupMenu === menu)
 })
 
 const menuMaxHeight = computed(() => {
@@ -101,6 +101,20 @@ function cancel() {
 const {
   variant, submitColor
 } = useFormUtils(operation.value)
+
+const tabInputErrors = computed(() => {
+      return (tab:string) => {
+        return tabFields.value(tab).some((field: IEntityCrudField) => store.getFieldInputErrors(field.name).length > 0)
+      }
+    }
+)
+
+const menuInputErrors = computed(() => {
+      return (tab:string) => {
+        return menuFields.value(tab).some((field: IEntityCrudField) => store.getFieldInputErrors(field.name).length > 0)
+      }
+    }
+)
 
 
 </script>
@@ -151,7 +165,9 @@ const {
 
             <v-tabs v-model="tabSelected">
               <v-tab v-for="tab in entity.tabs" :value="tab" :key="tab">
+                <span  :class="tabInputErrors(tab) ? 'text-red' : ''">
                 {{ te(tab) ? t(tab) : tab }}
+                </span>
               </v-tab>
             </v-tabs>
           <v-card-text>
@@ -197,7 +213,10 @@ const {
                 <v-list v-model="menuSelected">
                   <v-list-item v-for="menu in entity.menus" rounded="shaped" :value="menu" @click="menuSelected = menu">
                     <v-list-item-title>
-                      {{ te(menu) ? t(menu) : menu }}
+                    <span :class="menuInputErrors(menu) ? 'text-red' : ''">
+                        {{ te(menu) ? t(menu) : menu }}
+                      </span>
+
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -205,7 +224,7 @@ const {
             </v-card>
           </v-col>
           <v-col cols="12" sm="8" md="9">
-            <v-card variant="outlined">
+            <v-card v-if="menuSelected" variant="outlined">
               <v-card-text>
                 <v-row>
                   <v-col

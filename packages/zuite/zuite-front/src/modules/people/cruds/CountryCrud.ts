@@ -1,6 +1,5 @@
-
 import {EntityCrud} from "@drax/crud-vue";
-import type{
+import type {
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
@@ -25,13 +24,13 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
   }
 
   static get instance(): CountryCrud {
-    if(!CountryCrud.singleton){
+    if (!CountryCrud.singleton) {
       CountryCrud.singleton = new CountryCrud()
     }
     return CountryCrud.singleton
   }
 
-  get permissions(): IEntityCrudPermissions{
+  get permissions(): IEntityCrudPermissions {
     return {
       manage: 'country:manage',
       view: 'country:view',
@@ -43,13 +42,13 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
 
   get headers(): IEntityCrudHeader[] {
     return [
-        {title: 'name',key:'name', align: 'start'},
-{title: 'description',key:'description', align: 'start'},
-{title: 'flag',key:'flag', align: 'start'}
+      {title: 'name', key: 'name', align: 'start'},
+      {title: 'description', key: 'description', align: 'start'},
+      {title: 'flag', key: 'flag', align: 'start'}
     ]
   }
 
-  get actionHeaders():IEntityCrudHeader[]{
+  get actionHeaders(): IEntityCrudHeader[] {
     return [
       {
         title: 'action.actions',
@@ -61,87 +60,90 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     ]
   }
 
-  get provider(): IDraxCrudProvider<any, any, any>{
+  get provider(): IDraxCrudProvider<any, any, any> {
     return CountryProvider.instance
   }
 
-  get refs(): IEntityCrudRefs{
-    return {
-
-    }
+  get refs(): IEntityCrudRefs {
+    return {}
   }
 
-  get rules():IEntityCrudRules{
+  get rules(): IEntityCrudRules {
     return {
       name: [(v: any) => !!v || 'validation.required'],
-description: [],
-flag: []
+      description: [],
+      flag: []
     }
   }
 
-  get fields(): IEntityCrudField[]{
+  get fields(): IEntityCrudField[] {
     return [
-        {name:'name',type:'string',label:'name',default:'', hint:'Aca pone nombre', persistentHint:true},
-{name:'description',type:'longString',label:'description',default:'Some Description',menu: 'BASIC'},
-{name:'flag',type:'file',label:'flag',default:'',menu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'}
+      {name: 'name', type: 'string', label: 'name', default: '', hint: 'Aca pone nombre', persistentHint: true},
+      {name: 'description', type: 'longString', label: 'description', default: '', groupMenu: 'BASIC'},
+      {
+        name: 'flag',
+        type: 'file',
+        label: 'flag',
+        default: '',
+        groupMenu: 'EXTENDED',
+        prependInnerIcon: 'mdi mdi-attachment'
+      }
     ]
   }
 
-  get filters():IEntityCrudFilter[]{
+  get filters(): IEntityCrudFilter[] {
     return [
       //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
     ]
   }
 
-  get isViewable(){
+  get isViewable() {
     return true
   }
 
-  get isEditable(){
+  get isEditable() {
     return true
   }
 
-  get isCreatable(){
+  get isCreatable() {
     return true
   }
 
-  get isDeletable(){
+  get isDeletable() {
     return true
   }
 
-  get isExportable(){
+  get isExportable() {
     return true
   }
 
-  get exportFormats(){
+  get exportFormats() {
     return ['CSV', 'JSON']
   }
 
-  get exportHeaders(){
+  get exportHeaders() {
     return ['_id']
   }
 
-  get isImportable(){
+  get isImportable() {
     return true
   }
 
-  get importFormats(){
+  get importFormats() {
     return ['CSV', 'JSON']
   }
 
-  get dialogFullscreen(){
+  get dialogFullscreen() {
     return false
   }
 
   get tabs() {
-    return [
-
-    ]
+    return []
   }
 
   get menus() {
     return [
-     'BASIC', 'EXTENDED'
+      'BASIC', 'EXTENDED'
     ]
   }
 
