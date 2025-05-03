@@ -78,7 +78,7 @@ const handleDrop = async (event: DragEvent) => {
   const files = event.dataTransfer?.files;
   if (files && files[0]) {
     const file = await mediaSystem.uploadFile(files[0], dir);
-    valueModel.value = file.url;
+    valueModel.value = file;
   }
 };
 
