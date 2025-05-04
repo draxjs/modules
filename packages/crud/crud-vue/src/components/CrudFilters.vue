@@ -40,7 +40,7 @@ const icon = computed(() => {
       case 'like':
         return 'mdi-contain'
       default:
-        return ''
+        return 'eq'
     }
   }
 })

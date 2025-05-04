@@ -23,8 +23,8 @@ const {dir, readonly, timeout} = defineProps({
   label: {type: String, default: 'media.file'},
   timeout: {type: Number, default: 360000},
   accept: {type: String, default: '*'},
-  errorMessages: {type: Array as PropType<string[]>, default: []},
-  rules: {type: Array as PropType<any>, default: []},
+  errorMessages: {type: Array as PropType<string[]>, default: () => []},
+  rules: {type: Array as PropType<any>, default: () => []},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
   variant: {
     type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>,
