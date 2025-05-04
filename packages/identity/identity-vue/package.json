@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.15.8",
+  "version": "0.15.9",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -26,9 +26,9 @@
   "dependencies": {
     "@drax/common-front": "^0.15.0",
     "@drax/common-vue": "^0.15.0",
-    "@drax/crud-front": "^0.15.8",
-    "@drax/crud-share": "^0.15.8",
-    "@drax/crud-vue": "^0.15.8",
+    "@drax/crud-front": "^0.15.9",
+    "@drax/crud-share": "^0.15.9",
+    "@drax/crud-vue": "^0.15.9",
     "@drax/identity-share": "^0.15.0"
   },
   "peerDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-front",
-  "version": "0.15.8",
+  "version": "0.15.9",
   "private": true,
   "scripts": {
     "front": "vite",
@@ -14,13 +14,13 @@
   "dependencies": {
     "@drax/common-front": "^0.15.0",
     "@drax/common-vue": "^0.15.0",
-    "@drax/crud-front": "^0.15.8",
-    "@drax/crud-vue": "^0.15.8",
+    "@drax/crud-front": "^0.15.9",
+    "@drax/crud-vue": "^0.15.9",
     "@drax/dynamic-front": "^0.15.0",
-    "@drax/dynamic-vue": "^0.15.8",
+    "@drax/dynamic-vue": "^0.15.9",
     "@drax/i18n-share": "^0.15.0",
-    "@drax/identity-front": "^0.15.8",
-    "@drax/identity-vue": "^0.15.8",
+    "@drax/identity-front": "^0.15.9",
+    "@drax/identity-vue": "^0.15.9",
     "@drax/settings-front": "^0.15.0",
     "@drax/settings-vue": "^0.15.0",
     "@mdi/font": "7.4.47",
