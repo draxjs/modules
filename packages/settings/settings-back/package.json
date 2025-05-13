@@ -32,18 +32,14 @@
     "@drax/crud-back": "^0.15.9",
     "@drax/crud-share": "^0.15.9",
     "@drax/email-back": "^0.15.0",
-    "@drax/identity-share": "^0.15.0",
-    "bcryptjs": "^2.4.3",
-    "express-jwt": "^8.4.1",
-    "graphql": "^16.8.2",
-    "jsonwebtoken": "^9.0.2",
-    "zod": "^3.23.8"
+    "@drax/identity-share": "^0.15.0"
   },
   "peerDependencies": {
     "better-sqlite3": "^11.0.0",
     "fastify": "^5.2.1",
     "mongoose": "^8.6.3",
-    "mongoose-unique-validator": "^5.0.1"
+    "mongoose-unique-validator": "^5.0.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

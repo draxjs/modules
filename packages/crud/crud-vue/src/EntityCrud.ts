@@ -199,6 +199,10 @@ class EntityCrud implements IEntityCrud {
         return '300px'
     }
 
+    get dialogZindex() {
+        return 1999
+    }
+
 }
 
 export default EntityCrud;
