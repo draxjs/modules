@@ -12,7 +12,6 @@ interface IPromptMemory {
     value: string;
 }
 
-
 interface IPromptParams {
     systemPrompt: string,
     userInput?: string,

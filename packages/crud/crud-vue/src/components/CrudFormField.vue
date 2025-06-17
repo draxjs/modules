@@ -141,9 +141,9 @@ defineEmits(['updateValue'])
         @click:append-inner="show = !show"
     />
 
+
     <v-combobox
-        v-if="field.type === 'enum'"
-        type="text"
+        v-if="field.type === 'enum' && !field.noFilter"
         :name="name"
         :label="label"
         :hint="field.hint"
@@ -163,9 +163,35 @@ defineEmits(['updateValue'])
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
-
     >
     </v-combobox>
+
+
+    <v-select
+        v-if="field.type === 'enum' && field.noFilter"
+        :name="name"
+        :label="label"
+        :hint="field.hint"
+        :persistent-hint="field.persistentHint"
+        v-model="valueModel"
+        :items="field.enum"
+        :readonly="readonly"
+        :error-messages="inputErrors"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :rules="rules"
+        @update:modelValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
+    >
+    </v-select>
+
+
 
     <v-text-field
         v-if="field.type === 'number'"

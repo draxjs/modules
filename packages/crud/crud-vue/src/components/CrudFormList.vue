@@ -40,11 +40,18 @@ function hasField(key: string): boolean {
 }
 
 function addItem() {
-  valueModel.value.push(newItem());
+  const item = newItem()
+  valueModel.value.push(item);
+  menuSelect(item, valueModel.value.length - 1)
 }
 
 function removeItem(index: number) {
+  if (indexSelected.value === index) {
+    itemSelected.value = undefined
+    indexSelected.value = undefined
+  }
   valueModel.value.splice(index, 1);
+
 }
 
 const label = computed(() => {

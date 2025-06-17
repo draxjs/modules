@@ -118,7 +118,14 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         refDisplay: 'name'
       },
       {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
-      {name: 'race', type: 'enum', label: 'race', default: null, groupTab: 'BASIC', enum: ['human', 'elf', 'orc']},
+      {name: 'race',
+        type: 'enum',
+        label: 'race',
+        default: null,
+        groupTab: 'BASIC',
+        enum: ['human', 'elf', 'orc'],
+        noFilter: false,
+      },
       {
         name: 'interests',
         type: 'array.enum',
