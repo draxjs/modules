@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.15.9",
+  "version": "0.16.0",
   "description": "Setting module for nice management options.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -28,11 +28,11 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "@drax/common-back": "^0.15.0",
-    "@drax/crud-back": "^0.15.9",
-    "@drax/crud-share": "^0.15.9",
-    "@drax/email-back": "^0.15.0",
-    "@drax/identity-share": "^0.15.0"
+    "@drax/common-back": "^0.16.0",
+    "@drax/crud-back": "^0.16.0",
+    "@drax/crud-share": "^0.16.0",
+    "@drax/email-back": "^0.16.0",
+    "@drax/identity-share": "^0.16.0"
   },
   "peerDependencies": {
     "better-sqlite3": "^11.0.0",
