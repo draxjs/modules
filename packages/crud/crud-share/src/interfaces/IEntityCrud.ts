@@ -35,6 +35,8 @@ interface IEntityCrud {
   importFormats: string[]
   exportHeaders: string[]
 
+  isSearchable: boolean
+
   tabs?: string[]
   menus?: string[]
   menuMaxHeight?: string
