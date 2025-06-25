@@ -102,17 +102,19 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       />
 
       <v-card>
-        <v-card-text>
+        <v-card-text v-if="!entity.searchDisabled">
           <crud-search
               v-model="search"
           />
         </v-card-text>
 
         <v-card-text class="pt-0">
+          <slot name="filters" v-bind="{filters}"></slot>
           <crud-filters
-              :entity="entity"
-              v-model="filters"
-              @updateValue="doPaginate()"
+            v-if="!$slots.filters"
+            :entity="entity"
+            v-model="filters"
+            @updateValue="doPaginate()"
           />
         </v-card-text>
 
