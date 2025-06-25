@@ -45,8 +45,8 @@ const emit = defineEmits(['created', 'updated', 'deleted', 'viewed','canceled'])
           </slot>
         </template>
 
-        <template v-slot:filters v-if="$slots.filters">
-          <slot name="filters">
+        <template v-slot:filters="{filters}" v-if="$slots.filters">
+          <slot name="filters" v-bind="{filters}">
           </slot>
         </template>
 

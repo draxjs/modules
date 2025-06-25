@@ -109,7 +109,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
         </v-card-text>
 
         <v-card-text class="pt-0">
-          <slot name="filters"></slot>
+          <slot name="filters" v-bind="{filters}"></slot>
           <crud-filters
             v-if="!$slots.filters"
             :entity="entity"
