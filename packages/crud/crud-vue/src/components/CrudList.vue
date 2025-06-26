@@ -102,7 +102,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       />
 
       <v-card>
-        <v-card-text v-if="!entity.searchDisabled">
+        <v-card-text v-if="!entity.searchEnable">
           <crud-search
               v-model="search"
           />

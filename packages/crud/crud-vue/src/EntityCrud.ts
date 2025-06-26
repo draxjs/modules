@@ -203,6 +203,10 @@ class EntityCrud implements IEntityCrud {
         return 1999
     }
 
+    get searchEnable(){
+        return true
+    }
+
 }
 
 export default EntityCrud;
