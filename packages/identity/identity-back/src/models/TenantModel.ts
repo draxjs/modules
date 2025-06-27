@@ -8,6 +8,7 @@ import {PaginateModel} from "mongoose";
 
 const TenantMongoSchema = new Schema<ITenant>({
     name: {type: String, unique: true, required: true, index: true,},
+    custom: {type: Object, unique: true, required: true, index: true,},
 }, {timestamps: true, toJSON: {  virtuals: true}, toObject: { virtuals: true}});
 
 
