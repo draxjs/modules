@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Identity module for user management, authentication and authorization.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -28,11 +28,11 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "@drax/common-back": "^0.18.0",
-    "@drax/crud-back": "^0.18.0",
-    "@drax/crud-share": "^0.18.0",
-    "@drax/email-back": "^0.18.0",
-    "@drax/identity-share": "^0.18.0",
+    "@drax/common-back": "^0.18.1",
+    "@drax/crud-back": "^0.18.1",
+    "@drax/crud-share": "^0.18.1",
+    "@drax/email-back": "^0.18.1",
+    "@drax/identity-share": "^0.18.1",
     "bcryptjs": "^2.4.3",
     "graphql": "^16.8.2",
     "jsonwebtoken": "^9.0.2"
