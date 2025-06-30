@@ -1,4 +1,4 @@
-import { object, string, date } from "zod"
+import { object, string, date, record, any } from "zod"
 
 const TenantBaseSchema = object({
     name: string({ required_error: "validation.required" })
@@ -10,6 +10,7 @@ const TenantBaseSchema = object({
 const TenantSchema = TenantBaseSchema.extend({
     _id: string(),
     id: string().optional(),
+    custom: record(string(), any()).optional(),
     createdAt: date(),
     updatedAt: date()
 });
