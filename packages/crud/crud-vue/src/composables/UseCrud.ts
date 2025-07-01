@@ -230,9 +230,18 @@ export function useCrud(entity: IEntityCrud) {
     }
 
     function onEdit(item: object) {
-        store.setForm(cast({...item}))
+        store.setForm(cast(cloneItem(item)))
         store.setOperation("edit")
         openDialog()
+    }
+
+    function cloneItem(item: object):object {
+        try{
+            return JSON.parse(JSON.stringify(item))
+        }catch (error){
+            console.error("Error cloning item", error)
+            return ({})
+        }
     }
 
     function onDelete(item: object) {
