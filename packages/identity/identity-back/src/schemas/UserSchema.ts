@@ -1,6 +1,4 @@
-import {date, object, string, boolean, array} from "zod"
-import {RoleSchema} from "./RoleSchema.js"
-import {TenantSchema} from "./TenantSchema.js"
+import {date, object, string, boolean, array, record, any} from "zod"
 
 const UserBaseSchema = object({
     name: string({required_error: "validation.required"})
@@ -42,6 +40,7 @@ const UserSchema = UserBaseSchema
             _id: string(),
             id: string().optional(),
             name: string(),
+            custom: record(string(), any()).optional(),
         }).nullable().optional(),
         createdAt: date().optional(),
         avatar: string().optional()
