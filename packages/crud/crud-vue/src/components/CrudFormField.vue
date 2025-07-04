@@ -282,7 +282,6 @@ defineEmits(['updateValue'])
 
     <v-date-input
         v-if="field.type === 'date'"
-        type="text"
         :name="name"
         :label="label"
         :hint="field.hint"
@@ -296,12 +295,25 @@ defineEmits(['updateValue'])
         :clearable="clearable"
         :hide-details="hideDetails"
         :single-line="singleLine"
-        @update:modelValue="$emit('updateValue')"
+        @update:modelValue="(v) => {
+          if(field.endOfDay){
+            const date = new Date(v)
+            date.setHours(23, 59, 59, 0)
+            valueModel = date
+          }
+          $emit('updateValue')
+        }"
+        @click:clear="() => {valueModel = null;  $emit('updateValue');} "
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
-    />
+
+    >
+      <template v-if="field.endOfDay" v-slot:append-inner>
+        <v-chip size="small">23:59</v-chip>
+      </template>
+    </v-date-input>
 
     <crud-autocomplete
         v-if="field.type === 'ref'"

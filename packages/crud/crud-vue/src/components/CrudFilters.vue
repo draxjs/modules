@@ -78,7 +78,7 @@ const emit = defineEmits(['filter', 'clear','updateValue'])
                 density="compact"
                 variant="outlined"
                 :prepend-inner-icon="icon(filter)"
-                hide-details single-line disable-rules
+                hide-details  disable-rules
                 @updateValue="$emit('updateValue')"
             />
           </v-col>
