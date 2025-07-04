@@ -9,9 +9,9 @@ const {t} = useI18n()
 const valueModel = defineModel({type: [Object]})
 const {hasPermission} = useAuth()
 
-const {entity} = defineProps({
+const {entity, actionButtons} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-  actions: {type: Boolean, default: false},
+  actionButtons: {type: Boolean, default: false},
 })
 
 const aFields = computed(() => {
@@ -46,16 +46,22 @@ const icon = computed(() => {
 })
 
 
-async function filter() {
-  emit('filter')
+ function filter() {
+  emit('applyFilter')
 }
 
-async function clear() {
-  emit('filter')
+ function clear() {
+  emit('clearFilter')
+}
+
+function onUpdateValue(){
+  if(!actionButtons){
+    emit('applyFilter')
+  }
 }
 
 
-const emit = defineEmits(['filter', 'clear','updateValue'])
+const emit = defineEmits(['applyFilter', 'clearFilter'])
 
 </script>
 
@@ -79,13 +85,13 @@ const emit = defineEmits(['filter', 'clear','updateValue'])
                 variant="outlined"
                 :prepend-inner-icon="icon(filter)"
                 hide-details  disable-rules
-                @updateValue="$emit('updateValue')"
+                @updateValue="onUpdateValue"
             />
           </v-col>
 
         </v-row>
 
-    <v-card-actions v-if="actions" class="pb-0">
+    <v-card-actions v-if="actionButtons" class="pb-0">
       <v-spacer />
       <v-btn variant="text" density="compact" color="grey" @click="clear">{{ t('action.clear') }}</v-btn>
       <v-btn variant="flat" density="compact" color="primary" @click="filter">

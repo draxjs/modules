@@ -17,5 +17,8 @@
     "tsc:watch": "tsc-watch -b --watch  ./tsconfig.packages.json --onSuccess 'npm run copygql' ",
     "copygql": "lerna run copygql --stream",
     "dev": "lerna run dev --scope @drax/zuite-back"
+  },
+  "dependencies": {
+    "bson": "^6.10.4"
   }
 }

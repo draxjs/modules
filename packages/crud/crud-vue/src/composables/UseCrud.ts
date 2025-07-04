@@ -349,12 +349,21 @@ export function useCrud(entity: IEntityCrud) {
         store.setFilters(entity.formFilters)
     }
 
+    async function clearFilters(){
+        prepareFilters()
+        await doPaginate()
+    }
+
+    async function applyFilters(){
+        await doPaginate()
+    }
+
 
     return {
         doPaginate, doExport, onView, onCreate, onEdit, onDelete, onCancel, onSubmit, resetCrudStore,
         operation, dialog, form, notify, error, message, formValid,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
-        prepareFilters, filters,
+        prepareFilters, filters, clearFilters, applyFilters,
         exportFiles, exportLoading, exportListVisible
     }
 

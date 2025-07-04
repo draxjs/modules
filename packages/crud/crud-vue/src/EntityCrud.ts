@@ -207,6 +207,11 @@ class EntityCrud implements IEntityCrud {
         return true
     }
 
+    get filterButtons(){
+        return true
+    }
+
+
 }
 
 export default EntityCrud;

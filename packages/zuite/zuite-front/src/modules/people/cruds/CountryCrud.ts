@@ -93,7 +93,8 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
 
   get filters(): IEntityCrudFilter[] {
     return [
-      //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
+      {name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
+      {name: 'name', type: 'string', label: 'name', default: '', operator: 'eq' },
     ]
   }
 

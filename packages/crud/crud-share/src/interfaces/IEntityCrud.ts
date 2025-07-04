@@ -37,6 +37,8 @@ interface IEntityCrud {
 
   searchEnable?: boolean
 
+  filterButtons?: boolean
+
   tabs?: string[]
   menus?: string[]
   menuMaxHeight?: string

@@ -25,7 +25,7 @@ const {entity} = defineProps({
 
 const {
   loading, itemsPerPage, page, sortBy, search, totalItems, items,
-  doPaginate, filters
+  doPaginate, filters, applyFilters, clearFilters
 } = useCrud(entity)
 
 const actions: IEntityCrudHeader[] = entity.actionHeaders.map(header => ({
@@ -114,7 +114,9 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             v-if="!$slots.filters"
             :entity="entity"
             v-model="filters"
-            @updateValue="doPaginate()"
+            :action-buttons="entity.filterButtons"
+            @clearFilter="clearFilters()"
+            @applyFilter="applyFilters()"
           />
         </v-card-text>
 
