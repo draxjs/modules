@@ -232,6 +232,13 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return []
   }
 
+  get filterButtons(){
+    return true
+  }
+
+  get searchEnable(){
+    return true
+  }
 
 }
 

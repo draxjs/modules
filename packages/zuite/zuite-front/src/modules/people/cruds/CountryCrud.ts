@@ -148,6 +148,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     ]
   }
 
+  get filterButtons(){
+    return true
+  }
+
 
 }
 
