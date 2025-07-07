@@ -6,7 +6,7 @@ import {
     DraxConfig,
     StoreManager,
     ValidationError,
-    UnauthorizedError,
+    UnauthorizedError, SecuritySensitiveError,
 } from "@drax/common-back";
 
 import UserServiceFactory from "../factory/UserServiceFactory.js";
@@ -253,6 +253,8 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             const code = await userService.recoveryCode(email)
 
+            console.log("CODE", code)
+
             if (code) {
                 await UserEmailService.recoveryCode(code, email)
             }
@@ -260,7 +262,12 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             reply.send({message})
 
         } catch (e) {
-            this.handleError(e,reply)
+            console.error("ERROR RECOVERY", e)
+            if(e instanceof SecuritySensitiveError){
+                reply.send({message})
+            }else{
+                this.handleError(e,reply)
+            }
         }
     }
 

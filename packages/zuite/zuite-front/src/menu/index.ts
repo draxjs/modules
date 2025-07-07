@@ -8,6 +8,7 @@ const menu: MenuItem[] = [
     gallery: false,
     auth: false
   },
+
   {
     icon: 'mdi-world',
     text: 'People',

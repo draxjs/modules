@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {useMenu} from '@/composables/useMenu'
-import {PropType} from "vue";
-import type {MenuItem} from "@/types/menu";
+import type {PropType} from "vue";
+import type {IMenuItem} from "@drax/common-share";
 
 const {isGranted, childrenGranted, hasChildrenGranted, itemText } = useMenu()
 
 defineProps({
   menu: {
-    type: Array as PropType<MenuItem[]>,
+    type: Array as PropType<IMenuItem[]>,
     required: true
   }
 });

@@ -10,7 +10,7 @@ const messages = {
             },
             events: {
                 passwordChanged: "Password Changed",
-                recoveryPasswordInfo: "Password recovery information has been sent",
+                recoveryPasswordInfo: "If an account exists for this email address, you will receive a link to reset your password.",
                 registrationComplete: "Registration Complete",
             },
             action: {
@@ -53,7 +53,7 @@ const messages = {
             },
             events: {
                 passwordChanged: "Se ha cambiado la Contraseña",
-                recoveryPasswordInfo: "Se ha enviado información de recuperación de Contraseña",
+                recoveryPasswordInfo: "Si existe una cuenta asociada a este correo electrónico, te enviaremos un enlace para restablecer tu contraseña.",
                 registrationComplete: "Revisa tu correo electrónico para completar el registro.",
             },
             action: {

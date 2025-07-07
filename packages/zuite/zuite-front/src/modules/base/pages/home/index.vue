@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GalleryMenu from "@/components/GalleryMenu/GalleryMenu.vue";
+import {GalleryMenu} from "@drax/common-vue";
 import menu from '../../../../menu'
 
 </script>

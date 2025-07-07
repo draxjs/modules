@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import {debounce} from "@drax/common-front"
-import {ref, defineModel} from "vue"
+import {ref, defineModel, watch} from "vue"
 
 
 const {t} = useI18n()
 const model = defineModel<any>()
 
 let input = ref(model.value)
+
+watch(() => model.value, (newValue) => {
+  input.value = newValue
+})
 
 const debouncedSearch = debounce(updateModel, 500)
 

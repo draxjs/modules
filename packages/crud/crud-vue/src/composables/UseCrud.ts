@@ -1,6 +1,6 @@
 import type {IDraxPaginateResult, IEntityCrud} from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
-import {computed, toRaw} from "vue";
+import {computed, nextTick, toRaw} from "vue";
 import getItemId from "../helpers/getItemId";
 
 export function useCrud(entity: IEntityCrud) {
@@ -351,7 +351,12 @@ export function useCrud(entity: IEntityCrud) {
 
     async function clearFilters(){
         prepareFilters()
-        await doPaginate()
+        store.setSearch("")
+        search.value = ""
+        await nextTick(async () => {
+            await doPaginate()
+        })
+
     }
 
     async function applyFilters(){

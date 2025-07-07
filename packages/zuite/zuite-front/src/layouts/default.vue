@@ -3,7 +3,7 @@ import {ref} from 'vue'
 import menu from '../menu'
 import {IdentityProfileAvatar, IdentityProfileDrawer, useAuth} from "@drax/identity-vue";
 import DarkMode from "../components/DarkMode/index.vue";
-import SidebarMenu from "../components/SidebarMenu/SidebarMenu.vue";
+import {SidebarMenu} from "@drax/common-vue";
 import AnimatedBackground from "../components/AnimatedBackground/AnimatedBackground.vue";
 import {useRouter} from "vue-router";
 import { useDarkMode } from '../composables/useDarkMode.js'

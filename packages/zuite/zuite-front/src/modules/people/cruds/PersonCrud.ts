@@ -104,7 +104,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 
   get fields(): IEntityCrudField[] {
     return [
-      {name: 'fullname', type: 'string', label: 'fullname', default: '', groupTab: 'ADDRESS'},
+      {name: 'fullname', type: 'string', label: 'fullname', default: ''},
       {name: 'live', type: 'boolean', label: 'live', default: false, groupTab: 'BASIC'},
       {name: 'birthdate', type: 'date', label: 'birthdate', default: null, groupTab: 'BASIC'},
       {name: 'secret', type: 'password', label: 'secret', default: '', groupTab: 'BASIC'},
