@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useMenu} from '@/composables/useMenu'
+import {useMenu} from '../../composables/useMenu'
 import type {PropType} from "vue";
 import type {IMenuItem} from "@drax/common-share";
 

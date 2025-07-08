@@ -2,10 +2,9 @@ import z from "zod";
 import type {IQueryFilter} from "../interfaces/IQueryFilter";
 import { ObjectId } from 'mongodb'
 
-function isValidDate(value) {
-  const date = new Date(value);
-  return !isNaN(date.getTime());
-}
+import {isValidIsoDate} from '../utils/IsValidIsoDate.js'
+import {isValidObjectId} from '../utils/IsValidObjectId.js'
+
 
 class MongooseQueryFilter{
 
@@ -17,9 +16,17 @@ class MongooseQueryFilter{
         this.assertFiltersSchema(filters)
 
         for(const filter of filters){
-            //Valid date and mongo ObjectId for aggregates
-            if(isValidDate(filter.value)) filter.value = new Date(filter.value)
-            if(ObjectId.isValid(filter.value) && !['in', 'nin'].includes(filter.operator)) filter.value = ObjectId.createFromHexString(filter.value)
+
+
+            //Valid date
+            if(isValidIsoDate(filter.value)){
+                filter.value = new Date(filter.value)
+            }
+
+            //Valid ObjectId
+            if(isValidObjectId(filter.value) && !['in', 'nin'].includes(filter.operator)){
+                filter.value = ObjectId.createFromHexString(filter.value)
+            }
 
             if(filter.value === undefined || filter.value === null) return
 
@@ -36,14 +43,20 @@ class MongooseQueryFilter{
                 case 'in':
                     if(!Array.isArray(filter.value)){
                         filter.value = filter.value.split(',').map(v => v.trim())
-                        filter.value = filter.value.map(value => ObjectId.isValid(value) ? ObjectId.createFromHexString(value): value)
+                        filter.value = filter.value.map(
+                            (value:string) =>
+                                isValidObjectId(value) ? ObjectId.createFromHexString(value): value
+                        )
                     }
                     query[filter.field] = {...query[filter.field],...{$in: filter.value} }
                     break;
                 case 'nin':
                     if(!Array.isArray(filter.value)){
                         filter.value = filter.value.split(',').map(v => v.trim())
-                        filter.value = filter.value.map(value => ObjectId.isValid(value) ? ObjectId.createFromHexString(value): value)
+                        filter.value = filter.value.map(
+                            (value:string) =>
+                                isValidObjectId(value) ? ObjectId.createFromHexString(value): value
+                        )
                     }
                     query[filter.field] = {...query[filter.field],...{$nin: filter.value} }
                     break;

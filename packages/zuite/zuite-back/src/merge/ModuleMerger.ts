@@ -1,5 +1,5 @@
 import { mergeTypeDefs, mergeResolvers  } from '@graphql-tools/merge'
-import BaseMerge from '../modules/base/graphql/index.mjs'
+import BaseMerge from '../modules/base/graphql/index.js'
 import {commonResolvers, commonTypeDefs} from "@drax/common-back";
 import {identityResolvers, identityTypeDefs} from "@drax/identity-back"
 
