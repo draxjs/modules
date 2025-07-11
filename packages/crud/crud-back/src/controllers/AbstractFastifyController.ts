@@ -40,14 +40,14 @@ type CustomRequest = FastifyRequest<{
     }
 }>
 
-const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
-const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
-
 
 class AbstractFastifyController<T, C, U> extends CommonController {
 
     protected service: AbstractService<T, C, U>
     protected permission: IDraxPermission
+
+    protected baseFileDir = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
+    protected baseURL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
 
     protected tenantField: string = 'tenant'
     protected userField: string = 'user'
@@ -94,7 +94,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
-    private applyUserAndTenantFilters(filters: IDraxFieldFilter[], rbac: IRbac) {
+    protected applyUserAndTenantFilters(filters: IDraxFieldFilter[], rbac: IRbac) {
         if (this.tenantFilter && rbac.tenantId) {
             filters.push({field: this.tenantField, operator: 'eq', value: rbac.tenantId})
         }
@@ -104,26 +104,26 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
-    private assertTenant(item: T, rbac: IRbac) {
+    protected assertTenant(item: T, rbac: IRbac) {
         if (this.tenantAssert) {
             const itemTenantId = item[this.tenantField]?._id ? item[this.tenantField]._id.toString() : null
             rbac.assertTenantId(itemTenantId)
         }
     }
 
-    private assertUser(item: T, rbac: IRbac) {
+    protected assertUser(item: T, rbac: IRbac) {
         if (this.userAssert) {
             const itemUserId = item[this.userField]?._id ? item[this.userField]._id.toString() : null
             rbac.assertUserId(itemUserId)
         }
     }
 
-    private assertUserAndTenant(item: T, rbac: IRbac) {
+    protected assertUserAndTenant(item: T, rbac: IRbac) {
         this.assertTenant(item, rbac)
         this.assertUser(item, rbac)
     }
 
-    private applyUserAndTenantSetters(payload: any, rbac: any) {
+    protected applyUserAndTenantSetters(payload: any, rbac: any) {
         if (this.tenantSetter && rbac.tenantId) {
             payload[this.tenantField] = rbac.tenantId
         }
@@ -416,7 +416,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const month = (new Date().getMonth() + 1).toString().padStart(2, '0')
             const exportPath = 'exports'
 
-            const destinationPath = join(BASE_FILE_DIR, 'exports', year, month)
+            const destinationPath = join(this.baseFileDir, 'exports', year, month)
 
             let result: IDraxExportResult = await this.service.export({
                 separator,
@@ -429,7 +429,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 filters,
             }, destinationPath)
 
-            const url = `${BASE_URL}/api/file/${exportPath}/${year}/${month}/${result.fileName}`
+            const url = `${this.baseURL}/api/file/${exportPath}/${year}/${month}/${result.fileName}`
 
 
             return {
@@ -447,3 +447,5 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
 export default AbstractFastifyController;
 export {AbstractFastifyController}
+
+export type {CustomRequest}

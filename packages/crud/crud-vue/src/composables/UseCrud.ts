@@ -174,7 +174,8 @@ export function useCrud(entity: IEntityCrud) {
                 separator: ";",
                 orderBy: store.sortBy[0]?.key,
                 order: store.sortBy[0]?.order,
-                search: store.search
+                search: store.search,
+                filters: store.filters
             })
 
             if (r && r.url) {

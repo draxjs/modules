@@ -3,6 +3,7 @@ import AbstractMongoRepository from "./repository/AbstractMongoRepository.js";
 import AbstractSqliteRepository from "./repository/AbstractSqliteRepository.js";
 import AbstractService from "./services/AbstractService.js";
 import AbstractFastifyController from "./controllers/AbstractFastifyController.js";
+import type {CustomRequest} from "./controllers/AbstractFastifyController.js";
 
 //schemas
 import {IdParamSchema} from "./schemas/IdParamSchema.js"
@@ -15,6 +16,9 @@ import {ExportBodyResponseSchema} from "./schemas/ExportBodyResponseSchema.js"
 import {ErrorBodyResponseSchema, ValidationErrorBodyResponseSchema} from "./schemas/ErrorBodyResponseSchema.js"
 import {CrudSchemaBuilder} from "./builders/CrudSchemaBuilder.js";
 
+export type {
+    CustomRequest
+}
 
 export {
 
