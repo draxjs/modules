@@ -11,7 +11,8 @@ const CountryBaseSchema = z.object({
 const CountrySchema = CountryBaseSchema
     .extend({
       _id: z.string(),
-
+        company: z.object({_id: z.string(), name: z.string()}).nullable().optional(),
+        createdBy: z.object({_id: z.string(), username: z.string()}).nullable().optional()
     })
 
 export default CountrySchema;

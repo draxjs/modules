@@ -12,14 +12,17 @@ class CountryController extends AbstractFastifyController<ICountry, ICountryBase
 
     constructor() {
         super(CountryServiceFactory.instance, CountryPermissions)
-        this.tenantField = "tenant";
-        this.userField = "user";
+        this.tenantField = "company";
+        this.userField = "createdBy";
+
         this.tenantFilter = false;
-        this.userFilter = false;
-        this.tenantSetter = false;
-        this.userSetter = false;
         this.tenantAssert = false;
-        this.userAssert = false;
+        this.tenantSetter = false;
+
+        this.userFilter = true;
+        this.userSetter = true;
+        this.userAssert = true;
+
     }
 
     async export(request: CustomRequest, reply: FastifyReply) {

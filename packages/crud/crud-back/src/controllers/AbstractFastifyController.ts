@@ -53,12 +53,22 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     protected userField: string = 'user'
 
     protected tenantFilter: boolean = false
+    protected tenantSetter: boolean = false
+    protected tenantAssert: boolean = false
+
+    /**
+     * userFilter is used to filter items by user field like createdBy with auth user. Used by find, search, paginate
+     */
     protected userFilter: boolean = false
 
-    protected tenantSetter: boolean = false
+    /**
+     * userSetter is used to set user like createdBy with auth user. Used by create
+     */
     protected userSetter: boolean = false
 
-    protected tenantAssert: boolean = false
+    /**
+     * userSetter is used to verify item user like createdBy with auth user. Used by update, delete, findById
+     */
     protected userAssert: boolean = false
 
     protected defaultLimit: number = 1000
@@ -89,18 +99,31 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             })
             return filters
         } catch (e) {
-            console.error("parseFilters error",e)
+            console.error("parseFilters error", e)
             throw e
         }
     }
 
     protected applyUserAndTenantFilters(filters: IDraxFieldFilter[], rbac: IRbac) {
-        if (this.tenantFilter && rbac.tenantId) {
-            filters.push({field: this.tenantField, operator: 'eq', value: rbac.tenantId})
+        this.applyTenantFilter(filters, rbac)
+        this.applyUserFilter(filters, rbac)
+    }
+
+    protected applyUserFilter(filters: IDraxFieldFilter[], rbac: IRbac) {
+
+        if(rbac.hasSomePermission([this.permission.All, this.permission.ViewAll])) {
+            return
         }
 
-        if (this.userFilter && rbac.userId) {
+        if(this.userFilter && rbac.userId) {
             filters.push({field: this.userField, operator: 'eq', value: rbac.userId})
+        }
+
+    }
+
+    protected applyTenantFilter(filters: IDraxFieldFilter[], rbac: IRbac) {
+        if (this.tenantFilter && rbac.tenantId) {
+            filters.push({field: this.tenantField, operator: 'eq', value: rbac.tenantId})
         }
     }
 
@@ -112,6 +135,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     }
 
     protected assertUser(item: T, rbac: IRbac) {
+
         if (this.userAssert) {
             const itemUserId = item[this.userField]?._id ? item[this.userField]._id.toString() : null
             rbac.assertUserId(itemUserId)
@@ -155,10 +179,23 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             }
             const id = request.params.id
             const payload = request.body
+
+            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
+
+                let preItem = await this.service.findById(id)
+
+                if (!preItem) {
+                    reply.statusCode = 404
+                    reply.send({error: 'NOT_FOUND'})
+                }
+
+                this.assertUser(preItem, request.rbac)
+            }
+
+            //Definido el tenant/user en el create no debe modificarse en un update
             delete payload[this.tenantField]
             delete payload[this.userField]
-            //Una vez que un registro se crea con un tenant, no deberia actualizarse nunca mas
-            //this.applyUserAndTenantSetters(payload, request.rbac)
+
             let item = await this.service.update(id, payload as U)
 
             if (!item) {
@@ -180,10 +217,23 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             }
             const id = request.params.id
             const payload = request.body
+
+            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
+
+                let preItem = await this.service.findById(id)
+
+                if (!preItem) {
+                    reply.statusCode = 404
+                    reply.send({error: 'NOT_FOUND'})
+                }
+
+                this.assertUser(preItem, request.rbac)
+            }
+
+            //Definido el tenant/user en el create no debe modificarse en un update
             delete payload[this.tenantField]
             delete payload[this.userField]
-            //Una vez que un registro se crea con un tenant, no deberia actualizarse nunca mas
-            //this.applyUserAndTenantSetters(payload, request.rbac)
+
             let item = await this.service.updatePartial(id, payload as U)
             if (!item) {
                 throw new NotFoundError()
@@ -201,6 +251,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 reply.statusCode = 400
                 reply.send({error: 'BAD REQUEST'})
             }
+
             const id = request.params.id
 
             let item = await this.service.findById(id)
@@ -210,7 +261,12 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 reply.send({error: 'NOT_FOUND'})
             }
 
-            this.assertUserAndTenant(item, request.rbac)
+            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.DeleteAll])) {
+                this.assertUser(item, request.rbac)
+            }
+
+            this.assertTenant(item, request.rbac)
+
 
             await this.service.delete(id)
             reply.send({
@@ -240,7 +296,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 throw new NotFoundError()
             }
 
-            this.assertUserAndTenant(item, request.rbac)
+            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.ViewAll])) {
+                this.assertUser(item, request.rbac)
+            }
+
+            this.assertTenant(item, request.rbac)
 
             return item
         } catch (e) {
@@ -280,6 +340,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const order = request.query.order
             const search = request.query.search ??= undefined
             const filters = this.parseFilters(request.query.filters)
+
 
             this.applyUserAndTenantFilters(filters, request.rbac);
 
@@ -351,7 +412,6 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             this.handleError(e, reply)
         }
     }
-
 
 
     async search(request: CustomRequest, reply: FastifyReply) {

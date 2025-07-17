@@ -5,6 +5,8 @@ interface ICountryBase {
     flag?: string
     createdAt?: Date
     updatedAt?: Date
+    company?: any
+    createdBy?: any
 }
 
 interface ICountry {
@@ -14,9 +16,11 @@ interface ICountry {
     flag?: string
     createdAt?: Date
     updatedAt?: Date
+    company?: any
+    createdBy?: any
 }
 
 export type {
-ICountryBase, 
+ICountryBase,
 ICountry
 }

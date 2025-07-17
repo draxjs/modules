@@ -44,7 +44,8 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return [
       {title: 'name', key: 'name', align: 'start'},
       {title: 'description', key: 'description', align: 'start'},
-      {title: 'flag', key: 'flag', align: 'start'}
+      {title: 'flag', key: 'flag', align: 'start'},
+      {title: 'createdBy', key: 'createdBy', align: 'start'},
     ]
   }
 

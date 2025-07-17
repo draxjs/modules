@@ -226,6 +226,7 @@ export function useCrud(entity: IEntityCrud) {
 
     function onCreate() {
         store.setForm(entity.form)
+        store.resetErrors()
         store.setOperation("create")
         openDialog()
     }

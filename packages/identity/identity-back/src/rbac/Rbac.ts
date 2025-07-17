@@ -54,6 +54,13 @@ class Rbac implements IRbac{
         return this.role.permissions.includes(requiredPermission);
     }
 
+    hasSomePermission(requiredPermissions: string[]): boolean {
+        if (!this.authUser || !this.role || !this.role.permissions || this.role.permissions.length === 0) {
+            return false;
+        }
+        return this.role.permissions.some(permission => requiredPermissions.includes(permission));
+    }
+
     assertPermission(requiredPermission: string) {
         this.assertAuthenticated()
         if (!this.hasPermission(requiredPermission)) {

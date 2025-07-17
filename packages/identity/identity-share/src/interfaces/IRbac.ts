@@ -8,6 +8,7 @@ interface IRbac {
     readonly tenantId: string | undefined;
 
     hasPermission(requiredPermission: string): boolean;
+    hasSomePermission(requiredPermission: string[]): boolean;
     assertPermission(requiredPermission: string): void;
     assertOrPermissions(requiredPermissions: string[]): boolean;
     assertAuthenticated(): void;

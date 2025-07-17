@@ -5,7 +5,13 @@ enum CountryPermissions {
     Update = "country:update",
     Delete = "country:delete",
     View = "country:view",
-    Manage = "country:manage"
+    Manage = "country:manage",
+
+    All = "country:all",
+
+    ViewAll = "country:view:all",
+    UpdateAll = "country:update:all",
+    DeleteAll = "country:delete:all",
 
 }
 
