@@ -30,7 +30,8 @@ class EntityCrud implements IEntityCrud {
                 key: 'actions',
                 sortable: false,
                 align: 'center',
-                minWidth: '190px'
+                minWidth: '190px',
+                fixed:  'end'
             },
         ]
     }
@@ -209,6 +210,42 @@ class EntityCrud implements IEntityCrud {
 
     get filterButtons(){
         return true
+    }
+
+    get containerFluid(){
+        return false
+    }
+
+    get cardDensity() : 'default' | 'comfortable' | 'compact' {
+        return 'default'
+    }
+
+    get cardClass() : string {
+        return 'rounded-xl'
+    }
+
+    get toolbarDensity() : 'default' | 'comfortable' | 'compact' {
+        return 'default'
+    }
+
+    get toolbarClass() : string {
+        return 'bg-primary'
+    }
+
+    get tableDensity() : 'default' | 'comfortable' | 'compact' {
+        return 'default'
+    }
+
+    get headerProps(){
+        return { class: 'bg-primary' }
+    }
+
+    get tableStriped() : null | 'odd' | 'even' {
+        return 'even'
+    }
+
+    get footerClass(){
+        return 'bg-primary'
     }
 
 

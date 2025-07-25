@@ -22,14 +22,14 @@ onBeforeMount(() => {
   prepareFilters()
 })
 
-const emit = defineEmits(['created', 'updated', 'deleted', 'viewed','canceled'])
+const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])
 
 
 </script>
 
 <template>
-  <v-container fluid class="mt-5">
-    <v-card>
+  <v-container :fluid="entity.containerFluid" class="mt-5">
+    <v-card :class="entity.cardClass" :density="entity.cardDensity">
 
       <crud-list
           :entity="entity"
@@ -48,6 +48,16 @@ const emit = defineEmits(['created', 'updated', 'deleted', 'viewed','canceled'])
         <template v-slot:filters="{filters}" v-if="$slots.filters">
           <slot name="filters" v-bind="{filters}">
           </slot>
+        </template>
+
+        <template v-for="iFilter in entity.filters"
+                  :key="iFilter.name"
+                  v-slot:[`filter.${iFilter.name}`]="{filter, filterIndex}"
+        >
+          <slot v-if="$slots[`filter.${iFilter.name}`]"
+                :name="`filter.${iFilter.name}`"
+                v-bind="{filter, filterIndex}"
+          />
         </template>
 
         <template v-for="header in entity.headers" :key="header.key" v-slot:[`item.${header.key}`]="{item, value}">

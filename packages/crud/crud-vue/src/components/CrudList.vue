@@ -53,7 +53,9 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
 <template>
   <v-data-table-server
-      class="border"
+      :density="entity.tableDensity"
+      :striped="entity.tableStriped"
+      :header-props="entity.headerProps"
       v-if="hasPermission(entity.permissions.view)"
       v-model:items-per-page="itemsPerPage"
       :items-per-page-options="[5, 10, 20, 50]"
@@ -67,9 +69,17 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       :multi-sort="false"
       item-value="name"
       @update:options="doPaginate"
+      :style="entity.footerBgColor ? `--custom-footer-bg: ${entity.footerBgColor}` : ''"
   >
+
+    <template v-slot:bottom>
+      <v-data-table-footer :class="entity.footerClass"
+                           :items-per-page-options="[5, 10, 20, 50]"
+      ></v-data-table-footer>
+    </template>
+
     <template v-slot:top>
-      <v-toolbar density="compact">
+      <v-toolbar :class="entity.toolbarClass" :density="entity.toolbarDensity">
         <v-toolbar-title>
           {{ te(`${entity.name.toLowerCase()}.crud`) ? t(`${entity.name.toLowerCase()}.crud`) : entity.name }}
         </v-toolbar-title>
@@ -101,7 +111,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
           :entity="entity"
       />
 
-      <v-card>
+      <v-card variant="flat">
         <v-card-text v-if="entity.searchEnable">
           <crud-search
               v-model="search"
@@ -110,23 +120,36 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
         <v-card-text class="pt-0">
           <slot name="filters" v-bind="{filters}"></slot>
+
           <crud-filters
-            v-if="!$slots.filters"
-            :entity="entity"
-            v-model="filters"
-            :action-buttons="entity.filterButtons"
-            @clearFilter="clearFilters()"
-            @applyFilter="applyFilters()"
-          />
+              v-if="!$slots.filters"
+              :entity="entity"
+              v-model="filters"
+              :action-buttons="entity.filterButtons"
+              @clearFilter="clearFilters()"
+              @applyFilter="applyFilters()"
+          >
+
+            <template v-for="iFilter in entity.filters"
+                      :key="iFilter.name"
+                      v-slot:[`filter.${iFilter.name}`]="{filter, filterIndex}"
+            >
+              <slot v-if="$slots[`filter.${iFilter.name}`]"
+                    :name="`filter.${iFilter.name}`"
+                    v-bind="{filter, filterIndex}"
+              />
+            </template>
+          </crud-filters>
         </v-card-text>
 
       </v-card>
 
+      <v-divider></v-divider>
     </template>
 
 
     <template v-for="header in entity.headers" :key="header.key" v-slot:[`item.${header.key}`]="{item, value}">
-      <slot :name="`item.${header.key}`" v-bind="{item, value}">
+      <slot v-if="$slots[`item.${header.key}`]" :name="`item.${header.key}`" v-bind="{item, value}">
         {{ value }}
       </slot>
     </template>

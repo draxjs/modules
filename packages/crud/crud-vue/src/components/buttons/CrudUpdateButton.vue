@@ -11,7 +11,7 @@ const {t} = useI18n()
           icon="mdi-pencil"
           class="mr-1"
           variant="text"
-          color="primary"
+          color="blue"
           slim
       >
       </v-btn>

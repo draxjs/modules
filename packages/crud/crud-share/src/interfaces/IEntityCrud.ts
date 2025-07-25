@@ -35,6 +35,21 @@ interface IEntityCrud {
   importFormats: string[]
   exportHeaders: string[]
 
+  containerFluid?: boolean
+
+  cardClass?: string
+  cardDensity?: 'default' | 'comfortable' | 'compact'
+
+  toolbarClass?: string
+  toolbarDensity?: 'default' | 'comfortable' | 'compact'
+
+  tableDensity?: 'default' | 'comfortable' | 'compact'
+  tableStriped?: null | 'odd' | 'even'
+
+  headerProps?: Record<string, any>;
+
+  footerClass?: string
+
   searchEnable?: boolean
 
   filterButtons?: boolean

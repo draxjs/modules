@@ -11,7 +11,7 @@ const {t} = useI18n()
           icon="mdi-magnify"
           class="mr-1"
           variant="text"
-          color="secondary"
+          color="teal"
           slim
       >
       </v-btn>

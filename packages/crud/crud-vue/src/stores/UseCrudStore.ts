@@ -42,6 +42,11 @@ export const useCrudStore = defineStore('CrudStore', {
                     }
                 }
             }
+        },
+        getFilterIndex(state: any) {
+            return (filterName: string) => {
+                return state.filters.findIndex((filter: any) => filter.field === filterName)
+            }
         }
 
     },

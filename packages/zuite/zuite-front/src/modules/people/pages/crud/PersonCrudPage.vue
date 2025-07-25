@@ -1,11 +1,11 @@
 
 <script setup lang="ts">
 import PersonCrud from '../../cruds/PersonCrud'
-import {Crud} from "@drax/crud-vue";
 import {formatDate} from "@drax/common-front"
+import {Crud, useCrudStore} from "@drax/crud-vue";
+const store = useCrudStore()
 
 </script>
-
 <template>
   <crud :entity="PersonCrud.instance">
     <template v-slot:item.birthdate="{value}">{{formatDate(value)}}</template>
@@ -14,6 +14,15 @@ import {formatDate} from "@drax/common-front"
     <template v-slot:item.languages="{value}">{{ value.map((v:any) => v.name).join(",") }}</template>
     <template v-slot:item.tenant="{value}">{{value?.name}}</template>
     <template v-slot:item.user="{value}">{{value?.username}}</template>
+    <template v-slot:filter.fullname="{filterIndex}">
+      <v-text-field
+        label="FULLNAME"
+        color="orange"
+        v-model="store.filters[filterIndex].value"
+        hint="Filtro custom fullname" persistent-hint
+      />
+    </template>
+
   </crud>
 </template>
 

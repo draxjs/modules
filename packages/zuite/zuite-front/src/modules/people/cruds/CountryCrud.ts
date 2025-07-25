@@ -128,7 +128,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
   }
 
   get isImportable() {
-    return true
+    return false
   }
 
   get importFormats() {

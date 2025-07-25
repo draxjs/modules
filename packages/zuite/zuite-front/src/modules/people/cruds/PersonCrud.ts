@@ -172,7 +172,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   get filters(): IEntityCrudFilter[] {
     return [
       {name: '_id', type: 'string', label: 'ID', default: null, operator: "eq"},
-      {name: 'fullname', type: 'string', label: 'fullname', default: null, operator: "eq"},
+      {name: 'fullname', type: 'string', label: 'fullname', default: null, operator: "like"},
       {name: 'birthdate', type: 'date', label: 'birthdate', default: null, operator: "lte", endOfDay: true},
     ]
   }
@@ -238,6 +238,14 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 
   get searchEnable(){
     return true
+  }
+
+  get striped(): null | 'odd' | 'even'{
+    return 'even'
+  }
+
+  get headerProps(){
+    return { style: {color: 'white', backgroundColor: '#3F51B5'} }
   }
 
 }

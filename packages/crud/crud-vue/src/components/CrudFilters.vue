@@ -76,17 +76,21 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
                  :lg="filter.lg ? filter.lg : 4"
                  :xl="filter.xl ? filter.xl : 3"
           >
-            <crud-form-field
-                :field="filter"
-                :entity="entity"
-                v-model="valueModel[index].value"
-                :clearable="true"
-                density="compact"
-                variant="outlined"
-                :prepend-inner-icon="icon(filter)"
-                hide-details  disable-rules
-                @updateValue="onUpdateValue"
-            />
+
+            <slot :name="`filter.${filter.name}`" v-bind="{filter, filterIndex: index}">
+              <crud-form-field
+                  :field="filter"
+                  :entity="entity"
+                  v-model="valueModel[index].value"
+                  :clearable="true"
+                  density="compact"
+                  variant="outlined"
+                  :prepend-inner-icon="icon(filter)"
+                  hide-details  disable-rules
+                  @updateValue="onUpdateValue"
+              />
+            </slot>
+
           </v-col>
 
         </v-row>

@@ -12,7 +12,6 @@ const {t} = useI18n()
              icon="mdi-plus"
              class="mr-1"
              variant="text"
-             color="primary"
       >
       </v-btn>
     </template>

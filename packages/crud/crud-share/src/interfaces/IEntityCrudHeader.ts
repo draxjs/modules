@@ -6,7 +6,8 @@ interface IEntityCrudHeader {
     minWidth?: string
     maxWidth?: string
     width?: string
-    permission?: string
+    permission?: string,
+    fixed?: 'start' | 'end' | undefined
 }
 
 
