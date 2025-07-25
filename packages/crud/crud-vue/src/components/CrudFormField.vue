@@ -310,7 +310,7 @@ defineEmits(['updateValue'])
         :append-inner-icon="appendInnerIcon"
 
     >
-      <template v-if="field.endOfDay" v-slot:append-inner>
+      <template v-if="field.endOfDay && field.showEndOfDayChip !== false" v-slot:append-inner>
         <v-chip size="small">23:59</v-chip>
       </template>
     </v-date-input>
