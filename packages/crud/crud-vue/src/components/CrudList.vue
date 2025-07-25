@@ -69,7 +69,6 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       :multi-sort="false"
       item-value="name"
       @update:options="doPaginate"
-      :style="entity.footerBgColor ? `--custom-footer-bg: ${entity.footerBgColor}` : ''"
   >
 
     <template v-slot:bottom>

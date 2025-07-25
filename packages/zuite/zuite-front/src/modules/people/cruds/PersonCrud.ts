@@ -245,7 +245,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get headerProps(){
-    return { style: {color: 'white', backgroundColor: '#3F51B5'} }
+    return { class: 'bg-primary' }
   }
 
 }
