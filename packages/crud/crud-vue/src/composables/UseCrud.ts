@@ -167,11 +167,13 @@ export function useCrud(entity: IEntityCrud) {
             }
 
             const headers: string = entity.exportHeaders.join(',')
+            const fileName: string = entity.exportFileName
 
             const r: any = await entity?.provider.export({
                 format: format,
                 headers: headers,
                 separator: ";",
+                fileName: fileName,
                 orderBy: store.sortBy[0]?.key,
                 order: store.sortBy[0]?.order,
                 search: store.search,

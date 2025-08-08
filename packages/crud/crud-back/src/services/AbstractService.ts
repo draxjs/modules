@@ -266,6 +266,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                      format = 'JSON',
                      headers = [],
                      separator = ';',
+                     fileName = 'export',
                      orderBy = '',
                      order = false,
                      search = '',
@@ -285,10 +286,10 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
             switch (format) {
                 case 'JSON':
-                    exporter = new ExportJson({cursor, destinationPath: destinationPath, headers});
+                    exporter = new ExportJson({cursor, destinationPath: destinationPath, headers, fileName});
                     return await exporter.process()
                 case 'CSV':
-                    exporter = new ExportCsv({cursor, destinationPath: destinationPath, headers, separator});
+                    exporter = new ExportCsv({cursor, destinationPath: destinationPath, headers, fileName, separator});
                     return await exporter.process()
                 default:
                     throw new Error(`Unsupported export format: ${format}`);

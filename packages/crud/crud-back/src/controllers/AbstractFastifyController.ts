@@ -37,6 +37,7 @@ type CustomRequest = FastifyRequest<{
         filters?: string
         headers?: string
         separator?: string
+        fileName?: string
     }
 }>
 
@@ -464,6 +465,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const format = request.query.format as 'CSV' | 'JSON' || 'JSON'
             const headers = request.query.headers ? request.query.headers.split(",") : []
             const separator = request.query.separator || ";"
+            const fileName = request.query.fileName || "export"
             const limit = request.query.limit
             const orderBy = request.query.orderBy
             const order = request.query.order
@@ -480,6 +482,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let result: IDraxExportResult = await this.service.export({
                 separator,
+                fileName,
                 format,
                 headers,
                 limit,
