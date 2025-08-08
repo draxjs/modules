@@ -28,6 +28,7 @@ interface IEntityCrudField {
     noFilter?: boolean
     endOfDay?: boolean
     showEndOfDayChip?: boolean
+    max?: string
 }
 
 export type { IEntityCrudField }
