@@ -9,7 +9,7 @@ const {entity} = defineProps({
 })
 
 const {
-  exportFiles, exportListVisible, exportLoading
+  exportFiles, exportListVisible, exportLoading, exportError
 } = useCrud(entity);
 
 </script>
@@ -25,7 +25,10 @@ const {
 
     </v-card-title>
     <v-card-text>
-      <v-table density="compact">
+      <v-alert v-if="exportError" type="error">
+        {{ t('export.error.message') }}
+      </v-alert>
+      <v-table density="compact" v-else>
         <thead>
         <tr>
           <th>Link</th><th>Rows</th><th>Time</th>

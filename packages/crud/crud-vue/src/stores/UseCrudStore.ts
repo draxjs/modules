@@ -23,6 +23,7 @@ export const useCrudStore = defineStore('CrudStore', {
             exportLoading: false,
             exportFiles: [] as string[],
             exportListVisible: false,
+            exportError: false
         }
     ),
     getters: {
@@ -115,6 +116,9 @@ export const useCrudStore = defineStore('CrudStore', {
         },
         setExportListVisible(exportListVisible: boolean) {
             this.exportListVisible = exportListVisible
+        },
+        setExportError(error: boolean){
+            this.exportError = error
         },
         setFilters(filters: any[]) {
             this.filters = filters
