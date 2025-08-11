@@ -2,6 +2,7 @@ import IdentityLogin from "./components/IdentityLogin/IdentityLogin.vue";
 import IdentityProfileAvatar from "./components/IdentityProfileAvatar/IdentityProfileAvatar.vue";
 import IdentityProfileDrawer from "./components/IdentityProfileDrawer/IdentityProfileDrawer.vue";
 import IdentityProfileView from "./components/IdentityProfileView/IdentityProfileView.vue";
+import IdentityProfileAvatarEdit from "./components/IdentityProfileAvatarEdit/IdentityProfileAvatarEdit.vue";
 
 import UserCrudPage from "./pages/crud/UserCrudPage.vue";
 import UserForm from "./cruds/user-crud/UserForm.vue";
@@ -54,6 +55,7 @@ export {
     IdentityProfileAvatar,
     IdentityProfileView,
     IdentityProfileDrawer,
+    IdentityProfileAvatarEdit,
 
     //Pages
     LoginPage,
