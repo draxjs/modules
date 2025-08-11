@@ -34,6 +34,7 @@ interface IEntityCrud {
   exportFormats: string[]
   importFormats: string[]
   exportHeaders: string[]
+  exportFileName: string
 
   containerFluid?: boolean
 

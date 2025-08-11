@@ -170,6 +170,10 @@ class EntityCrud implements IEntityCrud {
         return ['_id']
     }
 
+    get exportFileName(){
+        return 'export'
+    }
+
     get isImportable() {
         return true
     }

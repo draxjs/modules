@@ -308,7 +308,7 @@ defineEmits(['updateValue'])
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
-
+        :max="field.max"
     >
       <template v-if="field.endOfDay && field.showEndOfDayChip !== false" v-slot:append-inner>
         <v-chip size="small">23:59</v-chip>

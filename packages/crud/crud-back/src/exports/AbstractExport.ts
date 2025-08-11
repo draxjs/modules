@@ -6,6 +6,7 @@ interface ExportOptions {
     cursor: any
     destinationPath: string
     headers: string[] | string
+    fileName: string
 }
 
 export type {ExportOptions}
@@ -23,6 +24,7 @@ class AbstractExport {
         this.cursor = options.cursor;
         this.destinationPath = options.destinationPath;
         this.headers = Array.isArray(options.headers) ? options.headers : options.headers.split(',');
+        this.fileName = options.fileName;
     }
 
 
@@ -31,12 +33,12 @@ class AbstractExport {
     }
 
     generateFileName(extension:string): string {
-        if (!this.fileName) {
-            const randomUUID = crypto.randomUUID().toString();
-            this.fileName = `export_${randomUUID}.${extension}`;
-        }
+        if (!this.fileName) this.fileName = 'export'
+        const today = new Date();
+        const formattedDate = today.toISOString().slice(0, 10).replace(/-/g, '');
+        const shortUUID = crypto.randomUUID().slice(0, 4).toUpperCase();
+        this.fileName = `${this.fileName}_${formattedDate}_${shortUUID}.${extension}`;
         return this.fileName;
-
     }
 
     generateFilePath(extension:string) {
