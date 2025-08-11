@@ -7,6 +7,13 @@ export function useCrud(entity: IEntityCrud) {
 
     const store = useCrudStore()
 
+    const exportError = computed({
+        get() {
+            return store.exportError
+        }, set(value) {
+            store.setExportError(value)
+        }
+    })
 
     const dialog = computed({
         get() {
@@ -188,6 +195,7 @@ export function useCrud(entity: IEntityCrud) {
             return r
 
         } catch (e) {
+            store.setExportError(true)
             console.error("Error exporting csv", e)
         } finally {
             store.setExportLoading(false)
@@ -373,7 +381,7 @@ export function useCrud(entity: IEntityCrud) {
         operation, dialog, form, notify, error, message, formValid,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
         prepareFilters, filters, clearFilters, applyFilters,
-        exportFiles, exportLoading, exportListVisible
+        exportFiles, exportLoading, exportListVisible, exportError
     }
 
 }
