@@ -67,7 +67,7 @@ const {
               prepend-inner-icon="mdi-card-account-details"
               :variant="variant"
               :error-messages="$ta(store.inputErrors?.name)"
-              :rules="[v => !!v || 'validation.required']"
+              :rules="[v => !!v || t('validation.required')]"
               density="default"
               :readonly="readonly"
               :clearable="false"
