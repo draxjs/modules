@@ -16,6 +16,8 @@ interface ISettingBase{
     entityText?: string
     prefix?: string
     suffix?: string
+    public?: boolean
+    permission?: string
 }
 
 interface ISetting{
@@ -34,6 +36,8 @@ interface ISetting{
     entityText?: string
     prefix?: string
     suffix?: string
+    public?: boolean
+    permission?: string
 }
 
 

@@ -4,6 +4,7 @@ const messages = {
             entity: "Tenant",
             name: "Name",
             createdAt: 'Created At',
+            current: 'Current Tenant',
             field:{
                 id: 'ID',
                 name: 'Name'
@@ -15,6 +16,7 @@ const messages = {
             entity: "Tenant",
             name: "Nombre",
             createdAt: 'Creado',
+            current: 'Tenant actual',
             field:{
                 id: 'ID',
                 name: 'Nombre'

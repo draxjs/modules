@@ -18,6 +18,7 @@ import {join} from "path";
 import {IdentityConfig} from "../config/IdentityConfig.js";
 import UserEmailService from "../services/UserEmailService.js";
 import {IDraxFieldFilter} from "@drax/crud-share";
+import TenantServiceFactory from "../factory/TenantServiceFactory.js";
 
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const AVATAR_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatar';
@@ -56,10 +57,37 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 let user = await userService.findById(request.rbac.userId)
                 user.password = undefined
                 delete user.password
+
+                //handle SwitchTenant setted in accessToken
+                if(request.authUser.tenantId != user?.tenant?._id){
+                    const tenantService = TenantServiceFactory()
+                    const tenant = await tenantService.findById(request.authUser.tenantId)
+                    if(tenant){
+                        user.tenant = tenant
+                    }
+                }
+
                 return user
+
             } else {
                 throw new UnauthorizedError()
 
+            }
+        } catch (e) {
+            this.handleError(e,reply)
+        }
+    }
+
+    async switchTenant(request, reply) {
+        try {
+            request.rbac.assertPermission(UserPermissions.SwitchTenant)
+            if (request.authUser && request.token) {
+                const tenantId = request.body.tenantId
+                const userService = UserServiceFactory()
+                let {accessToken} = await userService.switchTenant(request.token, tenantId)
+                return {accessToken}
+            } else {
+                throw new UnauthorizedError()
             }
         } catch (e) {
             this.handleError(e,reply)

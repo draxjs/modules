@@ -15,6 +15,7 @@ function jwtMiddleware (request, reply, done) {
                 const authUser = AuthUtils.verifyToken(token) as IJwtUser
                 if(authUser){
                     request.authUser = authUser
+                    request.token = token
                 }
             }
             done()

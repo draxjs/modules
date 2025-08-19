@@ -34,6 +34,15 @@ class AuthGqlProvider implements IAuthProvider {
         return {accessToken}
     }
 
+    async switchTenant(tenantId: string): Promise<ILoginResponse> {
+        const query: string = `mutation switchTenant($input: SwitchTenantInput) { switchTenant(input: $input) {accessToken} }`
+        const variables = {input: {tenantId}}
+        let data = await this.gqlClient.mutation(query, variables)
+        const {accessToken} = data.auth
+        this.setHttpClientToken(accessToken)
+        return {accessToken}
+    }
+
     async me(): Promise<IAuthUser> {
         const query: string = `query me { me {id, username, email, phone, role {id, name, permissions}, avatar} }`
         let data = await this.gqlClient.query(query)

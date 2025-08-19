@@ -78,6 +78,42 @@ class AuthUtils{
         // Generar el hash en formato hexadecimal
         return hmac.digest('hex');
     }
+
+    static switchTenant(accessToken: string, newTenantId: string): string {
+        // Verificar que el token actual sea válido
+        const decodedToken = AuthUtils.verifyToken(accessToken) as IJwtUser & { exp?: number };
+
+        if (!decodedToken) {
+            throw new Error("Invalid access token");
+        }
+
+        // Crear el nuevo payload manteniendo todos los datos excepto tenantId
+        const newPayload: IJwtUser = {
+            id: decodedToken.id,
+            username: decodedToken.username,
+            roleId: decodedToken.roleId,
+            tenantId: newTenantId,
+            session: decodedToken.session,
+            exp: decodedToken.exp
+        };
+
+        const JWT_SECRET = DraxConfig.getOrLoad(IdentityConfig.JwtSecret);
+        if (!JWT_SECRET) {
+            throw new Error("JWT_SECRET ENV must be provided");
+        }
+
+        const JWT_ISSUER = DraxConfig.getOrLoad(IdentityConfig.JwtIssuer) || 'DRAX';
+
+        const options: SignOptions = {
+            jwtid: decodedToken.id,
+            algorithm: 'HS256',
+            audience: decodedToken.username,
+            issuer: JWT_ISSUER
+        };
+
+
+        return jsonwebtoken.sign(newPayload, JWT_SECRET, options);
+    }
 }
 
 export default AuthUtils

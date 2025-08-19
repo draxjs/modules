@@ -9,6 +9,7 @@ import {
     PasswordBodyRequestSchema,
     PasswordBodyResponseSchema
 } from "../schemas/PasswordSchema.js";
+import {SwitchTenantBodyRequestSchema, SwitchTenantBodyResponseSchema} from "../schemas/SwitchTenantSchema.js";
 
 async function UserRoutes(fastify, options) {
 
@@ -51,6 +52,19 @@ async function UserRoutes(fastify, options) {
             },
         },
     }, (req, rep) => controller.me(req, rep))
+
+    fastify.post('/api/auth/switch-tenant',
+        {
+            schema: {
+                tags: ['Auth'],
+                body: zodToJsonSchema(SwitchTenantBodyRequestSchema),
+                response: {
+                    200: zodToJsonSchema(SwitchTenantBodyResponseSchema),
+                    400: schemas.jsonErrorBodyResponse,
+                },
+            },
+        },
+        (req, rep) => controller.switchTenant(req, rep))
 
 
     fastify.post('/api/users/register', {

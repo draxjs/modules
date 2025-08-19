@@ -4,7 +4,7 @@ enum UserPermissions {
     Delete = "user:delete",
     View = "user:view",
     Manage = "user:manage",
-
+    SwitchTenant = "user:switchTenant",
 }
 
 export default UserPermissions;

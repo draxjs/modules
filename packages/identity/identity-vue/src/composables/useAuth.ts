@@ -17,6 +17,14 @@ export function useAuth() {
         authStore.setAuthUser(authUser)
     }
 
+
+    const switchTenant = async (tenantId: string) => {
+        const {accessToken} = await authSystem.switchTenant(tenantId)
+        authStore.setAccessToken(accessToken)
+        const authUser = await authSystem.me()
+        authStore.setAuthUser(authUser)
+    }
+
     const loginWithToken = async (token: string) => {
         authStore.setAccessToken(token)
         if(tokenIsValid()){
@@ -91,7 +99,7 @@ export function useAuth() {
         isAuthenticated, fetchAuthUser,
         changeOwnPassword, changeAvatar,
         recoveryPasswordRequest, recoveryPasswordComplete,
-        register
+        register, switchTenant
     }
 
 }

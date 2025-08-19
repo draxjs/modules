@@ -5,6 +5,7 @@ import {ValidationError, UnauthorizedError} from "@drax/common-back";
 import TenantServiceFactory from "../factory/TenantServiceFactory.js";
 import TenantService from "../services/TenantService.js";
 import TenantPermissions from "../permissions/TenantPermissions.js";
+import UserPermissions from "../permissions/UserPermissions.js";
 
 class TenantController extends AbstractFastifyController<ITenant, ITenantBase, ITenantBase>   {
 
@@ -14,13 +15,11 @@ class TenantController extends AbstractFastifyController<ITenant, ITenantBase, I
         super(TenantServiceFactory(), TenantPermissions)
     }
 
-
-
     async all(request, reply) {
         try {
             request.rbac.assertPermission(this.permission.View)
             let tenants = await this.service.fetchAll()
-            if(request.rbac.getAuthUser.tenantId){
+            if(request.rbac.getAuthUser.tenantId && !request.rbac.hasPermission(UserPermissions.SwitchTenant)){
                 return tenants.filter(t => t._id === request.rbac.getAuthUser.tenantId)
             }else{
                 return tenants

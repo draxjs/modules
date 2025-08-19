@@ -13,6 +13,7 @@ const messages = {
             'user:update': 'Edit User',
             'user:delete': 'Delete User',
             'user:manage': 'Manage User',
+            'user:switchTenant': 'Switch Tenant',
 
             'userApiKey:view': 'View ApiKey',
             'userApiKey:myView': 'View My ApiKey',
@@ -50,6 +51,7 @@ const messages = {
             'user:update': 'Editar Usuario',
             'user:delete': 'Eliminar Usuario',
             'user:manage': 'Administrar Usuario',
+            'user:switchTenant': 'Cambiar Tenant',
 
             'userApiKey:view': 'Ver ApiKey',
             'userApiKey:myView': 'Ver mis ApiKey',

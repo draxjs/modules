@@ -34,6 +34,11 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
     }
 
+    async switchTenant(accessToken: string, tenantId: string) {
+        const newAccessToken = AuthUtils.switchTenant(accessToken, tenantId)
+        return {accessToken: newAccessToken}
+    }
+
     async authByEmail(email: string, createIfNotFound: boolean = false, userData: IUserCreate) {
         let user = null
         console.log("auth email", email)

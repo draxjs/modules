@@ -8,6 +8,7 @@ defineProps({
   errorMessages: {type: String as PropType<string | string[] | undefined>,},
   clearable: {type: Boolean, default: false},
   readonly: {type: Boolean, default: false},
+  hideDetails: {type: Boolean, default: false},
   itemTitle: {type: String, default: "name"},
   itemValue: {type: String, default: "_id"},
   rules: {type: Array as PropType<any[]>, default: () => []},
@@ -40,6 +41,8 @@ onMounted(async () => {
       :clearable="clearable"
       :rules="rules"
       :readonly="readonly"
+      :hide-details="hideDetails"
+      :density="density"
   ></v-select>
 </template>
 

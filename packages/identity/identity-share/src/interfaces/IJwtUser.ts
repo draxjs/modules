@@ -4,6 +4,7 @@ interface IJwtUser {
     roleId: string
     tenantId?: string
     session?: string
+    exp?: number
 }
 
 export {IJwtUser}

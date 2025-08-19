@@ -56,9 +56,13 @@ input AuthInput{
     password: String!
 }
 
+input SwitchTenantInput{
+    tenantId: String!
+}
 
 type Mutation{
     auth(input: AuthInput): Auth
+    switchTenant(input: SwitchTenantInput): Auth
     createUser(input: UserCreateInput): User
     updateUser(id: ID!, input: UserUpdateInput): User
     deleteUser(id: ID!): Boolean

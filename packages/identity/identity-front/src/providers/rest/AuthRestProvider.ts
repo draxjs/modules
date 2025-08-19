@@ -30,6 +30,14 @@ class AuthRestProvider implements IAuthProvider {
             return {accessToken}
     }
 
+    async switchTenant(tenantId: string): Promise<ILoginResponse> {
+        const url = '/api/auth/switch-tenant'
+        const data = {tenantId}
+        let {accessToken} = await this.httpClient.post(url, data) as ILoginResponse
+        this.setHttpClientToken(accessToken)
+        return {accessToken}
+    }
+
     logout(): void {
         this.removeHttpClientToken()
     }

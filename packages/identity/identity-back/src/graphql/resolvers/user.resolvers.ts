@@ -7,12 +7,12 @@ import {
     DraxConfig,
     CommonConfig
 } from "@drax/common-back";
-import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
 import {UnauthorizedError} from "@drax/common-back";
 import BadCredentialsError from "../../errors/BadCredentialsError.js";
 import {join} from "path";
 import IdentityConfig from "../../config/IdentityConfig.js";
 import {IDraxPaginateOptions} from "@drax/crud-share";
+import UserPermissions from "../../permissions/UserPermissions.js";
 
 export default {
     Query: {
@@ -33,7 +33,7 @@ export default {
         },
         findUserById: async (_, {id}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewUser)
+                rbac.assertPermission(UserPermissions.View)
                 let userService = UserServiceFactory()
                 let user =  await userService.findById(id)
                 user.password = undefined
@@ -48,7 +48,7 @@ export default {
         },
         paginateUser: async (_, { options= {page:1, limit:5, orderBy:"", order:"asc", search:"", filters: []} as IDraxPaginateOptions }, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewUser)
+                rbac.assertPermission(UserPermissions.View)
                 let userService = UserServiceFactory()
 
                 if(!options.filters){
@@ -81,9 +81,25 @@ export default {
             }
 
         },
+        switchTenant: async (_, {input},{rbac, authUser, token}) => {
+            try {
+                rbac.assertPermission(UserPermissions.SwitchTenant)
+                if (authUser && token) {
+                    const tenantId = input.tenantId
+                    const userService = UserServiceFactory()
+                    let {accessToken} = await userService.switchTenant(token, tenantId)
+                    return {accessToken}
+                } else {
+                    throw new UnauthorizedError()
+                }
+            } catch (e) {
+                throw new GraphQLError('error.server')
+            }
+
+        },
         createUser: async (_, {input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.CreateUser)
+                rbac.assertPermission(UserPermissions.Create)
                 let userService = UserServiceFactory()
                 if (rbac.getAuthUser.tenantId) {
                     input.tenant = rbac.getAuthUser.tenantId
@@ -103,7 +119,7 @@ export default {
         },
         updateUser: async (_, {id, input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.UpdateUser)
+                rbac.assertPermission(UserPermissions.Update)
                 let userService = UserServiceFactory()
                 if (rbac.getAuthUser.tenantId) {
                     input.tenant = rbac.getAuthUser.tenantId
@@ -121,7 +137,7 @@ export default {
         },
         deleteUser: async (_, {id}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.DeleteUser)
+                rbac.assertPermission(UserPermissions.Delete)
                 let userService = UserServiceFactory()
                 return await userService.delete(id)
             } catch (e) {
@@ -153,7 +169,7 @@ export default {
         },
         changeUserPassword: async (_, {userId, newPassword}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.UpdateUser)
+                rbac.assertPermission(UserPermissions.Update)
                 let userService = UserServiceFactory()
                 return await userService.changeUserPassword(userId, newPassword)
             } catch (e) {

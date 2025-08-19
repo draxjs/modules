@@ -17,6 +17,11 @@ class AuthSystem implements IAuthProvider {
         return r
     }
 
+    async switchTenant(tenantId:string):Promise<ILoginResponse> {
+        const r = await this._provider.switchTenant(tenantId)
+        return r
+    }
+
     logout():void {
         this._provider.logout()
     }

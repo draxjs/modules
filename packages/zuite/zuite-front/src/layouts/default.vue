@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
 import menu from '../menu'
-import {IdentityProfileAvatar, IdentityProfileDrawer, useAuth} from "@drax/identity-vue";
+import {IdentityProfileAvatar, IdentityProfileDrawer, useAuth, SwitchTenant} from "@drax/identity-vue";
 import DarkMode from "../components/DarkMode/index.vue";
 import {SidebarMenu} from "@drax/common-vue";
 import AnimatedBackground from "../components/AnimatedBackground/AnimatedBackground.vue";
@@ -48,6 +48,7 @@ const {isAuthenticated} = useAuth()
     <animated-background></animated-background>
 
     <v-main>
+      <switch-tenant></switch-tenant>
       <router-view/>
     </v-main>
 
