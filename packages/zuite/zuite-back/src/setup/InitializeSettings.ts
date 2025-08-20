@@ -10,8 +10,9 @@ async function InitializeSettings() {
         value: 'ASD',
         label: 'String',
         type: 'string',
-        prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        prefix: 'Prefijo',
+        suffix: 'Sufijo',
+        public: true
     })
 
     await settingService.createOrUpdate({
@@ -20,8 +21,9 @@ async function InitializeSettings() {
         value: '2',
         label: 'Number',
         type: 'number',
-        prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        prefix: '',
+        suffix: 'HS',
+        public: true
     })
 
 
@@ -31,8 +33,9 @@ async function InitializeSettings() {
         value: 'true',
         label: 'Boolean',
         type: 'boolean',
-        prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        prefix: '',
+        suffix: '',
+        public: false
     })
 
     await settingService.createOrUpdate({
@@ -41,8 +44,10 @@ async function InitializeSettings() {
         value: 'LONGOOOSSS',
         label: 'LongString',
         type: 'longString',
-        prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        prefix: '',
+        suffix: '',
+        public: true,
+        permission: 'setting:sensitive'
     })
 
 
@@ -54,7 +59,8 @@ async function InitializeSettings() {
         type: 'enum',
         options: ['Option 1', 'Option 2', 'Option 3'],
         prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        suffix: '_SUFFIX',
+        public: false
     })
 
 
@@ -65,7 +71,8 @@ async function InitializeSettings() {
         label: 'Password',
         type: 'password',
         prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        suffix: '_SUFFIX',
+        public: false
     })
 
     await settingService.createOrUpdate({
@@ -75,7 +82,9 @@ async function InitializeSettings() {
         label: 'StringList',
         type: 'stringList',
         prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        suffix: '_SUFFIX',
+        public: false,
+        permission: 'setting:sensitive'
     })
 
     await settingService.createOrUpdate({
@@ -85,7 +94,9 @@ async function InitializeSettings() {
         label: 'NumberList',
         type: 'numberList',
         prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        suffix: '_SUFFIX',
+        public: false,
+        permission: 'setting:sensitive'
     })
 
     await settingService.createOrUpdate({
@@ -96,7 +107,9 @@ async function InitializeSettings() {
         options: ['Option 1', 'Option 2', 'Option 3'],
         type: 'enumList',
         prefix: 'PREFIX_',
-        suffix: '_SUFFIX'
+        suffix: '_SUFFIX',
+        public: false,
+        permission: 'setting:sensitive'
     })
 }
 

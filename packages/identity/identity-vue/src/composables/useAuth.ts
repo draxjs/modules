@@ -84,10 +84,9 @@ export function useAuth() {
     }
 
     function isAuthenticated() {
-        if (tokenIsValid()) {
+        if (authStore.authUser && tokenIsValid()) {
             return true
         } else {
-            clearAuth()
             return false
         }
 

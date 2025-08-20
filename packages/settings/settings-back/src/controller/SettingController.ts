@@ -1,12 +1,11 @@
 import {SettingPermissions} from "../permissions/SettingPermissions.js";
 import SettingService from "../services/SettingService.js";
 import SettingServiceFactory from "../factory/SettingServiceFactory.js";
-import {UnauthorizedError, ValidationError} from "@drax/common-back";
+import {NotFoundError, UnauthorizedError, ValidationError} from "@drax/common-back";
 
 class SettingController {
 
     protected service: SettingService
-    protected permission
 
     constructor() {
         this.service = SettingServiceFactory()
@@ -14,9 +13,16 @@ class SettingController {
 
     async fetchAll(request, reply) {
         try {
-            request.rbac.assertPermission(SettingPermissions.View)
             const settings = await this.service.fetchAll()
-            return settings
+
+            if(!request.authUser){
+                return settings.filter(s => s.public === true && !s.permission)
+            }else{
+                return settings.filter(s => {
+                    return !s.permission || (s.permission && request.rbac.hasPermission(s.permission));
+                } )
+            }
+
         } catch (e) {
             console.error(e)
             if (e instanceof UnauthorizedError) {
@@ -31,8 +37,9 @@ class SettingController {
 
     async fetchGrouped(request, reply) {
         try {
-            request.rbac.assertPermission(SettingPermissions.View)
+            request.rbac.assertPermission(SettingPermissions.Manage)
             const settings = await this.service.fetchGrouped()
+
             return settings
         } catch (e) {
             console.error(e)
@@ -48,16 +55,31 @@ class SettingController {
 
     async findByKey(request, reply) {
         try {
-            request.rbac.assertPermission(SettingPermissions.View)
             const key = request.params.key
             const setting = await this.service.findByKey(key)
+
+            if(!setting){
+                throw new NotFoundError()
+            }
+
+            if(setting.public === false && !request.authUser ){
+                throw new UnauthorizedError()
+            }
+
+            if(setting.permission && !request.rbac.hasPermission(setting.permission)){
+                throw new UnauthorizedError()
+            }
+
             return setting
         } catch (e) {
             console.error(e)
             if (e instanceof UnauthorizedError) {
                 reply.statusCode = e.statusCode
                 reply.send({error: e.message})
-            } else {
+            }if (e instanceof NotFoundError) {
+                reply.statusCode = e.statusCode
+                reply.send({error: e.message})
+            }else {
                 reply.statusCode = 500
                 reply.send({error: 'INTERNAL_SERVER_ERROR'})
             }

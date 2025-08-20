@@ -56,7 +56,6 @@ const validateNumberList = computed(() => {
 
   <!--string-->
   <v-text-field v-if="setting.type === 'string'"
-                prepend-icon="text_snippet"
                 :name="setting.key"
                 v-model="valueModel"
                 :label="setting.label"
@@ -66,6 +65,7 @@ const validateNumberList = computed(() => {
                 :prefix="setting.prefix"
                 :suffix="setting.suffix"
                 :readonly="!editing"
+                :hide-details="!editing"
                 :variant="variant"
   >
   </v-text-field>
@@ -73,7 +73,6 @@ const validateNumberList = computed(() => {
   <!--longString-->
   <v-textarea v-if="setting.type === 'longString'"
               :rows="2"
-              prepend-icon="text_snippet"
               :name="setting.key"
               v-model="valueModel"
               :label="setting.label"
@@ -83,6 +82,7 @@ const validateNumberList = computed(() => {
               :prefix="setting.prefix"
               :suffix="setting.suffix"
               :readonly="!editing"
+              :hide-details="!editing"
               :variant="variant"
   >
   </v-textarea>
@@ -90,7 +90,6 @@ const validateNumberList = computed(() => {
 
   <!--password-->
   <v-text-field v-if=" setting.type === 'password'"
-                prepend-icon="text_snippet"
                 :name="setting.key"
                 v-model="valueModel"
                 :label="setting.label"
@@ -103,13 +102,13 @@ const validateNumberList = computed(() => {
                 :prefix="setting.prefix"
                 :suffix="setting.suffix"
                 :readonly="!editing"
+                :hide-details="!editing"
                 :variant="variant"
   >
   </v-text-field>
 
   <!--number-->
   <v-text-field v-if="setting.type === 'number'"
-                prepend-icon="text_snippet"
                 type="number"
                 :name="setting.key"
                 v-model.number="valueModel"
@@ -120,13 +119,13 @@ const validateNumberList = computed(() => {
                 :prefix="setting.prefix"
                 :suffix="setting.suffix"
                 :readonly="!editing"
+                :hide-details="!editing"
                 :variant="variant"
   >
   </v-text-field>
 
   <!--boolean-->
   <v-checkbox v-if="setting.type === 'boolean'"
-              prepend-icon="text_snippet"
               :name="setting.key"
               :value="true"
               v-model="valueModel"
@@ -134,6 +133,7 @@ const validateNumberList = computed(() => {
               :placeholder="setting.label"
               color="secondary"
               :readonly="!editing"
+              :hide-details="!editing"
               :variant="variant"
   >
   </v-checkbox>
@@ -141,7 +141,6 @@ const validateNumberList = computed(() => {
 
   <!--enum-->
   <v-select v-if="setting.type === 'enum'"
-            prepend-icon="text_snippet"
             :name="setting.key"
             :items="setting.options"
             v-model="valueModel"
@@ -151,6 +150,7 @@ const validateNumberList = computed(() => {
             :prefix="setting.prefix"
             :suffix="setting.suffix"
             :readonly="!editing"
+            :hide-details="!editing"
             :variant="variant"
   >
   </v-select>
@@ -160,13 +160,13 @@ const validateNumberList = computed(() => {
   <v-combobox v-if="setting.type === 'stringList'"
               chips
               multiple
-              prepend-icon="list"
               :name="setting.key"
               v-model="valueModel"
               :label="setting.label"
               :placeholder="setting.label"
               color="secondary"
               :readonly="!editing"
+              :hide-details="!editing"
               :variant="variant"
   >
   </v-combobox>
@@ -175,7 +175,6 @@ const validateNumberList = computed(() => {
   <v-combobox v-if="setting.type === 'numberList'"
               chips
               multiple
-              prepend-icon="list"
               :name="setting.key"
               v-model="valueModel"
               :label="setting.label"
@@ -183,6 +182,7 @@ const validateNumberList = computed(() => {
               color="secondary"
               :rules="validateNumberList"
               :readonly="!editing"
+              :hide-details="!editing"
               :variant="variant"
   >
   </v-combobox>
@@ -191,7 +191,6 @@ const validateNumberList = computed(() => {
   <v-select v-if="setting.type === 'enumList'"
             multiple
             chips
-            prepend-icon="text_snippet"
             :name="setting.key"
             :items="setting.options"
             v-model="valueModel"
@@ -201,6 +200,7 @@ const validateNumberList = computed(() => {
             :prefix="setting.prefix"
             :suffix="setting.suffix"
             :readonly="!editing"
+            :hide-details="!editing"
             :variant="variant"
   >
   </v-select>

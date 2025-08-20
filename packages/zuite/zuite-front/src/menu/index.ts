@@ -79,6 +79,13 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'setting:manage'
       },
+      {
+        icon: 'mdi mdi-cogs',
+        text:'Settings 2',
+        link: { name: "SettingCardPage" },
+        gallery: true,
+        permission: 'setting:manage'
+      },
     ]
   }
 

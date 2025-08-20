@@ -10,6 +10,7 @@ import App from './App.vue'
 
 // Composables
 import { createApp } from 'vue'
+import { useSetting } from '@drax/settings-vue'
 import {setupAuth} from "./setup/SetupAuth";
 
 const app = createApp(App)
@@ -19,6 +20,9 @@ app.use(i18n)
 
 setupAuth()
 
-app
+// Fetch settings to initialize settings store state
+const {fetchSettings, suscribeAuth} = useSetting()
+await fetchSettings()
+await suscribeAuth()
 
-  .mount('#app')
+app.mount('#app')

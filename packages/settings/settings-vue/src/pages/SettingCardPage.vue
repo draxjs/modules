@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import SettingTableConfig from "../components/SettingTableConfig.vue";
+import SettingCardConfig from "../components/SettingCardConfig.vue";
 </script>
 
 <template>
   <v-container max-width="1200">
-    <setting-table-config></setting-table-config>
+    <setting-card-config></setting-card-config>
   </v-container>
 
 </template>

@@ -1,6 +1,8 @@
 import {useSetting} from "./composables/UseSetting";
 import {useSettingStore} from "./stores/UseSettingStore";
-import SettingConfig from "./components/SettingConfig.vue";
+import SettingCardConfig from "./components/SettingCardConfig.vue";
+import SettingTableConfig from "./components/SettingTableConfig.vue";
+import SettingLoaded from "./components/SettingLoaded.vue";
 import SettingPage from "./pages/SettingPage.vue";
 import SettingRoutes from "./routes/SettingRoutes";
 
@@ -8,7 +10,9 @@ import SettingRoutes from "./routes/SettingRoutes";
 export{
     useSetting,
     useSettingStore,
-    SettingConfig,
+    SettingCardConfig,
+    SettingTableConfig,
+    SettingLoaded,
     SettingPage,
     SettingRoutes
 }

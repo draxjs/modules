@@ -26,7 +26,8 @@
   "dependencies": {
     "@drax/common-front": "^0.29.0",
     "@drax/settings-front": "^0.29.0",
-    "@drax/settings-share": "^0.29.0"
+    "@drax/settings-share": "^0.29.0",
+    "@drax/identity-vue": "^0.29.0"
   },
   "peerDependencies": {
     "pinia": "^2.2.2",
