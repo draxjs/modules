@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import {useSetting} from "../composables/UseSetting";
-import {useI18n} from "vue-i18n";
 
 const {settings} = useSetting()
-const {t, te} = useI18n()
 
 </script>
 

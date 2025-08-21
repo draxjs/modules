@@ -14,7 +14,7 @@ import PersonProvider from "../providers/PersonProvider";
 //Import EntityCrud Refs
 import CountryCrud from "./CountryCrud";
 import LanguageCrud from "./LanguageCrud";
-import {TenantCrud} from "@drax/identity-vue"
+import {TenantCrud, useAuthStore} from "@drax/identity-vue"
 import {UserCrud} from "@drax/identity-vue"
 
 class PersonCrud extends EntityCrud implements IEntityCrud {
@@ -48,12 +48,12 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
       {title: 'fullname', key: 'fullname', align: 'start'},
       {title: 'live', key: 'live', align: 'start'},
       {title: 'birthdate', key: 'birthdate', align: 'start'},
-      {title: 'nationality', key: 'nationality', align: 'start'},
-      {title: 'hobbies', key: 'hobbies', align: 'start'},
+      // {title: 'nationality', key: 'nationality', align: 'start'},
+      // {title: 'hobbies', key: 'hobbies', align: 'start'},
       {title: 'race', key: 'race', align: 'start'},
-      {title: 'interests', key: 'interests', align: 'start'},
+      // {title: 'interests', key: 'interests', align: 'start'},
       {title: 'languages', key: 'languages', align: 'start'},
-      {title: 'address', key: 'address', align: 'start'},
+      // {title: 'address', key: 'address', align: 'start'},
       {title: 'tenant', key: 'tenant', align: 'start'},
       {title: 'user', key: 'user', align: 'start'}
     ]
@@ -186,7 +186,8 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get isCreatable() {
-    return true
+    const authStore = useAuthStore()
+    return !!authStore?.authUser?.tenant
   }
 
   get isDeletable() {
@@ -194,7 +195,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get isExportable() {
-    return true
+    return false
   }
 
   get exportFormats() {
@@ -206,7 +207,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get isImportable() {
-    return true
+    return false
   }
 
   get importFormats() {

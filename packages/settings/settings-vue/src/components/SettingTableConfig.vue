@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {useSetting} from "../composables/UseSetting";
-import SettingField from "./SettingField.vue";
 import SettingEditor from "./SettingEditor.vue";
 import {onMounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
@@ -64,7 +63,7 @@ function clearEdit() {
               <template v-slot:item.value="{ item }">
                 {{ item.prefix }}
                 <template v-if="item.type === 'boolean'">
-                  <v-chip :color="item.value === true ? 'green' : 'red' " tile>
+                  <v-chip :color="item.value ? 'green' : 'red' " tile>
                     {{ item.value }}
                   </v-chip>
                 </template>

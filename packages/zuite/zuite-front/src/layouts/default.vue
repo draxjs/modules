@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import {IdentityProfileAvatar, IdentityProfileDrawer, useAuth, SwitchTenant} from "@drax/identity-vue";
 import {ref} from 'vue'
 import menu from '../menu'
-import {IdentityProfileAvatar, IdentityProfileDrawer, useAuth, SwitchTenant} from "@drax/identity-vue";
-import {SettingLoaded} from "@drax/settings-vue";
+import { useSettingStore} from "@drax/settings-vue";
 import DarkMode from "../components/DarkMode/index.vue";
 import {SidebarMenu} from "@drax/common-vue";
 import AnimatedBackground from "../components/AnimatedBackground/AnimatedBackground.vue";
@@ -22,6 +22,12 @@ const {push} = useRouter()
 
 const {isAuthenticated} = useAuth()
 
+
+const appName = computed(() => {
+  const settingStore = useSettingStore()
+  return settingStore.getSettingValueByKey('STRING')
+})
+
 </script>
 
 <template>
@@ -36,6 +42,7 @@ const {isAuthenticated} = useAuth()
         <v-btn icon @click="push({name:'Root'})">
           <v-icon>mdi-home</v-icon>
         </v-btn>
+        {{appName}}
       </slot>
       <v-spacer></v-spacer>
       <slot name="toolbar-right"></slot>
@@ -50,9 +57,7 @@ const {isAuthenticated} = useAuth()
 
     <v-main>
       <switch-tenant></switch-tenant>
-
       <router-view/>
-      <setting-loaded></setting-loaded>
     </v-main>
 
   </v-app>
