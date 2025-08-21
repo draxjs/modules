@@ -1,2 +1,5 @@
 node_modules/
 /packages/zuite/zuite-back/.env
+**/*/dist
+**/*/types
+**/*/tsconfig.tsbuildinfo
