@@ -138,6 +138,64 @@ const {xs} = useDisplay()
       </v-expansion-panels>
     </v-card-text>
 
+
+    <v-card-text v-else-if="field.arrayObjectUI === 'chips' ">
+      <v-row dense>
+        <v-col cols="12" sm="12" md="12">
+          <v-card variant="flat">
+            <v-card-text >
+              <v-btn color="primary"   rounded="xl" @click="addItem"
+                     class="text-blue text--darken-3 float-left mt-1 mr-2">
+                <v-icon>mdi-plus</v-icon> {{ label }}
+              </v-btn>
+              <v-chip-group v-model="itemSelected"
+                            :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }"
+                            direction="horizontal"
+
+              >
+                <v-chip v-for="(item,index) in valueModel" :key="index"
+                             :value="item" @click="menuSelect(item, index)"
+                             label closable @click:close="removeItem(index)"
+                >
+<!--                  <template v-slot:prepend>-->
+<!--                    <v-avatar>{{ index }}</v-avatar>-->
+<!--                  </template>-->
+                    {{//@ts-ignore
+                  valueModel[index][Object.keys(valueModel[index] as any)[0]] || index
+                    }}
+                </v-chip>
+
+              </v-chip-group>
+
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" sm="12" md="12">
+          <v-card v-if="itemSelected" variant="flat">
+            <v-card-text >
+              <template v-for="key in Object.keys(itemSelected as Record<string, any>)" :key="key">
+                <crud-form-field
+                    v-if="hasField(key)"
+                    :entity="entity"
+                    :field="getField(key)"
+                    v-model="(itemSelected as any)[key]"
+                    :readonly="readonly"
+                    :parentField="field.name"
+                    :index="indexSelected"
+                    :density="density"
+                    :variant="variant"
+                    :clearable="clearable"
+                    :hide-details="hideDetails"
+                    :single-line="singleLine"
+                    @updateValue="$emit('updateValue')"
+                />
+              </template>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-card-text>
+
     <v-card-text v-else>
       <v-row>
         <v-col cols="12" sm="4" md="3">

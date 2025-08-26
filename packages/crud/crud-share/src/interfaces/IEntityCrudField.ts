@@ -15,7 +15,7 @@ interface IEntityCrudField {
     readonly?: boolean
     hint?: string
     persistentHint?: boolean
-    arrayObjectUI ?: 'menu' | 'accordion'
+    arrayObjectUI ?: 'menu' | 'accordion' | 'chips'
     menuMaxHeight?: string
     groupTab?:string //Group Tabs
     groupMenu?: string //Group Menu
