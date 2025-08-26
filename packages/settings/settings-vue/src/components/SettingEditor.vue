@@ -16,6 +16,7 @@ const {setting} = defineProps({
 })
 
 const value = ref()
+const form = ref()
 const loading = ref(false)
 
 onMounted(() => {
@@ -27,8 +28,11 @@ const emit = defineEmits(['updateValue'])
 async function updateValue() {
   try {
     loading.value = true
-    await updateSettingValue(setting._id, value.value)
-    emit('updateValue', value.value)
+    const validation = await form.value.validate()
+    if(validation && validation.valid === true){
+      await updateSettingValue(setting._id, value.value)
+      emit('updateValue', value.value)
+    }
   } catch (e) {
     console.error(e)
   } finally {

@@ -111,6 +111,19 @@ async function InitializeSettings() {
         public: false,
         permission: 'setting:sensitive'
     })
+
+
+    await settingService.createOrUpdate({
+        category: 'VALIDATION',
+        key: 'ValidateRegex',
+        value: '',
+        label: 'String',
+        type: 'string',
+        prefix: '',
+        suffix: '',
+        regex: '^[a-zA-Z]+$',
+        public: true
+    })
 }
 
 

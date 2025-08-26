@@ -1,6 +1,7 @@
 import {ISettingRepository} from "../interfaces/ISettingRepository";
 import {settingSchema} from "../schemas/SettingSchema.js";
 import {ISetting, ISettingBase} from "@drax/settings-share";
+import {ValidationError} from "@drax/common-back";
 import {AbstractService} from "@drax/crud-back";
 import {DraxCache, ZodErrorToValidationError} from "@drax/common-back";
 import {ZodError} from "zod";
@@ -50,6 +51,15 @@ class SettingService extends AbstractService<ISetting, ISettingBase, ISettingBas
     }
 
     async updateValue(id: string, value: string): Promise<ISetting | undefined> {
+        const setting = await this.findById(id)
+        if(setting.regex){
+            const regex = new RegExp(setting.regex)
+            if (!regex.test(value)) {
+                throw new ValidationError([
+                    {field: 'value', reason: "setting.invalid_regex", value: value}
+                ])
+            }
+        }
         return this._repository.updatePartial(id, {value})
     }
 
