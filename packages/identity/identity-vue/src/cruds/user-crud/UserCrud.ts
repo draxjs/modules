@@ -116,16 +116,13 @@ class UserCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
-  isItemEditable(item:any): boolean {
+  isItemEditable(item?:any) {
     const authStore = useAuthStore()
-    console.log(" authStore.authUser.role", authStore.authUser.role)
-    if(authStore.authUser.role.childRoles){
+    if(authStore?.authUser?.role?.childRoles){
       return  authStore.authUser.role.childRoles.some(role => role.name === item.role.name)
     }else{
       return true
     }
-
-
   }
 
 }

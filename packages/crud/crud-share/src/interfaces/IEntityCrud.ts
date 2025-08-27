@@ -24,7 +24,7 @@ interface IEntityCrud {
   formFilters: IEntityCrudFormFilter[]
   isViewable: boolean
   isEditable: boolean
-  isItemEditable: function(item: any): boolean
+  isItemEditable: (item?: any) => boolean
   isCreatable: boolean
   isDeletable: boolean
   isExportable: boolean

@@ -99,7 +99,7 @@ function cancel() {
 }
 
 const {
-  variant, submitColor
+  variant
 } = useFormUtils(operation.value)
 
 const tabInputErrors = computed(() => {
