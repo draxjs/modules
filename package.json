@@ -10,7 +10,7 @@
     "vue-tsc": "^2.0.17"
   },
   "scripts": {
-    "bootstrap": "sh bootstrap.sh",
+    "setup": "sh setup.sh",
     "vuetsc": "vue-tsc -b ./tsconfig.packages.json",
     "vuetsc:watch": "vue-tsc -b --watch  ./tsconfig.packages.json",
     "tsc": "tsc -b ./tsconfig.packages.json",
