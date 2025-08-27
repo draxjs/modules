@@ -54,16 +54,21 @@ interface IEntityCrud {
   searchEnable?: boolean
 
   filterButtons?: boolean
+  cleanFilterClass?: string
+  applyFilterClass?: string
+
+  cancelBtnFormClass?: string
+  submitBtnFormClass?: string
 
   tabs?: string[]
   menus?: string[]
   menuMaxHeight?: string
 
   refs: IEntityCrudRefs
-  getRef(ref: string|undefined): IEntityCrud
+  getRef(ref: string | undefined): IEntityCrud
 
   rules: IEntityCrudRules
-  getRule(field:string|undefined): Array<Function>|undefined
+  getRule(field: string | undefined): Array<Function> | undefined
 
   provider: IDraxCrudProvider<any, any, any>
 }

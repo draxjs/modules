@@ -262,10 +262,10 @@ const menuInputErrors = computed(() => {
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn variant="text" color="grey" @click="cancel">
+        <v-btn variant="text" :class="entity.cancelBtnFormClass" @click="cancel">
           {{ operation == 'view' ? t('action.close') : t('action.cancel') }}
         </v-btn>
-        <v-btn variant="flat" v-if="operation != 'view'" :color="submitColor" @click="submit" :loading="store.loading">
+        <v-btn variant="flat" v-if="operation != 'view'" :class="entity.submitBtnFormClass" @click="submit" :loading="store.loading">
           {{ operation ? t('action.' + operation) : t('action.sent') }}
         </v-btn>
       </v-card-actions>
