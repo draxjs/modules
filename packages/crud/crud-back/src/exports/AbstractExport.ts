@@ -6,6 +6,7 @@ interface ExportOptions {
     cursor: any
     destinationPath: string
     headers: string[] | string
+    headersTranslate?: string[] | string
     fileName: string
 }
 
@@ -16,6 +17,7 @@ class AbstractExport {
     protected cursor: any
     protected destinationPath: string
     protected headers: string[]
+    protected headersTranslate?: string[]
 
     protected fileName: string
     protected relativeFilePath: string
@@ -25,6 +27,9 @@ class AbstractExport {
         this.destinationPath = options.destinationPath;
         this.headers = Array.isArray(options.headers) ? options.headers : options.headers.split(',');
         this.fileName = options.fileName;
+        if(options.headersTranslate){
+            this.headersTranslate = Array.isArray(options.headersTranslate) ? options.headersTranslate : options.headersTranslate.split(',');
+        }
     }
 
 

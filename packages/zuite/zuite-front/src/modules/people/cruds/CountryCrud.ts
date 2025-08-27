@@ -127,6 +127,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return ['_id', 'name', 'description']
   }
 
+  get exportHeadersTranslate() {
+    return ['countryCrud.id', 'countryCrud.name', 'countryCrud.description']
+  }
+
   get isImportable() {
     return false
   }

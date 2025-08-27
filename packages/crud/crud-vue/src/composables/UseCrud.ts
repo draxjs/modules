@@ -2,10 +2,13 @@ import type {IDraxPaginateResult, IEntityCrud} from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {computed, nextTick, toRaw} from "vue";
 import getItemId from "../helpers/getItemId";
+import { useI18n } from "vue-i18n";
 
 export function useCrud(entity: IEntityCrud) {
 
     const store = useCrudStore()
+
+    const { t: $t } = useI18n()
 
     const exportError = computed({
         get() {
@@ -174,11 +177,13 @@ export function useCrud(entity: IEntityCrud) {
             }
 
             const headers: string = entity.exportHeaders.join(',')
+            const headersTranslate: string | undefined = entity.exportHeadersTranslate?.map(t => $t(t)).join(',')
             const fileName: string = entity.exportFileName
 
             const r: any = await entity?.provider.export({
                 format: format,
                 headers: headers,
+                headersTranslate: headersTranslate,
                 separator: ";",
                 fileName: fileName,
                 orderBy: store.sortBy[0]?.key,

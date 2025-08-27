@@ -40,8 +40,9 @@ class ExportCsv extends AbstractExport {
                     message: 'Export successful',
                 }))
 
+                let csvHeaders = this.headers.join(this.separator);
+                if(this.headersTranslate && this.headersTranslate.length) csvHeaders = this.headersTranslate.join(this.separator)
 
-                const csvHeaders = this.headers.join(this.separator);
                 writableStream.write(csvHeaders + '\n');
 
                 if (this.isIterableAsync(this.cursor)) {
@@ -81,23 +82,33 @@ class ExportCsv extends AbstractExport {
                 value = record[header];
             }
 
-            if (value === undefined) {
+            if (value === undefined || value === null) {
                 fields.push('');
                 continue;
             }
 
             if (Array.isArray(value)) {
                 if (value.length > 0 && typeof value[0] === 'object') {
-                    fields.push(JSON.stringify(value));
+                    value = JSON.stringify(value);
                 } else {
-                    fields.push(value.join(','));
+                    value = value.join(',');
                 }
             } else if (typeof value === 'object') {
-                fields.push(JSON.stringify(value));
-
+                value = JSON.stringify(value);
             } else {
-                fields.push(value.toString());
+                value = value.toString();
             }
+
+            if (
+                value.includes(this.separator) ||
+                value.includes('"') ||
+                value.includes('\n') ||
+                value.includes('\r')
+            ) {
+                value = '"' + value.replace(/"/g, '""') + '"';
+            }
+
+            fields.push(value);
         }
         return fields.join(this.separator);
     }
