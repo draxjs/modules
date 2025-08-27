@@ -102,6 +102,7 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
     async export({
                      format = 'JSON',
                      headers = [],
+                     headersTranslate = [],
                      separator = ';',
                      fileName = 'export',
                      limit = 0,
@@ -114,6 +115,7 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
         const params: any = {
             format,
             headers,
+            headersTranslate,
             separator,
             fileName,
             limit,

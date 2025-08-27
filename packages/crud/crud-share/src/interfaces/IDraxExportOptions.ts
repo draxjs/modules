@@ -3,6 +3,7 @@ import type {IDraxFieldFilter} from "./IDraxFieldFilter";
 interface IDraxExportOptions {
   format: 'JSON' | 'CSV';
   headers?: string[] | string;
+  headersTranslate?: string[] | string
   separator: string;
   fileName?: string;
   limit?: number;
