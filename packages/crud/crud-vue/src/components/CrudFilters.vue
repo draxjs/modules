@@ -97,8 +97,8 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
 
     <v-card-actions v-if="actionButtons" class="pb-0">
       <v-spacer />
-      <v-btn variant="text" density="compact" color="grey" @click="clear">{{ t('action.clear') }}</v-btn>
-      <v-btn variant="flat" density="compact" color="primary" @click="filter">
+      <v-btn  variant="text" density="compact" :class="entity.cleanFilterClass" @click="clear">{{ t('action.clear') }}</v-btn>
+      <v-btn variant="flat" density="compact" :class="entity.applyFilterClass"  @click="filter">
         {{ t('action.filter') }}
       </v-btn>
     </v-card-actions>
