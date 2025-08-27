@@ -11,7 +11,9 @@ function jwtMiddleware (request, reply, done) {
                 token = request.headers?.authorization?.replace(/Bearer /i, "")
             }
 
-            if(token){
+            const routerPath = request.url
+
+            if(routerPath != '/api/auth/login' && token){
                 const authUser = AuthUtils.verifyToken(token) as IJwtUser
                 if(authUser){
                     request.authUser = authUser
@@ -21,6 +23,9 @@ function jwtMiddleware (request, reply, done) {
             done()
         }catch (e) {
             console.error(e)
+            if (e.name === 'TokenExpiredError') {
+                reply.code(498).send({ error: 'JWT expirado' });
+            }
             reply.code(401).send({ error: 'Token JWT inválido' });
         }
 }

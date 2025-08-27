@@ -17,7 +17,10 @@ class UserMongoRepository extends AbstractMongoRepository<IUser,IUserCreate,IUse
     protected roleRepository: RoleMongoRepository;
 
     protected _searchFields = ['name','username','email','phone']
-    protected _populateFields = ['role','tenant']
+    protected _populateFields = [
+        {path: 'role', populate: {path: 'childRoles'} },
+        {path: 'tenant'},
+        ]
     protected _model = UserModel
     protected _lean = true
 

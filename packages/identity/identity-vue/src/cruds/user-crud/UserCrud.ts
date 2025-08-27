@@ -4,6 +4,11 @@ import {EntityCrud} from "@drax/crud-vue";
 import {UserSystemFactory} from "@drax/identity-front";
 import {RoleCrud} from '../role-crud/RoleCrud'
 import {TenantCrud} from '../tenant-crud/TenantCrud'
+import {useAuthStore} from '../../stores/auth/AuthStore'
+
+
+
+
 import type {
   IEntityCrud,
   IEntityCrudField,
@@ -31,11 +36,11 @@ class UserCrud extends EntityCrud implements IEntityCrud {
 
   get permissions(){
     return {
-      manage: 'tenant:manage',
-      view: 'tenant:view',
-      create: 'tenant:create',
-      update: 'tenant:update',
-      delete: 'tenant:delete'
+      manage: 'user:manage',
+      view: 'user:view',
+      create: 'user:create',
+      update: 'user:update',
+      delete: 'user:delete'
     }
   }
 
@@ -75,7 +80,7 @@ class UserCrud extends EntityCrud implements IEntityCrud {
         {name: 'email', type: 'string', label: 'email', default:'' },
         {name: 'phone', type: 'string', label: 'phone', default:'' },
         {name: 'role', type: 'ref', ref: 'role', label: 'role', default:null },
-        {name: 'tenant', type: 'ref', ref: 'tenant', label: 'tenant', default:null },
+        {name: 'tenant', type: 'ref', ref: 'tenant', label: 'tenant', default:null, permission: 'tenant:manage' },
         {name: 'active', type: 'boolean',  label: 'active', default:true },
 
     ]
@@ -106,6 +111,23 @@ class UserCrud extends EntityCrud implements IEntityCrud {
   get isImportable(){
     return false
   }
+
+  get isEditable(){
+    return true
+  }
+
+  isItemEditable(item:any): boolean {
+    const authStore = useAuthStore()
+    console.log(" authStore.authUser.role", authStore.authUser.role)
+    if(authStore.authUser.role.childRoles){
+      return  authStore.authUser.role.childRoles.some(role => role.name === item.role.name)
+    }else{
+      return true
+    }
+
+
+  }
+
 }
 
 export default UserCrud

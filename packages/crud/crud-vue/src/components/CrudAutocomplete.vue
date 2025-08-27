@@ -95,7 +95,39 @@ defineEmits(['updateValue'])
 </script>
 
 <template>
+
+  <v-select
+      v-if="field.noFilter === true"
+      v-model="valueModel"
+      :label="label ? label : field.label"
+      :hint="field.hint"
+      :persistent-hint="field.persistentHint"
+      :placeholder="field.label"
+      :items="items"
+      :multiple="multiple"
+      :chips="chips"
+      :closable-chips="closableChips"
+      :item-value="itemValue"
+      :item-title="itemTitle"
+      :loading="loading"
+      :rules="rules"
+      :readonly="readonly"
+      :density="density"
+      :variant="variant"
+      :hide-details="hideDetails"
+      :single-line="singleLine"
+      :clearable="clearable"
+      :error-messages="errorMessages"
+      @update:modelValue="$emit('updateValue')"
+      :prepend-icon="prependIcon"
+      :append-icon="appendIcon"
+      :prepend-inner-icon="prependInnerIcon"
+      :append-inner-icon="appendInnerIcon"
+  ></v-select>
+
+
   <v-autocomplete
+      v-else
       v-model="valueModel"
       :label="label ? label : field.label"
       :hint="field.hint"
@@ -123,6 +155,8 @@ defineEmits(['updateValue'])
       :prepend-inner-icon="prependInnerIcon"
       :append-inner-icon="appendInnerIcon"
   ></v-autocomplete>
+
+
 </template>
 
 <style scoped>

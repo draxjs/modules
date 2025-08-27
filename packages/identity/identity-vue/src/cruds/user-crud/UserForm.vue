@@ -4,11 +4,14 @@ import {defineEmits, defineModel, defineProps, type PropType, ref} from "vue";
 import {useI18nValidation} from "@drax/common-vue";
 import RoleCombobox from "../../combobox/RoleCombobox.vue";
 import TenantCombobox from "../../combobox/TenantCombobox.vue";
+import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
 import type {IEntityCrudOperation} from "@drax/crud-share";
 
 const {$ta} = useI18nValidation()
 const {t, te} = useI18n()
+
+const {hasPermission} = useAuth()
 
 const {operation} = defineProps({
   operation: {type: String as PropType<IEntityCrudOperation>, required: true},
@@ -119,6 +122,7 @@ let passwordVisibility = ref(false)
         ></RoleCombobox>
 
         <TenantCombobox
+            v-if="hasPermission('tenant:manage')"
             v-model="valueModel.tenant"
             :label="t('user.field.tenant')"
             :variant="variant"

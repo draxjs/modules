@@ -33,7 +33,8 @@ const UserSchema = UserBaseSchema
             _id: string(),
             id: string().optional(),
             name: string(),
-            permissions: array(string())
+            permissions: array(string()),
+            childRoles: array(object({_id: string(), name:string()})).optional()
         }).optional(),
         active: boolean(),
         tenant: object({

@@ -150,6 +150,10 @@ class EntityCrud implements IEntityCrud {
     return true
   }
 
+  isItemEditable():boolean {
+    return true
+  }
+
   get isCreatable() {
     return true
   }

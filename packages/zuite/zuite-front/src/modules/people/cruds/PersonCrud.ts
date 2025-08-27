@@ -115,7 +115,8 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         default: null,
         groupTab: 'BASIC',
         ref: 'Country',
-        refDisplay: 'name'
+        refDisplay: 'name',
+        noFilter: true
       },
       {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
       {name: 'race',

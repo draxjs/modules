@@ -36,7 +36,7 @@ class RoleController extends AbstractFastifyController<IRole, IRoleBase, IRoleBa
             const roleService = RoleServiceFactory()
             let roles = await roleService.fetchAll()
             if(request.rbac.getRole?.childRoles?.length > 0) {
-                return roles.filter(role => request.rbac.getRole.childRoles.some(childRole => childRole._id === role._id));
+                return roles.filter(role => request.rbac.getRole.childRoles.some(childRole => childRole._id?.toString() === role._id?.toString()));
             }else{
                 return roles
             }

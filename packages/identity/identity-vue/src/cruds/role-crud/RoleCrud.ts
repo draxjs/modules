@@ -22,11 +22,11 @@ class RoleCrud extends EntityCrud implements IEntityCrud {
 
   get permissions(){
     return {
-      manage: 'tenant:manage',
-      view: 'tenant:view',
-      create: 'tenant:create',
-      update: 'tenant:update',
-      delete: 'tenant:delete'
+      manage: 'role:manage',
+      view: 'role:view',
+      create: 'role:create',
+      update: 'role:update',
+      delete: 'role:delete'
     }
   }
 

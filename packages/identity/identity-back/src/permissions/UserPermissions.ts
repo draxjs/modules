@@ -4,6 +4,7 @@ enum UserPermissions {
     Delete = "user:delete",
     View = "user:view",
     Manage = "user:manage",
+    ChangePassword = "user:changePassword",
     SwitchTenant = "user:switchTenant",
 }
 

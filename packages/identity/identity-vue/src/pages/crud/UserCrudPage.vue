@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref} from "vue"
 import UserCrud from "../../cruds/user-crud/UserCrud";
+import {useAuth} from "../../composables/useAuth";
 import {Crud, useCrud} from "@drax/crud-vue";
 import UserForm from "../../cruds/user-crud/UserForm.vue";
 import PasswordUpdateButton from "../../cruds/user-crud/PasswordUpdateButton.vue";
@@ -11,6 +12,8 @@ const {onCancel, onSubmit,form, operation } = useCrud(UserCrud.instance);
 
 const dialogPassword = ref(false);
 const userSelected = ref();
+
+const {hasPermission } = useAuth();
 
 function onChangePassword(user:IUser){
   console.log("onChangePassword for user: ", user);
@@ -43,7 +46,9 @@ function onChangePassword(user:IUser){
 
 
       <template v-slot:item.actions="{ item }">
-        <password-update-button @click="onChangePassword(item as IUser)"></password-update-button>
+        <password-update-button v-if="hasPermission('user:changePassword')"
+                                @click="onChangePassword(item as IUser)"
+        ></password-update-button>
       </template>
 
 

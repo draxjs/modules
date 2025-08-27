@@ -1,21 +1,19 @@
-import {IdentityPermissions} from "@drax/identity-back"
+import {UserPermissions, TenantPermissions, RolePermissions} from "@drax/identity-back"
 import operatorRole from "./operator-role.js";
 
 const role = {
-  name: "Supervisor",
-  permissions: [
-    IdentityPermissions.CreateUser,
-    IdentityPermissions.ViewUser,
-    IdentityPermissions.ManageUser,
-    IdentityPermissions.UpdateUser,
-    IdentityPermissions.ViewRole,
-    IdentityPermissions.ViewTenant,
-
-  ],
-  childRoles: [
-    operatorRole.name
-  ],
-  readonly: true
+    name: "Supervisor",
+    permissions: [
+        UserPermissions.Create,
+        UserPermissions.View,
+        UserPermissions.Manage,
+        UserPermissions.Update,
+        RolePermissions.View,
+    ],
+    childRoles: [
+        operatorRole.name
+    ],
+    readonly: true
 }
 
 export default role

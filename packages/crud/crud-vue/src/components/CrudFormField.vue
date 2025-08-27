@@ -8,8 +8,11 @@ import {useCrudStore} from "../stores/UseCrudStore";
 import {VDateInput} from 'vuetify/labs/VDateInput'
 import type {IEntityCrud, IEntityCrudField, IEntityCrudFilter} from "@drax/crud-share";
 import {MediaField, MediaFullField} from "@drax/media-vue";
+import {useAuth} from "@drax/identity-vue";
 
 const {t, te} = useI18n()
+
+const {hasPermission} = useAuth()
 
 const store = useCrudStore()
 
@@ -69,7 +72,7 @@ defineEmits(['updateValue'])
 
 <template>
 
-  <div v-if="field && field.type">
+  <div v-if="field && field.type && (!field.permission || hasPermission(field.permission) )">
     <v-text-field
         v-if="field.type === 'string'"
         type="text"
@@ -163,6 +166,7 @@ defineEmits(['updateValue'])
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+
     >
     </v-combobox>
 
