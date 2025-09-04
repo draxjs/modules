@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {defineEmits} from 'vue'
-import {useAuthStore} from "../../stores/auth/AuthStore.js";
+import {useAuthStore} from "../../stores/AuthStore";
 
 
 

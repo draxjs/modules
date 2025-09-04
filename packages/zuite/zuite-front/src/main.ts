@@ -24,13 +24,20 @@ const {fetchSettings, suscribeAuth} = useSetting()
 await fetchSettings()
 await suscribeAuth()
 
+import { useIdentityCrudStore } from '@drax/identity-vue'
+import CustomUserCrud from './modules/base/cruds/CustomUserCrud'
+import CustomRoleCrud from "./modules/base/cruds/CustomRoleCrud";
+const identityCrudStore = useIdentityCrudStore()
+identityCrudStore.setUserCrud(new CustomUserCrud())
+identityCrudStore.setRoleCrud(new CustomRoleCrud())
+
 app
   .use(vuetify)
   .use(router)
+  .use(i18n)
 
-// registerPlugins(app)
 
-app.use(i18n)
+
 
 setupAuth()
 

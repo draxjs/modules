@@ -1,7 +1,7 @@
 import type {
   IEntityCrud, IEntityCrudForm, IEntityCrudHeader, IEntityCrudRefs,
   IEntityCrudRules, IEntityCrudField, IEntityCrudPermissions,
-  IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFormFilter
+  IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFormFilter, IEntityCrudFieldVariant
 } from "@drax/crud-share";
 
 
@@ -158,6 +158,10 @@ class EntityCrud implements IEntityCrud {
     return true
   }
 
+  isItemDeletable():boolean{
+    return true
+  }
+
   get isDeletable() {
     return true
   }
@@ -271,6 +275,24 @@ class EntityCrud implements IEntityCrud {
   get cancelBtnFormClass() {
     return 'text-grey'
   }
+
+  get inputVariantCreate(): IEntityCrudFieldVariant {
+    return 'outlined'
+  }
+
+  get inputVariantEdit(): IEntityCrudFieldVariant {
+    return 'outlined'
+  }
+
+  get inputVariantView(): IEntityCrudFieldVariant {
+    return 'filled'
+  }
+
+  get inputVariantDelete() : IEntityCrudFieldVariant{
+    return 'underlined'
+  }
+
+
 }
 
 export default EntityCrud;

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import TenantCrud from '../../cruds/tenant-crud/TenantCrud'
+import {useIdentityCrudStore} from "../../stores/IdentityCrudStore"
+const identityCrudStore = useIdentityCrudStore();
 import {Crud} from "@drax/crud-vue";
 </script>
 
 <template>
-  <crud :entity="TenantCrud.instance">
+  <crud :entity="identityCrudStore.tenantCrud">
 
   </crud>
 </template>

@@ -346,7 +346,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
     async changePassword(request, reply) {
         try {
-            request.rbac.assertPermission(UserPermissions.Update)
+            request.rbac.assertPermission(UserPermissions.ChangePassword)
             const userId = request.params.id
             if (!userId) {
                 throw new UnauthorizedError()

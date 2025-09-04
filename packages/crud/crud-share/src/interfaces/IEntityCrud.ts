@@ -7,6 +7,8 @@ import type {IEntityCrudRules} from "./IEntityCrudRules";
 import type {IEntityCrudRefs} from "./IEntityCrudRefs";
 import type {IDraxCrudProvider} from "./IDraxCrudProvider";
 import type {IEntityCrudFormFilter} from "./IEntityCrudFormFilter";
+import type {IEntityCrudFieldVariant} from "./IEntityCrudFieldVariant";
+
 
 interface IEntityCrud {
   name: string
@@ -25,6 +27,7 @@ interface IEntityCrud {
   isViewable: boolean
   isEditable: boolean
   isItemEditable: (item?: any) => boolean
+  isItemDeletable: (item?: any) => boolean
   isCreatable: boolean
   isDeletable: boolean
   isExportable: boolean
@@ -73,6 +76,11 @@ interface IEntityCrud {
   getRule(field: string | undefined): Array<Function> | undefined
 
   provider: IDraxCrudProvider<any, any, any>
+
+  inputVariantCreate?: IEntityCrudFieldVariant
+  inputVariantEdit?: IEntityCrudFieldVariant
+  inputVariantView?: IEntityCrudFieldVariant
+  inputVariantDelete?: IEntityCrudFieldVariant
 }
 
 

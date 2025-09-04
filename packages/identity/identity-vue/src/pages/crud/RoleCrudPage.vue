@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import {Crud, useCrud} from "@drax/crud-vue";
-import RoleCrud from "../../cruds/role-crud/RoleCrud";
 import RoleForm from "../../cruds/role-crud/RoleForm.vue";
 import {useI18n} from "vue-i18n";
-
+import {useIdentityCrudStore} from "../../stores/IdentityCrudStore"
+const identityCrudStore = useIdentityCrudStore();
 const {t, te} = useI18n()
 
 const {
   onCancel, onSubmit,form
-} = useCrud(RoleCrud.instance);
+} = useCrud(identityCrudStore.roleCrud);
 
 </script>
 
 <template>
-  <crud :entity="RoleCrud.instance">
+  <crud :entity="identityCrudStore.roleCrud">
 
     <template v-slot:form>
       <role-form

@@ -157,6 +157,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
+  get inputVariantEdit(){
+    return 'filled'
+  }
+
 
 }
 

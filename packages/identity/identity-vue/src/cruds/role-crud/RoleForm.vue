@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import {useFormUtils, useCrudStore} from "@drax/crud-vue";
-import {defineEmits, defineModel, ref} from "vue";
+import {computed, defineEmits, defineModel, ref} from "vue";
 import {useI18nValidation} from "@drax/common-vue";
 import PermissionSelector from "../../components/PermissionSelector/PermissionSelector.vue";
 import RoleCombobox from "../../combobox/RoleCombobox.vue";
+import {useIdentityCrudStore} from "../../stores/IdentityCrudStore";
 import {useI18n} from "vue-i18n";
 
 const {$ta} = useI18nValidation()
@@ -14,6 +15,8 @@ const valueModel = defineModel({type: [Object]})
 const emit = defineEmits(['submit', 'cancel'])
 
 const store = useCrudStore()
+const identityCrudStore = useIdentityCrudStore()
+const entity = identityCrudStore.roleCrud
 
 const valid = ref()
 const formRef = ref()
@@ -33,8 +36,21 @@ function cancel() {
   emit('cancel')
 }
 
+const variant = computed(() => {
+  if (store.operation === 'create') {
+    return entity.inputVariantCreate
+  } else if (store.operation === 'edit') {
+    return entity.inputVariantEdit
+  } else if (store.operation === 'delete') {
+    return entity.inputVariantDelete
+  } else if (store.operation === 'view') {
+    return entity.inputVariantView
+  }
+  return 'outlined'
+})
+
 const {
-  variant, submitColor, readonly
+  submitColor, readonly
 } = useFormUtils(store.operation)
 
 </script>

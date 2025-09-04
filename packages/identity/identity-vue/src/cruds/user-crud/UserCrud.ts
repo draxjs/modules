@@ -1,13 +1,8 @@
-
-
 import {EntityCrud} from "@drax/crud-vue";
 import {UserSystemFactory} from "@drax/identity-front";
 import {RoleCrud} from '../role-crud/RoleCrud'
 import {TenantCrud} from '../tenant-crud/TenantCrud'
-import {useAuthStore} from '../../stores/auth/AuthStore'
-
-
-
+import {useAuthStore} from '../../stores/AuthStore'
 
 import type {
   IEntityCrud,
@@ -16,7 +11,6 @@ import type {
   IEntityCrudHeader,
   IEntityCrudRefs
 } from "@drax/crud-share";
-
 
 class UserCrud extends EntityCrud implements IEntityCrud {
 
@@ -46,7 +40,6 @@ class UserCrud extends EntityCrud implements IEntityCrud {
 
   get headers():IEntityCrudHeader[] {
     return [
-        //{title: 'id',key:'_id', align: 'start'},
       { title: 'name', key: 'name', align: 'start' },
       { title: 'username', key: 'username', align: 'start' },
       { title: 'email', key: 'email', align: 'start' },
@@ -118,11 +111,28 @@ class UserCrud extends EntityCrud implements IEntityCrud {
 
   isItemEditable(item?:any) {
     const authStore = useAuthStore()
-    if(authStore?.authUser?.role?.childRoles){
+    if(authStore?.authUser?.role?.childRoles && authStore?.authUser?.role?.childRoles.length > 0){
       return  authStore.authUser.role.childRoles.some(role => role.name === item.role.name)
     }else{
       return true
     }
+  }
+
+  isItemDeletable(item?:any) {
+    const authStore = useAuthStore()
+    if(authStore?.authUser?.role?.childRoles && authStore?.authUser?.role?.childRoles.length > 0){
+      return  authStore.authUser.role.childRoles.some(role => role.name === item.role.name)
+    }else{
+      return true
+    }
+  }
+
+  get searchEnable() {
+    return true
+  }
+
+  get filterButtons() {
+    return false
   }
 
 }

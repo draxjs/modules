@@ -38,7 +38,8 @@ import RoleCrud from "./cruds/role-crud/RoleCrud"
 
 
 
-import {useAuthStore} from "./stores/auth/AuthStore.js";
+import {useAuthStore} from "./stores/AuthStore.js";
+import {useIdentityCrudStore} from "./stores/IdentityCrudStore.js";
 
 import IdentityAuthRoutes from "./routes/IdentityAuthRoutes.js";
 import IdentityCrudRoutes from "./routes/IdentityCrudRoutes.js";
@@ -92,6 +93,7 @@ export {
 
     //Stores
     useAuthStore,
+    useIdentityCrudStore,
 
     //Routes
     IdentityCrudRoutes,

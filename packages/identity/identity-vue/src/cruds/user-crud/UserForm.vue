@@ -1,28 +1,28 @@
 <script setup lang="ts">
 import {useFormUtils, useCrudStore} from "@drax/crud-vue";
-import {defineEmits, defineModel, defineProps, type PropType, ref} from "vue";
+import {computed, defineEmits, defineModel, defineProps, type PropType, ref} from "vue";
 import {useI18nValidation} from "@drax/common-vue";
 import RoleCombobox from "../../combobox/RoleCombobox.vue";
 import TenantCombobox from "../../combobox/TenantCombobox.vue";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
-import type {IEntityCrudOperation} from "@drax/crud-share";
+import {useIdentityCrudStore} from "../../stores/IdentityCrudStore";
 
 const {$ta} = useI18nValidation()
 const {t, te} = useI18n()
 
 const {hasPermission} = useAuth()
 
-const {operation} = defineProps({
-  operation: {type: String as PropType<IEntityCrudOperation>, required: true},
-  enablePassword: {type: Boolean, default: false}
-})
 
 const valueModel = defineModel({type: [Object]})
 
 const emit = defineEmits(['submit', 'cancel'])
 
 const store = useCrudStore()
+const enablePassword = store.operation === 'create'
+
+const identityCrudStore = useIdentityCrudStore()
+const entity = identityCrudStore.userCrud
 
 const valid = ref()
 const formRef = ref()
@@ -31,7 +31,7 @@ const formRef = ref()
 async function submit() {
   store.resetErrors()
 
-  if(operation === 'delete') {
+  if(store.operation === 'delete') {
     emit('submit',valueModel.value)
     return
   }
@@ -49,8 +49,22 @@ function cancel() {
 }
 
 const {
-  variant, submitColor, readonly
+   submitColor, readonly
 } = useFormUtils(store.operation)
+
+
+const variant = computed(() => {
+  if (store.operation === 'create') {
+    return entity.inputVariantCreate
+  } else if (store.operation === 'edit') {
+    return entity.inputVariantEdit
+  } else if (store.operation === 'delete') {
+    return entity.inputVariantDelete
+  } else if (store.operation === 'view') {
+    return entity.inputVariantView
+  }
+  return 'outlined'
+})
 
 
 let passwordVisibility = ref(false)

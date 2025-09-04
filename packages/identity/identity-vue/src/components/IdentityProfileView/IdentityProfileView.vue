@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useAuthStore} from "../../stores/auth/AuthStore.js";
+import {useAuthStore} from "../../stores/AuthStore";
 import IdentityProfileAvatarEdit from "../IdentityProfileAvatarEdit/IdentityProfileAvatarEdit.vue";
 import {useI18n} from "vue-i18n";
 defineEmits(['click'])

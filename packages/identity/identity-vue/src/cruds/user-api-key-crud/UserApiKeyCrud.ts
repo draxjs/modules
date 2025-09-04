@@ -88,6 +88,14 @@ class UserApiKeyCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
+  get searchEnable() {
+    return true
+  }
+
+  get filterButtons() {
+    return false
+  }
+
 }
 
 export default UserApiKeyCrud

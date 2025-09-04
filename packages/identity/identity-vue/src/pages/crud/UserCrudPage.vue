@@ -7,6 +7,9 @@ import UserForm from "../../cruds/user-crud/UserForm.vue";
 import PasswordUpdateButton from "../../cruds/user-crud/PasswordUpdateButton.vue";
 import UserPasswordDialog from "../../cruds/user-crud/UserPasswordDialog.vue";
 import type {IUser} from "@drax/identity-share";
+import {useIdentityCrudStore} from "../../stores/IdentityCrudStore"
+
+const identityCrudStore = useIdentityCrudStore();
 
 const {onCancel, onSubmit,form, operation } = useCrud(UserCrud.instance);
 
@@ -31,12 +34,10 @@ function onChangePassword(user:IUser){
         :user="userSelected"
     />
 
-    <crud :entity="UserCrud.instance">
+    <crud :entity="identityCrudStore.userCrud">
 
       <template v-slot:form>
         <user-form
-            :enable-password="operation === 'create'"
-            :operation="operation"
             v-model="form"
             @submit="onSubmit"
             @cancel="onCancel"

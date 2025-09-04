@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
-import {useFormUtils} from "../composables/UseFormUtils";
 import {getItemId} from "../helpers/getItemId";
 import CrudFormField from "./CrudFormField.vue";
 import {computed, defineEmits, defineProps, ref} from "vue";
@@ -98,9 +97,19 @@ function cancel() {
   emit('canceled')
 }
 
-const {
-  variant
-} = useFormUtils(operation.value)
+
+const variant = computed(() => {
+  if (operation.value === 'create') {
+    return entity.inputVariantCreate
+  } else if (operation.value === 'edit') {
+    return entity.inputVariantEdit
+  } else if (operation.value === 'delete') {
+    return entity.inputVariantDelete
+  } else if (operation.value === 'view') {
+    return entity.inputVariantView
+  }
+  return 'outlined'
+})
 
 const tabInputErrors = computed(() => {
       return (tab:string) => {

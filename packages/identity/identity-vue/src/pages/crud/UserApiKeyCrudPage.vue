@@ -1,16 +1,17 @@
 <script setup lang="ts">
 
-import UserApiKeyCrud from "../../cruds/user-api-key-crud/UserApiKeyCrud";
 import UserApiKeyForm from "../../cruds/user-api-key-crud/UserApiKeyForm.vue";
 import {Crud, useCrud} from "@drax/crud-vue";
 import type {IUserApiKey} from "@drax/identity-share";
 import {formatDateTime} from "@drax/common-front";
 import UserApiKeyCreated from "../../cruds/user-api-key-crud/UserApiKeyCreated.vue";
 import {ref} from "vue";
+import {useIdentityCrudStore} from "../../stores/IdentityCrudStore"
+const identityCrudStore = useIdentityCrudStore();
 
 const {
   onCancel, onSubmit,form
-} = useCrud(UserApiKeyCrud.instance);
+} = useCrud(identityCrudStore.userApiKeyCrud);
 
 const userApiKeyCreated = ref<IUserApiKey>();
 const userApiKeyCreatedDialog = ref<boolean>(false);
@@ -37,7 +38,7 @@ function onCreated(item:IUserApiKey) {
         v-model="userApiKeyCreatedDialog"
     />
 
-  <crud :entity="UserApiKeyCrud.instance" @created="onCreated">
+  <crud :entity="identityCrudStore.userApiKeyCrud" @created="onCreated">
 
     <template v-slot:form>
       <user-api-key-form

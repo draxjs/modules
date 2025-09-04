@@ -1,4 +1,4 @@
-import {useAuthStore} from "../stores/auth/AuthStore";
+import {useAuthStore} from "../stores/AuthStore";
 import {AuthHelper, AuthSystemFactory} from "@drax/identity-front";
 import type {AuthSystem} from "@drax/identity-front";
 import {useRouter} from 'vue-router'

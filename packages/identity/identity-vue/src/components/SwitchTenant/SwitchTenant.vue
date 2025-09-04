@@ -2,7 +2,7 @@
 import {ref} from "vue"
 import TenantCombobox from "../../combobox/TenantCombobox.vue";
 import {useAuth} from "../../composables/useAuth"
-import {useAuthStore} from "../../stores/auth/AuthStore"
+import {useAuthStore} from "../../stores/AuthStore"
 import {useI18n} from "vue-i18n"
 
 const authStore = useAuthStore()

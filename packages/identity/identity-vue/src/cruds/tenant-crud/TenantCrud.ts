@@ -85,6 +85,14 @@ class TenantCrud extends EntityCrud implements IEntityCrud {
     return '800'
   }
 
+  get searchEnable() {
+    return true
+  }
+
+  get filterButtons() {
+    return false
+  }
+
 }
 
 export default TenantCrud
