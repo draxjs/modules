@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-front",
-  "version": "0.34.0",
+  "version": "0.34.1",
   "private": true,
   "scripts": {
     "front": "vite",
@@ -20,9 +20,9 @@
     "@drax/dynamic-vue": "^0.34.0",
     "@drax/i18n-share": "^0.34.0",
     "@drax/identity-front": "^0.34.0",
-    "@drax/identity-vue": "^0.34.0",
+    "@drax/identity-vue": "^0.34.1",
     "@drax/settings-front": "^0.34.0",
-    "@drax/settings-vue": "^0.34.0",
+    "@drax/settings-vue": "^0.34.1",
     "@mdi/font": "7.4.47",
     "core-js": "^3.34.0",
     "deepmerge": "^4.3.1",
