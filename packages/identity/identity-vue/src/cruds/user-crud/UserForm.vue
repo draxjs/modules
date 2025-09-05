@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useFormUtils, useCrudStore} from "@drax/crud-vue";
-import {computed, defineEmits, defineModel, defineProps, type PropType, ref} from "vue";
+import {computed, defineEmits, defineModel, ref} from "vue";
 import {useI18nValidation} from "@drax/common-vue";
 import RoleCombobox from "../../combobox/RoleCombobox.vue";
 import TenantCombobox from "../../combobox/TenantCombobox.vue";

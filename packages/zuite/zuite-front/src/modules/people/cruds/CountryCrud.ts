@@ -7,8 +7,10 @@ import type {
   IEntityCrudHeader,
   IEntityCrudPermissions,
   IEntityCrudRefs,
-  IEntityCrudRules
+  IEntityCrudRules,
+  IEntityCrudFieldVariant
 } from "@drax/crud-share";
+
 import CountryProvider from "../providers/CountryProvider";
 
 //Import EntityCrud Refs
@@ -157,7 +159,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
-  get inputVariantEdit(){
+  get inputVariantEdit(): IEntityCrudFieldVariant{
     return 'filled'
   }
 

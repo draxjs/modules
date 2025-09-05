@@ -11,7 +11,7 @@ import {useIdentityCrudStore} from "../../stores/IdentityCrudStore"
 
 const identityCrudStore = useIdentityCrudStore();
 
-const {onCancel, onSubmit,form, operation } = useCrud(UserCrud.instance);
+const {onCancel, onSubmit, form } = useCrud(UserCrud.instance);
 
 const dialogPassword = ref(false);
 const userSelected = ref();
