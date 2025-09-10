@@ -26,7 +26,7 @@ const {
     </v-card-title>
     <v-card-text>
       <v-alert v-if="exportError" type="error">
-        {{ t('export.error.message') }}
+        {{ t('error.crud.export') }}
       </v-alert>
       <v-table density="compact" v-else>
         <thead>
