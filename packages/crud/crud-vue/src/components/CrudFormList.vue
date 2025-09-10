@@ -148,6 +148,7 @@ const {xs} = useDisplay()
                      class="text-blue text--darken-3 float-left mt-1 mr-2">
                 <v-icon>mdi-plus</v-icon> {{ label }}
               </v-btn>
+
               <v-chip-group v-model="itemSelected"
                             :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }"
                             direction="horizontal"
@@ -155,14 +156,15 @@ const {xs} = useDisplay()
               >
                 <v-chip v-for="(item,index) in valueModel" :key="index"
                              :value="item" @click="menuSelect(item, index)"
-                             label closable @click:close="removeItem(index)"
+                             label  filter class="pr-0"
                 >
-<!--                  <template v-slot:prepend>-->
-<!--                    <v-avatar>{{ index }}</v-avatar>-->
-<!--                  </template>-->
+
                     {{//@ts-ignore
                   valueModel[index][Object.keys(valueModel[index] as any)[0]] || index
                     }}
+                  <template v-slot:append>
+                    <v-btn variant="text" class="ml-2" density="compact" icon="mdi-close-circle" @click="removeItem(index)"></v-btn>
+                  </template>
                 </v-chip>
 
               </v-chip-group>
