@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.34.3",
+  "version": "0.35.0",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -24,10 +24,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/common-front": "^0.34.2",
-    "@drax/crud-front": "^0.34.0",
-    "@drax/crud-share": "^0.34.0",
-    "@drax/media-vue": "^0.34.0"
+    "@drax/common-front": "^0.35.0",
+    "@drax/crud-front": "^0.35.0",
+    "@drax/crud-share": "^0.35.0",
+    "@drax/media-vue": "^0.35.0"
   },
   "peerDependencies": {
     "pinia": "^2.2.2",
