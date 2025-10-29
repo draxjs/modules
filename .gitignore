@@ -3,3 +3,4 @@ node_modules/
 **/*/dist
 **/*/types
 **/*/tsconfig.tsbuildinfo
+lerna-debug.log
