@@ -32,7 +32,7 @@ class CustomUserCrud extends UserCrud implements IEntityCrud {
       { title: 'username', key: 'username', align: 'start' },
       // { title: 'email', key: 'email', align: 'start' },
       { title: 'role', key: 'role.name', align: 'start' },
-      { title: 'tenant', key: 'tenant.name', align: 'start' },
+      ...(this.isTenantEnabled ? [{ title: 'tenant', key: 'tenant.name', align: 'start' as const }] : []),
       { title: 'active', key: 'active', align: 'start' },
     ]
   }

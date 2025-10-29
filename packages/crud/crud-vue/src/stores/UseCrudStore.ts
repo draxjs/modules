@@ -61,6 +61,9 @@ export const useCrudStore = defineStore('CrudStore', {
         setForm(form: any) {
             this.form = form
         },
+        setFormFieldValue(name: string, value: any) {
+            this.form[name] = value
+        },
         setFormValid(formValid: any) {
             this.formValid = formValid
         },
@@ -122,6 +125,12 @@ export const useCrudStore = defineStore('CrudStore', {
         },
         setFilters(filters: any[]) {
             this.filters = filters
+        },
+        setFilterValue(name:string, value:any) {
+            const index = this.getFilterIndex(name)
+            if (index >= 0) {
+                this.filters[index].value = value
+            }
         }
     }
 

@@ -48,7 +48,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
       {title: 'fullname', key: 'fullname', align: 'start'},
       {title: 'live', key: 'live', align: 'start'},
       {title: 'birthdate', key: 'birthdate', align: 'start'},
-      // {title: 'nationality', key: 'nationality', align: 'start'},
+       {title: 'nationality', key: 'nationality', align: 'start'},
       // {title: 'hobbies', key: 'hobbies', align: 'start'},
       {title: 'race', key: 'race', align: 'start'},
       // {title: 'interests', key: 'interests', align: 'start'},
@@ -175,7 +175,18 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return [
       {name: '_id', type: 'string', label: 'ID', default: null, operator: "eq"},
       {name: 'fullname', type: 'string', label: 'fullname', default: null, operator: "like"},
-      {name: 'birthdate', type: 'date', label: 'birthdate', default: null, operator: "lte", endOfDay: true},
+      {name: 'birthdate', type: 'date', label: 'birthdate', default: new Date(), operator: "lte", endOfDay: true},
+      {
+        name: 'nationality',
+        type: 'array.ref',
+        label: 'nationality',
+        default: null,
+        groupTab: 'BASIC',
+        ref: 'Country',
+        refDisplay: 'name',
+        noFilter: true,
+        operator: "in"
+      },
     ]
   }
 

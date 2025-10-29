@@ -97,7 +97,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const filters: IDraxFieldFilter[] = []
             filterArray.forEach((filter) => {
                 const [field, operator, value] = filter.split(";")
-                filters.push({field, operator, value})
+
+                if(field && operator && (value !== undefined && value !== '') ) {
+                    filters.push({field, operator, value})
+                }
+
             })
             return filters
         } catch (e) {

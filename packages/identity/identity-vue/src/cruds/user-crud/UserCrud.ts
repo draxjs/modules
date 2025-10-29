@@ -38,13 +38,17 @@ class UserCrud extends EntityCrud implements IEntityCrud {
     }
   }
 
+  get isTenantEnabled(){
+    return import.meta.env.VITE_DRAX_TENANT === 'ENABLE'
+  }
+
   get headers():IEntityCrudHeader[] {
     return [
       { title: 'name', key: 'name', align: 'start' },
       { title: 'username', key: 'username', align: 'start' },
       { title: 'email', key: 'email', align: 'start' },
       { title: 'role', key: 'role.name', align: 'start' },
-      { title: 'tenant', key: 'tenant.name', align: 'start' },
+      ...(this.isTenantEnabled ? [{ title: 'tenant', key: 'tenant.name', align: 'start' as const }] : []),
       { title: 'active', key: 'active', align: 'start' },
     ]
   }

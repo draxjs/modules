@@ -118,7 +118,7 @@ class EntityCrud implements IEntityCrud {
   get formFilters(): IEntityCrudFormFilter[] {
     return this.filters.map(
       (filter: IEntityCrudFilter) =>
-        ({field: filter.name, value: null, operator: (filter.operator ? filter.operator : 'eq')})
+        ({field: filter.name, value: filter.default ? filter.default : null, operator: (filter.operator ? filter.operator : 'eq')})
     ) as IEntityCrudFormFilter[]
   }
 

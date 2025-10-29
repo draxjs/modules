@@ -27,6 +27,10 @@ const entity = identityCrudStore.userCrud
 const valid = ref()
 const formRef = ref()
 
+// Add this computed property
+const isTenantEnabled = computed(() => import.meta.env.VITE_DRAX_TENANT === 'ENABLE')
+
+
 
 async function submit() {
   store.resetErrors()
@@ -136,7 +140,7 @@ let passwordVisibility = ref(false)
         ></RoleCombobox>
 
         <TenantCombobox
-            v-if="hasPermission('tenant:manage')"
+            v-if="isTenantEnabled && hasPermission('tenant:manage')"
             v-model="valueModel.tenant"
             :label="t('user.field.tenant')"
             :variant="variant"
