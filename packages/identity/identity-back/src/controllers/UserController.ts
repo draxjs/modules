@@ -31,6 +31,8 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
     constructor() {
         super(UserServiceFactory(), UserPermissions)
+        this.tenantField = "tenant";
+        this.tenantFilter = true;
     }
 
     async auth(request, reply) {
