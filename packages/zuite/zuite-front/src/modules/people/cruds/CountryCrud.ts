@@ -42,6 +42,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     }
   }
 
+  get selectedHeaders(){
+    return ['name',  'flag', 'createdBy']
+  }
+
   get headers(): IEntityCrudHeader[] {
     return [
       {title: 'name', key: 'name', align: 'start'},

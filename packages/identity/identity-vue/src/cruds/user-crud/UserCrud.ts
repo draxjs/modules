@@ -42,9 +42,6 @@ class UserCrud extends EntityCrud implements IEntityCrud {
     return import.meta.env.VITE_DRAX_TENANT === 'ENABLE'
   }
 
-  get isRoleDashboardEnabled(){
-    return import.meta.env.VITE_DRAX_USER_ROLE_DASHBOARD === 'ENABLE'
-  }
 
   get headers():IEntityCrudHeader[] {
     return [

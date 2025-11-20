@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type {PropType} from 'vue'
+import {ref, computed} from 'vue'
 import {useAuth} from '@drax/identity-vue'
 import CrudSearch from "./CrudSearch.vue";
 import {useCrud} from "../composables/UseCrud";
@@ -20,13 +21,28 @@ const {hasPermission} = useAuth()
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-
 })
 
 const {
   loading, itemsPerPage, page, sortBy, search, totalItems, items,
   doPaginate, filters, applyFilters, clearFilters
 } = useCrud(entity)
+
+// Estado para las columnas visibles - inicializado con selectedHeaders
+const visibleColumns = ref<string[]>([])
+
+// Inicializar columnas visibles con selectedHeaders del entity
+const initializeVisibleColumns = () => {
+  const availableHeaders = entity.headers
+    .filter(header => !header.permission || hasPermission(header.permission))
+    .map(header => header.key)
+
+  // Usar selectedHeaders del entity, filtrando solo las que están disponibles
+  visibleColumns.value = entity.selectedHeaders?.filter(key => availableHeaders.includes(key)) || availableHeaders
+}
+
+// Inicializar al montar el componente
+initializeVisibleColumns()
 
 const actions: IEntityCrudHeader[] = entity.actionHeaders.map(header => ({
   ...header,
@@ -40,8 +56,30 @@ const tHeaders: IEntityCrudHeader[] = entity.headers
       title: te(`${entity.name.toLowerCase()}.field.${header.title}`) ? t(`${entity.name.toLowerCase()}.field.${header.title}`) : header.title
     }))
 
-const headers: IEntityCrudHeader[] = [...tHeaders, ...actions]
+// Filtrar headers según columnas visibles
+const headers = computed<IEntityCrudHeader[]>(() => {
+  const filteredHeaders = tHeaders.filter(header => visibleColumns.value.includes(header.key))
+  return [...filteredHeaders, ...actions]
+})
 
+// Lista de columnas disponibles para el menú
+const availableColumns = computed(() => {
+  return tHeaders.map(header => ({
+    key: header.key,
+    title: header.title,
+    visible: visibleColumns.value.includes(header.key)
+  }))
+})
+
+// Toggle de visibilidad de columna
+const toggleColumn = (columnKey: string) => {
+  const index = visibleColumns.value.indexOf(columnKey)
+  if (index > -1) {
+    visibleColumns.value.splice(index, 1)
+  } else {
+    visibleColumns.value.push(columnKey)
+  }
+}
 
 defineExpose({
   doPaginate
@@ -97,6 +135,40 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             :entity="entity"
             @export="v => $emit('export',v)"
         />
+
+        <!-- Selector de columnas -->
+        <v-menu offset-y>
+          <template v-slot:activator="{ props }">
+            <v-btn
+                v-bind="props"
+                icon
+                variant="text"
+            >
+              <v-icon>mdi-view-column</v-icon>
+              <v-tooltip activator="parent" location="bottom">
+                {{ t('crud.columns.select') }}
+              </v-tooltip>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-subheader>
+              {{ t('crud.columns.title') }}
+            </v-list-subheader>
+            <v-list-item
+                v-for="column in availableColumns"
+                :key="column.key"
+                @click="toggleColumn(column.key)"
+            >
+              <template v-slot:prepend>
+                <v-checkbox-btn
+                    :model-value="column.visible"
+                    @click.stop="toggleColumn(column.key)"
+                ></v-checkbox-btn>
+              </template>
+              <v-list-item-title>{{ column.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
         <crud-create-button
             v-if="entity.isCreatable"

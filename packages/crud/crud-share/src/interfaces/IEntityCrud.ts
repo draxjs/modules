@@ -14,6 +14,7 @@ interface IEntityCrud {
   name: string
 
   headers: IEntityCrudHeader[]
+  selectedHeaders: string[]  // Nuevo getter
   actionHeaders: IEntityCrudHeader[]
   permissions: IEntityCrudPermissions
   fields: IEntityCrudField[]

@@ -25,6 +25,8 @@ function onChangePassword(user:IUser){
   dialogPassword.value = true;
 }
 
+const roleDashboard = import.meta.env.VITE_DRAX_USER_ROLE_DASHBOARD === 'ENABLE'
+
 </script>
 
 <template>
@@ -35,7 +37,7 @@ function onChangePassword(user:IUser){
         :user="userSelected"
     />
 
-    <identity-user-group-by v-if="identityCrudStore.isRoleDashboardEnabled"></identity-user-group-by>
+    <identity-user-group-by v-if="roleDashboard"></identity-user-group-by>
 
     <crud :entity="identityCrudStore.userCrud">
 

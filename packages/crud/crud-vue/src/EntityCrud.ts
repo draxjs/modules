@@ -15,12 +15,16 @@ class EntityCrud implements IEntityCrud {
   static get instance(): IEntityCrud {
     throw new Error('EntityCrud instance not found')
   }
-
-
+  
   get headers(): IEntityCrudHeader[] {
     return [
       {title: 'ID', key: '_id'},
     ]
+  }
+
+  get selectedHeaders(): string[] {
+    // Retrocompatibilidad: si no se define, retorna todas las keys de headers
+    return this.headers.map(header => header.key)
   }
 
   get actionHeaders(): IEntityCrudHeader[] {
