@@ -9,7 +9,14 @@ import {
     MongoServerErrorToValidationError
 } from "@drax/common-back";
 import type {DeleteResult} from "mongodb";
-import type {IDraxPaginateOptions, IDraxPaginateResult, IDraxFindOptions, IDraxCrud, IDraxFieldFilter} from "@drax/crud-share";
+import type {
+    IDraxPaginateOptions,
+    IDraxPaginateResult,
+    IDraxFindOptions,
+    IDraxCrud,
+    IDraxFieldFilter,
+    IDraxGroupByOptions
+} from "@drax/crud-share";
 import type {PaginateModel, PaginateOptions, PaginateResult} from "mongoose";
 import {InvalidIdError} from "@drax/common-back";
 import {MongoServerError} from "mongodb";
@@ -304,6 +311,84 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const sort = MongooseSort.applySort(orderBy, order)
 
         return this._model.find(query).limit(limit).sort(sort).cursor() as Cursor<T>;
+    }
+
+    async groupBy({fields= [], filters= []}: IDraxGroupByOptions): Promise<Array<any>> {
+        const query = {}
+
+        MongooseQueryFilter.applyFilters(query, filters)
+
+        // Construir el objeto de agrupación dinámicamente
+        const groupId: any = {}
+        fields.forEach(field => {
+            groupId[field] = `$${field}`
+        })
+
+        // Construir el objeto de proyección para aplanar el resultado
+        const projectFields: any = { count: 1, _id: 0 }
+        fields.forEach(field => {
+            projectFields[field] = `$_id.${field}`
+        })
+
+        // Construir lookups para campos de referencia
+        const lookupStages: any[] = []
+        
+        // Obtener el schema para identificar campos de referencia
+        const schema = this._model.schema
+        
+        fields.forEach(field => {
+            const schemaPath = schema.path(field)
+            
+            // Verificar si el campo es una referencia
+            if (schemaPath && schemaPath.options && schemaPath.options.ref) {
+                const refModel = schemaPath.options.ref
+                const fieldName = fields.length === 1 ? field : field
+                
+                lookupStages.push({
+                    $lookup: {
+                        from: refModel.toLowerCase() + 's', // Convención de nombres de colección en MongoDB
+                        localField: fieldName,
+                        foreignField: '_id',
+                        as: `${fieldName}_populated`
+                    }
+                })
+                
+                // Unwind para convertir el array en objeto único
+                lookupStages.push({
+                    $unwind: {
+                        path: `$${fieldName}_populated`,
+                        preserveNullAndEmptyArrays: true
+                    }
+                })
+                
+                // Reemplazar el campo original con el objeto poblado
+                projectFields[field] = `$${fieldName}_populated`
+            }
+        })
+
+        const pipeline: any[] = [
+            { $match: query },
+            {
+                $group: {
+                    _id: fields.length === 1 ? `$${fields[0]}` : groupId,
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $project: fields.length === 1
+                    ? { [fields[0]]: '$_id', count: 1, _id: 0 }
+                    : projectFields
+            },
+            ...lookupStages,
+            {
+                $project: projectFields
+            },
+            { $sort: { count: -1 } }
+        ]
+
+        const result = await this._model.aggregate(pipeline).exec()
+
+        return result
     }
 }
 

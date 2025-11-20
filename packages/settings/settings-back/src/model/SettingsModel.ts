@@ -9,6 +9,7 @@ const SettingSchema = new mongoose.Schema<ISetting>({
     key: {type: String, required: true, unique: true},
     value: {type: mongoose.Schema.Types.Mixed, required: false, unique: false, index: false},
     label: {type: String, required: false, index: false},
+    description: {type: String, required: false, index: false},
     category: {type: String, required: true, index: false},
     type: {type: String, default: "string", enum: ['string','longString','number','enum','boolean', 'password', 'stringList','numberList', 'enumList', 'ref', 'secret'], required: false, unique: false, index: false},
     options: [{type: String, index: false, required: false}],

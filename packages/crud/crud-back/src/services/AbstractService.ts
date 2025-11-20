@@ -6,7 +6,7 @@ import type {
     IDraxPaginateResult,
     IDraxFindOptions,
     IDraxExportOptions,
-    IDraxCrudRepository, IDraxFieldFilter
+    IDraxCrudRepository, IDraxFieldFilter, IDraxGroupByOptions
 } from "@drax/crud-share";
 import {IDraxCrudService} from "@drax/crud-share";
 import ExportCsv from "../exports/ExportCsv.js";
@@ -260,6 +260,10 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             throw e;
         }
 
+    }
+
+    async groupBy({fields= [], filters= []}: IDraxGroupByOptions): Promise<Array<any>> {
+        return await this._repository.groupBy({fields, filters})
     }
 
     async export({

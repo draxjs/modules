@@ -19,12 +19,12 @@ await fetchSettings()
 await suscribeAuth()
 
 //Setup Custom Identity Cruds
-import { useIdentityCrudStore } from '@drax/identity-vue'
-import CustomUserCrud from './modules/base/cruds/CustomUserCrud'
-import CustomRoleCrud from "./modules/base/cruds/CustomRoleCrud";
-const identityCrudStore = useIdentityCrudStore()
-identityCrudStore.setUserCrud(new CustomUserCrud())
-identityCrudStore.setRoleCrud(new CustomRoleCrud())
+// import { useIdentityCrudStore } from '@drax/identity-vue'
+// import CustomUserCrud from './modules/base/cruds/CustomUserCrud'
+// import CustomRoleCrud from "./modules/base/cruds/CustomRoleCrud";
+// const identityCrudStore = useIdentityCrudStore()
+// identityCrudStore.setUserCrud(new CustomUserCrud())
+// identityCrudStore.setRoleCrud(new CustomRoleCrud())
 
 //Setup Router, I18n and Vuetify
 app

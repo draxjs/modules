@@ -39,6 +39,7 @@ type CustomRequest = FastifyRequest<{
         headersTranslate?: string
         separator?: string
         fileName?: string
+        fields?: string
     }
 }>
 
@@ -509,6 +510,29 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 fileName: result.fileName,
             }
 
+        } catch (e) {
+            this.handleError(e, reply)
+        }
+    }
+
+    async groupBy(request: CustomRequest, reply: FastifyReply) {
+        try {
+            request.rbac.assertPermission(this.permission.View)
+
+            const fields: string[] = request.query.fields ?
+                request.query.fields.split(',').map(f => f.trim()).filter(f => f.length > 0) :
+                []
+
+            if (fields.length === 0) {
+                throw new BadRequestError('At least one field is required for grouping')
+            }
+
+            const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
+            this.applyUserAndTenantFilters(filters, request.rbac)
+
+            const result = await this.service.groupBy({fields, filters})
+
+            return result
         } catch (e) {
             this.handleError(e, reply)
         }

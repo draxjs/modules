@@ -65,8 +65,10 @@ const validateNumberList = computed(() => {
                 :prefix="setting.prefix"
                 :suffix="setting.suffix"
                 :readonly="!editing"
-                :hide-details="!editing"
+
                 :variant="variant"
+                :hint="setting.description"
+                :persistent-hint="!!setting.description"
   >
   </v-text-field>
 
@@ -82,8 +84,10 @@ const validateNumberList = computed(() => {
               :prefix="setting.prefix"
               :suffix="setting.suffix"
               :readonly="!editing"
-              :hide-details="!editing"
+
               :variant="variant"
+              :hint="setting.description"
+              :persistent-hint="!!setting.description"
   >
   </v-textarea>
 
@@ -102,8 +106,10 @@ const validateNumberList = computed(() => {
                 :prefix="setting.prefix"
                 :suffix="setting.suffix"
                 :readonly="!editing"
-                :hide-details="!editing"
+
                 :variant="variant"
+                :hint="setting.description"
+                :persistent-hint="!!setting.description"
   >
   </v-text-field>
 
@@ -119,8 +125,10 @@ const validateNumberList = computed(() => {
                 :prefix="setting.prefix"
                 :suffix="setting.suffix"
                 :readonly="!editing"
-                :hide-details="!editing"
+
                 :variant="variant"
+                :hint="setting.description"
+                :persistent-hint="!!setting.description"
   >
   </v-text-field>
 
@@ -133,8 +141,10 @@ const validateNumberList = computed(() => {
               :placeholder="setting.label"
               color="secondary"
               :readonly="!editing"
-              :hide-details="!editing"
+
               :variant="variant"
+              :hint="setting.description"
+              :persistent-hint="!!setting.description"
   >
   </v-checkbox>
 
@@ -150,8 +160,10 @@ const validateNumberList = computed(() => {
             :prefix="setting.prefix"
             :suffix="setting.suffix"
             :readonly="!editing"
-            :hide-details="!editing"
+
             :variant="variant"
+            :hint="setting.description"
+            :persistent-hint="!!setting.description"
   >
   </v-select>
 
@@ -166,8 +178,10 @@ const validateNumberList = computed(() => {
               :placeholder="setting.label"
               color="secondary"
               :readonly="!editing"
-              :hide-details="!editing"
+
               :variant="variant"
+              :hint="setting.description"
+              :persistent-hint="!!setting.description"
   >
   </v-combobox>
 
@@ -182,8 +196,10 @@ const validateNumberList = computed(() => {
               color="secondary"
               :rules="validateNumberList"
               :readonly="!editing"
-              :hide-details="!editing"
+
               :variant="variant"
+              :hint="setting.description"
+              :persistent-hint="!!setting.description"
   >
   </v-combobox>
 
@@ -200,8 +216,10 @@ const validateNumberList = computed(() => {
             :prefix="setting.prefix"
             :suffix="setting.suffix"
             :readonly="!editing"
-            :hide-details="!editing"
+
             :variant="variant"
+            :hint="setting.description"
+            :persistent-hint="!!setting.description"
   >
   </v-select>
 

@@ -7,6 +7,7 @@ interface ISettingBase{
     value: string
     //valueList?: string[]
     label: string
+    description?: string
     category: string
     type: SettingTypes
     options?: string[]
@@ -27,6 +28,7 @@ interface ISetting{
     value: string
     //valueList?: string[]
     label: string
+    description?: string
     category: string
     type: SettingTypes
     options?: string[]

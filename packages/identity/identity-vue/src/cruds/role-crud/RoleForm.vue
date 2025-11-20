@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useFormUtils, useCrudStore} from "@drax/crud-vue";
 import {computed, defineEmits, defineModel, ref} from "vue";
-import {useI18nValidation} from "@drax/common-vue";
+import {useI18nValidation, IconCombobox, ColorCombobox} from "@drax/common-vue";
 import PermissionSelector from "../../components/PermissionSelector/PermissionSelector.vue";
 import RoleCombobox from "../../combobox/RoleCombobox.vue";
 import {useIdentityCrudStore} from "../../stores/IdentityCrudStore";
@@ -88,6 +88,10 @@ const {
               :readonly="readonly"
               :clearable="false"
           ></v-text-field>
+
+
+          <icon-combobox v-model="valueModel.icon"></icon-combobox>
+          <color-combobox v-model="valueModel.color"></color-combobox>
 
           <RoleCombobox
               v-model="valueModel.childRoles"

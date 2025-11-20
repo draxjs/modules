@@ -4,7 +4,8 @@ import {useMenu} from "./composables/useMenu.js";
 import GalleryMenu from "./components/GalleryMenu/GalleryMenu.vue";
 import MenuCard from "./components/MenuCard/MenuCard.vue";
 import SidebarMenu from "./components/SidebarMenu/SidebarMenu.vue";
-
+import IconCombobox from './components/IconCombobox/IconCombobox.vue'
+import ColorCombobox from './components/ColorCombobox/ColorCombobox.vue'
 
 
 export {
@@ -15,5 +16,7 @@ export {
 
     GalleryMenu,
     MenuCard,
-    SidebarMenu
+    SidebarMenu,
+    IconCombobox,
+    ColorCombobox
 }

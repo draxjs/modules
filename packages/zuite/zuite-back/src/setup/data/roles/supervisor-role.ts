@@ -3,6 +3,8 @@ import operatorRole from "./operator-role.js";
 
 const role = {
     name: "Supervisor",
+    icon: 'mdi-account-supervisor-circle',
+    color: 'purple',
     permissions: [
         UserPermissions.Create,
         UserPermissions.View,

@@ -11,7 +11,8 @@ import {
   FindByParamSchema,
   ErrorBodyResponseSchema,
   ValidationErrorBodyResponseSchema,
-  ExportBodyResponseSchema
+  ExportBodyResponseSchema,
+  GroupByQuerySchema
 } from '../index.js';
 
 export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate extends z.ZodObject<z.ZodRawShape>, TUpdate extends z.ZodObject<z.ZodRawShape>> {
@@ -54,6 +55,17 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
     return zodToJsonSchema(z.array(this.entitySchema), {target: this.target})
   }
 
+  get jsonEntityGroupBySchema() {
+    return zodToJsonSchema(
+      z.array(
+        z.object({
+          count: z.number()
+        }).catchall(z.union([z.string(), z.record(z.unknown())]))
+      ),
+      {target: this.target}
+    )
+  }
+
   get jsonExportBodyResponse() {
     return zodToJsonSchema(ExportBodyResponseSchema, {target: this.target})
   }
@@ -68,6 +80,10 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
 
   get jsonFindQuerySchema(){
     return zodToJsonSchema(FindQuerySchema, {target: this.target})
+  }
+
+  get jsonGroupByQuerySchema(){
+    return zodToJsonSchema(GroupByQuerySchema, {target: this.target})
   }
 
   get jsonSearchQuerySchema(){
@@ -158,6 +174,23 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
       query: this.jsonSearchQuerySchema,
       response: {
         200: this.jsonEntityArraySchema,
+        400: this.jsonErrorBodyResponse,
+        401: this.jsonErrorBodyResponse,
+        403: this.jsonErrorBodyResponse,
+        500: this.jsonErrorBodyResponse
+      }
+    }
+  }
+
+  /**
+   * Get JSON schema for find entities
+   */
+  get groupBySchema() {
+    return {
+      ...(this.getTags),
+      query: this.jsonGroupByQuerySchema,
+      response: {
+        200: this.jsonEntityGroupBySchema,
         400: this.jsonErrorBodyResponse,
         401: this.jsonErrorBodyResponse,
         403: this.jsonErrorBodyResponse,

@@ -3,7 +3,7 @@ import SettingTableConfig from "../components/SettingTableConfig.vue";
 </script>
 
 <template>
-  <v-container max-width="1200">
+  <v-container >
     <setting-table-config></setting-table-config>
   </v-container>
 

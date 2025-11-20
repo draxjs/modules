@@ -33,6 +33,8 @@ const UserSchema = UserBaseSchema
             _id: string(),
             id: string().optional(),
             name: string(),
+            icon: string().optional(),
+            color: string().optional(),
             permissions: array(string()),
             childRoles: array(object({_id: string(), name:string()})).optional()
         }).optional(),

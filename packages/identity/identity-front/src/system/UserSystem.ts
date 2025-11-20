@@ -2,7 +2,7 @@ import type {IUserProvider} from "../interfaces/IUserProvider";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import type {
     IDraxCrudProviderExportResult,
-    IDraxExportOptions,
+    IDraxExportOptions, IDraxGroupByOptions,
     IDraxPaginateOptions,
     IDraxPaginateResult
 } from "@drax/crud-share";
@@ -44,8 +44,16 @@ class UserSystem implements IUserProvider{
     }
 
     async changeUserPassword(userId:string, newPassword:string):Promise<boolean> {
-        console.log("UserSystem",userId, newPassword)
         const result: boolean = await this._provider.changeUserPassword(userId,newPassword)
+        return result
+    }
+
+    async groupBy({fields = [], filters = []}: IDraxGroupByOptions): Promise<Array<any>> {
+        if(!this._provider.groupBy){
+            throw new Error("GroupBy method not implemented")
+        }
+
+        const result: any[] = await this._provider.groupBy({fields,filters})
         return result
     }
 

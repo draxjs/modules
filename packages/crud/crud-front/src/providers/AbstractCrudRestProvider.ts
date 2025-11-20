@@ -3,7 +3,7 @@ import type {IHttpClient} from '@drax/common-front'
 import type {
     IDraxCrudProvider, IDraxCrudProviderExportResult,
     IDraxPaginateResult, IDraxPaginateOptions,
-    IDraxFieldFilter, IDraxExportOptions, IDraxFindOptions, IDraxFindOneOptions
+    IDraxFieldFilter, IDraxExportOptions, IDraxFindOptions, IDraxFindOneOptions, IDraxGroupByOptions
 } from "@drax/crud-share";
 
 
@@ -61,6 +61,13 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
     async find({limit = 100, orderBy = "",order = false,search = "", filters = []}: IDraxFindOptions): Promise<T[]> {
         const url = this.basePath + '/find'
         const params = {limit, orderBy, order, search,filters: this.prepareFilters(filters)}
+        const items = await this.httpClient.get(url, {params})
+        return items as T[]
+    }
+
+    async groupBy({fields = [], filters = []}: IDraxGroupByOptions): Promise<Array<any>> {
+        const url = this.basePath + '/group-by'
+        const params = {fields: fields ? fields.join(',') : '',filters: this.prepareFilters(filters)}
         const items = await this.httpClient.get(url, {params})
         return items as T[]
     }
