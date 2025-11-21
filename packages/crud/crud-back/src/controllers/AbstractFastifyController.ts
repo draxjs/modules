@@ -454,7 +454,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac);
 
-            //console.log("FILTERS",filters)
+            // console.log("paginate filters",filters)
 
             let paginateResult = await this.service.paginate({page, limit, orderBy, order, search, filters})
             return paginateResult
@@ -529,6 +529,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac)
+
+            // console.log("groupby filters",filters)
 
             const result = await this.service.groupBy({fields, filters})
 

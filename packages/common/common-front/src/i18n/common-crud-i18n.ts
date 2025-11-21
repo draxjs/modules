@@ -4,6 +4,8 @@ const messages = {
       columns: {
         select: "Select columns",
         title: "Visible columns",
+        selectAll: "All",
+        deselectAll: "None",
       }
     }
   },
@@ -11,7 +13,9 @@ const messages = {
     crud: {
       columns: {
         select: "Seleccionar columnas",
-        title: "Columnas visibles"
+        title: "Columnas visibles",
+        selectAll: "Todas",
+        deselectAll: "Ninguna",
       }
     }
   }

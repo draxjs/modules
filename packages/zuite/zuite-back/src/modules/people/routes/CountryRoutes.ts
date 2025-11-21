@@ -13,6 +13,9 @@ async function CountryFastifyRoutes(fastify, options) {
     fastify.get('/api/countries', {schema: schemas.paginateSchema}, (req,rep) => controller.paginate(req,rep))
 
     fastify.get('/api/countries/find', {schema: schemas.findSchema}, (req,rep) => controller.find(req,rep))
+
+    fastify.get('/api/countries/group-by', {schema: schemas.groupBySchema}, (req,rep) => controller.groupBy(req,rep))
+
     fastify.get('/api/countries/search', {schema: schemas.searchSchema}, (req,rep) => controller.search(req,rep))
 
     fastify.get('/api/countries/:id', {schema: schemas.findByIdSchema}, (req,rep) => controller.findById(req,rep))

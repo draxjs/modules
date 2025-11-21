@@ -26,11 +26,11 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
     protected _model: mongoose.Model<T> & PaginateModel<T>
     protected _searchFields: string[] = []
-    protected _populateFields:  string[] | PopulateOptions[] = []
+    protected _populateFields: string[] | PopulateOptions[] = []
     protected _lean: boolean = true
 
     assertId(id: string): void {
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             console.log(`Invalid ID: ${id} is not a valid ObjectId.`)
             throw new InvalidIdError(id)
         }
@@ -41,7 +41,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         try {
             const item: mongoose.HydratedDocument<T> = await this._model.create(data)
 
-            if(this._populateFields && this._populateFields.length > 0){
+            if (this._populateFields && this._populateFields.length > 0) {
                 //@ts-ignore
                 await item.populate(this._populateFields)
             }
@@ -53,7 +53,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             if (e instanceof mongoose.Error.CastError) {
                 throw MongooseCastErrorToValidationError(e)
             }
-            if(e instanceof MongoServerError || e.name === 'MongoServerError'){
+            if (e instanceof MongoServerError || e.name === 'MongoServerError') {
                 throw MongoServerErrorToValidationError(e)
             }
             throw e
@@ -75,7 +75,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             if (e instanceof mongoose.Error.CastError) {
                 throw MongooseCastErrorToValidationError(e)
             }
-            if(e instanceof MongoServerError || e.name === 'MongoServerError'){
+            if (e instanceof MongoServerError || e.name === 'MongoServerError') {
                 throw MongoServerErrorToValidationError(e)
             }
             throw e
@@ -97,7 +97,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             if (e instanceof mongoose.Error.CastError) {
                 throw MongooseCastErrorToValidationError(e)
             }
-            if(e instanceof MongoServerError || e.name === 'MongoServerError'){
+            if (e instanceof MongoServerError || e.name === 'MongoServerError') {
                 throw MongoServerErrorToValidationError(e)
             }
             throw e
@@ -123,7 +123,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
     async findByIds(ids: Array<string>): Promise<T[]> {
 
-        ids.map(id =>  this.assertId(id))
+        ids.map(id => this.assertId(id))
 
         const items = await this._model
             .find({_id: {$in: ids}})
@@ -148,7 +148,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return item as T
     }
 
-    async findBy(field: string, value: any, limit: number  = 0): Promise<T[]> {
+    async findBy(field: string, value: any, limit: number = 0): Promise<T[]> {
         const filter: any = {[field]: value}
         const items = await this._model
             .find(filter)
@@ -173,13 +173,13 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return items as T[]
     }
 
-    async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] =[]): Promise<T[]> {
+    async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[]> {
 
         const query = {}
 
-        if(mongoose.Types.ObjectId.isValid(value)) {
+        if (mongoose.Types.ObjectId.isValid(value)) {
             query['_id'] = new mongoose.Types.ObjectId(value)
-        }else if (value) {
+        } else if (value) {
             query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
         }
 
@@ -208,10 +208,10 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const query = {}
 
-        if(search){
-            if(mongoose.Types.ObjectId.isValid(search)) {
+        if (search) {
+            if (mongoose.Types.ObjectId.isValid(search)) {
                 query['_id'] = new mongoose.Types.ObjectId(search)
-            }else{
+            } else {
                 query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
             }
         }
@@ -232,23 +232,23 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async findOne({
-                   search = '',
-                   filters = []
-               }: IDraxFindOptions): Promise<T> {
+                      search = '',
+                      filters = []
+                  }: IDraxFindOptions): Promise<T> {
 
         const query = {}
 
-        if(search){
-            if(mongoose.Types.ObjectId.isValid(search)) {
+        if (search) {
+            if (mongoose.Types.ObjectId.isValid(search)) {
                 query['_id'] = new mongoose.Types.ObjectId(search)
-            }else{
+            } else {
                 query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
             }
         }
 
         MongooseQueryFilter.applyFilters(query, filters)
 
-        const item =  this._model
+        const item = this._model
             .findOne(query)
             .populate(this._populateFields)
             .lean(this._lean)
@@ -267,10 +267,10 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const query = {}
 
-        if(search){
-            if(mongoose.Types.ObjectId.isValid(search)) {
+        if (search) {
+            if (mongoose.Types.ObjectId.isValid(search)) {
                 query['_id'] = new mongoose.Types.ObjectId(search)
-            }else{
+            } else {
                 query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
             }
         }
@@ -278,7 +278,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         MongooseQueryFilter.applyFilters(query, filters)
 
         const sort = MongooseSort.applySort(orderBy, order)
-        const items =  await this._model
+        const items = await this._model
             .find(query)
             .limit(limit)
             .sort(sort)
@@ -313,7 +313,8 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return this._model.find(query).limit(limit).sort(sort).cursor() as Cursor<T>;
     }
 
-    async groupBy({fields= [], filters= []}: IDraxGroupByOptions): Promise<Array<any>> {
+    async groupBy({fields = [], filters = []}: IDraxGroupByOptions): Promise<Array<any>> {
+
         const query = {}
 
         MongooseQueryFilter.applyFilters(query, filters)
@@ -324,26 +325,21 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             groupId[field] = `$${field}`
         })
 
-        // Construir el objeto de proyección para aplanar el resultado
-        const projectFields: any = { count: 1, _id: 0 }
-        fields.forEach(field => {
-            projectFields[field] = `$_id.${field}`
-        })
+        // Obtener el schema para identificar campos de referencia
+        const schema = this._model.schema
 
         // Construir lookups para campos de referencia
         const lookupStages: any[] = []
-        
-        // Obtener el schema para identificar campos de referencia
-        const schema = this._model.schema
-        
+        const finalProjectFields: any = {count: 1, _id: 0}
+
         fields.forEach(field => {
             const schemaPath = schema.path(field)
-            
+
             // Verificar si el campo es una referencia
             if (schemaPath && schemaPath.options && schemaPath.options.ref) {
                 const refModel = schemaPath.options.ref
-                const fieldName = fields.length === 1 ? field : field
-                
+                const fieldName = field
+
                 lookupStages.push({
                     $lookup: {
                         from: refModel.toLowerCase() + 's', // Convención de nombres de colección en MongoDB
@@ -352,7 +348,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
                         as: `${fieldName}_populated`
                     }
                 })
-                
+
                 // Unwind para convertir el array en objeto único
                 lookupStages.push({
                     $unwind: {
@@ -360,34 +356,31 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
                         preserveNullAndEmptyArrays: true
                     }
                 })
-                
-                // Reemplazar el campo original con el objeto poblado
-                projectFields[field] = `$${fieldName}_populated`
+
+                // En la proyección final, usar el objeto poblado
+                finalProjectFields[field] = `$${fieldName}_populated`
+            } else {
+                // Si no es una referencia, usar el valor directo del _id
+                finalProjectFields[field] = fields.length === 1 ? `$_id` : `$_id.${field}`
             }
         })
 
         const pipeline: any[] = [
-            { $match: query },
+            {$match: query},
             {
                 $group: {
                     _id: fields.length === 1 ? `$${fields[0]}` : groupId,
-                    count: { $sum: 1 }
+                    count: {$sum: 1}
                 }
-            },
-            {
-                $project: fields.length === 1
-                    ? { [fields[0]]: '$_id', count: 1, _id: 0 }
-                    : projectFields
             },
             ...lookupStages,
             {
-                $project: projectFields
+                $project: finalProjectFields
             },
-            { $sort: { count: -1 } }
+            {$sort: {count: -1}}
         ]
 
         const result = await this._model.aggregate(pipeline).exec()
-
         return result
     }
 }

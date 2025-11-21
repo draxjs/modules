@@ -23,7 +23,8 @@ export const useCrudStore = defineStore('CrudStore', {
             exportLoading: false,
             exportFiles: [] as string[],
             exportListVisible: false,
-            exportError: false
+            exportError: false,
+            visibleColumns: []
         }
     ),
     getters: {
@@ -131,6 +132,13 @@ export const useCrudStore = defineStore('CrudStore', {
             if (index >= 0) {
                 this.filters[index].value = value
             }
+        },
+        setVisibleColumns(columns: string[]) {
+            this.visibleColumns = columns
+        },
+
+        clearVisibleColumns() {
+            this.visibleColumns = []
         }
     }
 

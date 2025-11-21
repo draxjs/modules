@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {PropType} from 'vue'
-import {ref, computed} from 'vue'
+import {ref} from 'vue'
 import {useAuth} from '@drax/identity-vue'
 import CrudSearch from "./CrudSearch.vue";
 import {useCrud} from "../composables/UseCrud";
@@ -10,11 +10,14 @@ import CrudCreateButton from "./buttons/CrudCreateButton.vue";
 import CrudUpdateButton from "./buttons/CrudUpdateButton.vue";
 import CrudDeleteButton from "./buttons/CrudDeleteButton.vue";
 import CrudViewButton from "./buttons/CrudViewButton.vue";
+import CrudGroupByButton from "./buttons/CrudGroupByButton.vue";
+import CrudColumnsButton from "./buttons/CrudColumnsButton.vue";
 import CrudExportList from "./CrudExportList.vue";
+import CrudGroupBy from "./CrudGroupBy.vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
-import type {IEntityCrudHeader} from "@drax/crud-share";
 import CrudFilters from "./CrudFilters.vue";
+import { useCrudColumns } from "../composables/UseCrudColumns";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -28,57 +31,32 @@ const {
   doPaginate, filters, applyFilters, clearFilters
 } = useCrud(entity)
 
-// Estado para las columnas visibles - inicializado con selectedHeaders
-const visibleColumns = ref<string[]>([])
+// Usar el composable de columnas
+const { filteredHeaders } = useCrudColumns(entity)
 
-// Inicializar columnas visibles con selectedHeaders del entity
-const initializeVisibleColumns = () => {
-  const availableHeaders = entity.headers
-    .filter(header => !header.permission || hasPermission(header.permission))
-    .map(header => header.key)
+// Estado para Group By
+const groupByData = ref<Array<Record<string, any>>>([])
+const groupByFields = ref<string[]>([])
+const groupByLoading = ref(false)
 
-  // Usar selectedHeaders del entity, filtrando solo las que están disponibles
-  visibleColumns.value = entity.selectedHeaders?.filter(key => availableHeaders.includes(key)) || availableHeaders
+// Función para ejecutar el groupBy
+const handleGroupBy = async (fields: string[]) => {
+  groupByLoading.value = true
+  try {
+    groupByFields.value = fields
+    groupByData.value = await entity?.provider?.groupBy({ fields })
+  } catch (error) {
+    console.error('Error executing groupBy:', error)
+    groupByData.value = []
+  } finally {
+    groupByLoading.value = false
+  }
 }
 
-// Inicializar al montar el componente
-initializeVisibleColumns()
-
-const actions: IEntityCrudHeader[] = entity.actionHeaders.map(header => ({
-  ...header,
-  title: te(header.title) ? t(header.title) : header.title,
-}))
-
-const tHeaders: IEntityCrudHeader[] = entity.headers
-    .filter(header => !header.permission || hasPermission(header.permission))
-    .map(header => ({
-      ...header,
-      title: te(`${entity.name.toLowerCase()}.field.${header.title}`) ? t(`${entity.name.toLowerCase()}.field.${header.title}`) : header.title
-    }))
-
-// Filtrar headers según columnas visibles
-const headers = computed<IEntityCrudHeader[]>(() => {
-  const filteredHeaders = tHeaders.filter(header => visibleColumns.value.includes(header.key))
-  return [...filteredHeaders, ...actions]
-})
-
-// Lista de columnas disponibles para el menú
-const availableColumns = computed(() => {
-  return tHeaders.map(header => ({
-    key: header.key,
-    title: header.title,
-    visible: visibleColumns.value.includes(header.key)
-  }))
-})
-
-// Toggle de visibilidad de columna
-const toggleColumn = (columnKey: string) => {
-  const index = visibleColumns.value.indexOf(columnKey)
-  if (index > -1) {
-    visibleColumns.value.splice(index, 1)
-  } else {
-    visibleColumns.value.push(columnKey)
-  }
+// Función para cerrar el groupBy
+const closeGroupBy = () => {
+  groupByData.value = []
+  groupByFields.value = []
 }
 
 defineExpose({
@@ -99,7 +77,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       :items-per-page-options="[5, 10, 20, 50]"
       v-model:page="page"
       v-model:sort-by="sortBy"
-      :headers="headers"
+      :headers="filteredHeaders"
       :items="items"
       :items-length="totalItems"
       :loading="loading"
@@ -136,39 +114,15 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             @export="v => $emit('export',v)"
         />
 
-        <!-- Selector de columnas -->
-        <v-menu offset-y>
-          <template v-slot:activator="{ props }">
-            <v-btn
-                v-bind="props"
-                icon
-                variant="text"
-            >
-              <v-icon>mdi-view-column</v-icon>
-              <v-tooltip activator="parent" location="bottom">
-                {{ t('crud.columns.select') }}
-              </v-tooltip>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-subheader>
-              {{ t('crud.columns.title') }}
-            </v-list-subheader>
-            <v-list-item
-                v-for="column in availableColumns"
-                :key="column.key"
-                @click="toggleColumn(column.key)"
-            >
-              <template v-slot:prepend>
-                <v-checkbox-btn
-                    :model-value="column.visible"
-                    @click.stop="toggleColumn(column.key)"
-                ></v-checkbox-btn>
-              </template>
-              <v-list-item-title>{{ column.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <crud-columns-button
+            :entity="entity"
+        />
+
+        <crud-group-by-button
+            :entity="entity"
+            @group-by="handleGroupBy"
+            @close="closeGroupBy"
+        />
 
         <crud-create-button
             v-if="entity.isCreatable"
@@ -216,6 +170,16 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       </v-card>
 
       <v-divider></v-divider>
+
+      <!-- Grupo por campos -->
+      <crud-group-by
+          v-if="groupByData.length > 0"
+          :fields="groupByFields"
+          :data="groupByData"
+          :loading="groupByLoading"
+          @close="closeGroupBy"
+      />
+
     </template>
 
 
