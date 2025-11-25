@@ -2,33 +2,23 @@ import type {IHttpClient} from "@drax/common-front";
 import type {
   IDraxCrudProviderExportResult,
   IDraxExportOptions,
-  IDraxFieldFilter,
   IDraxGroupByOptions,
   IDraxPaginateOptions,
   IDraxPaginateResult
 } from "@drax/crud-share";
 import type {IUserSession} from "@drax/identity-share";
 import type {IUserSessionProvider} from "../../interfaces/IUserSessionProvider";
+import {AbstractBaseRestProvider} from "@drax/crud-front";
 
-class UserSessionRestProvider implements IUserSessionProvider {
+class UserSessionRestProvider extends AbstractBaseRestProvider implements IUserSessionProvider {
 
   httpClient: IHttpClient
 
   constructor(httpClient: IHttpClient) {
-    this.httpClient = httpClient
+      super('/api/user-sessions');
+      this.httpClient = httpClient
   }
 
-  prepareFilters(filters: IDraxFieldFilter[]) {
-    const isDate = (value: any): value is Date => value instanceof Date;
-
-    return filters
-        .filter((filter: IDraxFieldFilter) => filter.value !== null && filter.value !== '' && filter.value !== undefined)
-        .map((filter: IDraxFieldFilter) => {
-          let value = isDate(filter.value)? filter.value.toISOString() : (Array.isArray(filter.value) ? filter.value.join(',') : filter.value)
-          return `${filter.field};${filter.operator ? filter.operator : 'eq'};${value}`
-        })
-        .join('|')
-  }
 
   async paginate({page= 1, limit= 5, orderBy="",order= "asc", search = "", filters=[]}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUserSession>> {
     const url = '/api/user-sessions'
@@ -55,8 +45,7 @@ class UserSessionRestProvider implements IUserSessionProvider {
                  filters = []
                }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
     const url =  '/api/user-sessions/export'
-    const sFilters: string  = filters.map((filter : IDraxFieldFilter ) => `${filter.field},${filter.operator},${filter.value}`).join('|')
-    const params: any = {format, headers, separator, limit, orderBy, order, search, filters: sFilters}
+    const params: any = {format, headers, separator, limit, orderBy, order, search, filters: this.prepareFilters(filters)}
     return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
   }
 

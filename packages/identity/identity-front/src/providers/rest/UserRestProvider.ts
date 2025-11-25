@@ -7,13 +7,15 @@ import type {
     IDraxPaginateOptions,
     IDraxPaginateResult
 } from "@drax/crud-share";
+import {AbstractBaseRestProvider} from "@drax/crud-front";
 
 
-class UserRestProvider implements IUserProvider {
+class UserRestProvider extends AbstractBaseRestProvider implements IUserProvider {
 
     httpClient: IHttpClient
 
     constructor(httpClient: IHttpClient) {
+        super('/api/users');
         this.httpClient = httpClient
     }
 
@@ -36,9 +38,9 @@ class UserRestProvider implements IUserProvider {
             return user
     }
 
-    async paginate({page= 1, limit= 5, orderBy="",order= "asc", search = ""}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
+    async paginate({page= 1, limit= 5, orderBy="",order= "asc", search = "", filters=[]}: IDraxPaginateOptions): Promise<IDraxPaginateResult<IUser>> {
         const url = '/api/users'
-        const params = {page, limit, orderBy, order, search}
+        const params = {page, limit, orderBy, order, search, filters: this.prepareFilters(filters)}
             let paginatedUsers = await this.httpClient.get(url, {params})
             return paginatedUsers as IDraxPaginateResult<IUser>
 
@@ -70,21 +72,8 @@ class UserRestProvider implements IUserProvider {
                      filters = []
                  }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
         const url =  '/api/users/export'
-        const sFilters: string  = filters.map((filter : IDraxFieldFilter ) => `${filter.field},${filter.operator},${filter.value}`).join('|')
-        const params: any = {format, headers, separator, limit, orderBy, order, search, filters: sFilters}
+        const params: any = {format, headers, separator, limit, orderBy, order, search, filters: this.prepareFilters(filters)}
         return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
-    }
-
-    prepareFilters(filters: IDraxFieldFilter[]) {
-        const isDate = (value: any): value is Date => value instanceof Date;
-
-        return filters
-            .filter((filter: IDraxFieldFilter) => filter.value !== null && filter.value !== '' && filter.value !== undefined)
-            .map((filter: IDraxFieldFilter) => {
-                let value = isDate(filter.value)? filter.value.toISOString() : (Array.isArray(filter.value) ? filter.value.join(',') : filter.value)
-                return `${filter.field};${filter.operator ? filter.operator : 'eq'};${value}`
-            })
-            .join('|')
     }
 
     async groupBy({fields = [], filters = []}: IDraxGroupByOptions): Promise<Array<any>> {

@@ -14,7 +14,7 @@ import PersonProvider from "../providers/PersonProvider";
 //Import EntityCrud Refs
 import CountryCrud from "./CountryCrud";
 import LanguageCrud from "./LanguageCrud";
-import {TenantCrud, useAuthStore} from "@drax/identity-vue"
+import {TenantCrud} from "@drax/identity-vue"
 import {UserCrud} from "@drax/identity-vue"
 
 class PersonCrud extends EntityCrud implements IEntityCrud {

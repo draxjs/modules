@@ -63,7 +63,7 @@ class Rbac implements IRbac{
 
     assertPermission(requiredPermission: string) {
         this.assertAuthenticated()
-        if (!this.hasPermission(requiredPermission)) {
+        if (requiredPermission === undefined || !this.hasPermission(requiredPermission)) {
             throw new ForbiddenError()
         }
     }

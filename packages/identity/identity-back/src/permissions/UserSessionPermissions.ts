@@ -1,11 +1,8 @@
 
 enum UserSessionPermissions {
 
-    Create = "usersession:create",
-    Update = "usersession:update",
-    Delete = "usersession:delete",
     View = "usersession:view",
-    viewAll = "usersession:viewAll",
+    ViewAll = "usersession:viewAll",
     Manage = "usersession:manage"
 
 }
