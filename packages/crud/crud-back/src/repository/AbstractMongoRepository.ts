@@ -1,3 +1,4 @@
+
 import "mongoose-paginate-v2";
 import mongoose from "mongoose";
 import type {Cursor, PopulateOptions} from "mongoose";
@@ -313,37 +314,103 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return this._model.find(query).limit(limit).sort(sort).cursor() as Cursor<T>;
     }
 
-    async groupBy({fields = [], filters = []}: IDraxGroupByOptions): Promise<Array<any>> {
+    async groupBy({fields = [], filters = [], dateFormat = 'day'}: IDraxGroupByOptions): Promise<Array<any>> {
 
         const query = {}
 
         MongooseQueryFilter.applyFilters(query, filters)
 
-        // Construir el objeto de agrupación dinámicamente
-        const groupId: any = {}
-        fields.forEach(field => {
-            groupId[field] = `$${field}`
-        })
-
-        // Obtener el schema para identificar campos de referencia
+        // Obtener el schema para identificar campos de referencia y fechas
         const schema = this._model.schema
 
-        // Construir lookups para campos de referencia
+        // Construir el objeto de agrupación dinámicamente
+        const groupId: any = {}
         const lookupStages: any[] = []
         const finalProjectFields: any = {count: 1, _id: 0}
+        const refFields = new Set<string>()
+        const dateFields = new Set<string>()
+
+        // Función para obtener el formato de fecha según el nivel de granularidad
+        const getDateFormat = (field: string, format: string) => {
+            const formats = {
+                'year': {
+                    $dateFromParts: {
+                        year: {$year: `$${field}`},
+                        month: 1,
+                        day: 1
+                    }
+                },
+                'month': {
+                    $dateFromParts: {
+                        year: {$year: `$${field}`},
+                        month: {$month: `$${field}`},
+                        day: 1
+                    }
+                },
+                'day': {
+                    $dateFromParts: {
+                        year: {$year: `$${field}`},
+                        month: {$month: `$${field}`},
+                        day: {$dayOfMonth: `$${field}`}
+                    }
+                },
+                'hour': {
+                    $dateFromParts: {
+                        year: {$year: `$${field}`},
+                        month: {$month: `$${field}`},
+                        day: {$dayOfMonth: `$${field}`},
+                        hour: {$hour: `$${field}`}
+                    }
+                },
+                'minute': {
+                    $dateFromParts: {
+                        year: {$year: `$${field}`},
+                        month: {$month: `$${field}`},
+                        day: {$dayOfMonth: `$${field}`},
+                        hour: {$hour: `$${field}`},
+                        minute: {$minute: `$${field}`}
+                    }
+                },
+                'second': {
+                    $dateFromParts: {
+                        year: {$year: `$${field}`},
+                        month: {$month: `$${field}`},
+                        day: {$dayOfMonth: `$${field}`},
+                        hour: {$hour: `$${field}`},
+                        minute: {$minute: `$${field}`},
+                        second: {$second: `$${field}`}
+                    }
+                }
+            }
+            return formats[format] || formats['day']
+        }
 
         fields.forEach(field => {
             const schemaPath = schema.path(field)
 
+            // Verificar si el campo es de tipo Date
+            if (schemaPath && schemaPath.instance === 'Date') {
+                dateFields.add(field)
+                groupId[field] = getDateFormat(field, dateFormat)
+            }
             // Verificar si el campo es una referencia
-            if (schemaPath && schemaPath.options && schemaPath.options.ref) {
+            else if (schemaPath && schemaPath.options && schemaPath.options.ref) {
                 const refModel = schemaPath.options.ref
                 const fieldName = field
 
+                refFields.add(field)
+
+                // Obtener el modelo referenciado y su nombre de colección real
+                const refModelInstance = mongoose.model(refModel)
+                const collectionName = refModelInstance.collection.name
+
+                // Determinar el campo local correcto según si es un solo campo o múltiples
+                const localField = fields.length === 1 ? '_id' : `_id.${fieldName}`
+
                 lookupStages.push({
                     $lookup: {
-                        from: refModel.toLowerCase() + 's', // Convención de nombres de colección en MongoDB
-                        localField: fieldName,
+                        from: collectionName,
+                        localField: localField,
                         foreignField: '_id',
                         as: `${fieldName}_populated`
                     }
@@ -359,9 +426,27 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
                 // En la proyección final, usar el objeto poblado
                 finalProjectFields[field] = `$${fieldName}_populated`
+                groupId[field] = `$${field}`
             } else {
-                // Si no es una referencia, usar el valor directo del _id
-                finalProjectFields[field] = fields.length === 1 ? `$_id` : `$_id.${field}`
+                // Si no es una referencia ni fecha, usar el valor directo
+                groupId[field] = `$${field}`
+            }
+        })
+
+        // Construir la proyección final para campos de fecha
+        fields.forEach(field => {
+            if (dateFields.has(field)) {
+                if (fields.length === 1) {
+                    finalProjectFields[field] = `$_id`
+                } else {
+                    finalProjectFields[field] = `$_id.${field}`
+                }
+            } else if (!refFields.has(field)) {
+                if (fields.length === 1) {
+                    finalProjectFields[field] = `$_id`
+                } else {
+                    finalProjectFields[field] = `$_id.${field}`
+                }
             }
         })
 
@@ -369,17 +454,24 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             {$match: query},
             {
                 $group: {
-                    _id: fields.length === 1 ? `$${fields[0]}` : groupId,
+                    _id: fields.length === 1 ? (dateFields.has(fields[0]) ? getDateFormat(fields[0], dateFormat) : `$${fields[0]}`) : groupId,
                     count: {$sum: 1}
                 }
-            },
-            ...lookupStages,
+            }
+        ]
+
+        // Solo agregar lookups si hay campos de referencia
+        if (lookupStages.length > 0) {
+            pipeline.push(...lookupStages)
+        }
+
+        pipeline.push(
             {
                 $project: finalProjectFields
             },
             {$sort: {count: -1}}
-        ]
-
+        )
+        console.log("pipeline", JSON.stringify(pipeline, null, 2))
         const result = await this._model.aggregate(pipeline).exec()
         return result
     }

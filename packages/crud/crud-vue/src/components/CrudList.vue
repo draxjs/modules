@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type {PropType} from 'vue'
-import {ref} from 'vue'
 import {useAuth} from '@drax/identity-vue'
 import CrudSearch from "./CrudSearch.vue";
 import {useCrud} from "../composables/UseCrud";
@@ -13,7 +12,6 @@ import CrudViewButton from "./buttons/CrudViewButton.vue";
 import CrudGroupByButton from "./buttons/CrudGroupByButton.vue";
 import CrudColumnsButton from "./buttons/CrudColumnsButton.vue";
 import CrudExportList from "./CrudExportList.vue";
-import CrudGroupBy from "./CrudGroupBy.vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import CrudFilters from "./CrudFilters.vue";
@@ -34,30 +32,6 @@ const {
 // Usar el composable de columnas
 const { filteredHeaders } = useCrudColumns(entity)
 
-// Estado para Group By
-const groupByData = ref<Array<Record<string, any>>>([])
-const groupByFields = ref<string[]>([])
-const groupByLoading = ref(false)
-
-// Función para ejecutar el groupBy
-const handleGroupBy = async (fields: string[]) => {
-  groupByLoading.value = true
-  try {
-    groupByFields.value = fields
-    groupByData.value = await entity?.provider?.groupBy({ fields })
-  } catch (error) {
-    console.error('Error executing groupBy:', error)
-    groupByData.value = []
-  } finally {
-    groupByLoading.value = false
-  }
-}
-
-// Función para cerrar el groupBy
-const closeGroupBy = () => {
-  groupByData.value = []
-  groupByFields.value = []
-}
 
 defineExpose({
   doPaginate
@@ -114,14 +88,14 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             @export="v => $emit('export',v)"
         />
 
-        <crud-columns-button
+        <crud-group-by-button
+            v-if="entity.isGroupable"
             :entity="entity"
         />
 
-        <crud-group-by-button
+        <crud-columns-button
+            v-if="entity.isColumnSelectable"
             :entity="entity"
-            @group-by="handleGroupBy"
-            @close="closeGroupBy"
         />
 
         <crud-create-button
@@ -171,14 +145,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
       <v-divider></v-divider>
 
-      <!-- Grupo por campos -->
-      <crud-group-by
-          v-if="groupByData.length > 0"
-          :fields="groupByFields"
-          :data="groupByData"
-          :loading="groupByLoading"
-          @close="closeGroupBy"
-      />
+
 
     </template>
 

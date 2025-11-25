@@ -7,7 +7,7 @@ import type {IDraxFieldFilter} from "./interfaces/IDraxFieldFilter";
 import type {IDraxPaginateResult} from "./interfaces/IDraxPaginateResult";
 import type {IDraxPaginateOptions} from "./interfaces/IDraxPaginateOptions";
 import type {IDraxFindOptions} from "./interfaces/IDraxFindOptions";
-import type {IDraxGroupByOptions} from "./interfaces/IDraxGroupByOptions";
+import type {IDraxGroupByOptions, IDraxGroupByDateFormat} from "./interfaces/IDraxGroupByOptions";
 import type {IDraxFindOneOptions} from "./interfaces/IDraxFindOneOptions";
 import type {IDraxPermission} from "./interfaces/IDraxPermission";
 import type {IDraxExportOptions} from "./interfaces/IDraxExportOptions";
@@ -41,6 +41,7 @@ export type {
     IDraxPaginateOptions,
     IDraxFindOptions,
     IDraxGroupByOptions,
+    IDraxGroupByDateFormat,
     IDraxFindOneOptions,
     IDraxExportOptions,
     IDraxExportResult,

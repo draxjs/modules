@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import type {IEntityCrudOperation} from "@drax/crud-share";
+import type {IEntityCrudOperation, IDraxFieldFilter} from "@drax/crud-share";
 
 export const useCrudStore = defineStore('CrudStore', {
     state: () => (
@@ -11,7 +11,7 @@ export const useCrudStore = defineStore('CrudStore', {
             notify: false as boolean,
             message: '' as string,
             error: '' as string,
-            filters: [] as any[],
+            filters: [] as IDraxFieldFilter[],
             items: [] as any[],
             totalItems: 0 as number,
             itemsPerPage: 10 as number,
@@ -124,7 +124,7 @@ export const useCrudStore = defineStore('CrudStore', {
         setExportError(error: boolean){
             this.exportError = error
         },
-        setFilters(filters: any[]) {
+        setFilters(filters: IDraxFieldFilter[]) {
             this.filters = filters
         },
         setFilterValue(name:string, value:any) {

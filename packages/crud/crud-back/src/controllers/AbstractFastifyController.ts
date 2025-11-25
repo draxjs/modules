@@ -40,6 +40,7 @@ type CustomRequest = FastifyRequest<{
         separator?: string
         fileName?: string
         fields?: string
+        dateFormat?: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'
     }
 }>
 
@@ -523,6 +524,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 request.query.fields.split(',').map(f => f.trim()).filter(f => f.length > 0) :
                 []
 
+            const dateFormat = request.query.dateFormat ? request.query.dateFormat : 'day'
+
             if (fields.length === 0) {
                 throw new BadRequestError('At least one field is required for grouping')
             }
@@ -530,10 +533,12 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac)
 
+
+            const result = await this.service.groupBy({fields, filters, dateFormat})
+            // console.log("groupby fields",fields)
+            // console.log("groupby dateFormat",dateFormat)
             // console.log("groupby filters",filters)
-
-            const result = await this.service.groupBy({fields, filters})
-
+            // console.log("groupby result",result)
             return result
         } catch (e) {
             this.handleError(e, reply)

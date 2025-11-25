@@ -199,8 +199,9 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get isCreatable() {
-    const authStore = useAuthStore()
-    return !!authStore?.authUser?.tenant
+    // const authStore = useAuthStore()
+    // return !!authStore?.authUser?.tenant
+    return true
   }
 
   get isDeletable() {

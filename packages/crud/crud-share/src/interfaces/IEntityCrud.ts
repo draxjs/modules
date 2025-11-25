@@ -33,6 +33,8 @@ interface IEntityCrud {
   isDeletable: boolean
   isExportable: boolean
   isImportable: boolean
+  isColumnSelectable: boolean
+  isGroupable: boolean
   dialogFullscreen: boolean
   dialogMaxWidth?: string
   dialogZindex?: number

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import type { IEntityCrud } from "@drax/crud-share"
 import { useI18n } from "vue-i18n"
+import { useCrudGroupBy } from '../../composables/UseCrudGroupBy'
+import CrudActiveFilters from "../CrudActiveFilters.vue";
 
 const { t, te } = useI18n()
 
@@ -10,44 +12,57 @@ const props = defineProps({
   entity: { type: Object as PropType<IEntityCrud>, required: true }
 })
 
+const entityName = computed(() => props.entity.name.toLowerCase())
+
 const emit = defineEmits(['groupBy'])
 
-const dialog = ref(false)
-const selectedFields = ref<string[]>([])
-const loading = ref(false)
+const {
+  dialog,
+  selectedFields,
+  loading,
+  groupByData,
+  availableFields,
+  dateFormat,
+  hasDateFields,
+  dateFormatOptions,
+  openDialog,
+  resetAndClose,
+  formatDateByFormat,
+  handleGroupBy
+} = useCrudGroupBy(props.entity)
 
-// Obtener campos disponibles para agrupar (excluyendo algunos tipos)
-const availableFields = computed(() => {
-  return props.entity.fields
-    .filter(field => {
-      // Excluir campos que no son apropiados para agrupar
-      const excludedTypes = ['password', 'longString', 'array.object', 'object', 'file', 'fullFile']
-      return !excludedTypes.includes(field.type)
-    })
-    .map(field => ({
-      value: field.name,
-      title: te(`${props.entity.name.toLowerCase()}.field.${field.label}`)
-        ? t(`${props.entity.name.toLowerCase()}.field.${field.label}`)
-        : field.label
-    }))
+
+
+// Generar headers dinámicamente basados en los campos seleccionados
+const headers = computed(() => {
+  if (!groupByData.value.length || !selectedFields.value.length) return []
+
+  const fieldHeaders = selectedFields.value.map(field => {
+    const label = field.name
+
+    return {
+      title: te(`${props.entity.name.toLowerCase()}.field.${label}`)
+        ? t(`${props.entity.name.toLowerCase()}.field.${label}`)
+        : label,
+      key: field.name,
+      align: 'start' as const
+    }
+  })
+
+  return [
+    ...fieldHeaders,
+    {
+      title: t('crud.groupBy.count'),
+      key: 'count',
+      align: 'end' as const
+    }
+  ]
 })
 
-const handleGroupBy = async () => {
-  if (selectedFields.value.length === 0) return
-
-  loading.value = true
-  try {
-    emit('groupBy', selectedFields.value)
-    dialog.value = false
-  } finally {
-    loading.value = false
-  }
-}
-
-const resetAndClose = () => {
-  selectedFields.value = []
-  dialog.value = false
-}
+// Calcular total de registros
+const totalCount = computed(() => {
+  return groupByData.value.reduce((sum: Number, item: any) => sum + (item.count || 0), 0)
+})
 </script>
 
 <template>
@@ -55,43 +70,64 @@ const resetAndClose = () => {
     <v-btn
       icon
       variant="text"
-      @click="dialog = true"
+      @click="openDialog"
     >
       <v-icon>mdi-chart-bar</v-icon>
       <v-tooltip activator="parent" location="bottom">
-        {{ t('crud.groupby.button') }}
+        {{ t('crud.groupBy.button') }}
       </v-tooltip>
     </v-btn>
 
-    <v-dialog v-model="dialog" max-width="500">
+    <v-dialog v-model="dialog" max-width="800" >
       <v-card>
-        <v-card-title>
+        <v-card-title class="d-flex align-center">
           <v-icon class="mr-2">mdi-chart-bar</v-icon>
-          {{ t('crud.groupby.dialog.title') }}
+          {{ t('crud.groupBy.title') }}
+          <v-spacer></v-spacer>
+          <v-btn
+            icon
+            variant="text"
+            @click="resetAndClose"
+            :disabled="loading"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-card-title>
 
         <v-divider></v-divider>
 
         <v-card-text>
+          <crud-active-filters :entity="entity"></crud-active-filters>
+          <v-divider></v-divider>
+
           <v-select
             v-model="selectedFields"
             :items="availableFields"
-            :label="t('crud.groupby.dialog.selectFields')"
+            item-title="label"
+            :label="t('crud.groupBy.selectFields')"
             multiple
             chips
             closable-chips
-            :hint="t('crud.groupby.dialog.hint')"
-            persistent-hint
+            return-object
           >
-            <template v-slot:prepend-item>
-              <v-list-item>
-                <v-list-item-title class="text-caption text-medium-emphasis">
-                  {{ t('crud.groupby.dialog.description') }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-divider class="mb-2"></v-divider>
+          </v-select>
+
+          <!-- Selector de formato de fecha -->
+          <v-select
+            v-if="hasDateFields"
+            v-model="dateFormat"
+            :items="dateFormatOptions"
+            :label="t('crud.groupBy.dateFormatLabel')"
+            density="compact"
+            variant="outlined"
+            class="mt-4"
+          >
+            <template v-slot:prepend-inner>
+              <v-icon>mdi-calendar-clock</v-icon>
             </template>
           </v-select>
+
+
         </v-card-text>
 
         <v-divider></v-divider>
@@ -99,22 +135,65 @@ const resetAndClose = () => {
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            variant="text"
-            @click="resetAndClose"
-            :disabled="loading"
-          >
-            {{ t('action.cancel') }}
-          </v-btn>
-          <v-btn
             color="primary"
             variant="flat"
             @click="handleGroupBy"
             :disabled="selectedFields.length === 0"
             :loading="loading"
           >
-            {{ t('crud.groupby.dialog.apply') }}
+            {{ t('action.apply') }}
           </v-btn>
         </v-card-actions>
+        <v-divider class="mb-4"></v-divider>
+        <!-- Tabla de resultados -->
+        <v-card-text v-if="groupByData.length > 0">
+
+
+          <div class="d-flex align-center mb-3">
+            <v-icon class="mr-2">mdi-table</v-icon>
+            <span class="text-h6">{{ t('crud.groupBy.results') }}</span>
+            <v-spacer></v-spacer>
+            <v-chip color="primary" variant="flat" size="small">
+              {{ t('crud.groupBy.total') }}: {{ totalCount }}
+            </v-chip>
+          </div>
+
+
+          <v-data-table
+            :headers="headers"
+            :items="groupByData"
+            density="compact"
+            :items-per-page="-1"
+            hide-default-footer
+          >
+            <template v-slot:bottom></template>
+
+            <!-- Slot para personalizar la visualización de cada campo -->
+            <template
+              v-for="field in selectedFields"
+              :key="field.name"
+              v-slot:[`item.${field.name}`]="{ value }"
+            >
+                <template v-if="field.type === 'ref' && field.refDisplay">
+                  {{value[field.refDisplay]}}
+                </template>
+              <template v-else-if="field.type === 'date'">
+                {{ formatDateByFormat(value, dateFormat) }}
+              </template>
+                <template v-else>
+                   {{ value }}
+                </template>
+
+            </template>
+
+            <!-- Formato especial para el count -->
+            <template v-slot:item.count="{ value }">
+              <v-chip color="primary" size="small" variant="flat">
+                {{ value }}
+              </v-chip>
+            </template>
+          </v-data-table>
+        </v-card-text>
       </v-card>
     </v-dialog>
   </div>

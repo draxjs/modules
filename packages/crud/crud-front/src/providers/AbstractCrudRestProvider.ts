@@ -65,9 +65,13 @@ class AbstractCrudRestProvider<T, C, U> implements IDraxCrudProvider<T, C, U> {
         return items as T[]
     }
 
-    async groupBy({fields = [], filters = []}: IDraxGroupByOptions): Promise<Array<any>> {
+    async groupBy({fields = [], filters = [], dateFormat = 'day'}: IDraxGroupByOptions): Promise<Array<any>> {
         const url = this.basePath + '/group-by'
-        const params = {fields: fields ? fields.join(',') : '',filters: this.prepareFilters(filters)}
+        const params = {
+            fields: fields ? fields.join(',') : '',
+            filters: this.prepareFilters(filters),
+            dateFormat: dateFormat
+        }
         const items = await this.httpClient.get(url, {params})
         return items as T[]
     }

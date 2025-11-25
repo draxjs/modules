@@ -262,8 +262,8 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     }
 
-    async groupBy({fields= [], filters= []}: IDraxGroupByOptions): Promise<Array<any>> {
-        return await this._repository.groupBy({fields, filters})
+    async groupBy({fields= [], filters= [], dateFormat= 'day'}: IDraxGroupByOptions): Promise<Array<any>> {
+        return await this._repository.groupBy({fields, filters, dateFormat})
     }
 
     async export({

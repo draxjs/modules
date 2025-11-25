@@ -60,7 +60,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
       z.array(
         z.object({
           count: z.number()
-        }).catchall(z.union([z.string(), z.record(z.unknown())]))
+        }).catchall(z.any())
       ),
       {target: this.target}
     )

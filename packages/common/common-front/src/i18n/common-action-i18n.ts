@@ -29,6 +29,7 @@ const messages = {
       statistics: 'Statistics',
       chart: 'Chart',
       summary: 'Summary',
+      apply: 'Apply',
     }
   },
   es: {
@@ -61,6 +62,7 @@ const messages = {
       statistics: 'Estadísticas',
       chart: 'Gráfico',
       summary: 'Resumen',
+      apply: 'Aplicar',
     }
   }
 }
