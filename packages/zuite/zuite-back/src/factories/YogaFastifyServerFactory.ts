@@ -1,5 +1,14 @@
 import YogaFastifyServer from "../servers/YogaFastifyServer.js";
-import {jwtMiddleware, rbacMiddleware, apiKeyMiddleware, UserRoutes, RoleRoutes, TenantRoutes, UserApiKeyRoutes} from "@drax/identity-back"
+import {
+    jwtMiddleware,
+    rbacMiddleware,
+    apiKeyMiddleware,
+    UserRoutes,
+    RoleRoutes,
+    TenantRoutes,
+    UserApiKeyRoutes,
+    UserLoginFailRoutes, UserSessionRoutes
+} from "@drax/identity-back"
 import {MediaRoutes} from "@drax/media-back"
 import {PersonFastifyRoutes} from "../modules/people/routes/PersonRoutes.js"
 import {CountryFastifyRoutes} from "../modules/people/routes/CountryRoutes.js"
@@ -19,6 +28,8 @@ function YogaFastifyServerFactory(rootDir:string) {
     server.fastifyRegister(RoleRoutes)
     server.fastifyRegister(TenantRoutes)
     server.fastifyRegister(UserApiKeyRoutes)
+    server.fastifyRegister(UserLoginFailRoutes)
+    server.fastifyRegister(UserSessionRoutes)
 
     server.fastifyRegister(MediaRoutes)
     server.fastifyRegister(SettingRoutes)

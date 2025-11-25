@@ -71,7 +71,9 @@ export default {
         auth: async (_, {input}) => {
             try {
                 let userService = UserServiceFactory()
-                return await userService.auth(input.username, input.password)
+                const userAgent = ''
+                const ip = ''
+                return await userService.auth(input.username, input.password,{userAgent, ip})
             } catch (e) {
                 console.error("auth", e)
                 if (e instanceof BadCredentialsError) {

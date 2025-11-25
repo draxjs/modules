@@ -1,5 +1,5 @@
 import RoleServiceFactory from "../../factory/RoleServiceFactory.js";
-import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
+import {RolePermissions} from "../../permissions/RolePermissions.js";
 import {ValidationError, ValidationErrorToGraphQLError, UnauthorizedError} from "@drax/common-back";
 import {GraphQLError} from "graphql";
 import {PermissionService} from "../../services/PermissionService.js";
@@ -10,7 +10,7 @@ export default {
     Query: {
         findRoleById: async (_, {id}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewRole)
+                rbac.assertPermission(RolePermissions.View)
                 const roleService = RoleServiceFactory()
                 return await roleService.findById(id)
             } catch (e) {
@@ -22,7 +22,7 @@ export default {
         },
         findRoleByName: async (_, {name}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewRole)
+                rbac.assertPermission(RolePermissions.View)
                 const roleService = RoleServiceFactory()
                 return await roleService.findByName(name)
             } catch (e) {
@@ -34,7 +34,7 @@ export default {
         },
         fetchRole: async (_, {}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewRole)
+                rbac.assertPermission(RolePermissions.View)
                 const roleService = RoleServiceFactory()
                 const roles = await roleService.fetchAll()
                 if(rbac.getRole?.childRoles?.length > 0) {
@@ -53,7 +53,7 @@ export default {
         },
         fetchPermissions: async (_, {}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.PermissionsRole)
+                rbac.assertPermission(RolePermissions.Permissions)
                 return PermissionService.getPermissions()
             } catch (e) {
                 if (e instanceof UnauthorizedError) {
@@ -64,7 +64,7 @@ export default {
         },
         paginateRole: async (_, {options= {page:1, limit:5, orderBy:"", order:"asc", search:"", filters: []} as IDraxPaginateOptions }, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewRole)
+                rbac.assertPermission(RolePermissions.View)
                 const roleService = RoleServiceFactory()
                 return await roleService.paginate(options)
             } catch (e) {
@@ -79,7 +79,7 @@ export default {
     Mutation: {
         createRole: async (_, {input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.CreateRole)
+                rbac.assertPermission(RolePermissions.Create)
                 const roleService = RoleServiceFactory()
                 return await roleService.create(input)
             } catch (e) {
@@ -96,7 +96,7 @@ export default {
         },
         updateRole: async (_, {id, input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.UpdateRole)
+                rbac.assertPermission(RolePermissions.Update)
                 const roleService = RoleServiceFactory()
                 const currentRole = await roleService.findById(id)
                 if(currentRole.readonly){
@@ -117,7 +117,7 @@ export default {
         },
         deleteRole: async (_, {id}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.DeleteRole)
+                rbac.assertPermission(RolePermissions.Delete)
                 const roleService = RoleServiceFactory()
                 const currentRole = await roleService.findById(id)
                 if(currentRole.readonly){

@@ -1,13 +1,17 @@
-import TenantPermissions from './TenantPermissions';
-import UserPermissions from './UserPermissions';
-import RolePermissions from './RolePermissions';
-import UserApiKeyPermissions from './UserApiKeyPermissions';
+import TenantPermissions from './TenantPermissions.js';
+import UserPermissions from './UserPermissions.js';
+import RolePermissions from './RolePermissions.js';
+import UserApiKeyPermissions from './UserApiKeyPermissions.js';
+import UserLoginFailPermissions from './UserLoginFailPermissions.js';
+import UserSessionPermissions from './UserSessionPermissions.js';
 
 const permissions = {
     ...TenantPermissions,
     ...UserPermissions,
     ...RolePermissions,
-    ...UserApiKeyPermissions
+    ...UserApiKeyPermissions,
+    ...UserLoginFailPermissions,
+    ...UserSessionPermissions
 };
 
 

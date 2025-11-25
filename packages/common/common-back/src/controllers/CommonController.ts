@@ -3,6 +3,7 @@ import {NotFoundError} from "../errors/NotFoundError.js";
 import {BadRequestError} from "../errors/BadRequestError.js";
 import {UnauthorizedError} from "../errors/UnauthorizedError.js";
 import {ForbiddenError} from "../errors/ForbiddenError.js";
+import {MethodNotAllowedError} from "../errors/MethodNotAllowedError.js";
 import {InvalidIdError} from "../errors/InvalidIdError.js";
 import {SecuritySensitiveError} from "../errors/SecuritySensitiveError.js";
 import {UploadFileError} from "../errors/UploadFileError.js";
@@ -22,6 +23,7 @@ class CommonController{
             e instanceof BadRequestError ||
             e instanceof UnauthorizedError ||
             e instanceof ForbiddenError ||
+            e instanceof MethodNotAllowedError ||
             e instanceof InvalidIdError ||
             e instanceof SecuritySensitiveError ||
             e instanceof UploadFileError ||

@@ -7,9 +7,9 @@ import {IDraxGroupByOptions} from "./IDraxGroupByOptions";
 
 interface IDraxCrud<T,C,U>{
   paginate(options: IDraxPaginateOptions): Promise<IDraxPaginateResult<T>>
-  create(input: C): Promise<T>
-  update(id: string, input: U): Promise<T>
-  delete(id: string): Promise<any>
+  create?(input: C): Promise<T>
+  update?(id: string, input: U): Promise<T>
+  delete?(id: string): Promise<any>
 
   updatePartial?(id: string, input: any): Promise<T>
 

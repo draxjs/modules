@@ -26,6 +26,10 @@ import UserApiKeyCreated from "./cruds/user-api-key-crud/UserApiKeyCreated.vue";
 import UserApiKeyView from "./views/UserApiKeyView.vue";
 import UserApiKeyCrudPage from "./pages/crud/UserApiKeyCrudPage.vue";
 
+
+import UserLoginFailCrudPage from "./pages/crud/UserLoginFailCrudPage.vue";
+import UserSessionCrudPage from "./pages/crud/UserSessionCrudPage.vue";
+
 import {useAuth} from "./composables/useAuth.js";
 import {useUser} from "./composables/useUser.js";
 import {useRole} from "./composables/useRole.js";
@@ -64,6 +68,9 @@ export {
     LoginPage,
     ProfilePage,
     PasswordPage,
+
+    UserLoginFailCrudPage,
+    UserSessionCrudPage,
 
     //User
     UserView,

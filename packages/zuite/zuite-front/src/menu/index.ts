@@ -86,6 +86,20 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'setting:manage'
       },
+      {
+        icon: 'mdi-account-arrow-right',
+        text:'UserSession',
+        link: { name: "UserSessionCrudPage" },
+        gallery: true,
+        permission: 'usersession:manage'
+      },
+      {
+        icon: 'mdi-lock-alert-outline',
+        text:'UserLoginFail',
+        link: { name: "UserLoginFailCrudPage" },
+        gallery: true,
+        permission: 'userloginfail:manage'
+      },
     ]
   }
 

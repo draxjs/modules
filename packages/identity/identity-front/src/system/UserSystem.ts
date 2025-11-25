@@ -21,7 +21,7 @@ class UserSystem implements IUserProvider{
     async search(value: any):Promise<IUser[]> {
 
         if(!this._provider.search){
-            throw new Error("Search method not implemented")
+            throw new Error("search method not implemented")
         }
 
         return this._provider.search(value)
@@ -50,7 +50,7 @@ class UserSystem implements IUserProvider{
 
     async groupBy({fields = [], filters = []}: IDraxGroupByOptions): Promise<Array<any>> {
         if(!this._provider.groupBy){
-            throw new Error("GroupBy method not implemented")
+            throw new Error("groupBy method not implemented")
         }
 
         const result: any[] = await this._provider.groupBy({fields,filters})
@@ -69,7 +69,7 @@ class UserSystem implements IUserProvider{
                  }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
 
         if(!this._provider.export){
-            throw new Error(`RoleSystem.provider does not support export`)  // assuming we have a custom error for this case  // replace with actual error handling as needed  // see: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html#error-handling-changes for more details on custom error classes in TypeScript 3.1+  // or use a library like 'ts-error' for a more robust and flexible error handling solution  // or use a custom error type if you want to have a specific error type for this operation  // or use a custom interface or class for the export result if you want to have a specific structure for the result  // or use a custom function that returns the result if you want to have a specific function for the result  // or use a custom interface or class if you want to have a specific structure for the result  // or use a custom function that returns the result
+            throw new Error(`export method not implemented`)  // assuming we have a custom error for this case  // replace with actual error handling as needed  // see: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html#error-handling-changes for more details on custom error classes in TypeScript 3.1+  // or use a library like 'ts-error' for a more robust and flexible error handling solution  // or use a custom error type if you want to have a specific error type for this operation  // or use a custom interface or class for the export result if you want to have a specific structure for the result  // or use a custom function that returns the result if you want to have a specific function for the result  // or use a custom interface or class if you want to have a specific structure for the result  // or use a custom function that returns the result
         }
 
         return this._provider.export({

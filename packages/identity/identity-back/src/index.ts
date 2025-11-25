@@ -14,6 +14,8 @@ import {UserRoutes} from "./routes/UserRoutes.js";
 import {RoleRoutes} from "./routes/RoleRoutes.js";
 import {TenantRoutes} from "./routes/TenantRoutes.js";
 import {UserApiKeyRoutes} from "./routes/UserApiKeyRoutes.js";
+import {UserSessionRoutes} from "./routes/UserSessionRoutes.js";
+import {UserLoginFailRoutes} from "./routes/UserLoginFailRoutes.js";
 
 import AuthUtils from "./utils/AuthUtils.js";
 import {jwtMiddleware} from "./middleware/jwtMiddleware.js";
@@ -35,12 +37,12 @@ import type {IUserRepository} from "./interfaces/IUserRepository";
 import type {IUserApiKeyRepository} from "./interfaces/IUserApiKeyRepository";
 
 
-import IdentityPermissions from "./permissions/IdentityPermissions.js";
-
 import {RolePermissions} from "./permissions/RolePermissions.js";
 import {TenantPermissions} from "./permissions/TenantPermissions.js";
 import {UserPermissions} from "./permissions/UserPermissions.js";
 import {UserApiKeyPermissions} from "./permissions/UserApiKeyPermissions.js";
+import {UserLoginFailPermissions} from "./permissions/UserLoginFailPermissions.js";
+import {UserSessionPermissions} from "./permissions/UserSessionPermissions.js";
 
 import {UserSchema, UserBaseSchema} from "./schemas/UserSchema.js";
 import {TenantSchema,TenantBaseSchema} from "./schemas/TenantSchema.js";
@@ -93,6 +95,8 @@ export {
     RoleRoutes,
     TenantRoutes,
     UserApiKeyRoutes,
+    UserSessionRoutes,
+    UserLoginFailRoutes,
 
     AuthUtils,
 
@@ -102,11 +106,12 @@ export {
     apiKeyMiddleware,
 
     //Permissions
-    IdentityPermissions,
     RolePermissions,
     TenantPermissions,
     UserPermissions,
     UserApiKeyPermissions,
+    UserSessionPermissions,
+    UserLoginFailPermissions,
 
     //Config
     IdentityConfig,
