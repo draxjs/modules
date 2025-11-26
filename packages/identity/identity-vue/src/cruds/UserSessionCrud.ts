@@ -44,7 +44,7 @@ class UserSessionCrud extends EntityCrud implements IEntityCrud {
         return [
             {title: 'uuid', key: 'uuid', align: 'start'},
             {title: 'user', key: 'user', align: 'start'},
-            {title: 'agent', key: 'agent', align: 'start'},
+            {title: 'userAgent', key: 'userAgent', align: 'start'},
             {title: 'ip', key: 'ip', align: 'start'},
             {title: 'createdAt', key: 'createdAt', align: 'start'}
         ]
@@ -90,7 +90,7 @@ class UserSessionCrud extends EntityCrud implements IEntityCrud {
         return [
             {name: 'uuid', type: 'string', label: 'uuid', default: ''},
             {name: 'user', type: 'ref', label: 'user', default: null, ref: 'User', refDisplay: 'username'},
-            {name: 'agent', type: 'string', label: 'agent', default: ''},
+            {name: 'userAgent', type: 'string', label: 'userAgent', default: ''},
             {name: 'ip', type: 'string', label: 'ip', default: ''},
             {name: 'createdAt', type: 'date', label: 'createdAt', default: null}
         ]

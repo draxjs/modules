@@ -45,7 +45,7 @@ class UserCrud extends EntityCrud implements IEntityCrud {
 
   get headers():IEntityCrudHeader[] {
     return [
-      { title: '', key: 'avatar', align: 'start', width:'50px' },
+      { title: 'avatar', key: 'avatar', align: 'start', width:'50px' },
       { title: 'name', key: 'name', align: 'start' },
       { title: 'username', key: 'username', align: 'start' },
       { title: 'email', key: 'email', align: 'start' },
