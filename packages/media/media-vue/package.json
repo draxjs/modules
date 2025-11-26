@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.36.0",
+  "version": "0.37.0",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -24,7 +24,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/media-front": "^0.36.0"
+    "@drax/media-front": "^0.37.0"
   },
   "peerDependencies": {
     "pinia": "^2.2.2",

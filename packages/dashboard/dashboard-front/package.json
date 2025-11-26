@@ -4,7 +4,7 @@
     "access": "public"
   },
   "type": "module",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",
@@ -19,8 +19,8 @@
     "tsc": "vue-tsc"
   },
   "dependencies": {
-    "@drax/dashboard-share": "^0.36.0",
-    "@drax/common-front": "^0.36.0",
+    "@drax/common-front": "^0.37.0",
+    "@drax/dashboard-share": "^0.37.0",
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {
