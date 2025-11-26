@@ -60,6 +60,20 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     protected tenantSetter: boolean = false
     protected tenantAssert: boolean = false
 
+    onCreate?: (request: CustomRequest, item: T) => void
+    onUpdate?: (request: CustomRequest, oldItem: T, item: T) => void
+    onDelete?: (request: CustomRequest, oldItem: T, id: string) => void
+    onFindById?: (request: CustomRequest, item: T) => void
+    onFindByIds?: (request: CustomRequest, items: T[]) => void
+    onFindOneBy?: (request: CustomRequest, item: T) => void
+    onFindOne?: (request: CustomRequest, item: T) => void
+    onFindBy?: (request: CustomRequest, items: T[]) => void
+    onFind?: (request: CustomRequest, items: T[]) => void
+    onSearch?: (request: CustomRequest, items: T[]) => void
+    onPaginate?: (request: CustomRequest, items: T[]) => void
+    onExport?: (request: CustomRequest, items: T[]) => void
+    onGroupBy?: (request: CustomRequest, items: T[]) => void
+
     /**
      * userFilter is used to filter items by user field like createdBy with auth user. Used by find, search, paginate
      */
@@ -172,6 +186,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const payload = request.body
             this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.create(payload as C)
+            this.onCreate(request, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -204,12 +219,14 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             delete payload[this.tenantField]
             delete payload[this.userField]
 
+            let preItem = await this.service.findById(id)
             let item = await this.service.update(id, payload as U)
 
             if (!item) {
                 throw new NotFoundError()
             }
 
+            this.onUpdate(request, preItem, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -242,10 +259,12 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             delete payload[this.tenantField]
             delete payload[this.userField]
 
+            let preItem = await this.service.findById(id)
             let item = await this.service.updatePartial(id, payload as U)
             if (!item) {
                 throw new NotFoundError()
             }
+            this.onUpdate(request, preItem, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -283,6 +302,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 deleted: true,
                 deletedAt: new Date(),
             })
+            this.onDelete(request, item, id)
         } catch (e) {
             this.handleError(e, reply)
         }
@@ -310,6 +330,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             this.assertTenant(item, request.rbac)
 
+            this.onFindById(request, item)
+
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -329,6 +351,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             if (!items || items.length === 0) {
                 throw new NotFoundError()
             }
+
+            this.onFindByIds(request, items)
 
             return items
         } catch (e) {
@@ -354,6 +378,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let items = await this.service.find({search, filters, order, orderBy, limit})
 
+            this.onFind(request, items)
 
             return items
         } catch (e) {
@@ -372,6 +397,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let item = await this.service.findOne({search, filters})
 
+            this.onFindOne(request, item)
 
             return item
         } catch (e) {
@@ -396,6 +422,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 this.assertUserAndTenant(item, request.rbac)
             }
 
+            this.onFindBy(request, items)
+
             return items
         } catch (e) {
             this.handleError(e, reply)
@@ -415,6 +443,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             let item = await this.service.findOneBy(field, value)
             this.assertUserAndTenant(item, request.rbac);
 
+            this.onFindOneBy(request, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -432,6 +461,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             this.applyUserAndTenantFilters(filters, request.rbac);
 
             let item = await this.service.search(search, limit, filters)
+            this.onSearch(request, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -458,6 +488,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             // console.log("paginate filters",filters)
 
             let paginateResult = await this.service.paginate({page, limit, orderBy, order, search, filters})
+            this.onPaginate(request, paginateResult)
             return paginateResult
         } catch (e) {
             this.handleError(e, reply)
@@ -503,7 +534,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             const url = `${this.baseURL}/api/file/${exportPath}/${year}/${month}/${result.fileName}`
 
-
+            this.onExport(request, result)
             return {
                 url: url,
                 rowCount: result.rowCount,
@@ -535,10 +566,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
 
             const result = await this.service.groupBy({fields, filters, dateFormat})
-            // console.log("groupby fields",fields)
-            // console.log("groupby dateFormat",dateFormat)
-            // console.log("groupby filters",filters)
-            // console.log("groupby result",result)
+            this.onGroupBy(request, result)
             return result
         } catch (e) {
             this.handleError(e, reply)
