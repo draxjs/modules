@@ -2,17 +2,18 @@
 import type { PropType } from 'vue'
 import { computed } from 'vue'
 import type { IEntityCrud } from "@drax/crud-share"
+import { useDateFormat } from "@drax/common-vue"
 import { useI18n } from "vue-i18n"
 import { useCrudGroupBy } from '../../composables/UseCrudGroupBy'
 import CrudActiveFilters from "../CrudActiveFilters.vue";
 
 const { t, te } = useI18n()
 
+const {formatDateByUnit} = useDateFormat()
+
 const props = defineProps({
   entity: { type: Object as PropType<IEntityCrud>, required: true }
 })
-
-const entityName = computed(() => props.entity.name.toLowerCase())
 
 const emit = defineEmits(['groupBy'])
 
@@ -27,7 +28,6 @@ const {
   dateFormatOptions,
   openDialog,
   resetAndClose,
-  formatDateByFormat,
   handleGroupBy
 } = useCrudGroupBy(props.entity)
 
@@ -178,7 +178,7 @@ const totalCount = computed(() => {
                   {{value[field.refDisplay]}}
                 </template>
               <template v-else-if="field.type === 'date'">
-                {{ formatDateByFormat(value, dateFormat) }}
+                {{ formatDateByUnit(value, dateFormat) }}
               </template>
                 <template v-else>
                    {{ value }}

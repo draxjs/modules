@@ -4,4 +4,6 @@ interface IDraxCommon{
   common: string
 }
 
-export type {IDraxCommon}
+type IDraxDateFormatUnit = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'
+
+export type {IDraxCommon, IDraxDateFormatUnit}

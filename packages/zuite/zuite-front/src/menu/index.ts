@@ -101,7 +101,7 @@ const menu: MenuItem[] = [
         permission: 'userloginfail:manage'
       },
       {
-        icon: 'mdi-dashboard',
+        icon: 'mdi-view-dashboard-edit',
         text:'DashboardCrudPage',
         link: { name: "DashboardCrudPage" },
         gallery: true,

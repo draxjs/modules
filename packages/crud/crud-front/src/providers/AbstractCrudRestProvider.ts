@@ -1,9 +1,8 @@
-import {HttpRestClientFactory} from "@drax/common-front";
-import type {IHttpClient} from '@drax/common-front'
+
 import type {
     IDraxCrudProvider, IDraxCrudProviderExportResult,
     IDraxPaginateResult, IDraxPaginateOptions,
-    IDraxFieldFilter, IDraxExportOptions, IDraxFindOptions, IDraxFindOneOptions, IDraxGroupByOptions
+    IDraxExportOptions, IDraxFindOptions, IDraxFindOneOptions, IDraxGroupByOptions
 } from "@drax/crud-share";
 import AbstractBaseRestProvider from "./AbstractBaseRestProvider.js";
 

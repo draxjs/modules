@@ -8,9 +8,9 @@ const DashboardSchema = new mongoose.Schema<IDashboard>({
     identifier: {type: String, required: true, index: true, unique: true},
     title: {type: String, required: true, index: true, unique: true},
     cards: [{
+        title: {type: String, required: true, index: false, unique: false},
         entity: {type: String, required: true, index: false, unique: false},
         type: {type: String, enum: ['paginate', 'groupBy'], required: true, index: false, unique: false},
-        title: {type: String, required: true, index: false, unique: false},
         filters: [{
             field: {type: String, required: true, index: false, unique: false},
             operator: {type: String, required: true, index: false, unique: false},

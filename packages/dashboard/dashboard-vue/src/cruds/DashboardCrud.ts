@@ -10,6 +10,7 @@ import type {
     IEntityCrudRules
 } from "@drax/crud-share";
 import {DashboardProvider} from "@drax/dashboard-front";
+import {useDashboardStore} from "../stores/UseDashboardStore";
 
 //Import EntityCrud Refs
 
@@ -79,6 +80,11 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
         }
     }
 
+    get entities(){
+        const dashboardStore = useDashboardStore();
+        return dashboardStore.entities.map((entity: any) => entity.name)
+    }
+
     get fields(): IEntityCrudField[] {
         return [
             {name: 'identifier', type: 'string', label: 'identifier', default: ''},
@@ -88,15 +94,17 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
                 type: 'array.object',
                 label: 'cards',
                 default: [],
-                objectFields: [{name: 'entity', type: 'string', label: 'entity', default: ''},
-                    {name: 'type', type: 'enum', label: 'type', default: null, enum: ['paginate', 'groupBy']},
+                objectFields: [
                     {name: 'title', type: 'string', label: 'title', default: ''},
+                    {name: 'entity', type: 'enum', enum: this.entities, label: 'entity', default: ''},
+                    {name: 'type', type: 'enum', label: 'type', default: null, enum: ['paginate', 'groupBy']},
                     {
                         name: 'filters',
                         type: 'array.object',
                         label: 'filters',
                         default: [],
-                        objectFields: [{name: 'field', type: 'string', label: 'field', default: ''},
+                        objectFields: [
+                            {name: 'field', type: 'string', label: 'field', default: ''},
                             {name: 'operator', type: 'string', label: 'operator', default: ''},
                             {name: 'value', type: 'string', label: 'value', default: ''}]
                     },
@@ -104,12 +112,13 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
                         name: 'layout',
                         type: 'object',
                         label: 'layout',
-                        default: {"cols": 12, "sm": 12, "md": 12, "lg": 12, "height": 100, "cardVariant": "elevated"},
-                        objectFields: [{name: 'cols', type: 'number', label: 'cols', default: 12},
-                            {name: 'sm', type: 'number', label: 'sm', default: 12},
-                            {name: 'md', type: 'number', label: 'md', default: 12},
-                            {name: 'lg', type: 'number', label: 'lg', default: 12},
-                            {name: 'height', type: 'number', label: 'height', default: 100},
+                        default: {"cols": 12, "sm": 12, "md": 12, "lg": 12, "height": 350, "cardVariant": "elevated"},
+                        objectFields: [
+                            {name: 'cols', type: 'number', label: 'cols', default: 12, sm: 3, md: 3, lg: 3},
+                            {name: 'sm', type: 'number', label: 'sm', default: 12, sm: 3, md: 3, lg: 3},
+                            {name: 'md', type: 'number', label: 'md', default: 12, sm: 3, md: 3, lg: 3},
+                            {name: 'lg', type: 'number', label: 'lg', default: 12, sm: 3, md: 3, lg: 3},
+                            {name: 'height', type: 'number', label: 'height', default: 350},
                             {
                                 name: 'cardVariant',
                                 type: 'enum',

@@ -1,6 +1,6 @@
-import type {IDashboard, IDashboardBase} from "./interfaces/IDashboard";
+import type {IDashboard, IDashboardBase, IDashboardCard} from "./interfaces/IDashboard";
 
 
 export type{
-    IDashboard, IDashboardBase
+    IDashboard, IDashboardBase, IDashboardCard
 }

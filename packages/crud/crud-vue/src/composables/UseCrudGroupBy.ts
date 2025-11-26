@@ -3,8 +3,6 @@ import type {IEntityCrud, IEntityCrudField, IDraxGroupByDateFormat} from "@drax/
 import { useI18n } from "vue-i18n"
 import { useGroupByStore } from '../stores/UseGroupByStore'
 import {useCrudStore} from '../stores/UseCrudStore'
-import dayjs from 'dayjs'
-
 
 
 export const useCrudGroupBy = (entity: IEntityCrud) => {
@@ -57,30 +55,6 @@ export const useCrudGroupBy = (entity: IEntityCrud) => {
     { value: 'second', title: t('crud.groupBy.dateFormat.second') }
   ])
 
-  // Función para formatear fecha según el formato seleccionado
-  const formatDateByFormat = (isoDate: string, format: IDraxGroupByDateFormat): string => {
-    if (!isoDate || isNaN(new Date(isoDate).getTime())) {
-      return ''
-    }
-    const date = dayjs(isoDate)
-
-    switch (format) {
-      case 'year':
-        return date.format('YYYY')
-      case 'month':
-        return date.format('YYYY-MM')
-      case 'day':
-        return date.format('YYYY-MM-DD')
-      case 'hour':
-        return date.format('YYYY-MM-DD HH')
-      case 'minute':
-        return date.format('YYYY-MM-DD HH:mm')
-      case 'second':
-        return date.format('YYYY-MM-DD HH:mm:ss')
-      default:
-        return date.format('YYYY-MM-DD')
-    }
-  }
 
 
   return {
@@ -111,7 +85,6 @@ export const useCrudGroupBy = (entity: IEntityCrud) => {
         groupBystore.setDateFormat(value)
       }
     }),
-    formatDateByFormat,
     hasDateFields,
     dateFormatOptions,
   }

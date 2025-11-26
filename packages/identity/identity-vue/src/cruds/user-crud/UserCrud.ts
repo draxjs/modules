@@ -78,8 +78,8 @@ class UserCrud extends EntityCrud implements IEntityCrud {
         {name: 'username', type: 'string', label: 'username', default:'' },
         {name: 'email', type: 'string', label: 'email', default:'' },
         {name: 'phone', type: 'string', label: 'phone', default:'' },
-        {name: 'role', type: 'ref', ref: 'role', label: 'role', default:null },
-        {name: 'tenant', type: 'ref', ref: 'tenant', label: 'tenant', default:null, permission: 'tenant:manage' },
+        {name: 'role', type: 'ref', ref: 'role', refDisplay:'name', label: 'role', default:null },
+        {name: 'tenant', type: 'ref', ref: 'tenant', refDisplay:'name', label: 'tenant', default:null, permission: 'tenant:manage' },
         {name: 'active', type: 'boolean',  label: 'active', default:true },
 
     ]

@@ -224,6 +224,10 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
+  get isGroupable() {
+    return true
+  }
+
   get importFormats() {
     return ['CSV', 'JSON']
   }
