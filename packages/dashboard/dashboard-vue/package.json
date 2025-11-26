@@ -1,5 +1,5 @@
 {
-  "name": "@drax/dynamic-vue",
+  "name": "@drax/dashboard-vue",
   "publishConfig": {
     "access": "public"
   },
@@ -24,10 +24,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/common-front": "^0.36.0",
     "@drax/crud-front": "^0.36.0",
-    "@drax/crud-share": "^0.36.0",
-    "@drax/media-vue": "^0.36.0"
+    "@drax/crud-share": "^0.36.0"
   },
   "peerDependencies": {
     "pinia": "^2.2.2",

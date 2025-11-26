@@ -100,6 +100,13 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'userloginfail:manage'
       },
+      {
+        icon: 'mdi-dashboard',
+        text:'DashboardCrudPage',
+        link: { name: "DashboardCrudPage" },
+        gallery: true,
+        permission: 'dashboard:manage'
+      },
     ]
   }
 

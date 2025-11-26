@@ -1,0 +1,28 @@
+{
+  "name": "@drax/dashboard-share",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.36.0",
+  "description": "Dashboard share across modules",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prepublish": "tsc",
+    "tscrun": "tsc",
+    "clean": "rm -rf dist",
+    "tsc": "tsc -b tsconfig.json",
+    "test": "node --import tsx --test test/**/*",
+    "testCache": "node --import tsx --test test/cache/*"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.12.10",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.4.5"
+  },
+  "gitHead": "d8e9ad20ff3a5bd9e9d4383ef0926b79eac335d8"
+}

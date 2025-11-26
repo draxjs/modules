@@ -136,7 +136,7 @@ class UserSessionCrud extends EntityCrud implements IEntityCrud {
     }
 
     get exportHeaders() {
-        return ['_id']
+        return ['_id','user','createdAt','userAgent','ip']
     }
 
     get isImportable() {

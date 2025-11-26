@@ -133,7 +133,7 @@ class UserLoginFailCrud extends EntityCrud implements IEntityCrud {
     }
 
     get exportHeaders() {
-        return ['_id']
+        return ['_id','username','createdAt','userAgent','ip']
     }
 
     get isImportable() {
