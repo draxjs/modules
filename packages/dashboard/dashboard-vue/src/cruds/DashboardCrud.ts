@@ -184,7 +184,7 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
     }
 
     get isExportable() {
-        return true
+        return false
     }
 
     get exportFormats() {
@@ -196,7 +196,7 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
     }
 
     get isImportable() {
-        return true
+        return false
     }
 
     get isColumnSelectable() {

@@ -88,6 +88,14 @@ class RoleCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
+  get isColumnSelectable() {
+    return true
+  }
+
+  get isGroupable(){
+    return false
+  }
+
   get searchEnable() {
     return true
   }

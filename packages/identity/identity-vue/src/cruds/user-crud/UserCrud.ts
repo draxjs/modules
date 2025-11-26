@@ -115,6 +115,14 @@ class UserCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
+  get isColumnSelectable() {
+    return true
+  }
+
+  get isGroupable(){
+    return true
+  }
+
   isItemEditable(item?:any) {
     const authStore = useAuthStore()
     if(authStore?.authUser?.role?.childRoles && authStore?.authUser?.role?.childRoles.length > 0){

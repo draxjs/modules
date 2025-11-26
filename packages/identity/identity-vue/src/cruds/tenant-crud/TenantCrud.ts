@@ -81,6 +81,14 @@ class TenantCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
+  get isColumnSelectable() {
+    return true
+  }
+
+  get isGroupable(){
+    return false
+  }
+
   get dialogMaxWidth(){
     return '800'
   }
