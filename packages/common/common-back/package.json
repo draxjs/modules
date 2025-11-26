@@ -28,7 +28,7 @@
     "zod": "^3.24.2"
   },
   "peerDependencies": {
-    "dayjs": "^1.11.13",
+    "dayjs": "^1.11.19",
     "mongoose-paginate-v2": "^1.8.3"
   },
   "devDependencies": {

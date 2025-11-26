@@ -4,8 +4,8 @@ import type { IEntityCrud } from '@drax/crud-share'
 import { useCrudStore } from '../stores/UseCrudStore'
 import { useI18n } from 'vue-i18n'
 import { useFilterIcon } from '../composables/useFilterIcon'
-import dayjs from "dayjs";
 import CrudRefDisplay from "./CrudRefDisplay.vue";
+import {formatDate} from "@drax/common-front"
 
 const { t} = useI18n()
 const store = useCrudStore()
@@ -53,7 +53,7 @@ const getFilterLabel = (filter: any) => {
 const getFilterValue = (filter: any) => {
   switch (filter.type) {
     case 'date':
-      return dayjs(filter.value).format('YYYY-MM-DD')
+      return formatDate(filter.value)
 
     case 'boolean':
       return filter.value ? t('common.yes') : t('common.no')
