@@ -29,6 +29,17 @@ import TenantSystem from "./system/TenantSystem.js"
 import TenantSystemFactory from "./factory/TenantSystemFactory.js"
 
 
+import UserSessionRestProvider from "./providers/rest/UserSessionRestProvider.js";
+import UserSessionGqlProvider from "./providers/gql/UserSessionGqlProvider.js";
+import UserSessionSystem from "./system/UserSessionSystem.js"
+import UserSessionSystemFactory from "./factory/UserSessionSystemFactory.js"
+
+import UserLoginFailRestProvider from "./providers/rest/UserLoginFailRestProvider.js";
+import UserLoginFailGqlProvider from "./providers/gql/UserLoginFailGqlProvider.js";
+import UserLoginFailSystem from "./system/UserLoginFailSystem.js"
+import UserLoginFailSystemFactory from "./factory/UserLoginFailSystemFactory.js"
+
+
 import {IdentityI18nMessages} from "./i18n/index.js"
 
 import type {IAuthProvider} from "./interfaces/IAuthProvider"
@@ -71,12 +82,21 @@ export {
     UserApiKeyRestProvider,
     UserApiKeyGqlProvider,
 
+    UserSessionRestProvider,
+    UserSessionGqlProvider,
+
+    UserLoginFailRestProvider,
+    UserLoginFailGqlProvider,
+
+
     //Systems
     AuthSystem,
     UserSystem,
     RoleSystem,
     TenantSystem,
     UserApiKeySystem,
+    UserSessionSystem,
+    UserLoginFailSystem,
 
     //Factory
     AuthSystemFactory,
@@ -84,6 +104,8 @@ export {
     RoleSystemFactory,
     TenantSystemFactory,
     UserApiKeySystemFactory,
+    UserSessionSystemFactory,
+    UserLoginFailSystemFactory,
 
     //Helpers
     AuthHelper,

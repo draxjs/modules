@@ -34,6 +34,8 @@ async function ${entity.name}FastifyRoutes(fastify, options) {
     
     fastify.get('${getApiBasePath(entity)}/:id', {schema: schemas.findByIdSchema}, (req,rep) => controller.findById(req,rep))
     fastify.get('${getApiBasePath(entity)}/find-one', {schema: schemas.findOneSchema}, (req,rep) => controller.findOne(req,rep))
+    
+    fastify.get('${getApiBasePath(entity)}/group-by', {schema: schemas.groupBySchema}, (req,rep) => controller.groupBy(req,rep))
 
     fastify.post('${getApiBasePath(entity)}', {schema: schemas.createSchema}, (req,rep) =>controller.create(req,rep))
 

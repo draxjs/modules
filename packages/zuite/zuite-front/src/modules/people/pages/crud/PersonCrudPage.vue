@@ -14,14 +14,14 @@ const store = useCrudStore()
     <template v-slot:item.languages="{value}">{{ value.map((v:any) => v.name).join(",") }}</template>
     <template v-slot:item.tenant="{value}">{{value?.name}}</template>
     <template v-slot:item.user="{value}">{{value?.username}}</template>
-    <template v-slot:filter.fullname="{filterIndex}">
-      <v-text-field
-        label="FULLNAME"
-        color="orange"
-        v-model="store.filters[filterIndex].value"
-        hint="Filtro custom fullname" persistent-hint
-      />
-    </template>
+<!--    <template v-slot:filter.fullname="{filterIndex}">-->
+<!--      <v-text-field-->
+<!--        label="FULLNAME"-->
+<!--        color="orange"-->
+<!--        v-model="store.filters[filterIndex].value"-->
+<!--        hint="Filtro custom fullname" persistent-hint-->
+<!--      />-->
+<!--    </template>-->
 
   </crud>
 </template>

@@ -4,7 +4,9 @@ const role = {
   name: "Admin",
   permissions: PermissionService.getPermissions(),
   childRoles: [],
-  readonly: true
+  readonly: true,
+  icon: 'mdi-chess-king',
+  color: 'indigo'
 }
 
 export default role

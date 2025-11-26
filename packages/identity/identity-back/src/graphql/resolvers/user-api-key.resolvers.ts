@@ -1,5 +1,5 @@
 import UserApiKeyServiceFactory from "../../factory/UserApiKeyServiceFactory.js";
-import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
+import {UserApiKeyPermissions} from "../../permissions/UserApiKeyPermissions.js";
 import {ValidationError, ValidationErrorToGraphQLError, UnauthorizedError} from "@drax/common-back";
 import {GraphQLError} from "graphql";
 import * as crypto from "node:crypto";
@@ -14,15 +14,15 @@ export default {
 
 
                 rbac.assertOrPermissions([
-                    IdentityPermissions.ViewUserApiKey,
-                    IdentityPermissions.ViewMyUserApiKey
+                    UserApiKeyPermissions.View,
+                    UserApiKeyPermissions.ViewMy
                 ])
 
                 if(!Array.isArray(options.filters)){
                     options.filters = []
                 }
 
-                if(!rbac.hasPermission(IdentityPermissions.ViewUserApiKey)){
+                if(!rbac.hasPermission(UserApiKeyPermissions.View)){
                     options.filters.push({field: "user", operator: "eq", value: rbac.userId})
                 }
 
@@ -40,7 +40,7 @@ export default {
     Mutation: {
         createUserApiKey: async (_, {input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.CreateUserApiKey)
+                rbac.assertPermission(UserApiKeyPermissions.Create)
                 input.user = rbac.authUser.id
                 input.secret = crypto.randomUUID()
                 const userApiKeyService = UserApiKeyServiceFactory(true)
@@ -59,7 +59,7 @@ export default {
         },
         updateUserApiKey: async (_, {id, input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.UpdateUserApiKey)
+                rbac.assertPermission(UserApiKeyPermissions.Update)
                 const userApiKeyService = UserApiKeyServiceFactory()
                 return await userApiKeyService.update(id, input)
             } catch (e) {
@@ -75,7 +75,7 @@ export default {
         },
         deleteUserApiKey: async (_, {id}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.DeleteUserApiKey)
+                rbac.assertPermission(UserApiKeyPermissions.Delete)
                 const userApiKeyService = UserApiKeyServiceFactory()
                 return await userApiKeyService.delete(id)
             } catch (e) {

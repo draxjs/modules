@@ -5,6 +5,8 @@ const RoleBaseSchema = object({
         .min(1, "validation.required")
         .regex(/^[A-Z]/, "validation.startWithUpperCase"),
     permissions: array(string()).optional(),
+    icon: string().optional(),
+    color: string().optional(),
     childRoles: array(string()).optional(),
 })
 
@@ -12,6 +14,8 @@ const RoleSchema = RoleBaseSchema.extend({
     _id: string(),
     id: string().optional(),
     permissions: array(string()).optional(),
+    icon: string().optional(),
+    color: string().optional(),
     readonly: boolean(),
     childRoles: array(object({
         _id: string(),

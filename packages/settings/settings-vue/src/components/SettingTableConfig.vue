@@ -14,6 +14,7 @@ onMounted(async () => {
 
 const settingEditing = ref()
 const editing = ref(false)
+const visibleSecrets = ref<Record<string, boolean>>({})
 
 function edit(setting: ISetting) {
   settingEditing.value = {...setting}
@@ -25,11 +26,23 @@ function clearEdit() {
   settingEditing.value = null
 }
 
+function toggleSecretVisibility(key: string) {
+  visibleSecrets.value[key] = !visibleSecrets.value[key]
+}
+
+function isSecretVisible(key: string): boolean {
+  return visibleSecrets.value[key] || false
+}
+
+function getObfuscatedValue(value: string): string {
+  return '•'.repeat(Math.min(value?.length || 8, 12))
+}
+
 </script>
 
 <template>
   <div>
-    <h1 class="mb-6 text-h2">Settings</h1>
+    <h1 class="mb-6 text-h2">{{t('setting.menu')}}</h1>
 
     <setting-editor
         v-if="editing"
@@ -49,11 +62,12 @@ function clearEdit() {
             <v-data-table
                 hide-default-footer
                 :headers="[
-                { title: t('common.identifier'), key: 'key', width: '130px', minWidth: '130px' },
-                { title: t('common.value'), key: 'value' },
-                { title: t('common.type'), key: 'type', width: '120px', minWidth: '120px' },
-                { title: t('common.scope'), key:'scope', width: '170px', minWidth: '170px' },
-                { title: t('common.actions'), key: 'actions', width: '70px' },
+                { title: t('setting.field.key'), key: 'key', width: '130px', minWidth: '130px' },
+                { title: t('setting.field.label'), key: 'label', width: '130px', minWidth: '130px' },
+                { title: t('setting.field.value'), key: 'value' },
+                { title: t('setting.field.type'), key: 'type', width: '120px', minWidth: '120px' },
+                { title: t('setting.field.scope'), key:'scope', width: '170px', minWidth: '170px' },
+                { title: t('action.edit'), key: 'actions', width: '70px' },
 
             ]"
                 :items="category"
@@ -61,6 +75,7 @@ function clearEdit() {
             >
 
               <template v-slot:item.value="{ item }">
+                <v-card variant="tonal" density="compact" class="my-1"><v-card-text>
                 {{ item.prefix }}
                 <template v-if="item.type === 'boolean'">
                   <v-chip :color="item.value ? 'green' : 'red' " tile>
@@ -70,10 +85,24 @@ function clearEdit() {
                 <template v-else-if="['stringList','numberList','enumList'].includes(item.type)">
                   <v-chip v-for="(v,i) in item.value" :key="i">{{v}}</v-chip>
                 </template>
+                <template v-else-if="['password','secret'].includes(item.type)">
+                  <span class="d-inline-flex align-center">
+                    <span class="mr-2">
+                      {{ isSecretVisible(item.key) ? item.value : getObfuscatedValue(item.value) }}
+                    </span>
+                    <v-btn
+                        :icon="isSecretVisible(item.key) ? 'mdi-eye-off' : 'mdi-eye'"
+                        size="x-small"
+                        variant="text"
+                        @click="toggleSecretVisibility(item.key)"
+                    ></v-btn>
+                  </span>
+                </template>
                 <template v-else>
                   {{item.value}}
                 </template>
                 {{ item.suffix }}
+                </v-card-text></v-card>
               </template>
 
               <template v-slot:item.scope="{ item }">

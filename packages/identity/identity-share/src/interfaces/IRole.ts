@@ -5,6 +5,8 @@ interface IRoleBase{
     _id?: string
     id?: string
     name: string
+    icon?: string
+    color?: string
     permissions: string[]
     childRoles?: string[]
     readonly: boolean | number
@@ -16,6 +18,8 @@ interface IRole{
     _id: string
     id?: string
     name: string
+    icon?: string
+    color?: string
     permissions: IRolePermissions
     childRoles?: IRole[]
     readonly: boolean | number

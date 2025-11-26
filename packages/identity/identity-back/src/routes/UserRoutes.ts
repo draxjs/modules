@@ -19,6 +19,8 @@ async function UserRoutes(fastify, options) {
 
     fastify.get('/api/users/search', {schema: schemas.searchSchema}, async (req, rep) => await controller.search(req, rep))
 
+    fastify.get('/api/users/group-by', {schema: schemas.groupBySchema}, async (req, rep) => await controller.groupBy(req, rep))
+
     fastify.get('/api/users/export', {schema: schemas.exportSchema}, (req, rep) => controller.export(req, rep))
 
     fastify.get('/api/users', {schema: schemas.paginateSchema}, (req, rep) => controller.paginate(req, rep))

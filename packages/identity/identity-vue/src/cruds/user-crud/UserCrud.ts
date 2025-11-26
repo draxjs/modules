@@ -42,12 +42,14 @@ class UserCrud extends EntityCrud implements IEntityCrud {
     return import.meta.env.VITE_DRAX_TENANT === 'ENABLE'
   }
 
+
   get headers():IEntityCrudHeader[] {
     return [
+      { title: '', key: 'avatar', align: 'start', width:'50px' },
       { title: 'name', key: 'name', align: 'start' },
       { title: 'username', key: 'username', align: 'start' },
       { title: 'email', key: 'email', align: 'start' },
-      { title: 'role', key: 'role.name', align: 'start' },
+      { title: 'role', key: 'role', align: 'start' },
       ...(this.isTenantEnabled ? [{ title: 'tenant', key: 'tenant.name', align: 'start' as const }] : []),
       { title: 'active', key: 'active', align: 'start' },
     ]
@@ -76,8 +78,8 @@ class UserCrud extends EntityCrud implements IEntityCrud {
         {name: 'username', type: 'string', label: 'username', default:'' },
         {name: 'email', type: 'string', label: 'email', default:'' },
         {name: 'phone', type: 'string', label: 'phone', default:'' },
-        {name: 'role', type: 'ref', ref: 'role', label: 'role', default:null },
-        {name: 'tenant', type: 'ref', ref: 'tenant', label: 'tenant', default:null, permission: 'tenant:manage' },
+        {name: 'role', type: 'ref', ref: 'role', refDisplay:'name', label: 'role', default:null },
+        {name: 'tenant', type: 'ref', ref: 'tenant', refDisplay:'name', label: 'tenant', default:null, permission: 'tenant:manage' },
         {name: 'active', type: 'boolean',  label: 'active', default:true },
 
     ]
@@ -139,6 +141,9 @@ class UserCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
+  get containerFluid(): boolean{
+    return true
+  }
 }
 
 export default UserCrud

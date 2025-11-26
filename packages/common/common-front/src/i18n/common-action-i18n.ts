@@ -25,6 +25,11 @@ const messages = {
       clear: 'Clear',
       change: 'Change',
       switch: 'Switch',
+      groupBy: 'Group By',
+      statistics: 'Statistics',
+      chart: 'Chart',
+      summary: 'Summary',
+      apply: 'Apply',
     }
   },
   es: {
@@ -53,6 +58,11 @@ const messages = {
       clear: 'Limpiar',
       change: 'Cambiar',
       switch: 'Cambiar',
+      groupBy: 'Agrupar Por',
+      statistics: 'Estadísticas',
+      chart: 'Gráfico',
+      summary: 'Resumen',
+      apply: 'Aplicar',
     }
   }
 }

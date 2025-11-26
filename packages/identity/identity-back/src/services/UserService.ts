@@ -9,6 +9,8 @@ import BadCredentialsError from "../errors/BadCredentialsError.js";
 import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {AbstractService} from "@drax/crud-back";
 import {randomUUID} from "crypto"
+import UserLoginFailServiceFactory from "../factory/UserLoginFailServiceFactory.js";
+import UserSessionServiceFactory from "../factory/UserSessionServiceFactory.js";
 
 class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
@@ -20,16 +22,29 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         console.log("UserService constructor")
     }
 
-    async auth(username: string, password: string) {
+    async auth(username: string, password: string, {userAgent, ip}) {
         let user = null
         console.log("auth username", username)
         user = await this.findByUsernameWithPassword(username)
         if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
             //TODO: Generar session
-            const session = randomUUID()
-            const accessToken = AuthUtils.generateToken(user._id.toString(), user.username, user.role._id, user.tenant?._id, session)
+            const sessionUUID = randomUUID()
+            const sessionService = UserSessionServiceFactory()
+            await sessionService.create({
+                user:user._id.toString(),
+                uuid: sessionUUID,
+                userAgent: userAgent,
+                ip: ip
+            })
+            const accessToken = AuthUtils.generateToken(user._id.toString(), user.username, user.role._id, user.tenant?._id, sessionUUID)
             return {accessToken: accessToken}
         } else {
+            const userLoginFailService = UserLoginFailServiceFactory()
+            await userLoginFailService.create({
+                username: username,
+                userAgent: userAgent,
+                ip: ip
+            })
             throw new BadCredentialsError()
         }
     }

@@ -3,12 +3,13 @@ import type {IDraxPaginateOptions} from "./IDraxPaginateOptions";
 import type {IDraxFindOptions} from "./IDraxFindOptions";
 import type {IDraxFieldFilter} from "./IDraxFieldFilter";
 import type {IDraxFindOneOptions} from "./IDraxFindOneOptions";
+import {IDraxGroupByOptions} from "./IDraxGroupByOptions";
 
 interface IDraxCrud<T,C,U>{
   paginate(options: IDraxPaginateOptions): Promise<IDraxPaginateResult<T>>
-  create(input: C): Promise<T>
-  update(id: string, input: U): Promise<T>
-  delete(id: string): Promise<any>
+  create?(input: C): Promise<T>
+  update?(id: string, input: U): Promise<T>
+  delete?(id: string): Promise<any>
 
   updatePartial?(id: string, input: any): Promise<T>
 
@@ -21,6 +22,8 @@ interface IDraxCrud<T,C,U>{
 
   findBy?(field: string, value: any, limit: number): Promise<T[]>
   findOneBy?(field: string, value: any): Promise<T | null>
+
+  groupBy?(options: IDraxGroupByOptions): Promise<Array<any>>
 
 }
 

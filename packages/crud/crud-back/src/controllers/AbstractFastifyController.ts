@@ -39,6 +39,8 @@ type CustomRequest = FastifyRequest<{
         headersTranslate?: string
         separator?: string
         fileName?: string
+        fields?: string
+        dateFormat?: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'
     }
 }>
 
@@ -453,7 +455,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac);
 
-            //console.log("FILTERS",filters)
+            // console.log("paginate filters",filters)
 
             let paginateResult = await this.service.paginate({page, limit, orderBy, order, search, filters})
             return paginateResult
@@ -509,6 +511,35 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 fileName: result.fileName,
             }
 
+        } catch (e) {
+            this.handleError(e, reply)
+        }
+    }
+
+    async groupBy(request: CustomRequest, reply: FastifyReply) {
+        try {
+            request.rbac.assertPermission(this.permission.View)
+
+            const fields: string[] = request.query.fields ?
+                request.query.fields.split(',').map(f => f.trim()).filter(f => f.length > 0) :
+                []
+
+            const dateFormat = request.query.dateFormat ? request.query.dateFormat : 'day'
+
+            if (fields.length === 0) {
+                throw new BadRequestError('At least one field is required for grouping')
+            }
+
+            const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
+            this.applyUserAndTenantFilters(filters, request.rbac)
+
+
+            const result = await this.service.groupBy({fields, filters, dateFormat})
+            // console.log("groupby fields",fields)
+            // console.log("groupby dateFormat",dateFormat)
+            // console.log("groupby filters",filters)
+            // console.log("groupby result",result)
+            return result
         } catch (e) {
             this.handleError(e, reply)
         }

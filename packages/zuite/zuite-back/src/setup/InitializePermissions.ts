@@ -1,7 +1,15 @@
 import {LoadPermissions} from "@drax/identity-back";
-import {UserPermissions, RolePermissions, TenantPermissions, UserApiKeyPermissions} from "@drax/identity-back";
+import {
+    UserPermissions,
+    RolePermissions,
+    TenantPermissions,
+    UserApiKeyPermissions,
+    UserSessionPermissions,
+    UserLoginFailPermissions
+} from "@drax/identity-back";
 import {MediaPermissions} from "@drax/media-back";
 import {DynamicFormPermissions} from "@drax/dynamic-back";
+import {DashboardPermissions} from "@drax/dashboard-back";
 import {SettingPermissions} from "@drax/settings-back";
 import {PersonPermissions} from "../modules/people/permissions/PersonPermissions.js";
 import {CountryPermissions} from "../modules/people/permissions/CountryPermissions.js";
@@ -17,12 +25,15 @@ function InitializePermissions() {
         ...Object.values(RolePermissions),
         ...Object.values(TenantPermissions),
         ...Object.values(UserApiKeyPermissions),
+        ...Object.values(UserSessionPermissions),
+        ...Object.values(UserLoginFailPermissions),
         ...Object.values(MediaPermissions),
         ...Object.values(SettingPermissions),
         ...Object.values(PersonPermissions),
         ...Object.values(CountryPermissions),
         ...Object.values(LanguagePermissions),
-        ...Object.values(DynamicFormPermissions)
+        ...Object.values(DynamicFormPermissions),
+        ...Object.values(DashboardPermissions),
     ]
 
     //Load All Permissions

@@ -12,7 +12,8 @@ async function InitializeSettings() {
         type: 'string',
         prefix: 'Prefijo',
         suffix: 'Sufijo',
-        public: true
+        public: true,
+        description: "La mar en coche"
     })
 
     await settingService.createOrUpdate({
@@ -23,7 +24,8 @@ async function InitializeSettings() {
         type: 'number',
         prefix: '',
         suffix: 'HS',
-        public: true
+        public: true,
+        description: "Locomotora loca"
     })
 
 
@@ -35,7 +37,8 @@ async function InitializeSettings() {
         type: 'boolean',
         prefix: '',
         suffix: '',
-        public: false
+        public: false,
+        description: "El estado de la coche"
     })
 
     await settingService.createOrUpdate({
@@ -47,7 +50,8 @@ async function InitializeSettings() {
         prefix: '',
         suffix: '',
         public: true,
-        permission: 'setting:sensitive'
+        permission: 'setting:sensitive',
+        description: 'La guardia del leon'
     })
 
 

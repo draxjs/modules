@@ -16,11 +16,15 @@ class EntityCrud implements IEntityCrud {
     throw new Error('EntityCrud instance not found')
   }
 
-
   get headers(): IEntityCrudHeader[] {
     return [
       {title: 'ID', key: '_id'},
     ]
+  }
+
+  get selectedHeaders(): string[] {
+    // Retrocompatibilidad: si no se define, retorna todas las keys de headers
+    return this.headers.map(header => header.key)
   }
 
   get actionHeaders(): IEntityCrudHeader[] {
@@ -54,11 +58,11 @@ class EntityCrud implements IEntityCrud {
   }
 
   get createFields() {
-    return this.fields
+    return this.fields.filter(field => !['_id','createdAt','updatedAt'].includes(field.name))
   }
 
   get updateFields() {
-    return this.fields
+    return this.fields.filter(field => !['_id','createdAt','updatedAt'].includes(field.name))
   }
 
   get deleteFields() {
@@ -188,6 +192,14 @@ class EntityCrud implements IEntityCrud {
 
   get importFormats() {
     return ['CSV', 'JSON']
+  }
+
+  get isColumnSelectable() {
+    return true
+  }
+
+  get isGroupable() {
+    return false
   }
 
   get dialogFullscreen() {

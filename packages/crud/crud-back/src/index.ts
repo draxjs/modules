@@ -12,6 +12,7 @@ import {PaginateBodyResponseSchema, PaginateQuerySchema} from "./schemas/Paginat
 import {FindQuerySchema} from "./schemas/FindSchema.js"
 import {SearchQuerySchema} from "./schemas/SearchSchema.js"
 import {FindByParamSchema} from "./schemas/FindBySchema.js"
+import {GroupByQuerySchema} from "./schemas/GroupBySchema.js"
 import {ExportBodyResponseSchema} from "./schemas/ExportBodyResponseSchema.js"
 import {ErrorBodyResponseSchema, ValidationErrorBodyResponseSchema} from "./schemas/ErrorBodyResponseSchema.js"
 import {CrudSchemaBuilder} from "./builders/CrudSchemaBuilder.js";
@@ -35,6 +36,7 @@ export {
     PaginateBodyResponseSchema,
     PaginateQuerySchema,
     FindQuerySchema,
+    GroupByQuerySchema,
     SearchQuerySchema,
     FindByParamSchema,
     ErrorBodyResponseSchema,

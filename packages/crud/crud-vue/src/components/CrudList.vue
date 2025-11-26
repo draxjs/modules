@@ -9,18 +9,19 @@ import CrudCreateButton from "./buttons/CrudCreateButton.vue";
 import CrudUpdateButton from "./buttons/CrudUpdateButton.vue";
 import CrudDeleteButton from "./buttons/CrudDeleteButton.vue";
 import CrudViewButton from "./buttons/CrudViewButton.vue";
+import CrudGroupByButton from "./buttons/CrudGroupByButton.vue";
+import CrudColumnsButton from "./buttons/CrudColumnsButton.vue";
 import CrudExportList from "./CrudExportList.vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
-import type {IEntityCrudHeader} from "@drax/crud-share";
 import CrudFilters from "./CrudFilters.vue";
+import { useCrudColumns } from "../composables/UseCrudColumns";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-
 })
 
 const {
@@ -28,19 +29,8 @@ const {
   doPaginate, filters, applyFilters, clearFilters
 } = useCrud(entity)
 
-const actions: IEntityCrudHeader[] = entity.actionHeaders.map(header => ({
-  ...header,
-  title: te(header.title) ? t(header.title) : header.title,
-}))
-
-const tHeaders: IEntityCrudHeader[] = entity.headers
-    .filter(header => !header.permission || hasPermission(header.permission))
-    .map(header => ({
-      ...header,
-      title: te(`${entity.name.toLowerCase()}.field.${header.title}`) ? t(`${entity.name.toLowerCase()}.field.${header.title}`) : header.title
-    }))
-
-const headers: IEntityCrudHeader[] = [...tHeaders, ...actions]
+// Usar el composable de columnas
+const { filteredHeaders } = useCrudColumns(entity)
 
 
 defineExpose({
@@ -61,7 +51,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       :items-per-page-options="[5, 10, 20, 50]"
       v-model:page="page"
       v-model:sort-by="sortBy"
-      :headers="headers"
+      :headers="filteredHeaders"
       :items="items"
       :items-length="totalItems"
       :loading="loading"
@@ -96,6 +86,16 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
         <crud-export-button
             :entity="entity"
             @export="v => $emit('export',v)"
+        />
+
+        <crud-group-by-button
+            v-if="entity.isGroupable"
+            :entity="entity"
+        />
+
+        <crud-columns-button
+            v-if="entity.isColumnSelectable"
+            :entity="entity"
         />
 
         <crud-create-button
@@ -144,6 +144,9 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       </v-card>
 
       <v-divider></v-divider>
+
+
+
     </template>
 
 

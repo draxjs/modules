@@ -39,8 +39,11 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
         try {
             const username = request.body.username
             const password = request.body.password
+            const userAgent = request.headers['user-agent'];
+            const ip = request.ip;
             const userService = UserServiceFactory()
-            return await userService.auth(username, password)
+
+            return await userService.auth(username, password,{userAgent, ip})
         } catch (e) {
             console.error('/api/auth error', e)
             if (e instanceof BadCredentialsError) {

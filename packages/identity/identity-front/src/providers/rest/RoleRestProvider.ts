@@ -7,12 +7,14 @@ import type {
     IDraxPaginateOptions,
     IDraxPaginateResult
 } from "@drax/crud-share";
+import {AbstractBaseRestProvider} from "@drax/crud-front";
 
-class RoleRestProvider implements IRoleProvider {
+class RoleRestProvider extends AbstractBaseRestProvider implements IRoleProvider {
 
     httpClient: IHttpClient
 
     constructor(httpClient: IHttpClient) {
+        super('/api/roles');
         this.httpClient = httpClient
     }
 
@@ -72,8 +74,7 @@ class RoleRestProvider implements IRoleProvider {
                      filters = []
                  }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
         const url =  '/api/roles/export'
-        const sFilters: string  = filters.map((filter : IDraxFieldFilter ) => `${filter.field},${filter.operator},${filter.value}`).join('|')
-        const params: any = {format, headers, separator, limit, orderBy, order, search, filters: sFilters}
+        const params: any = {format, headers, separator, limit, orderBy, order, search, filters: this.prepareFilters(filters)}
         return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
     }
 

@@ -1,5 +1,5 @@
 import TenantServiceFactory from "../../factory/TenantServiceFactory.js";
-import {IdentityPermissions} from "../../permissions/IdentityPermissions.js";
+import {TenantPermissions} from "../../permissions/TenantPermissions.js";
 import {ValidationError, ValidationErrorToGraphQLError, UnauthorizedError} from "@drax/common-back";
 import {GraphQLError} from "graphql";
 import {IDraxPaginateOptions} from "@drax/crud-share";
@@ -9,7 +9,7 @@ export default {
     Query: {
         findTenantById: async (_, {id}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewTenant)
+                rbac.assertPermission(TenantPermissions.View)
                 const tenantService = TenantServiceFactory()
                 return await tenantService.findById(id)
             } catch (e) {
@@ -21,7 +21,7 @@ export default {
         },
         findTenantByName: async (_, {name}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewTenant)
+                rbac.assertPermission(TenantPermissions.View)
                 const tenantService = TenantServiceFactory()
                 return await tenantService.findByName(name)
             } catch (e) {
@@ -33,7 +33,7 @@ export default {
         },
         fetchTenant: async (_, {}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewTenant)
+                rbac.assertPermission(TenantPermissions.View)
                 const tenantService = TenantServiceFactory()
                 const tenants =  await tenantService.fetchAll()
                 if(rbac.getAuthUser.tenantId){
@@ -51,7 +51,7 @@ export default {
         },
         paginateTenant: async (_, {options= {page:1, limit:5, orderBy:"", order:"asc", search:"", filters: []} as IDraxPaginateOptions }, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.ViewTenant)
+                rbac.assertPermission(TenantPermissions.View)
                 const tenantService = TenantServiceFactory()
                 return await tenantService.paginate(options)
             } catch (e) {
@@ -66,7 +66,7 @@ export default {
     Mutation: {
         createTenant: async (_, {input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.CreateTenant)
+                rbac.assertPermission(TenantPermissions.Create)
                 const tenantService = TenantServiceFactory()
                 return await tenantService.create(input)
             } catch (e) {
@@ -83,7 +83,7 @@ export default {
         },
         updateTenant: async (_, {id, input}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.UpdateTenant)
+                rbac.assertPermission(TenantPermissions.Update)
                 const tenantService = TenantServiceFactory()
                 return await tenantService.update(id, input)
             } catch (e) {
@@ -99,7 +99,7 @@ export default {
         },
         deleteTenant: async (_, {id}, {rbac}) => {
             try {
-                rbac.assertPermission(IdentityPermissions.DeleteTenant)
+                rbac.assertPermission(TenantPermissions.Delete)
                 const tenantService = TenantServiceFactory()
                 return await tenantService.delete(id)
             } catch (e) {

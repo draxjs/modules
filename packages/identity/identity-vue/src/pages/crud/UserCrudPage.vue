@@ -8,6 +8,7 @@ import PasswordUpdateButton from "../../cruds/user-crud/PasswordUpdateButton.vue
 import UserPasswordDialog from "../../cruds/user-crud/UserPasswordDialog.vue";
 import type {IUser} from "@drax/identity-share";
 import {useIdentityCrudStore} from "../../stores/IdentityCrudStore"
+import IdentityUserGroupBy from "../../components/IdentityUserGroupBy/IdentityUserGroupBy.vue";
 
 const identityCrudStore = useIdentityCrudStore();
 
@@ -24,15 +25,19 @@ function onChangePassword(user:IUser){
   dialogPassword.value = true;
 }
 
+const roleDashboard = import.meta.env.VITE_DRAX_USER_ROLE_DASHBOARD === 'ENABLE'
+
 </script>
 
 <template>
-  <div>
+  <v-container fluid>
     <user-password-dialog
         v-if="dialogPassword && userSelected"
         v-model="dialogPassword"
         :user="userSelected"
     />
+
+    <identity-user-group-by v-if="roleDashboard"></identity-user-group-by>
 
     <crud :entity="identityCrudStore.userCrud">
 
@@ -42,6 +47,17 @@ function onChangePassword(user:IUser){
             @submit="onSubmit"
             @cancel="onCancel"
         />
+      </template>
+
+      <template v-slot:item.avatar="{ item }">
+        <v-avatar>
+          <v-img v-if="item.avatar" :src="item.avatar"></v-img>
+          <v-icon v-else size="50">mdi-account-circle</v-icon>
+        </v-avatar>
+      </template>
+
+      <template v-slot:item.role="{ item }">
+       <v-chip  variant="outlined" :color="item.role.color"> <v-icon v-if="item.role.icon" start>{{item.role.icon}}</v-icon>{{item.role.name}}</v-chip>
       </template>
 
 
@@ -59,7 +75,7 @@ function onChangePassword(user:IUser){
         </v-chip>
       </template>
     </crud>
-  </div>
+  </v-container>
 
 </template>
 

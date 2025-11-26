@@ -227,6 +227,10 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
     ]
   }
   
+  get selectedHeaders(): string[] {
+    return this.headers.map(header => header.key)
+  }
+  
   get actionHeaders():IEntityCrudHeader[]{
     return [
       {
@@ -296,6 +300,14 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
   }
 
   get isImportable(){
+    return true
+  }
+  
+  get isColumnSelectable() {
+    return true
+  }
+
+  get isGroupable() {
     return true
   }
 

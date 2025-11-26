@@ -11,6 +11,8 @@ const RoleMongoSchema = new Schema<IRole>({
         type: String, unique: true, required: true, index: true,
     },
     permissions: [{type: String, required: true}],
+    icon: {type: String, required: false},
+    color: {type: String, required: false},
     childRoles: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role',

@@ -14,6 +14,7 @@ interface IEntityCrud {
   name: string
 
   headers: IEntityCrudHeader[]
+  selectedHeaders: string[]  // Nuevo getter
   actionHeaders: IEntityCrudHeader[]
   permissions: IEntityCrudPermissions
   fields: IEntityCrudField[]
@@ -32,6 +33,8 @@ interface IEntityCrud {
   isDeletable: boolean
   isExportable: boolean
   isImportable: boolean
+  isColumnSelectable: boolean
+  isGroupable: boolean
   dialogFullscreen: boolean
   dialogMaxWidth?: string
   dialogZindex?: number

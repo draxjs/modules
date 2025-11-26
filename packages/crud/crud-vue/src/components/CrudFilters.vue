@@ -4,10 +4,12 @@ import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud, IEntityCrudFilter} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import {useAuth} from "@drax/identity-vue";
+import {useFilterIcon} from "../composables/useFilterIcon";
 
 const {t} = useI18n()
 const valueModel = defineModel({type: [Object]})
 const {hasPermission} = useAuth()
+const {filterIcon} = useFilterIcon()
 
 const {entity, actionButtons} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
@@ -18,39 +20,11 @@ const aFields = computed(() => {
   return entity.filters.filter((field:IEntityCrudFilter) => !field.permission || hasPermission(field.permission))
 })
 
-const icon = computed(() => {
-  return (field: IEntityCrudFilter) => {
-    switch(field.operator){
-      case 'eq':
-        return 'mdi-equal'
-      case 'ne':
-        return 'mdi-not-equal'
-      case 'gt':
-        return 'mdi-greater-than'
-      case 'gte':
-        return 'mdi-greater-than-or-equal'
-      case 'lt':
-        return 'mdi-less-than'
-      case 'lte':
-        return 'mdi-less-than-or-equal'
-      case 'in':
-        return 'mdi-code-array'
-      case 'nin':
-        return 'mdi-not-equal'
-      case 'like':
-        return 'mdi-contain'
-      default:
-        return 'eq'
-    }
-  }
-})
-
-
- function filter() {
+function filter() {
   emit('applyFilter')
 }
 
- function clear() {
+function clear() {
   emit('clearFilter')
 }
 
@@ -59,7 +33,6 @@ function onUpdateValue(){
     emit('applyFilter')
   }
 }
-
 
 const emit = defineEmits(['applyFilter', 'clearFilter'])
 
@@ -85,7 +58,7 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
                   :clearable="true"
                   density="compact"
                   variant="outlined"
-                  :prepend-inner-icon="icon(filter)"
+                  :prepend-inner-icon="filterIcon(filter)"
                   hide-details  disable-rules
                   @updateValue="onUpdateValue"
               />
