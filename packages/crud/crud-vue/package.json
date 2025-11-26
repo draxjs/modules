@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.37.0",
+  "version": "0.37.1",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -25,16 +25,16 @@
   },
   "dependencies": {
     "@drax/common-front": "^0.37.0",
-    "@drax/crud-front": "^0.37.0",
+    "@drax/crud-front": "^0.37.1",
     "@drax/crud-share": "^0.37.0",
     "@drax/media-vue": "^0.37.0"
   },
   "peerDependencies": {
+    "dayjs": "^1.11.13",
     "pinia": "^2.2.2",
     "vue": "^3.5.7",
     "vue-i18n": "^9.14.0",
-    "vuetify": "^3.9.2",
-    "dayjs": "^1.11.13"
+    "vuetify": "^3.9.2"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
