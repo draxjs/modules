@@ -39,6 +39,19 @@ export function useDashboardCard(card: IDashboardCard) {
         ]
     })
 
+
+    const paginateHeaders = computed(() => {
+        return  card?.paginate?.columns.map((field: string) => {
+            return {
+                title: te(`${card.entity.toLowerCase()}.field.${field}`)
+                    ? t(`${card.entity.toLowerCase()}.field.${field}`)
+                    : field,
+                key: field,
+                align: 'start' as const
+            }
+        }) || []
+    })
+
     const fetchGroupByData = async function () {
         if(cardEntityProvider && cardEntityProvider?.value?.groupBy){
             const filters = card.filters
@@ -65,6 +78,7 @@ export function useDashboardCard(card: IDashboardCard) {
         fetchGroupByData,
         fetchPaginateData,
         groupByHeaders,
+        paginateHeaders,
         cardEntity,
         cardEntityFields,
         cardEntityProvider

@@ -11,7 +11,7 @@ const {card} = defineProps({
   card: {type: Object as PropType<IDashboardCard>, required: true},
 })
 
-const {fetchPaginateData} = useDashboardCard(card)
+const {fetchPaginateData, cardEntityFields, paginateHeaders} = useDashboardCard(card)
 
 const data = ref<IDraxPaginateResult<any>>()
 
@@ -24,6 +24,8 @@ onMounted(async ()=> {
 <template>
   <paginate-table-render  v-if="card?.groupBy?.render === 'table'"
                           :data="data"
+                          :fields="cardEntityFields"
+                          :headers="paginateHeaders"
   />
 
 </template>
