@@ -2,13 +2,13 @@ import type {IDraxPaginateResult, IEntityCrud} from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {computed, nextTick, toRaw} from "vue";
 import getItemId from "../helpers/getItemId";
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 
 export function useCrud(entity: IEntityCrud) {
 
     const store = useCrudStore()
 
-    const { t: $t } = useI18n()
+    const {t: $t} = useI18n()
 
     const exportError = computed({
         get() {
@@ -224,7 +224,7 @@ export function useCrud(entity: IEntityCrud) {
             .forEach(field => {
                 if (item[field.name] && Array.isArray(item[field.name])) {
                     item[field.name] = item[field.name].map(((i: any) => getItemId(i) ? getItemId(i) : i))
-                }else{
+                } else {
                     item[field.name] = []
                 }
             })
@@ -252,10 +252,10 @@ export function useCrud(entity: IEntityCrud) {
         openDialog()
     }
 
-    function cloneItem(item: object):object {
-        try{
+    function cloneItem(item: object): object {
+        try {
             return JSON.parse(JSON.stringify(item))
-        }catch (error){
+        } catch (error) {
             console.error("Error cloning item", error)
             return ({})
         }
@@ -273,7 +273,7 @@ export function useCrud(entity: IEntityCrud) {
         store.setInputErrors(null)
     }
 
-    async function onSubmit(formData: any): Promise<{status:string,item?:any}> {
+    async function onSubmit(formData: any): Promise<{ status: string, item?: any }> {
         store.setInputErrors(null)
         switch (store.operation) {
             case "view":
@@ -300,11 +300,14 @@ export function useCrud(entity: IEntityCrud) {
     async function doCreate(formData: any) {
         try {
             store.setLoading(true)
-            let item = await entity?.provider.create(toRaw(formData))
-            await doPaginate()
-            closeDialog()
-            store.showMessage("Entity created successfully!")
-            return {status: 'created', item: item}
+            if (entity?.provider.create) {
+                let item = await entity?.provider.create(toRaw(formData))
+                await doPaginate()
+                closeDialog()
+                store.showMessage("Entity created successfully!")
+                return {status: 'created', item: item}
+            }
+            throw new Error("provider.create not implemented")
         } catch (e: any) {
             if (e.inputErrors) {
                 store.setInputErrors(e.inputErrors)
@@ -321,11 +324,15 @@ export function useCrud(entity: IEntityCrud) {
     async function doUpdate(formData: any) {
         try {
             store.setLoading(true)
-            let item = await entity?.provider.update(getItemId(formData), toRaw(formData))
-            await doPaginate()
-            closeDialog()
-            store.showMessage("Entity updated successfully!")
-            return {status: 'updated', item: item}
+            if (entity?.provider.update) {
+                let item = await entity?.provider.update(getItemId(formData), toRaw(formData))
+                await doPaginate()
+                closeDialog()
+                store.showMessage("Entity updated successfully!")
+                return {status: 'updated', item: item}
+            }
+            throw new Error("provider.update not implemented")
+
         } catch (e: any) {
             //console.log("inputErrors", e.inputErrors)
             if (e.inputErrors) {
@@ -343,11 +350,14 @@ export function useCrud(entity: IEntityCrud) {
     async function doDelete(formData: any) {
         try {
             store.setLoading(true)
-            await entity?.provider.delete(getItemId(formData))
-            await doPaginate()
-            closeDialog()
-            store.showMessage("Entity deleted successfully!")
-            return {status: 'deleted'}
+            if (entity?.provider.delete) {
+                await entity?.provider.delete(getItemId(formData))
+                await doPaginate()
+                closeDialog()
+                store.showMessage("Entity deleted successfully!")
+                return {status: 'deleted'}
+            }
+            throw new Error("provider.delete not implemented")
         } catch (e: any) {
             store.setError(e.message || "An error occurred while deleting the entity")
             console.error("Error updating entity", e)
@@ -366,7 +376,7 @@ export function useCrud(entity: IEntityCrud) {
         store.setFilters(entity.formFilters)
     }
 
-    async function clearFilters(){
+    async function clearFilters() {
         prepareFilters()
         store.setSearch("")
         search.value = ""
@@ -376,7 +386,7 @@ export function useCrud(entity: IEntityCrud) {
 
     }
 
-    async function applyFilters(){
+    async function applyFilters() {
         await doPaginate()
     }
 

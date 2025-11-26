@@ -2,7 +2,7 @@
 import {onMounted, ref, computed} from "vue";
 import type {PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share";
-import type {IDraxFieldFilter} from "@drax/crud-share/dist";
+import type {IDraxFieldFilter} from "@drax/crud-share";
 
 const {entity, value, refDisplay} = defineProps({
   entity: {type: Object as PropType<IEntityCrud | undefined>, required: true},

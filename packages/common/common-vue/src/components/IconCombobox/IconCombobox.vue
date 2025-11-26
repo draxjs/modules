@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { PropType } from 'vue'
 
 const { t, te } = useI18n()
 
@@ -11,11 +12,11 @@ const props = defineProps({
     default: 'Icon'
   },
   variant: {
-    type: String as () => 'outlined' | 'filled' | 'solo' | 'plain' | 'underlined',
+    type: String as PropType<'outlined' | 'filled' | 'solo' | 'plain' | 'underlined'>,
     default: 'outlined'
   },
   errorMessages: {
-    type: [String, Array] as () => string | string[],
+    type: [String, Array] as PropType<string | string[]>,
     default: () => []
   },
   clearable: {
@@ -27,17 +28,14 @@ const props = defineProps({
     default: false
   },
   density: {
-    type: String as () => 'default' | 'comfortable' | 'compact',
+    type: String as PropType<'default' | 'comfortable' | 'compact'>,
     default: 'default'
   },
   hideDetails: {
     type: Boolean,
     default: false
   },
-  rules: {
-    type: Array,
-    default: () => []
-  },
+
   hint: {
     type: String,
     default: ''
@@ -361,7 +359,6 @@ watch(model, (newValue) => {
     :readonly="readonly"
     :density="density"
     :hide-details="hideDetails"
-    :rules="rules"
     :hint="hint"
     :persistent-hint="persistentHint"
     auto-select-first

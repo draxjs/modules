@@ -3,7 +3,7 @@ import type {IRoleProvider} from "../../interfaces/IRoleProvider.ts";
 import type {IRole, IRoleBase} from "@drax/identity-share";
 import type {
     IDraxCrudProviderExportResult,
-    IDraxExportOptions, IDraxFieldFilter,
+    IDraxExportOptions,
     IDraxPaginateOptions,
     IDraxPaginateResult
 } from "@drax/crud-share";

@@ -40,14 +40,26 @@ class RoleSystem implements IRoleProvider {
     }
 
     async create(userPayload: IRoleBase):Promise<IRole> {
+        if(!this._provider.create){
+            throw new Error("Create method not implemented")
+        }
+
         return this._provider.create(userPayload)
     }
 
     async update(id:string, userPayload: IRoleBase):Promise<IRole> {
+        if(!this._provider.update){
+            throw new Error("Update method not implemented")
+        }
+
         return this._provider.update(id, userPayload)
     }
 
     async delete(id: string):Promise<any> {
+        if(!this._provider.delete){
+            throw new Error("Delete method not implemented")
+        }
+
         return this._provider.delete(id)
     }
 
@@ -63,7 +75,7 @@ class RoleSystem implements IRoleProvider {
                  }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
 
         if(!this._provider.export){
-            throw new Error(`RoleSystem.provider does not support export`)  // assuming we have a custom error for this case  // replace with actual error handling as needed  // see: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html#error-handling-changes for more details on custom error classes in TypeScript 3.1+  // or use a library like 'ts-error' for a more robust and flexible error handling solution  // or use a custom error type if you want to have a specific error type for this operation  // or use a custom interface or class for the export result if you want to have a specific structure for the result  // or use a custom function that returns the result if you want to have a specific function for the result  // or use a custom interface or class if you want to have a specific structure for the result  // or use a custom function that returns the result
+            throw new Error(`RoleSystem.provider does not support export`)
         }
 
         return this._provider.export({

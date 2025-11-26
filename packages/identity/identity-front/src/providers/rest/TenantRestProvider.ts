@@ -3,7 +3,7 @@ import type {ITenantProvider} from "../../interfaces/ITenantProvider.ts";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
 import type {
     IDraxCrudProviderExportResult,
-    IDraxExportOptions, IDraxFieldFilter,
+    IDraxExportOptions,
     IDraxPaginateOptions,
     IDraxPaginateResult
 } from "@drax/crud-share";

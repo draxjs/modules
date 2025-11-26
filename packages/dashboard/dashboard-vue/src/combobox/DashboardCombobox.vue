@@ -3,7 +3,7 @@ import {ref, onMounted} from "vue"
 import {DashboardProvider} from "@drax/dashboard-front";
 import type {IDashboard} from "@drax/dashboard-share";
 
-const valueModel = defineModel({default: null})
+const valueModel = defineModel<IDashboard | undefined>({default: null})
 
 const loading = ref(false)
 const items = ref<IDashboard[]>([])

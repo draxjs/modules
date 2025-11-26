@@ -7,7 +7,7 @@ import type {IEntityCrudField} from "@drax/crud-share";
 
 const {formatDateByUnit} = useDateFormat()
 
-const {data, headers, fields, dateFormat, showLegend} = defineProps({
+const {data,  fields, dateFormat, showLegend} = defineProps({
   data: {type: Array as PropType<any[]>, required: false},
   headers: {type: Array as PropType<any[]>, required: false},
   fields: {type: Array as PropType<IEntityCrudField[]>, required: false},

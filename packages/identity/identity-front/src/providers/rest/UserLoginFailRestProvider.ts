@@ -2,7 +2,6 @@ import type {IHttpClient} from "@drax/common-front";
 import type {
   IDraxCrudProviderExportResult,
   IDraxExportOptions,
-  IDraxFieldFilter,
   IDraxGroupByOptions,
   IDraxPaginateOptions,
   IDraxPaginateResult

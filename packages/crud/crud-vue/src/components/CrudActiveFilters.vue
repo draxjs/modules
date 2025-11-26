@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { computed, watch, onMounted,  type PropType } from 'vue'
-import type { IEntityCrud, IEntityCrudFilter } from '@drax/crud-share'
+import { computed,  type PropType } from 'vue'
+import type { IEntityCrud } from '@drax/crud-share'
 import { useCrudStore } from '../stores/UseCrudStore'
 import { useI18n } from 'vue-i18n'
 import { useFilterIcon } from '../composables/useFilterIcon'
-import { useCrudRefDisplay } from '../composables/useCrudRefDisplay'
 import dayjs from "dayjs";
 import CrudRefDisplay from "./CrudRefDisplay.vue";
 
-const { t, d } = useI18n()
+const { t} = useI18n()
 const store = useCrudStore()
 const { filterIcon } = useFilterIcon()
-const { refDisplay } = useCrudRefDisplay()
 
 const props = defineProps({
   entity: {
@@ -87,22 +85,6 @@ const getFilterValue = (filter: any) => {
   }
 }
 
-// watch(activeFilters, async (filters) => {
-//   for (const filter of filters) {
-//     filter.display = await getFilterValue(filter)
-//   }
-// }, { immediate: true, deep: true })
-//
-// const renegerateDisplay = async () => {
-//   for (const filter of activeFilters.value) {
-//     filter.display = await getFilterValue(filter)
-//   }
-// }
-//
-// onMounted(() => {
-//   renegerateDisplay()
-// })
-
 const removeFilter = (index: number) => {
   const filter = store.filters[index]
   const filterDef = props.entity.filters[index]
@@ -114,14 +96,6 @@ const removeFilter = (index: number) => {
   emit('filterRemoved')
 }
 
-const clearAllFilters = () => {
-  store.filters.forEach((filter: any, index: any) => {
-    const filterDef = props.entity.filters[index]
-    filter.value = filterDef.default
-  })
-
-  emit('filtersCleared')
-}
 
 const emit = defineEmits(['filterRemoved', 'filtersCleared'])
 </script>
@@ -146,7 +120,6 @@ const emit = defineEmits(['filterRemoved', 'filtersCleared'])
 
           <span class="font-weight-medium">{{ getFilterLabel(filter) }}</span>
           <v-icon :icon="filterIcon(filter)" size="x-small" class="mx-1" />
-<!--          <span>{{ getFilterValue(filter) }}</span>-->
           <span v-if="['ref','array.ref'].includes(filter.type)">
             <crud-ref-display
                 :ref-display="filter.refDisplay"

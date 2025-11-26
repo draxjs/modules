@@ -3,7 +3,7 @@ import type {IUserProvider} from "../../interfaces/IUserProvider.ts";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import type {
     IDraxCrudProviderExportResult,
-    IDraxExportOptions, IDraxFieldFilter, IDraxGroupByOptions,
+    IDraxExportOptions,  IDraxGroupByOptions,
     IDraxPaginateOptions,
     IDraxPaginateResult
 } from "@drax/crud-share";

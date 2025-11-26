@@ -1,7 +1,6 @@
 import {HttpRestClientFactory} from "@drax/common-front";
 import type {IHttpClient} from '@drax/common-front'
 import type {
-    IDraxCrudProvider,
     IDraxFieldFilter,
 } from "@drax/crud-share";
 

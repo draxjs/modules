@@ -168,12 +168,12 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       />
 
       <crud-update-button
-          v-if="entity.isEditable && entity.isItemEditable(item) && hasPermission(entity.permissions.update)"
+          v-if="entity.isEditable && entity.isItemEditable(item) && hasPermission(entity.permissions?.update)"
           @click="$emit('edit', item)"
       />
 
       <crud-delete-button
-          v-if="entity.isDeletable && hasPermission(entity.permissions.delete)"
+          v-if="entity.isDeletable && hasPermission(entity.permissions?.delete)"
           @click="$emit('delete', item)"
       />
 

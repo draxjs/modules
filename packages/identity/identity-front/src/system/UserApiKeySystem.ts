@@ -27,14 +27,26 @@ class UserApiKeySystem implements IUserApiKeyProvider{
     }
 
     async create(userPayload: IUserApiKeyBase):Promise<IUserApiKey> {
+        if(!this._provider.create){
+            throw new Error("Create method not implemented")
+        }
+
         return this._provider.create(userPayload)
     }
 
     async update(id:string, userPayload: IUserApiKeyBase):Promise<IUserApiKey> {
+        if(!this._provider.update){
+            throw new Error("Update method not implemented")
+        }
+
         return this._provider.update(id, userPayload)
     }
 
     async delete(id: string):Promise<any> {
+        if(!this._provider.delete){
+            throw new Error("Delete method not implemented")
+        }
+
         return this._provider.delete(id)
     }
 

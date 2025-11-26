@@ -75,7 +75,10 @@ export function useAuth() {
         authStore.clearAuth()
     }
 
-    function hasPermission(permission: string) {
+    function hasPermission(permission: string | undefined) {
+        if(permission === undefined){
+            return false
+        }
         return authStore?.authUser?.role?.permissions ? authStore.authUser.role.permissions.includes(permission) : false
     }
 

@@ -51,13 +51,13 @@ const roleDashboard = import.meta.env.VITE_DRAX_USER_ROLE_DASHBOARD === 'ENABLE'
 
       <template v-slot:item.avatar="{ item }">
         <v-avatar>
-          <v-img v-if="item.avatar" :src="item.avatar"></v-img>
+          <v-img v-if="(item as IUser).avatar" :src="(item as IUser).avatar"></v-img>
           <v-icon v-else size="50">mdi-account-circle</v-icon>
         </v-avatar>
       </template>
 
       <template v-slot:item.role="{ item }">
-       <v-chip  variant="outlined" :color="item.role.color"> <v-icon v-if="item.role.icon" start>{{item.role.icon}}</v-icon>{{item.role.name}}</v-chip>
+       <v-chip  variant="outlined" :color="(item as IUser).role.color"> <v-icon v-if="(item as IUser).role.icon" start>{{(item as IUser).role.icon}}</v-icon>{{(item as IUser).role.name}}</v-chip>
       </template>
 
 
