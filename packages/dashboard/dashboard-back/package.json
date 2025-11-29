@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.37.2",
+  "version": "0.37.4",
   "description": "Dahsboard backend",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -22,7 +22,7 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "@drax/crud-back": "^0.37.2",
+    "@drax/crud-back": "^0.37.4",
     "@drax/crud-share": "^0.37.0",
     "mongoose": "^8.6.3",
     "mongoose-paginate-v2": "^1.8.3"
