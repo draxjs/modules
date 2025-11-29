@@ -1,10 +1,8 @@
 
 enum AuditPermissions {
 
-    Create = "audit:create",
-    Update = "audit:update",
-    Delete = "audit:delete",
     View = "audit:view",
+    ViewAll = "audit:viewAll",
     Manage = "audit:manage"
 
 }

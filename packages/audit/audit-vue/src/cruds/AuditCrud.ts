@@ -41,6 +41,7 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
 
     get headers(): IEntityCrudHeader[] {
         return [
+            {title: 'createdAt',key:'createdAt', align: 'start'},
             {title: 'entity',key:'entity', align: 'start'},
             {title: 'user',key:'user', align: 'start'},
             {title: 'action',key:'action', align: 'start'},

@@ -9,14 +9,14 @@ class AuditController extends AbstractFastifyController<IAudit, IAuditBase, IAud
 
     constructor() {
         super(AuditServiceFactory.instance, AuditPermissions)
-        this.tenantField = "tenant";
+        this.tenantField = "tenant.id";
         this.userField = "user";
         this.tenantFilter = true;
-        this.userFilter = true;
-        this.tenantSetter = true;
-        this.userSetter = true;
-        this.tenantAssert = true;
-        this.userAssert = true;
+        this.userFilter = false;
+        this.tenantSetter = false;
+        this.userSetter = false;
+        this.tenantAssert = false;
+        this.userAssert = false;
     }
 
     async create(request: FastifyRequest, reply: FastifyReply): Promise<IAudit> {

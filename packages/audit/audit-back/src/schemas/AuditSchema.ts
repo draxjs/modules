@@ -30,6 +30,7 @@ const AuditBaseSchema = z.object({
 const AuditSchema = AuditBaseSchema
     .extend({
         _id: z.string(),
+        createdAt: z.date(),
 
     })
 
