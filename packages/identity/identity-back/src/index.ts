@@ -44,6 +44,13 @@ import type {IUserApiKeyRepository} from "./interfaces/IUserApiKeyRepository";
 import type {IUserLoginFailRepository} from "./interfaces/IUserLoginFailRepository";
 import type {IUserSessionRepository} from "./interfaces/IUserSessionRepository";
 
+import {RoleModel, RoleMongoSchema} from "./models/RoleModel.js";
+import {TenantModel, TenantMongoSchema} from "./models/TenantModel.js";
+import {UserModel, UserMongoSchema} from "./models/UserModel.js";
+import {UserApiKeyModel, UserApiKeyMongoSchema} from "./models/UserApiKeyModel.js";
+import {UserSessionModel,UserSessionMongoSchema} from "./models/UserSessionModel.js";
+import {UserLoginFailModel,UserLoginFailMongoSchema} from "./models/UserLoginFailModel.js";
+
 
 import RoleMongoRepository from "./repository/mongo/RoleMongoRepository.js";
 import TenantMongoRepository from "./repository/mongo/TenantMongoRepository.js";
@@ -101,9 +108,7 @@ export {
     UserApiKeyBaseSchema,
     UserApiKeySchema,
     UserLoginFailBaseSchema,
-    UserLoginFailSchema,
     UserSessionBaseSchema,
-    UserSessionSchema,
 
     //Service
     UserService,
@@ -157,6 +162,21 @@ export {
     UserApiKeyMongoRepository,
     UserSessionMongoRepository,
     UserLoginFailMongoRepository,
+
+    //Mongo Models
+    RoleModel,
+    TenantModel,
+    UserModel,
+    UserApiKeyModel,
+    UserSessionModel,
+    UserLoginFailModel,
+
+    RoleMongoSchema,
+    TenantMongoSchema,
+    UserMongoSchema,
+    UserApiKeyMongoSchema,
+    UserSessionMongoSchema,
+    UserLoginFailMongoSchema,
 
     //Sqlite Repositories
     RoleSqliteRepository,

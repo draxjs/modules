@@ -4,30 +4,30 @@ import uniqueValidator from 'mongoose-unique-validator';
 import mongoosePaginate from 'mongoose-paginate-v2'
 import type {IUserLoginFail} from '@drax/identity-share'
 
-const UserLoginFailSchema = new mongoose.Schema<IUserLoginFail>({
+const UserLoginFailMongoSchema = new mongoose.Schema<IUserLoginFail>({
             username: {type: String,   required: false, index: false, unique: false },
             userAgent: {type: String,   required: false, index: false, unique: false },
             ip: {type: String,   required: false, index: false, unique: false },
 }, {timestamps: true});
 
-UserLoginFailSchema.plugin(uniqueValidator, {message: 'validation.unique'});
-UserLoginFailSchema.plugin(mongoosePaginate);
+UserLoginFailMongoSchema.plugin(uniqueValidator, {message: 'validation.unique'});
+UserLoginFailMongoSchema.plugin(mongoosePaginate);
 
-UserLoginFailSchema.virtual("id").get(function () {
+UserLoginFailMongoSchema.virtual("id").get(function () {
     return this._id.toString();
 });
 
 
-UserLoginFailSchema.set('toJSON', {getters: true, virtuals: true});
+UserLoginFailMongoSchema.set('toJSON', {getters: true, virtuals: true});
 
-UserLoginFailSchema.set('toObject', {getters: true, virtuals: true});
+UserLoginFailMongoSchema.set('toObject', {getters: true, virtuals: true});
 
 const MODEL_NAME = 'UserLoginFail';
 const COLLECTION_NAME = 'UserLoginFail';
-const UserLoginFailModel = mongoose.model<IUserLoginFail, PaginateModel<IUserLoginFail>>(MODEL_NAME, UserLoginFailSchema,COLLECTION_NAME);
+const UserLoginFailModel = mongoose.model<IUserLoginFail, PaginateModel<IUserLoginFail>>(MODEL_NAME, UserLoginFailMongoSchema,COLLECTION_NAME);
 
 export {
-    UserLoginFailSchema,
+    UserLoginFailMongoSchema,
     UserLoginFailModel
 }
 
