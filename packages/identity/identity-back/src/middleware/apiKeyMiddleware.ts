@@ -17,13 +17,21 @@ async function apiKeyMiddleware (request, reply) {
         try{
             let apiKey: string
 
+            //Por header 'x-api-key'
             if(request.headers['x-api-key']){
                 apiKey = request.headers['x-api-key']
             }
 
+            //Por authorization 'ApiKey <uuid-key>'
             const apiKeyRegExp = /^ApiKey (.*)$/i;
             if(request.headers['authorization'] && apiKeyRegExp.test(request.headers['authorization'])){
                 apiKey = request.headers?.authorization?.replace(/ApiKey /i, "")
+            }
+
+            //Por authorization '<uuid-key>'
+            const uuidRegex = /^[0-9a-fA-F]{24}$/i;
+            if(request.headers['authorization'] && uuidRegex.test(request.headers['authorization'])){
+                apiKey = request.headers['authorization']
             }
 
             if(apiKey){
