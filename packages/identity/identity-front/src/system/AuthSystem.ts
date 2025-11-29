@@ -1,5 +1,5 @@
 import type {IAuthProvider} from "../interfaces/IAuthProvider";
-import type {IAuthUser} from "../interfaces/IAuthUser";
+import type {IAuthFullUser} from "../interfaces/IAuthFullUser";
 import type {ILoginResponse} from "../interfaces/ILoginResponse";
 import type {IUserRegistration} from "../interfaces/IUserRegistration";
 
@@ -26,8 +26,8 @@ class AuthSystem implements IAuthProvider {
         this._provider.logout()
     }
 
-    async me():Promise<IAuthUser> {
-        const authUser: IAuthUser = await this._provider.me()
+    async me():Promise<IAuthFullUser> {
+        const authUser: IAuthFullUser = await this._provider.me()
         return authUser
     }
 

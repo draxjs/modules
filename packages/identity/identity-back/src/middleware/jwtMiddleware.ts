@@ -1,5 +1,5 @@
 import AuthUtils from "../utils/AuthUtils.js";
-import {IJwtUser} from "@drax/identity-share";
+import {IAuthUser} from "@drax/identity-share";
 
 function jwtMiddleware (request, reply, done) {
         try{
@@ -14,7 +14,7 @@ function jwtMiddleware (request, reply, done) {
             const routerPath = request.url
 
             if(routerPath != '/api/auth/login' && token){
-                const authUser = AuthUtils.verifyToken(token) as IJwtUser
+                const authUser: IAuthUser = AuthUtils.verifyToken(token)
                 if(authUser){
                     request.authUser = authUser
                     request.token = token

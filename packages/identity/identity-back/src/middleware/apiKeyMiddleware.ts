@@ -29,19 +29,23 @@ async function apiKeyMiddleware (request, reply) {
             }
 
             //Por authorization '<uuid-key>'
-            const uuidRegex = /^[0-9a-fA-F]{24}$/i;
+            const uuidRegex =  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
             if(request.headers['authorization'] && uuidRegex.test(request.headers['authorization'])){
                 apiKey = request.headers['authorization']
             }
 
             if(apiKey){
-                const userApiKey = await draxCache.getOrLoad(apiKey, userApiKeyLoader)
+                const userApiKey : IUserApiKey = await draxCache.getOrLoad(apiKey, userApiKeyLoader)
                 if(userApiKey && userApiKey.user){
                     const authUser: IAuthUser = {
                         id: userApiKey.user._id.toString(),
                         username: userApiKey.user.username,
                         roleId:  userApiKey.user.role?._id?.toString(),
+                        roleName:  userApiKey.user.role?.name,
                         tenantId: userApiKey.user?.tenant?._id?.toString(),
+                        tenantName: userApiKey.user?.tenant?.name,
+                        apiKeyId: userApiKey?._id?.toString(),
+                        apiKeyName: userApiKey?.name
                     }
                     request.authUser = authUser
                 }

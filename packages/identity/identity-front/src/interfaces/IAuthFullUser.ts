@@ -1,6 +1,6 @@
 import type {IRole, ITenant} from "@drax/identity-share";
 
-interface IAuthUser {
+interface IAuthFullUser {
     id: string
     username: string
     email: string
@@ -12,4 +12,4 @@ interface IAuthUser {
     tenant?: ITenant
 }
 
-export type {IAuthUser}
+export type {IAuthFullUser}

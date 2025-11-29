@@ -1,4 +1,4 @@
-import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
+import type {IAuthUser, IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import type {IUserRepository} from "../interfaces/IUserRepository";
 
 import {ZodError} from "zod";
@@ -24,19 +24,22 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
     async auth(username: string, password: string, {userAgent, ip}) {
         let user = null
-        console.log("auth username", username)
         user = await this.findByUsernameWithPassword(username)
         if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
-            //TODO: Generar session
-            const sessionUUID = randomUUID()
-            const sessionService = UserSessionServiceFactory()
-            await sessionService.create({
-                user:user._id.toString(),
-                uuid: sessionUUID,
-                userAgent: userAgent,
-                ip: ip
-            })
-            const accessToken = AuthUtils.generateToken(user._id.toString(), user.username, user.role._id, user.tenant?._id, sessionUUID)
+
+            const sessionUUID = await this.generateSession(user, userAgent, ip);
+
+            const tokenPayload: IAuthUser = {
+                id: user._id.toString(),
+                username: user.username,
+                roleId: user.role?._id?.toString(),
+                roleName: user.role?.name,
+                tenantId: user.tenant ? user.tenant?._id?.toString() : null,
+                tenantName: user.tenant ? user.tenant?.name : null,
+                session: sessionUUID
+            }
+
+            const accessToken = AuthUtils.generateToken(tokenPayload)
             return {accessToken: accessToken}
         } else {
             const userLoginFailService = UserLoginFailServiceFactory()
@@ -49,12 +52,24 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
     }
 
+    private async generateSession(user, userAgent, ip) {
+        const sessionUUID = randomUUID()
+        const sessionService = UserSessionServiceFactory()
+        await sessionService.create({
+            user: user._id.toString(),
+            uuid: sessionUUID,
+            userAgent: userAgent,
+            ip: ip
+        })
+        return sessionUUID;
+    }
+
     async switchTenant(accessToken: string, tenantId: string) {
         const newAccessToken = AuthUtils.switchTenant(accessToken, tenantId)
         return {accessToken: newAccessToken}
     }
 
-    async authByEmail(email: string, createIfNotFound: boolean = false, userData: IUserCreate) {
+    async authByEmail(email: string, createIfNotFound: boolean = false, userData: IUserCreate, {userAgent, ip}) {
         let user = null
         console.log("auth email", email)
         user = await this.findByEmail(email)
@@ -66,8 +81,20 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
 
         if (user && user.active) {
-            const session = randomUUID()
-            const accessToken = AuthUtils.generateToken(user._id.toString(), user.username, user.role._id, user.tenant?._id, session)
+            const sessionUUID = await this.generateSession(user, userAgent, ip);
+
+
+            const tokenPayload: IAuthUser = {
+                id: user._id.toString(),
+                username: user.username,
+                roleId: user.role?._id?.toString(),
+                roleName: user.role?.name,
+                tenantId: user.tenant ? user.tenant?._id?.toString() : null,
+                tenantName: user.tenant ? user.tenant?.name : null,
+                session: sessionUUID
+            }
+
+            const accessToken = AuthUtils.generateToken(tokenPayload)
             return {accessToken: accessToken}
         } else {
             throw new BadCredentialsError()

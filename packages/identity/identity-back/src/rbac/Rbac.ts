@@ -1,12 +1,11 @@
-import type {IJwtUser, IRole, IRbac} from "@drax/identity-share";
+import type { IAuthUser, IRole, IRbac} from "@drax/identity-share";
 import {UnauthorizedError, ForbiddenError} from "@drax/common-back";
-import {IAuthUser} from "@drax/identity-share/dist";
 
 class Rbac implements IRbac{
     private role: IRole;
     private authUser: IAuthUser;
 
-    constructor(authUser: IJwtUser, role: IRole) {
+    constructor(authUser: IAuthUser, role: IRole) {
         this.authUser = authUser;
         this.role = role;
     }
@@ -19,8 +18,13 @@ class Rbac implements IRbac{
         return {
             id: this.userId,
             username: this.username,
+            session: this.session,
             roleId: this.roleId,
-            tenantId: this.tenantId
+            roleName: this.roleName,
+            tenantId: this.tenantId,
+            tenantName: this.tenantName,
+            apiKeyId: this.apiKeyId,
+            apiKeyName: this.apiKeyName
         }
     }
 
@@ -32,12 +36,32 @@ class Rbac implements IRbac{
         return this.authUser?.id.toString()
     }
 
+    get session(): string  {
+        return this.authUser?.session
+    }
+
+    get apiKeyId(): string  {
+        return this.authUser?.apiKeyId.toString()
+    }
+
+    get apiKeyName(): string  {
+        return this.authUser?.apiKeyName
+    }
+
     get roleId(): string  {
         return this.authUser?.roleId.toString()
     }
 
+    get roleName(): string  {
+        return this.authUser?.roleName
+    }
+
     get tenantId(): string | undefined  {
         return this.authUser?.tenantId?.toString();
+    }
+
+    get tenantName(): string | undefined  {
+        return this.authUser?.tenantName;
     }
 
     assertAuthenticated() {

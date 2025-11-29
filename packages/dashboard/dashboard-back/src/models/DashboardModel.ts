@@ -2,7 +2,7 @@ import {mongoose} from '@drax/common-back';
 import {PaginateModel} from "mongoose";
 import uniqueValidator from 'mongoose-unique-validator';
 import mongoosePaginate from 'mongoose-paginate-v2'
-import type {IDashboard} from '../interfaces/IDashboard'
+import type {IDashboard} from '@drax/dashboard-share'
 
 const DashboardSchema = new mongoose.Schema<IDashboard>({
     identifier: {type: String, required: true, index: true, unique: true},

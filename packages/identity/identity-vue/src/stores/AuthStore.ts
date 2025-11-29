@@ -1,6 +1,6 @@
 // Utilities
 import { defineStore } from 'pinia'
-import type {IAuthUser} from "@drax/identity-front";
+import type {IAuthFullUser} from "@drax/identity-front";
 //@ts-ignore
 import type from 'pinia-plugin-persistedstate'
 import {AuthHelper} from "@drax/identity-front";
@@ -8,7 +8,7 @@ import {AuthHelper} from "@drax/identity-front";
 export const useAuthStore = defineStore('AuthStore', {
   state: () => ({
     accessToken: null as string | null,
-    authUser: null as IAuthUser | null,
+    authUser: null as IAuthFullUser | null,
   }),
   getters:{
     isAuth: (state): boolean => {
@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('AuthStore', {
     setAccessToken(accessToken:string){
       this.accessToken = accessToken
     },
-    setAuthUser(authUser:IAuthUser){
+    setAuthUser(authUser:IAuthFullUser){
       this.authUser = authUser
     },
     clearAuth(){

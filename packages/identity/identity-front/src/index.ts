@@ -47,7 +47,7 @@ import type {IUserProvider} from "./interfaces/IUserProvider"
 import type {IRoleProvider} from "./interfaces/IRoleProvider"
 import type {ITenantProvider} from "./interfaces/ITenantProvider"
 import type {IUserApiKeyProvider} from "./interfaces/IUserApiKeyProvider"
-import type {IAuthUser} from "./interfaces/IAuthUser"
+import type {IAuthFullUser} from "./interfaces/IAuthFullUser"
 import type {IUserPassword} from "./interfaces/IUserPassword"
 import type {ILoginResponse} from "./interfaces/ILoginResponse"
 import type {IUserRegistration} from "./interfaces/IUserRegistration"
@@ -58,7 +58,7 @@ export type {
     IRoleProvider,
     ITenantProvider,
     IUserApiKeyProvider,
-    IAuthUser,
+    IAuthFullUser,
     IUserPassword,
     ILoginResponse,
     IUserRegistration

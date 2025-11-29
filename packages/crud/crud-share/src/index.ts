@@ -1,6 +1,7 @@
 import type {IDraxCrud} from "./interfaces/IDraxCrud";
 import type {IDraxCrudRepository} from "./interfaces/IDraxCrudRepository";
 import type {IDraxCrudProvider} from "./interfaces/IDraxCrudProvider";
+import type {IDraxCrudEvent} from "./interfaces/IDraxCrudEvent";
 import type {IDraxCrudProviderExportResult} from "./interfaces/IDraxCrudProviderExportResult";
 import type {IDraxCrudService} from "./interfaces/IDraxCrudService";
 import type {IDraxFieldFilter} from "./interfaces/IDraxFieldFilter";
@@ -12,6 +13,7 @@ import type {IDraxFindOneOptions} from "./interfaces/IDraxFindOneOptions";
 import type {IDraxPermission} from "./interfaces/IDraxPermission";
 import type {IDraxExportOptions} from "./interfaces/IDraxExportOptions";
 import type {IDraxExportResult} from "./interfaces/IDraxExportResult";
+import type {IDraxExportResponse} from "./interfaces/IDraxExportResponse";
 
 import type {IEntityCrud} from "./interfaces/IEntityCrud";
 import type {IEntityCrudOperation} from "./interfaces/IEntityCrudOperation";
@@ -36,6 +38,7 @@ export type {
     IDraxCrudService,
     IDraxCrudProvider,
     IDraxCrudProviderExportResult,
+    IDraxCrudEvent,
     IDraxFieldFilter,
     IDraxPaginateResult,
     IDraxPaginateOptions,
@@ -45,6 +48,7 @@ export type {
     IDraxFindOneOptions,
     IDraxExportOptions,
     IDraxExportResult,
+    IDraxExportResponse,
     IDraxPermission,
 
     IEntityCrud,

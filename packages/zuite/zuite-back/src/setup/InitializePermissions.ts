@@ -10,6 +10,7 @@ import {
 import {MediaPermissions} from "@drax/media-back";
 import {DynamicFormPermissions} from "@drax/dynamic-back";
 import {DashboardPermissions} from "@drax/dashboard-back";
+import {AuditPermissions} from "@drax/audit-back";
 import {SettingPermissions} from "@drax/settings-back";
 import {PersonPermissions} from "../modules/people/permissions/PersonPermissions.js";
 import {CountryPermissions} from "../modules/people/permissions/CountryPermissions.js";
@@ -34,6 +35,7 @@ function InitializePermissions() {
         ...Object.values(LanguagePermissions),
         ...Object.values(DynamicFormPermissions),
         ...Object.values(DashboardPermissions),
+        ...Object.values(AuditPermissions),
     ]
 
     //Load All Permissions
