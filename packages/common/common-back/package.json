@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.38.0",
+  "version": "0.39.0",
   "description": "Common utils across modules",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -29,8 +29,8 @@
   },
   "peerDependencies": {
     "dayjs": "^1.11.19",
-    "mongoose-paginate-v2": "^1.8.3",
-    "fastify": "^5.2.1"
+    "fastify": "^5.2.1",
+    "mongoose-paginate-v2": "^1.8.3"
   },
   "devDependencies": {
     "@types/node": "^20.12.10",
