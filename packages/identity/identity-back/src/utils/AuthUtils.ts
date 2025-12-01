@@ -6,6 +6,7 @@ import crypto from "crypto";
 import type {IAuthUser} from "@drax/identity-share";
 import {TokenPayloadSchema} from "../schemas/TokenPayloadSchema.js";
 
+
 class AuthUtils{
 
     static verifyToken(token : string): IAuthUser {
@@ -74,7 +75,7 @@ class AuthUtils{
         return hmac.digest('hex');
     }
 
-    static switchTenant(accessToken: string, newTenantId: string): string {
+     static switchTenant(accessToken: string, newTenantId: string, tenantName: string): string {
         // Verificar que el token actual sea válido
         const tokenPayload = AuthUtils.verifyToken(accessToken) as IAuthUser & { exp?: number };
 
@@ -83,19 +84,16 @@ class AuthUtils{
         }
 
         tokenPayload.tenantId = newTenantId;
+        tokenPayload.tenantName = tenantName;
+
 
         const JWT_SECRET = DraxConfig.getOrLoad(IdentityConfig.JwtSecret);
         if (!JWT_SECRET) {
             throw new Error("JWT_SECRET ENV must be provided");
         }
 
-        const JWT_ISSUER = DraxConfig.getOrLoad(IdentityConfig.JwtIssuer) || 'DRAX';
-
         const options: SignOptions = {
-            jwtid: tokenPayload.id,
-            algorithm: 'HS256',
-            audience: tokenPayload.username,
-            issuer: JWT_ISSUER
+            algorithm: 'HS256'
         };
 
         return jsonwebtoken.sign(tokenPayload, JWT_SECRET, options);

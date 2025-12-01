@@ -9,7 +9,14 @@ import {SecuritySensitiveError} from "../errors/SecuritySensitiveError.js";
 import {UploadFileError} from "../errors/UploadFileError.js";
 import {LimitError} from "../errors/LimitError.js";
 import {InternalServerError} from "../errors/InternalServerError.js";
+import {IRbac} from "@drax/identity-share";
+import {FastifyRequest} from "fastify";
 
+declare module 'fastify' {
+    interface FastifyRequest {
+        rbac?: IRbac;
+    }
+}
 
 class CommonController{
 
@@ -35,6 +42,31 @@ class CommonController{
             reply.statusCode = serverError.statusCode
             reply.status(500).send(serverError.body);
         }
+    }
+
+    protected extractRequestData(request: FastifyRequest) {
+        return {
+            user:  {
+                id: request.rbac.userId,
+                username: request.rbac.username,
+                role:{
+                    id: request.rbac.roleId,
+                    name: request.rbac.roleName,
+                },
+                tenant: {
+                    id: request.rbac.tenantId,
+                    name: request.rbac.tenantName,
+                },
+                apiKey: {
+                    id: request.rbac.apiKeyId,
+                    name: request.rbac.apiKeyName,
+                },
+                session: request.rbac.session,
+            },
+            ip: request.ip,
+            userAgent: request.headers['user-agent'],
+            requestId: request.id,
+        };
     }
 }
 

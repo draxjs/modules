@@ -29,7 +29,8 @@
   },
   "peerDependencies": {
     "dayjs": "^1.11.19",
-    "mongoose-paginate-v2": "^1.8.3"
+    "mongoose-paginate-v2": "^1.8.3",
+    "fastify": "^5.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.10",

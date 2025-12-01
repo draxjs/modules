@@ -16,6 +16,26 @@ const store = useCrudStore();
       {{ formatDateTime(value) }}
     </template>
 
+    <template v-slot:item.user="{value}">
+     {{ value.username }} ({{value.rolName}})
+    </template>
+
+    <template v-slot:item.tenant="{value}">
+      {{ value?.name }}
+    </template>
+
+    <template v-slot:item.changes="{value}">
+      <div v-if="value && value.length > 0" class="changes-container">
+        <div v-for="(change, index) in value" :key="index" class="change-item">
+          <span class="field-name">{{ change.field }}:</span>
+          <span class="old-value">{{ change.old }}</span>
+          <span class="arrow">→</span>
+          <span class="new-value">{{ change.new }}</span>
+        </div>
+      </div>
+      <span v-else class="no-changes">Sin cambios</span>
+    </template>
+
     <template v-slot:form>
       <audit-view :audit="store.form"></audit-view>
     </template>
@@ -25,4 +45,3 @@ const store = useCrudStore();
 <style scoped>
 
 </style>
-

@@ -64,8 +64,8 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         return sessionUUID;
     }
 
-    async switchTenant(accessToken: string, tenantId: string) {
-        const newAccessToken = AuthUtils.switchTenant(accessToken, tenantId)
+    async switchTenant(accessToken: string, tenantId: string, tenantName: string) {
+        const newAccessToken = AuthUtils.switchTenant(accessToken, tenantId, tenantName)
         return {accessToken: newAccessToken}
     }
 
@@ -102,19 +102,20 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     }
 
 
-    async changeUserPassword(userId: string, newPassword: string) {
+    async changeUserPassword(userId: string, newPassword: string):Promise<IUser> {
         const user = await this._repository.findByIdWithPassword(userId)
         if (user) {
             newPassword = AuthUtils.hashPassword(newPassword)
             await this._repository.changePassword(userId, newPassword)
-            return true
+            delete user.password
+            return user
         } else {
             throw new ValidationError([{field: 'userId', reason: 'validation.notFound'}])
         }
     }
 
 
-    async changeOwnPassword(userId: string, currentPassword: string, newPassword: string) {
+    async changeOwnPassword(userId: string, currentPassword: string, newPassword: string): Promise<IUser> {
         const user = await this._repository.findByIdWithPassword(userId)
         if (user && user.active) {
 
@@ -125,7 +126,8 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             if (AuthUtils.checkPassword(currentPassword, user.password)) {
                 newPassword = AuthUtils.hashPassword(newPassword)
                 await this._repository.changePassword(userId, newPassword)
-                return true
+                delete user.password
+                return user
             } else {
                 throw new ValidationError([{field: 'currentPassword', reason: 'validation.notMatch'}])
             }
@@ -135,11 +137,11 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
     }
 
-    async changeAvatar(userId: string, avatar: string) {
+    async changeAvatar(userId: string, avatar: string):Promise<IUser> {
         const user = await this.findById(userId)
         if (user && user.active) {
             await this._repository.changeAvatar(userId, avatar)
-            return true
+            return user
         } else {
             throw new BadCredentialsError()
         }
@@ -161,16 +163,14 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
     }
 
-    async changeUserPasswordByCode(recoveryCode: string, newPassword: string): Promise<boolean> {
+    async changeUserPasswordByCode(recoveryCode: string, newPassword: string): Promise<IUser> {
         try {
-            console.log("changeUserPasswordByCode recoveryCode", recoveryCode)
             const user = await this._repository.findByRecoveryCode(recoveryCode)
-            console.log("changeUserPasswordByCode user", user)
             if (user && user.active) {
                 newPassword = AuthUtils.hashPassword(newPassword)
                 await this._repository.changePassword(user._id, newPassword)
                 await this._repository.updatePartial(user._id, {recoveryCode: null})
-                return true
+                return user
             } else {
                 throw new ValidationError([{field:'recoveryCode', reason: 'validation.notFound'}])
             }

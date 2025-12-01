@@ -49,7 +49,7 @@ class Rbac implements IRbac{
     }
 
     get roleId(): string  {
-        return this.authUser?.roleId.toString()
+        return this.authUser?.roleId?.toString()
     }
 
     get roleName(): string  {
@@ -61,7 +61,7 @@ class Rbac implements IRbac{
     }
 
     get tenantName(): string | undefined  {
-        return this.authUser?.tenantName;
+        return this.authUser?.tenantName  ?? undefined;
     }
 
     assertAuthenticated() {

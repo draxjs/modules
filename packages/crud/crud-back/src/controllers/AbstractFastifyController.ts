@@ -180,39 +180,18 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
-    protected extractRequestData(request: CustomRequest) {
-        return {
-            user:  {
-                id: request.rbac.userId,
-                username: request.rbac.username,
-                role:{
-                    id: request.rbac.roleId,
-                    name: request.rbac.roleName,
-                },
-                tenant: {
-                    id: request.rbac.tenantId,
-                    name: request.rbac.tenantName,
-                },
-                apiKey: {
-                    id: request.rbac.apiKeyId,
-                    name: request.rbac.apiKeyName,
-                }
-            },
-            ip: request.ip,
-            userAgent: request.headers['user-agent'],
-            sessionId: request.rbac.session,
-            requestId: request.id,
-        };
-    }
+
 
     async onCreated(request: CustomRequest, item:T){
         const requestData = this.extractRequestData(request)
+        const detail = `User ${requestData.user.username} created ${this.entityName}.`
         const eventData : IDraxCrudEvent = {
             action: 'created',
             entity: this.entityName,
             postItem: item,
             preItem: null,
             timestamp: new Date(),
+            detail: detail,
             ...requestData
         }
         this.eventEmitter.emitCrudEvent(eventData)
@@ -220,12 +199,14 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async onUpdated(request: CustomRequest, preItem: T, postItem:T){
         const requestData = this.extractRequestData(request)
+        const detail = `User ${requestData.user.username} updated ${this.entityName}.`
         const eventData : IDraxCrudEvent = {
             action: 'updated',
             entity: this.entityName,
             postItem: postItem,
             preItem: preItem,
             timestamp: new Date(),
+            detail: detail,
             ...requestData
         }
         this.eventEmitter.emitCrudEvent(eventData)
@@ -233,12 +214,14 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async onDeleted(request: CustomRequest, item: T) {
         const requestData = this.extractRequestData(request)
+        const detail = `User ${requestData.user.username} deleted ${this.entityName}.`
         const eventData : IDraxCrudEvent = {
             action: 'deleted',
             entity: this.entityName,
             postItem: null,
             preItem: item,
             timestamp: new Date(),
+            detail: detail,
             ...requestData
         }
         this.eventEmitter.emitCrudEvent(eventData)
@@ -246,12 +229,14 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async onExported(request: CustomRequest, response: IDraxExportResponse) {
         const requestData = this.extractRequestData(request)
+        const detail = `User ${requestData.user.username} exported ${this.entityName}.`
         const eventData : IDraxCrudEvent = {
             action: 'exported',
             entity: this.entityName,
             postItem: null,
             preItem: null,
             timestamp: new Date(),
+            detail: detail,
             ...requestData
         }
         this.eventEmitter.emitCrudEvent(eventData)
@@ -264,7 +249,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const payload = request.body
             this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.create(payload as C)
-            await this.onCreated(request, item)
+            this.onCreated(request, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -305,7 +290,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 throw new NotFoundError()
             }
 
-            await this.onUpdated(request, preItem, item)
+            this.onUpdated(request, preItem, item)
 
             return item
         } catch (e) {
@@ -343,7 +328,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             if (!item) {
                 throw new NotFoundError()
             }
-            await this.onUpdated(request, preItem, item)
+            this.onUpdated(request, preItem, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -378,7 +363,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             await this.service.delete(id)
 
-            await this.onDeleted(request, item)
+            this.onDeleted(request, item)
 
             reply.send({
                 id: id,
