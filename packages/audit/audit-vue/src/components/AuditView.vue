@@ -169,13 +169,13 @@ interface IAudit {
     id: string
     name: string
   }
-  createdAt?: Date
-  updatedAt?: Date
+  createdAt?: string
+  updatedAt?: string
 }
 
 const {t} = useI18n()
 
-const props = defineProps<{
+defineProps<{
   audit: IAudit
 }>()
 
