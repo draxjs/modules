@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-front",
-  "version": "0.39.0",
+  "version": "0.39.1",
   "private": true,
   "scripts": {
     "front": "vite",
@@ -12,7 +12,7 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@drax/audit-vue": "^0.39.0",
+    "@drax/audit-vue": "^0.39.1",
     "@drax/common-front": "^0.39.0",
     "@drax/common-vue": "^0.39.0",
     "@drax/crud-front": "^0.39.0",
