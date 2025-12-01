@@ -6,7 +6,6 @@ import DashboardCombobox from './combobox/DashboardCombobox.vue'
 import {useDashboardCard} from './composables/UseDashboardCard'
 import {useDashboardStore} from './stores/UseDashboardStore'
 import DashboardCrud from './cruds/DashboardCrud'
-import DashboardI18n from './i18n/Dashboard-i18n'
 
 
 export {
@@ -20,8 +19,6 @@ export {
     DashboardCombobox,
     //CRUD
     DashboardCrud,
-    //I18N
-    DashboardI18n,
     //STORES
     useDashboardStore,
     //COMPOSABLES

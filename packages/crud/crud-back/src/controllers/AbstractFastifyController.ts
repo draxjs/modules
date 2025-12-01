@@ -9,9 +9,16 @@ import {
 } from "@drax/common-back";
 import {IRbac} from "@drax/identity-share";
 import type {FastifyReply, FastifyRequest} from "fastify";
-import {IDraxExportResult, IDraxPermission, IDraxFieldFilter} from "@drax/crud-share";
+import {
+    IDraxExportResult,
+    IDraxPermission,
+    IDraxFieldFilter,
+    IDraxExportResponse,
+    IDraxCrudEvent
+} from "@drax/crud-share";
 import {join} from "path";
 import QueryFilterRegex from "../regexs/QueryFilterRegex.js";
+import CrudEventEmitter from "../events/CrudEventEmitter.js";
 
 declare module 'fastify' {
     interface FastifyRequest {
@@ -53,6 +60,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     protected baseFileDir = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
     protected baseURL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
 
+    protected entityName: string
+
     protected tenantField: string = 'tenant'
     protected userField: string = 'user'
 
@@ -78,12 +87,18 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     protected defaultLimit: number = 1000
     protected maximumLimit: number = 10000
 
-    constructor(service: AbstractService<T, C, U>, permission: IDraxPermission) {
+    protected eventEmitter: CrudEventEmitter
+
+    constructor(service: AbstractService<T, C, U>, permission: IDraxPermission, entityName?: string) {
         super();
         this.service = service
         this.permission = permission
+        this.entityName = entityName || this.constructor.name.replace('Fastify', '').replace('Controller', '')
+        this.eventEmitter = CrudEventEmitter.getInstance()
         console.log("AbstractFastifyController created. Permissions", this.permission)
     }
+
+
 
     protected parseFilters(stringFilters: string): IDraxFieldFilter[] {
         try {
@@ -165,6 +180,83 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
+    protected extractRequestData(request: CustomRequest) {
+        return {
+            user:  {
+                id: request.rbac.userId,
+                username: request.rbac.username,
+                role:{
+                    id: request.rbac.roleId,
+                    name: request.rbac.roleName,
+                },
+                tenant: {
+                    id: request.rbac.tenantId,
+                    name: request.rbac.tenantName,
+                },
+                apiKey: {
+                    id: request.rbac.apiKeyId,
+                    name: request.rbac.apiKeyName,
+                }
+            },
+            ip: request.ip,
+            userAgent: request.headers['user-agent'],
+            sessionId: request.rbac.session,
+            requestId: request.id,
+        };
+    }
+
+    async onCreated(request: CustomRequest, item:T){
+        const requestData = this.extractRequestData(request)
+        const eventData : IDraxCrudEvent = {
+            action: 'created',
+            entity: this.entityName,
+            postItem: item,
+            preItem: null,
+            timestamp: new Date(),
+            ...requestData
+        }
+        this.eventEmitter.emitCrudEvent(eventData)
+    }
+
+    async onUpdated(request: CustomRequest, preItem: T, postItem:T){
+        const requestData = this.extractRequestData(request)
+        const eventData : IDraxCrudEvent = {
+            action: 'updated',
+            entity: this.entityName,
+            postItem: postItem,
+            preItem: preItem,
+            timestamp: new Date(),
+            ...requestData
+        }
+        this.eventEmitter.emitCrudEvent(eventData)
+    }
+
+    async onDeleted(request: CustomRequest, item: T) {
+        const requestData = this.extractRequestData(request)
+        const eventData : IDraxCrudEvent = {
+            action: 'deleted',
+            entity: this.entityName,
+            postItem: null,
+            preItem: item,
+            timestamp: new Date(),
+            ...requestData
+        }
+        this.eventEmitter.emitCrudEvent(eventData)
+    }
+
+    async onExported(request: CustomRequest, response: IDraxExportResponse) {
+        const requestData = this.extractRequestData(request)
+        const eventData : IDraxCrudEvent = {
+            action: 'exported',
+            entity: this.entityName,
+            postItem: null,
+            preItem: null,
+            timestamp: new Date(),
+            ...requestData
+        }
+        this.eventEmitter.emitCrudEvent(eventData)
+    }
+
 
     async create(request: CustomRequest, reply: FastifyReply) {
         try {
@@ -172,11 +264,14 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const payload = request.body
             this.applyUserAndTenantSetters(payload, request.rbac)
             let item = await this.service.create(payload as C)
+            await this.onCreated(request, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
         }
     }
+
+
 
     async update(request: CustomRequest, reply: FastifyReply) {
         try {
@@ -188,9 +283,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const id = request.params.id
             const payload = request.body
 
-            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
+            let preItem = await this.service.findById(id)
 
-                let preItem = await this.service.findById(id)
+            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
 
                 if (!preItem) {
                     reply.statusCode = 404
@@ -210,6 +305,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 throw new NotFoundError()
             }
 
+            await this.onUpdated(request, preItem, item)
+
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -226,9 +323,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const id = request.params.id
             const payload = request.body
 
-            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
+            let preItem = await this.service.findById(id)
 
-                let preItem = await this.service.findById(id)
+            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
 
                 if (!preItem) {
                     reply.statusCode = 404
@@ -246,11 +343,14 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             if (!item) {
                 throw new NotFoundError()
             }
+            await this.onUpdated(request, preItem, item)
             return item
         } catch (e) {
             this.handleError(e, reply)
         }
     }
+
+
 
     async delete(request: CustomRequest, reply: FastifyReply) {
         try {
@@ -277,6 +377,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
 
             await this.service.delete(id)
+
+            await this.onDeleted(request, item)
+
             reply.send({
                 id: id,
                 message: 'Item deleted successfully',
@@ -465,6 +568,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     }
 
 
+
+
     async export(request: CustomRequest, reply: FastifyReply) {
         try {
             request.rbac.assertPermission(this.permission.View)
@@ -503,13 +608,16 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             const url = `${this.baseURL}/api/file/${exportPath}/${year}/${month}/${result.fileName}`
 
-
-            return {
+            const response : IDraxExportResponse = {
                 url: url,
                 rowCount: result.rowCount,
                 time: result.time,
                 fileName: result.fileName,
             }
+
+            await this.onExported(request, response)
+
+            return response
 
         } catch (e) {
             this.handleError(e, reply)

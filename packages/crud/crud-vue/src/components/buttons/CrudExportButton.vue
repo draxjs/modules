@@ -24,7 +24,6 @@ const {
               v-bind="{...mp, ...tp}"
               :disabled="exportLoading"
               class="mr-1"
-              color="teal"
               variant="text"
               :loading="exportLoading"
               icon="mdi-database-export-outline"

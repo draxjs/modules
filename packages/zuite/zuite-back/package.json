@@ -19,6 +19,7 @@
     "@drax/common-back": "^0.37.2",
     "@drax/crud-back": "^0.37.5",
     "@drax/crud-share": "^0.37.0",
+    "@drax/audit-back": "^0.37.5",
     "@drax/dashboard-back": "^0.37.5",
     "@drax/dynamic-back": "^0.37.5",
     "@drax/identity-back": "^0.37.5",

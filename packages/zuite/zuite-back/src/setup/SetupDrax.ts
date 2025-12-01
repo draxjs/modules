@@ -4,6 +4,7 @@ import InitializePermissions from "./InitializePermissions.js";
 import InitializeSettings from "./InitializeSettings.js";
 import CreateRootUserAndAdminRole from "./CreateRootUserAndAdminRole.js";
 import CreateSystemRoles from "./CreateSystemRoles.js";
+import InitializeAudit from "./InitializeAudit.js";
 
 
 async function SetupDrax(){
@@ -22,6 +23,9 @@ async function SetupDrax(){
 
     //Setup Permissions
     InitializePermissions()
+
+    //Setup Audit
+    InitializeAudit()
 
     //Setup Settings
     await InitializeSettings()

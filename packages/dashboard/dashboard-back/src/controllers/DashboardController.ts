@@ -2,7 +2,7 @@
 import DashboardServiceFactory from "../factory/services/DashboardServiceFactory.js";
 import {AbstractFastifyController} from "@drax/crud-back";
 import DashboardPermissions from "../permissions/DashboardPermissions.js";
-import type {IDashboard, IDashboardBase} from "../interfaces/IDashboard";
+import type {IDashboard, IDashboardBase} from "@drax/dashboard-share";
 
 class DashboardController extends AbstractFastifyController<IDashboard, IDashboardBase, IDashboardBase>   {
 

@@ -4,6 +4,7 @@ import {IdentityRoutes} from "@drax/identity-vue";
 import {SettingRoutes} from "@drax/settings-vue";
 import {DynamicFormCrudRoute} from "@drax/dynamic-vue";
 import {DashboardCrudRoute} from "@drax/dashboard-vue";
+import {AuditRoutes} from "@drax/audit-vue";
 
 const routes = [
   ...baseRoutes,
@@ -11,7 +12,8 @@ const routes = [
   ...SettingRoutes,
   ...peopleRoutes,
   ...DynamicFormCrudRoute,
-  ...DashboardCrudRoute
+  ...DashboardCrudRoute,
+  ...AuditRoutes
 ]
 
 export default routes

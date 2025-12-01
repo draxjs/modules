@@ -3,11 +3,12 @@ import jsonwebtoken, {SignOptions, VerifyOptions} from "jsonwebtoken";
 import {DraxConfig} from "@drax/common-back";
 import IdentityConfig from "../config/IdentityConfig.js";
 import crypto from "crypto";
-import type {IJwtUser} from "@drax/identity-share";
+import type {IAuthUser} from "@drax/identity-share";
+import {TokenPayloadSchema} from "../schemas/TokenPayloadSchema.js";
 
 class AuthUtils{
 
-    static verifyToken(token : string) {
+    static verifyToken(token : string): IAuthUser {
         const JWT_SECRET = DraxConfig.getOrLoad(IdentityConfig.JwtSecret)
         if(!JWT_SECRET){
             throw new Error("DraxConfig.JWT_SECRET must be provided")
@@ -15,7 +16,9 @@ class AuthUtils{
         const options : VerifyOptions = {
             algorithms: ['HS256'],
         }
-        return jsonwebtoken.verify(token, JWT_SECRET, options)
+        const tokenPayload =  jsonwebtoken.verify(token, JWT_SECRET, options)
+        TokenPayloadSchema.parse(tokenPayload)
+        return tokenPayload as IAuthUser;
     }
 
     static hashPassword(password : string) :string {
@@ -32,18 +35,10 @@ class AuthUtils{
         return bcryptjs.compareSync(password, hashPassword);
     }
 
-    static tokenSignPayload(userId : string, username: string, roleId: string, tenantId: string, session : string): IJwtUser {
-        return {
-            id: userId,
-            username: username,
-            roleId: roleId,
-            tenantId: tenantId,
-            session: session
-        };
-    }
 
-    static generateToken(userId : string, username: string, roleId: string,  tenantId: string, session : string) {
-        const payload = AuthUtils.tokenSignPayload(userId, username, roleId, tenantId, session)
+    static generateToken(payload: IAuthUser) {
+
+        TokenPayloadSchema.parse(payload)
 
         const JWT_SECRET = DraxConfig.getOrLoad(IdentityConfig.JwtSecret)
         if(!JWT_SECRET){
@@ -55,9 +50,9 @@ class AuthUtils{
 
         const options : SignOptions = {
             expiresIn: JWT_EXPIRATION,
-            jwtid: userId,
+            jwtid: payload.id,
             algorithm: 'HS256',
-            audience: username,
+            audience: payload.username,
             issuer: JWT_ISSUER
         }
 
@@ -81,21 +76,13 @@ class AuthUtils{
 
     static switchTenant(accessToken: string, newTenantId: string): string {
         // Verificar que el token actual sea válido
-        const decodedToken = AuthUtils.verifyToken(accessToken) as IJwtUser & { exp?: number };
+        const tokenPayload = AuthUtils.verifyToken(accessToken) as IAuthUser & { exp?: number };
 
-        if (!decodedToken) {
+        if (!tokenPayload) {
             throw new Error("Invalid access token");
         }
 
-        // Crear el nuevo payload manteniendo todos los datos excepto tenantId
-        const newPayload: IJwtUser = {
-            id: decodedToken.id,
-            username: decodedToken.username,
-            roleId: decodedToken.roleId,
-            tenantId: newTenantId,
-            session: decodedToken.session,
-            exp: decodedToken.exp
-        };
+        tokenPayload.tenantId = newTenantId;
 
         const JWT_SECRET = DraxConfig.getOrLoad(IdentityConfig.JwtSecret);
         if (!JWT_SECRET) {
@@ -105,14 +92,13 @@ class AuthUtils{
         const JWT_ISSUER = DraxConfig.getOrLoad(IdentityConfig.JwtIssuer) || 'DRAX';
 
         const options: SignOptions = {
-            jwtid: decodedToken.id,
+            jwtid: tokenPayload.id,
             algorithm: 'HS256',
-            audience: decodedToken.username,
+            audience: tokenPayload.username,
             issuer: JWT_ISSUER
         };
 
-
-        return jsonwebtoken.sign(newPayload, JWT_SECRET, options);
+        return jsonwebtoken.sign(tokenPayload, JWT_SECRET, options);
     }
 }
 

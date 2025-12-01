@@ -5,7 +5,14 @@ interface IRbac {
     readonly getRole: IRole;
     readonly getAuthUser: IAuthUser;
     readonly userId: string;
+    readonly username: string;
     readonly tenantId: string | undefined;
+    readonly tenantName: string | undefined;
+    readonly roleId: string | undefined;
+    readonly roleName: string | undefined;
+    readonly apiKeyId: string | undefined;
+    readonly apiKeyName: string | undefined;
+    readonly session: string | undefined;
 
     hasPermission(requiredPermission: string): boolean;
     hasSomePermission(requiredPermission: string[]): boolean;

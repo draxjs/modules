@@ -1,7 +1,7 @@
 
 import type {IHttpClient} from '@drax/common-front'
 import type {IAuthProvider} from "../../interfaces/IAuthProvider";
-import type {IAuthUser} from "../../interfaces/IAuthUser";
+import type {IAuthFullUser} from "../../interfaces/IAuthFullUser";
 import type {ILoginResponse} from "../../interfaces/ILoginResponse";
 import type {IUserRegistration} from "../../interfaces/IUserRegistration";
 
@@ -42,9 +42,9 @@ class AuthRestProvider implements IAuthProvider {
         this.removeHttpClientToken()
     }
 
-    async me(): Promise<IAuthUser> {
+    async me(): Promise<IAuthFullUser> {
             const url = '/api/auth/me'
-            let r = await this.httpClient.get(url) as IAuthUser
+            let r = await this.httpClient.get(url) as IAuthFullUser
             return r
     }
 

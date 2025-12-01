@@ -1,0 +1,43 @@
+{
+  "name": "@drax/audit-back",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.37.5",
+  "description": "Audit backend",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prepublish": "tsc && npm run copygql",
+    "tscrun": "tsc",
+    "clean": "rm -rf dist",
+    "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
+    "tsc": "tsc -b tsconfig.json",
+    "test": "node --import tsx --test test/**/*",
+    "testService": "node --import tsx --test test/services/*.ts",
+    "testExports": "node --import tsx --test test/exports/*.ts",
+    "testWorkers": "node --import tsx --test test/workers/*.ts"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "dependencies": {
+    "@drax/crud-back": "^0.37.5",
+    "@drax/crud-share": "^0.37.0",
+    "mongoose": "^8.6.3",
+    "mongoose-paginate-v2": "^1.8.3"
+  },
+  "peerDependencies": {
+    "dayjs": "^1.11.19",
+    "mongoose-paginate-v2": "^1.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.10",
+    "copyfiles": "^2.4.1",
+    "mongoose-paginate-v2": "^1.8.3",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.6.2"
+  },
+  "gitHead": "d8e9ad20ff3a5bd9e9d4383ef0926b79eac335d8"
+}

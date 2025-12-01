@@ -4,6 +4,7 @@ import AbstractSqliteRepository from "./repository/AbstractSqliteRepository.js";
 import AbstractService from "./services/AbstractService.js";
 import AbstractFastifyController from "./controllers/AbstractFastifyController.js";
 import type {CustomRequest} from "./controllers/AbstractFastifyController.js";
+import {CrudEventEmitter} from "./events/CrudEventEmitter.js";
 
 //schemas
 import {IdParamSchema} from "./schemas/IdParamSchema.js"
@@ -28,6 +29,9 @@ export {
     AbstractSqliteRepository,
     AbstractService,
     AbstractFastifyController,
+
+    //EVENTs
+    CrudEventEmitter,
 
 
     //Schemas

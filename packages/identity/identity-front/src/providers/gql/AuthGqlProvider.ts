@@ -1,6 +1,6 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {IAuthProvider} from "../../interfaces/IAuthProvider.ts";
-import type {IAuthUser} from "../../interfaces/IAuthUser";
+import type {IAuthFullUser} from "../../interfaces/IAuthFullUser";
 import type {ILoginResponse} from "../../interfaces/ILoginResponse";
 import type {IUserRegistration} from "../../interfaces/IUserRegistration";
 
@@ -43,7 +43,7 @@ class AuthGqlProvider implements IAuthProvider {
         return {accessToken}
     }
 
-    async me(): Promise<IAuthUser> {
+    async me(): Promise<IAuthFullUser> {
         const query: string = `query me { me {id, username, email, phone, role {id, name, permissions}, avatar} }`
         let data = await this.gqlClient.query(query)
         return data.me

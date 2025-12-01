@@ -31,15 +31,15 @@ const messages = {
             menu: 'Dashboard',
             crud: 'Gestionar Dashboard',
             field: {
-                identifier: 'identifier',
-                title: 'title',
-                cards: 'cards',
-                entity: 'entity',
-                type: 'type',
-                filters: 'filters',
-                layout: 'layout',
-                groupBy: 'groupBy',
-                paginate: 'paginate'
+                identifier: 'Identificador',
+                title: 'Titulo',
+                cards: 'Tarjeta',
+                entity: 'Entidad',
+                type: 'Tipo',
+                filters: 'Filtros',
+                layout: 'Layout',
+                groupBy: 'Agrupar por',
+                paginate: 'Paginar'
             }
         },
         permission: {

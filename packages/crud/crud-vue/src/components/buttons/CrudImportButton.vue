@@ -22,7 +22,6 @@ const {
               v-bind="props"
               :disabled="exportLoading"
               class="mr-1"
-              color="purple"
               variant="text"
               :loading="exportLoading"
               icon="mdi-database-import-outline"
