@@ -11,6 +11,7 @@ function InitializeAudit() {
 
         RegisterCrudEvent(data)
             .then((Audit    ) => console.log('Audit Event registered successfully', Audit))
+            .catch(e => console.error(e))
     })
 
     //Load All Permissions
