@@ -61,7 +61,7 @@ class Rbac implements IRbac{
     }
 
     get tenantName(): string | undefined  {
-        return this.authUser?.tenantName;
+        return this.authUser?.tenantName  ?? undefined;
     }
 
     assertAuthenticated() {

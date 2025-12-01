@@ -42,16 +42,16 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
     get headers(): IEntityCrudHeader[] {
         return [
             {title: 'createdAt',key:'createdAt', align: 'start'},
-            {title: 'entity',key:'entity', align: 'start'},
-            {title: 'user',key:'user', align: 'start'},
             {title: 'action',key:'action', align: 'start'},
+            {title: 'entity',key:'entity', align: 'start'},
+            {title: 'tenant',key:'tenant', align: 'start'},
+            {title: 'user',key:'user', align: 'start'},
             {title: 'ip',key:'ip', align: 'start'},
             {title: 'userAgent',key:'userAgent', align: 'start'},
             {title: 'changes',key:'changes', align: 'start'},
             {title: 'sessionId',key:'sessionId', align: 'start'},
             {title: 'requestId',key:'requestId', align: 'start'},
-            {title: 'detail',key:'detail', align: 'start'},
-            {title: 'tenant',key:'tenant', align: 'start'}
+            {title: 'detail',key:'detail', align: 'start'}
         ]
     }
 
@@ -99,6 +99,7 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
 
     get fields(): IEntityCrudField[] {
         return [
+            {name: 'action', type: 'string', label: 'action', default: ''},
             {name: 'entity', type: 'string', label: 'entity', default: ''},
             {
                 name: 'user',
@@ -109,7 +110,6 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
                     {name: 'username', type: 'string', label: 'username', default: ''},
                     {name: 'rolName', type: 'string', label: 'rolName', default: ''}]
             },
-            {name: 'action', type: 'string', label: 'action', default: ''},
             {name: 'ip', type: 'string', label: 'ip', default: ''},
             {name: 'userAgent', type: 'string', label: 'userAgent', default: ''},
             {
@@ -138,7 +138,23 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
     get filters(): IEntityCrudFilter[] {
         return [
             //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
+            {name: 'action', type: 'string', label: 'action', default: '', operator: 'eq'},
+            {name: 'entity', type: 'string', label: 'entity', default: '', operator: 'eq'},
+            {name: 'tenant.name', type: 'string', label: 'tenant', default: '', operator: 'eq'},
+            {
+                name: 'user.username',
+                type: 'string',
+                label: 'Username',
+                default: '',
+                operator:'eq'
+            },
+            {name: 'ip', type: 'string', label: 'ip', default: '', operator: 'eq'},
+            {name: 'userAgent', type: 'string', label: 'userAgent', default: '', operator: 'eq'},
         ]
+    }
+
+    get searchEnable() {
+        return false
     }
 
     get isViewable() {

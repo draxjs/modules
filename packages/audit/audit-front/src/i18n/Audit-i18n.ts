@@ -16,13 +16,16 @@ const messages = {
                 userAgent: 'userAgent',
                 changes: 'changes',
                 field: 'field',
-                old: 'old',
-                new: 'new',
+                old: 'old value',
+                new: 'new value',
                 sessionId: 'sessionId',
                 requestId: 'requestId',
                 detail: 'detail',
                 tenant: 'tenant',
-                name: 'name'
+                apiKey: 'apiKey',
+                name: 'name',
+                createdAt: 'Created at',
+                resourceId: 'Resource ID',
             }
         },
         permission: {
@@ -49,13 +52,16 @@ const messages = {
                 userAgent: 'UserAgent',
                 changes: 'Cambios',
                 field: 'Campo',
-                old: 'Viejo',
-                new: 'Nuevo',
+                old: 'Antiguo valor',
+                new: 'Nuevo valor',
                 sessionId: 'ID de Sesión',
                 requestId: 'ID de Petición',
                 detail: 'Detalle',
                 tenant: 'Tenant',
-                name: 'Nombre'
+                apiKey: 'ApiKey',
+                name: 'Nombre',
+                createdAt: 'Creado en',
+                resourceId: 'ID de Recurso',
             }
         },
         permission: {

@@ -5,7 +5,7 @@ import {
     ValidationError,
     StoreManager,
     DraxConfig,
-    CommonConfig
+    CommonConfig, BadRequestError
 } from "@drax/common-back";
 import {UnauthorizedError} from "@drax/common-back";
 import BadCredentialsError from "../../errors/BadCredentialsError.js";
@@ -13,6 +13,7 @@ import {join} from "path";
 import IdentityConfig from "../../config/IdentityConfig.js";
 import {IDraxPaginateOptions} from "@drax/crud-share";
 import UserPermissions from "../../permissions/UserPermissions.js";
+import TenantServiceFactory from "../../factory/TenantServiceFactory.js";
 
 export default {
     Query: {
@@ -88,8 +89,14 @@ export default {
                 rbac.assertPermission(UserPermissions.SwitchTenant)
                 if (authUser && token) {
                     const tenantId = input.tenantId
+                    const tenant = await TenantServiceFactory().findById(tenantId);
+
+                    if(!tenant){
+                        throw new BadRequestError('Invalid tenantId')
+                    }
+                    const tenantName = tenant?.name;
                     const userService = UserServiceFactory()
-                    let {accessToken} = await userService.switchTenant(token, tenantId)
+                    let {accessToken} = await userService.switchTenant(token, tenantId, tenantName)
                     return {accessToken}
                 } else {
                     throw new UnauthorizedError()

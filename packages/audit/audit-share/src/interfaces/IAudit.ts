@@ -1,5 +1,6 @@
 interface IAuditBase {
     entity: string
+    resourceId?: string
     user: {
         id: string
         username: string
@@ -20,6 +21,10 @@ interface IAuditBase {
         id: string
         name: string
     }
+    apiKey?: {
+        id: string
+        name: string
+    }
     createdAt?: Date
     updatedAt?: Date
 }
@@ -27,6 +32,7 @@ interface IAuditBase {
 interface IAudit {
     _id: string
     entity: string
+    resourceId?: string
     user: {
         id: string
         username: string
@@ -44,6 +50,10 @@ interface IAudit {
     requestId?: string
     detail?: string
     tenant?: {
+        id: string
+        name: string
+    }
+    apiKey?: {
         id: string
         name: string
     }

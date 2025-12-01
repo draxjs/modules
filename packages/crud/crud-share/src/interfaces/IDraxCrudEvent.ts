@@ -1,5 +1,6 @@
 interface IDraxCrudEvent<T = any> {
     entity: string;
+    resourceId?: string;
     action: 'created' | 'updated' | 'deleted' | 'exported' | string;
     preItem?: T;
     postItem?: T;
@@ -24,6 +25,7 @@ interface IDraxCrudEvent<T = any> {
     userAgent?: string;
     requestId?: string;
     timestamp: Date;
+    detail?: string;
 }
 
 
