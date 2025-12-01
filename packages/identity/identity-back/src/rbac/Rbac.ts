@@ -41,7 +41,7 @@ class Rbac implements IRbac{
     }
 
     get apiKeyId(): string  {
-        return this.authUser?.apiKeyId.toString()
+        return this.authUser?.apiKeyId?.toString()
     }
 
     get apiKeyName(): string  {
@@ -49,7 +49,7 @@ class Rbac implements IRbac{
     }
 
     get roleId(): string  {
-        return this.authUser?.roleId.toString()
+        return this.authUser?.roleId?.toString()
     }
 
     get roleName(): string  {
