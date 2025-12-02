@@ -105,6 +105,7 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
                 name: 'user',
                 type: 'object',
                 label: 'user',
+                refDisplay:'username',
                 default: {"id": "''", "username": "''", "rolName": "''"},
                 objectFields: [{name: 'id', type: 'string', label: 'id', default: ''},
                     {name: 'username', type: 'string', label: 'username', default: ''},

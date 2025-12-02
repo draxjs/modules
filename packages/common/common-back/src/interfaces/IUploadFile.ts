@@ -2,7 +2,8 @@ import {Readable} from "stream";
 
 interface IUploadFile{
     filename: string
-    fileStream: Readable
+    fileStream?: Readable
+    file?: Readable
     mimetype: string
     encoding?: string
     size?: number

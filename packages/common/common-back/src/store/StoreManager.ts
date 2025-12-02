@@ -23,9 +23,11 @@ class StoreManager {
         }
 
         //Verify if file.fileStream is a Readable stream
-        if (!(file.fileStream instanceof Readable)) {
+        if (!(file.fileStream instanceof Readable) && !(file.file instanceof Readable)) {
             throw new UploadFileError('Invalid fileStream');
         }
+
+        const fileStream = file.fileStream || file.file;
 
         //Validate file extension and mimetype
         const extension = this.getExtension(file.filename)
@@ -49,7 +51,7 @@ class StoreManager {
         const maxSizeEnv = DraxConfig.getOrLoad('DRAX_MAX_UPLOAD_SIZE') ? parseInt(DraxConfig.get('DRAX_MAX_UPLOAD_SIZE')) : 1;
         const maxSize = options?.maxSize || maxSizeEnv;
 
-        const {bytesWritten} = await StreamFileStore(file.fileStream, maxSize, destinationFile)
+        const {bytesWritten} = await StreamFileStore(fileStream, maxSize, destinationFile)
 
         const fileUploadResult: IUploadFileResult = {
             filename: filename,

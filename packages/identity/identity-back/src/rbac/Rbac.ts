@@ -29,39 +29,39 @@ class Rbac implements IRbac{
     }
 
     get username(): string{
-        return this.authUser.username
+        return this?.authUser?.username
     }
 
     get userId(): string  {
-        return this.authUser?.id.toString()
+        return this?.authUser?.id.toString()
     }
 
     get session(): string  {
-        return this.authUser?.session
+        return this?.authUser?.session
     }
 
     get apiKeyId(): string  {
-        return this.authUser?.apiKeyId?.toString()
+        return this?.authUser?.apiKeyId?.toString()
     }
 
     get apiKeyName(): string  {
-        return this.authUser?.apiKeyName
+        return this?.authUser?.apiKeyName
     }
 
     get roleId(): string  {
-        return this.authUser?.roleId?.toString()
+        return this?.authUser?.roleId?.toString()
     }
 
     get roleName(): string  {
-        return this.authUser?.roleName
+        return this?.authUser?.roleName
     }
 
     get tenantId(): string | undefined  {
-        return this.authUser?.tenantId?.toString();
+        return this?.authUser?.tenantId?.toString();
     }
 
     get tenantName(): string | undefined  {
-        return this.authUser?.tenantName  ?? undefined;
+        return this?.authUser?.tenantName  ?? undefined;
     }
 
     assertAuthenticated() {

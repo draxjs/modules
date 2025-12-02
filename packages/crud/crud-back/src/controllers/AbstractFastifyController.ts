@@ -180,6 +180,31 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
+    protected extractRequestData(request: FastifyRequest) {
+        return {
+            user:  {
+                id: request?.rbac?.userId,
+                username: request?.rbac?.username,
+                role:{
+                    id: request?.rbac?.roleId,
+                    name: request?.rbac?.roleName,
+                },
+                tenant: {
+                    id: request?.rbac?.tenantId,
+                    name: request?.rbac?.tenantName,
+                },
+                apiKey: {
+                    id: request?.rbac?.apiKeyId,
+                    name: request?.rbac?.apiKeyName,
+                },
+                session: request?.rbac?.session,
+            },
+            ip: request.ip,
+            userAgent: request.headers['user-agent'],
+            requestId: request.id,
+        };
+    }
+
 
 
     async onCreated(request: CustomRequest, item:T){

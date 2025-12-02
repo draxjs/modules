@@ -5,6 +5,7 @@ const messages = {
             entity: 'Audit',
             menu: 'Audit',
             crud: 'Manage Audit',
+            dashboard: 'Audit Dashboard',
             field: {
                 entity: 'entity',
                 user: 'user',
@@ -41,6 +42,7 @@ const messages = {
             entity: 'Audit',
             menu: 'Audit',
             crud: 'Gestionar Audit',
+            dashboard: 'Audit Dashboard',
             field: {
                 entity: 'Entidad',
                 user: 'Usuario',

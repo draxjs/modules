@@ -1,11 +1,14 @@
+import {IEntityCrud} from "@drax/crud-share";
+
 interface IDashboardCard{
     entity: string
+    entityInstance?: IEntityCrud,
     type: 'paginate' | 'groupBy'
     title: string
     filters?: Array<{
         field: string
         operator: string
-        value: string
+        value: any
     }>
     layout?: {
         cols: number

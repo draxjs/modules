@@ -49,7 +49,7 @@ const cardData = computed(() => {
 
       let formattedValue = ''
 
-      if (field.type === 'ref' && field.refDisplay && value) {
+      if (['ref','object'].includes(field.type) && field.refDisplay && value) {
         formattedValue = value[field.refDisplay]
       } else if (field.type === 'date' && value) {
         formattedValue = formatDateByUnit(value, dateFormat)

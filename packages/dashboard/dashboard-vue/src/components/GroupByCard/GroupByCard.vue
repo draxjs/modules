@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {PropType} from "vue";
+import {type PropType, watch} from "vue";
 import type {IDashboardCard} from "@drax/dashboard-share";
 import {useDashboardCard} from "../../composables/UseDashboardCard";
 import GroupByTableRender from "./renders/GroupByTableRender.vue";
@@ -17,9 +17,19 @@ const {fetchGroupByData, groupByHeaders, cardEntityFields} = useDashboardCard(ca
 
 const data = ref<any[]>()
 
-onMounted(async ()=> {
+const loadData = async () => {
   data.value = await fetchGroupByData()
+}
+
+onMounted(async ()=> {
+  await loadData()
 })
+
+watch(() => card, async () => {
+  await loadData()
+}, { deep: true })
+
+
 
 </script>
 

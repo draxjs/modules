@@ -10,18 +10,32 @@ interface IChange{
 
 async function RegisterCrudEvent(crudEventData: IDraxCrudEvent){
 
-    function diff(preItem: any, postItem: any): IChange[] {
+    function diff(preItem: any = {}, postItem: any = {}): IChange[] {
         const changes: IChange[] = [];
 
-        // Si no hay preItem (creación), no hay cambios que registrar
+        const ignoredFields = ['_id', 'createdAt', 'updatedAt', 'createdBy','$__','$isNew', '$errors'];
+
+        // Si no hay preItem (creación), registrar todos los campos como nuevos
         if (!preItem) {
+            preItem = {}
+            if (postItem) {
+                Object.keys(postItem).forEach(key => {
+                    // Ignorar campos internos de MongoDB y timestamps
+                    if (!key.startsWith('_') && !ignoredFields.includes(key)) {
+                        changes.push({
+                            field: key,
+                            old: undefined,
+                            new: postItem[key]
+                        });
+                    }
+                });
+            }
             return changes;
         }
 
-        const ignoredFields = ['_id', 'createdAt', 'updatedAt', 'createdBy','$__','$isNew'];
-
         // Si no hay postItem (eliminación), registrar todos los campos como eliminados
         if (!postItem) {
+            postItem = {}
             Object.keys(preItem).forEach(key => {
                 // Ignorar campos internos de MongoDB y timestamps
                 if (!key.startsWith('_') && !ignoredFields.includes(key)) {
@@ -55,7 +69,7 @@ async function RegisterCrudEvent(crudEventData: IDraxCrudEvent){
                 if (oldValue.length !== newValue.length) {
                     return false;
                 }
-                return oldValue.every((item, index) => 
+                return oldValue.every((item, index) =>
                     areValuesEqual(item, newValue[index])
                 );
             }

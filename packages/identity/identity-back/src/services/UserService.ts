@@ -40,7 +40,8 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             }
 
             const accessToken = AuthUtils.generateToken(tokenPayload)
-            return {accessToken: accessToken}
+            delete user.password
+            return {accessToken: accessToken, user: user, session: sessionUUID}
         } else {
             const userLoginFailService = UserLoginFailServiceFactory()
             await userLoginFailService.create({

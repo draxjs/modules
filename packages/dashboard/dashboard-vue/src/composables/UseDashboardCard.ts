@@ -12,7 +12,14 @@ export function useDashboardCard(card: IDashboardCard) {
     const {t, te} = useI18n()
 
     const cardEntity = computed<IEntityCrud>(() => {
-        return store.getEntities.find((entity: IEntityCrud) => entity.name === card.entity)
+        if(card.entityInstance){
+            return card.entityInstance
+        }
+        const entityInstance =  store.getEntities.find((entity: IEntityCrud) => entity.name === card.entity)
+        if(!entityInstance){
+            throw new Error(`Entity "${card.entity}" not found in entities DashboardStore`)
+        }
+        return entityInstance
     })
 
     const cardEntityFields = computed<IEntityCrudField[]>(() => {
