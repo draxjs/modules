@@ -9,36 +9,6 @@ const auditDashboard: IDashboardBase = {
             entity: 'Audit',
             type: "groupBy",
             entityInstance: AuditCrud.instance,
-            title: "Entity Action",
-            filters: [],
-            layout:{
-                cols: 12, sm: 12, md: 6, lg: 6, cardVariant: "outlined", height: 400
-            },
-            groupBy: {
-                fields: ["entity", "action"],
-                dateFormat: "day",
-                render: "table"
-            }
-        },
-        {
-            entity: 'Audit',
-            type: "groupBy",
-            entityInstance: AuditCrud.instance,
-            title: "User Action",
-            filters: [],
-            layout:{
-                cols: 12, sm: 12, md: 6, lg: 6, cardVariant: "outlined", height: 400
-            },
-            groupBy: {
-                fields: ["user", "action"],
-                dateFormat: "day",
-                render: "table"
-            }
-        },
-        {
-            entity: 'Audit',
-            type: "groupBy",
-            entityInstance: AuditCrud.instance,
             title: "User Entity Action",
             filters: [],
             layout:{
@@ -49,7 +19,53 @@ const auditDashboard: IDashboardBase = {
                 dateFormat: "day",
                 render: "table"
             }
-        }
+        },
+        {
+            entity: 'Audit',
+            type: "groupBy",
+            entityInstance: AuditCrud.instance,
+            title: "User Audits",
+            filters: [],
+            layout:{
+                cols: 12, sm: 12, md: 4, lg: 4, cardVariant: "outlined", height: 400
+            },
+            groupBy: {
+                fields: ["user"],
+                dateFormat: "day",
+                render: "pie"
+            }
+        },
+        {
+            entity: 'Audit',
+            type: "groupBy",
+            entityInstance: AuditCrud.instance,
+            title: "Entity Audits",
+            filters: [],
+            layout:{
+                cols: 12, sm: 12, md: 4, lg: 4, cardVariant: "outlined", height: 400
+            },
+            groupBy: {
+                fields: ["entity"],
+                dateFormat: "day",
+                render: "pie"
+            }
+        },
+        {
+            entity: 'Audit',
+            type: "groupBy",
+            entityInstance: AuditCrud.instance,
+            title: "Action Audits",
+            filters: [],
+            layout:{
+                cols: 12, sm: 12, md: 4, lg: 4, cardVariant: "outlined", height: 400
+            },
+            groupBy: {
+                fields: ["action"],
+                dateFormat: "day",
+                render: "pie"
+            }
+        },
+
     ]
 }
 
