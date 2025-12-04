@@ -20,7 +20,7 @@
 
     <div class="mb-1 audit-row">
       <strong class="audit-label">{{ t('audit.field.entity') }}:</strong>
-      <span>{{ audit.entity }}</span>
+      <span>{{ te(audit?.entity?.toLowerCase() + '.entity') ? t(audit?.entity.toLowerCase() + '.entity') : audit?.entity }}</span>
     </div>
 
     <div class="mb-1 audit-row">

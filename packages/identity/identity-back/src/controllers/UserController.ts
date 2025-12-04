@@ -38,24 +38,6 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
     }
 
     async onUserLoggedIn(request: CustomRequest, user: IUser, session: string) {
-        const requestData = this.extractRequestData(request)
-        requestData.user = {
-            id: user._id.toString(),
-            username: user.username,
-            role:{
-                id: user?.role?._id.toString(),
-                name: user?.role?.name,
-            },
-            tenant: {
-                id: user?.tenant?._id.toString(),
-                name: user?.tenant?.name,
-            },
-            apiKey: {
-                id: null,
-                name: null,
-            },
-            session: session,
-        }
         const eventData: IDraxCrudEvent = {
             action: 'loggedIn',
             entity: this.entityName,
@@ -64,7 +46,26 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             preItem: null,
             detail: `User ${user.username} logged in.`,
             timestamp: new Date(),
-            ...requestData
+            ip: request.ip,
+            userAgent: request.headers['user-agent'],
+            requestId: request.id,
+            user: {
+                id: user._id.toString(),
+                username: user.username,
+                role:{
+                    id: user?.role?._id.toString(),
+                    name: user?.role?.name,
+                },
+                tenant: {
+                    id: user?.tenant?._id.toString(),
+                    name: user?.tenant?.name,
+                },
+                apiKey: {
+                    id: null,
+                    name: null,
+                },
+                session: session,
+            }
         }
         this.eventEmitter.emitCrudEvent(eventData)
     }

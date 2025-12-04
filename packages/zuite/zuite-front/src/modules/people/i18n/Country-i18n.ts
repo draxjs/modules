@@ -22,7 +22,7 @@ const messages = {
   },
   es: {
     country: {
-      entity: 'Country',
+      entity: 'País',
       menu: 'Country',
       crud: 'Gestionar Country',
       field:{

@@ -30,6 +30,10 @@ const store = useCrudStore();
       {{ te('audit.action.'+value) ? t('audit.action.'+value) : value }}
     </template>
 
+    <template v-slot:item.entity="{value}">
+      {{ te(value?.toLowerCase() + '.entity') ? t(value.toLowerCase() + '.entity') : value }}
+    </template>
+
     <template v-slot:item.changes="{value}">
       <div v-if="value && value.length > 0" class="changes-container">
         <div v-for="(change, index) in value" :key="index" class="change-item">
