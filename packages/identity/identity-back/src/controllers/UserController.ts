@@ -37,6 +37,38 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
         this.entityName = 'User'
     }
 
+    async onUserLoggedIn(request: CustomRequest, user: IUser, session: string) {
+        const requestData = this.extractRequestData(request)
+        requestData.user = {
+            id: user._id.toString(),
+            username: user.username,
+            role:{
+                id: user?.role?._id.toString(),
+                name: user?.role?.name,
+            },
+            tenant: {
+                id: user?.tenant?._id.toString(),
+                name: user?.tenant?.name,
+            },
+            apiKey: {
+                id: null,
+                name: null,
+            },
+            session: session,
+        }
+        const eventData: IDraxCrudEvent = {
+            action: 'loggedIn',
+            entity: this.entityName,
+            resourceId: user._id.toString(),
+            postItem: null,
+            preItem: null,
+            detail: `User ${user.username} logged in.`,
+            timestamp: new Date(),
+            ...requestData
+        }
+        this.eventEmitter.emitCrudEvent(eventData)
+    }
+
     async auth(request, reply) {
         try {
             const username = request.body.username
@@ -44,8 +76,9 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userAgent = request.headers['user-agent'];
             const ip = request.ip;
             const userService = UserServiceFactory()
-
-            return await userService.auth(username, password,{userAgent, ip})
+            const {user, accessToken, session} = await userService.auth(username, password, {userAgent, ip})
+            this.onUserLoggedIn(request, user, session)
+            return {accessToken}
         } catch (e) {
             console.error('/api/auth error', e)
             if (e instanceof BadCredentialsError) {
@@ -66,10 +99,10 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 delete user.password
 
                 //handle SwitchTenant setted in accessToken
-                if(request.authUser.tenantId != user?.tenant?._id){
+                if (request.authUser.tenantId != user?.tenant?._id) {
                     const tenantService = TenantServiceFactory()
                     const tenant = await tenantService.findById(request.authUser.tenantId)
-                    if(tenant){
+                    if (tenant) {
                         user.tenant = tenant
                     }
                 }
@@ -81,13 +114,13 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
             }
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
     async onUserEvent(request: CustomRequest, action: string, resourceId: string = null, detail: string = null) {
         const requestData = this.extractRequestData(request)
-        const eventData : IDraxCrudEvent = {
+        const eventData: IDraxCrudEvent = {
             action: action,
             entity: this.entityName,
             resourceId: resourceId.toString(),
@@ -107,13 +140,13 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
             if (request.authUser && request.token) {
                 const tenantId = request.body.tenantId
-                if(!tenantId){
+                if (!tenantId) {
                     throw new BadRequestError('Missing tenantId')
                 }
 
                 const tenant = await TenantServiceFactory().findById(tenantId);
 
-                if(!tenant){
+                if (!tenant) {
                     throw new BadRequestError('Invalid tenantId')
                 }
 
@@ -121,15 +154,16 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 const userService = UserServiceFactory()
                 let {accessToken} = await userService.switchTenant(request.token, tenantId, tenantName)
 
-                const detail = `Switched to tenant "${tenantName}" (ID: ${tenantId})`;
-                this.onUserEvent(request,'switchTenant',request.rbac.userId, detail)
+                const username = request.rbac.username
+                const detail = `User ${username} switched to tenant "${tenantName}" (ID: ${tenantId})`;
+                this.onUserEvent(request, 'switchTenant', request.rbac.userId, detail)
 
                 return {accessToken}
             } else {
                 throw new UnauthorizedError()
             }
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -153,7 +187,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             }
             return paginateResult
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -169,7 +203,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             let item = await this.service.search(search, 1000, filters)
             return item
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -202,9 +236,9 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             let user = await userService.register(payload)
 
-            if(user){
+            if (user) {
                 const detail = `User ${user?.username} registered successfully.`;
-                this.onUserEvent(request,'register',user?._id, detail)
+                this.onUserEvent(request, 'register', user?._id, detail)
 
                 //SEND EMAIL FOR EMAIL VERIFICATION
                 await UserEmailService.emailVerifyCode(user.emailCode, user.email)
@@ -217,7 +251,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
 
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -226,12 +260,12 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const emailCode = request.params.code
             const userService = UserServiceFactory()
             const r = await userService.verifyEmail(emailCode)
-            if(r){
+            if (r) {
                 const html = RegistrationCompleteHtml
                 reply.header('Content-Type', 'text/html; charset=utf-8').send(html)
             }
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -241,7 +275,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             return await userService.verifyPhone(phoneCode)
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -261,7 +295,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             this.onCreated(request, user)
             return user
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -281,7 +315,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             this.onUpdated(request, preUser, user)
             return user
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -309,7 +343,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 })
             }
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -321,7 +355,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
             const email = request.body.email
 
-            if(!email || !emailRegex.test(email)){
+            if (!email || !emailRegex.test(email)) {
                 throw new ValidationError([{field: 'email', reason: 'validation.email.invalid'}])
             }
 
@@ -336,16 +370,16 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             }
 
             const detail = `User ${user?.username} request a password recovery .`;
-            this.onUserEvent(request,'passwordRecoveryRequest',user?._id, detail)
+            this.onUserEvent(request, 'passwordRecoveryRequest', user?._id, detail)
 
             reply.send({message})
 
         } catch (e) {
             console.error("ERROR RECOVERY", e)
-            if(e instanceof SecuritySensitiveError){
+            if (e instanceof SecuritySensitiveError) {
                 reply.send({message})
-            }else{
-                this.handleError(e,reply)
+            } else {
+                this.handleError(e, reply)
             }
         }
     }
@@ -356,27 +390,27 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const recoveryCode = request.body.recoveryCode
             const newPassword = request.body.newPassword
 
-            if(!recoveryCode){
-                throw new ValidationError([{field:'recoveryCode', reason: 'validation.required'}])
+            if (!recoveryCode) {
+                throw new ValidationError([{field: 'recoveryCode', reason: 'validation.required'}])
             }
 
-            if(!newPassword){
-                throw new ValidationError([{field:'newPassword', reason: 'validation.required'}])
+            if (!newPassword) {
+                throw new ValidationError([{field: 'newPassword', reason: 'validation.required'}])
             }
 
             const userService = UserServiceFactory()
             const user: IUser = await userService.changeUserPasswordByCode(recoveryCode, newPassword)
-            if(user){
+            if (user) {
                 const detail = `User ${user?.username} complete a password recovery .`;
-                this.onUserEvent(request,'passwordRecoveryCompleted',user?._id, detail)
+                this.onUserEvent(request, 'passwordRecoveryCompleted', user?._id, detail)
                 reply.send({message: 'action.success'})
-            }else{
+            } else {
                 reply.statusCode = 400
                 reply.send({message: 'action.failure'})
             }
 
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -392,10 +426,10 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             const user = await userService.changeOwnPassword(userId, currentPassword, newPassword)
             const detail = `User ${user?.username} changed his password.`;
-            this.onUserEvent(request,'changeMyPassword',user?._id, detail)
+            this.onUserEvent(request, 'changeMyPassword', user?._id, detail)
             return {message: 'Password updated successfully'}
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -410,10 +444,10 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const userService = UserServiceFactory()
             const user = await userService.changeUserPassword(userId, newPassword)
             const detail = `User ${request.rbac.username} changed password for user ${user.username}.`;
-            this.onUserEvent(request,'changePassword',user?._id, detail)
+            this.onUserEvent(request, 'changePassword', user?._id, detail)
             return {message: 'Password updated successfully'}
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
     }
 
@@ -440,7 +474,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const user = await userService.changeAvatar(userId, urlFile)
 
             const detail = `User ${request.rbac.username} changed avatar.`
-            this.onUserEvent(request,'changeAvatar',user?._id, detail)
+            this.onUserEvent(request, 'changeAvatar', user?._id, detail)
 
             return {
                 filename: storedFile.filename,
@@ -449,7 +483,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 url: urlFile,
             }
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
 
     }
@@ -462,7 +496,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             //console.log("FILE_DIR: ",fileDir, " FILENAME:", filename)
             return reply.sendFile(filename, fileDir)
         } catch (e) {
-            this.handleError(e,reply)
+            this.handleError(e, reply)
         }
 
     }

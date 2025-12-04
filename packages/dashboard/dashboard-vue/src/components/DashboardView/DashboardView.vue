@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import type {IDashboard} from "@drax/dashboard-share";
+import type {IDashboardBase} from "@drax/dashboard-share";
 import GroupByCard from "../GroupByCard/GroupByCard.vue";
 import PaginateCard from "../PaginateCard/PaginateCard.vue";
 
 const {dashboard} = defineProps({
-  dashboard: {type: Object as PropType<IDashboard>, required: true},
+  dashboard: {type: Object as PropType<IDashboardBase>, required: true},
 })
 
 </script>
@@ -13,7 +13,6 @@ const {dashboard} = defineProps({
 <template>
   <v-card v-if="dashboard" class="mt-3" >
     <v-card-title>{{dashboard.title}}</v-card-title>
-    <v-card-subtitle>{{dashboard.identifier}}</v-card-subtitle>
     <v-card-text>
       <v-row>
         <v-col v-for="(card,i) in dashboard.cards" :key="i"

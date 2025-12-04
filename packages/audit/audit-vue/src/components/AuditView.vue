@@ -3,9 +3,19 @@
   <!-- BLOQUE DE ATRIBUTOS EN COLUMNA -->
   <div class="text-body-2 mt-3">
 
+    <div
+        v-if="audit.createdAt"
+        class="mb-1 audit-row"
+    >
+      <strong class="audit-label">{{ t('audit.field.createdAt') }}:</strong>
+      <span>{{ formatDateTime(audit.createdAt) }}</span>
+    </div>
+
     <div class="mb-1 audit-row">
-      <strong class="audit-label">{{ t('audit.field.action') }}:</strong>
-      <span>{{ audit.action }}</span>
+      <strong class="audit-label">{{ t('audit.field.user') }}:</strong>
+      <span>{{ audit.user.username }}</span> <span v-if="audit.user.rolName"><{{ audit.user.rolName }}></span> <span>(ID {{
+        audit.user.id
+      }})</span>
     </div>
 
     <div class="mb-1 audit-row">
@@ -14,17 +24,20 @@
     </div>
 
     <div class="mb-1 audit-row">
+      <strong class="audit-label">{{ t('audit.field.action') }}:</strong>
+      <span>
+
+          {{ te('audit.action.'+audit.action) ? t('audit.action.'+audit.action) : audit.action }}
+      </span>
+    </div>
+
+    <div class="mb-1 audit-row">
       <strong class="audit-label">{{ t('audit.field.resourceId') }}:</strong>
       <span>{{ audit.resourceId }}</span>
     </div>
 
 
-    <div class="mb-1 audit-row">
-      <strong class="audit-label">{{ t('audit.field.user') }}:</strong>
-      <span>{{ audit.user.username }}</span> <span v-if="audit.user.rolName"><{{ audit.user.rolName }}></span> <span>(ID {{
-        audit.user.id
-      }})</span>
-    </div>
+
 
     <div
         v-if="audit.apiKey?.id"
@@ -70,13 +83,7 @@
       <span>{{ audit.requestId }}</span>
     </div>
 
-    <div
-        v-if="audit.createdAt"
-        class="mb-1 audit-row"
-    >
-      <strong class="audit-label">{{ t('audit.field.createdAt') }}:</strong>
-      <span>{{ formatDateTime(audit.createdAt) }}</span>
-    </div>
+
 
 
   </div>
@@ -173,7 +180,7 @@ interface IAudit {
   updatedAt?: string
 }
 
-const {t} = useI18n()
+const {t, te} = useI18n()
 
 defineProps<{
   audit: IAudit

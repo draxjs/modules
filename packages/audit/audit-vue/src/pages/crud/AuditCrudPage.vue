@@ -4,7 +4,9 @@ import AuditCrud from '../../cruds/AuditCrud'
 import {Crud, useCrudStore} from "@drax/crud-vue";
 import {formatDateTime} from "@drax/common-front"
 import AuditView from "../../components/AuditView.vue";
+import {useI18n} from "vue-i18n";
 
+const {t, te} = useI18n();
 const store = useCrudStore();
 
 </script>
@@ -17,11 +19,15 @@ const store = useCrudStore();
     </template>
 
     <template v-slot:item.user="{value}">
-     {{ value.username }} ({{value.rolName}})
+      {{ value.username }} ({{value.rolName}})
     </template>
 
     <template v-slot:item.tenant="{value}">
       {{ value?.name }}
+    </template>
+
+    <template v-slot:item.action="{value}">
+      {{ te('audit.action.'+value) ? t('audit.action.'+value) : value }}
     </template>
 
     <template v-slot:item.changes="{value}">

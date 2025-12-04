@@ -1,8 +1,9 @@
 import merge from 'deepmerge'
 import AuditI18n from "./Audit-i18n.js";
+import AuditActionsI18n from "./AuditActions-i18n.js";
 
 const AuditI18nMessages = merge.all([
-    AuditI18n,
+    AuditI18n,AuditActionsI18n
 ])
 
 export default AuditI18nMessages

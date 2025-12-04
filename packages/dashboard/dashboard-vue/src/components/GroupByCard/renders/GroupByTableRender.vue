@@ -45,7 +45,7 @@ const getPercentage = (count: number) => {
           :key="field.name"
           v-slot:[`item.${field.name}`]="{ value }"
       >
-        <template v-if="field.type === 'ref' && field.refDisplay">
+        <template v-if="['ref','object'].includes(field.type) && field.refDisplay">
           {{value[field.refDisplay]}}
         </template>
         <template v-else-if="field.type === 'date'">
