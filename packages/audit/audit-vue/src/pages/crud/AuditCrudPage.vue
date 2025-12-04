@@ -4,7 +4,6 @@ import AuditCrud from '../../cruds/AuditCrud'
 import {Crud, useCrudStore} from "@drax/crud-vue";
 import {formatDateTime} from "@drax/common-front"
 import AuditView from "../../components/AuditView.vue";
-import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 const {t, te} = useI18n();
