@@ -14,6 +14,8 @@ const settingSchema = z.object({
     suffix: z.string().optional().nullable(),
     permission: z.string().optional().nullable(),
     public: z.boolean().optional().nullable(),
+    updatedAt: z.string().optional().nullable(),
+    updatedBy: z.string().optional().nullable()
 })
 
 

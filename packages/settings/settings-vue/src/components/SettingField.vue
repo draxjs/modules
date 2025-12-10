@@ -7,16 +7,13 @@ import {type PropType, ref, computed} from "vue";
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
 
-const {setting, editing} = defineProps({
+const {setting, editing, variant} = defineProps({
   setting: {type: Object as PropType<ISetting>, required: true},
-  editing: {type: Boolean as PropType<boolean>, default: false}
+  editing: {type: Boolean as PropType<boolean>, default: false},
+  variant: {type: String as PropType<'filled' | 'outlined' | 'underlined'>, default: 'filled'},
 })
 
 const visible = ref(false)
-
-const variant = computed(() => {
-  return editing ? 'filled' : 'underlined'
-})
 
 const validateRegex = computed(() => {
   return [(val: any) => {
@@ -93,7 +90,7 @@ const validateNumberList = computed(() => {
 
 
   <!--password-->
-  <v-text-field v-if=" setting.type === 'password'"
+  <v-text-field v-if=" setting.type === 'password' || setting.type === 'secret'"
                 :name="setting.key"
                 v-model="valueModel"
                 :label="setting.label"

@@ -4,6 +4,18 @@ const messages = {
             entity: 'Setting',
             menu: 'Setting',
             crud: 'Manage Setting',
+            descriptionof: 'Description of',
+            updated: {
+                successfully: 'Setting updated successfully'
+            },
+            search: 'Searching settings...',
+            configurationValue: {
+                title: 'Configuration Value',
+                subtitle: 'Configuration Value Settings'
+            },
+            page: {
+                title: 'Settings Configuration'
+            },
             field: {
                 key:'Key',
                 label: 'Label',
@@ -18,8 +30,11 @@ const messages = {
                 suffix: 'Suffix',
                 permission: 'Permission',
                 public: 'Public',
+                publicinfo: 'Public (This variable is visible to clients)',
                 scope: 'Scope',
-                description: 'Description'
+                description: 'Description',
+                visibility: 'Visibility',
+                updated: 'Updated'
             }
         }
     },
@@ -28,6 +43,18 @@ const messages = {
             entity: 'Ajuste',
             menu: 'Ajustes',
             crud: 'Gestionar Ajustes',
+            descriptionof: 'Descripción de',
+            updated: {
+                successfully: 'Configuración actualizada correctamente'
+            },
+            search: 'Buscando variables...',
+            configurationValue: {
+                title: 'Variable de Configuración',
+                subtitle: 'Parametros de variable de configuración'
+            },
+            page: {
+                title: 'Configuración de variables'
+            },
             field: {
                 key:'Clave',
                 label: 'Etiqueta',
@@ -42,8 +69,11 @@ const messages = {
                 suffix: 'Sufijo',
                 permission: 'Permiso',
                 public: 'Público',
+                publicinfo: 'Publico (Se mantiene visible a todos los clientes)',
                 scope: 'Ambito',
-                description: 'Descripción'
+                description: 'Descripción',
+                visibility: 'Visibilidad',
+                updated: 'Ultima actualización'
             }
         }
     }

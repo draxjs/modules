@@ -3,6 +3,7 @@ import type {  ThemeDefinition } from 'vuetify'
 const DarkTheme: ThemeDefinition = {
   dark: true,
   colors: {
+    menuIcon: '#ffffff',
     enable: '#152264',
     // primary: '#6200EE',
     // secondary: '#03DAC6',

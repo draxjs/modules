@@ -91,7 +91,8 @@ class SettingController {
             request.rbac.assertPermission(SettingPermissions.Update)
             const id = request.params.id
             let {value} = request.body
-            const setting = await this.service.updateValue(id, value)
+            const updatedBy = `by ${request.authUser.username}`
+            const setting = await this.service.updateValue(id, value, updatedBy)
             return setting
         } catch (e) {
             console.error(e)
