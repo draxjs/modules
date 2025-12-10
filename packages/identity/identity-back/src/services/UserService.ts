@@ -19,7 +19,6 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     constructor(userRepository: IUserRepository) {
         super(userRepository, UserBaseSchema);
         this._repository = userRepository;
-        console.log("UserService constructor")
     }
 
     async auth(username: string, password: string, {userAgent, ip}) {

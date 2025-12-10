@@ -33,6 +33,10 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return PersonCrud.singleton
   }
 
+  get containerFluid(){
+    return true
+  }
+
   get permissions(): IEntityCrudPermissions {
     return {
       manage: 'person:manage',
@@ -105,7 +109,17 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   get fields(): IEntityCrudField[] {
     return [
       {name: 'fullname', type: 'string', label: 'fullname', default: ''},
-      {name: 'live', type: 'boolean', label: 'live', default: false, groupTab: 'BASIC'},
+      // {name: 'live', type: 'boolean', label: 'live', default: false, groupTab: 'BASIC'},
+      {
+        name: 'live',
+        type: 'select',
+        label: 'live',
+        default: null,
+        items: [
+          {title: 'Vivo', value: true, color:'blue'},
+          {title: 'Muerto', value: false, color:'red'},
+        ],
+      },
       {name: 'birthdate', type: 'date', label: 'birthdate', default: null, groupTab: 'BASIC'},
       {name: 'secret', type: 'password', label: 'secret', default: '', groupTab: 'BASIC'},
       {
@@ -119,13 +133,26 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         noFilter: true
       },
       {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
-      {name: 'race',
-        type: 'enum',
+      // {
+      //   name: 'race',
+      //   type: 'enum',
+      //   label: 'race',
+      //   default: null,
+      //   groupTab: 'BASIC',
+      //   enum: ['human', 'elf', 'orc'],
+      //   noFilter: false,
+      // },
+      {
+        name: 'race',
+        type: 'select',
         label: 'race',
         default: null,
         groupTab: 'BASIC',
-        enum: ['human', 'elf', 'orc'],
-        noFilter: false,
+        items: [
+          {title: 'human', value: 'human', color:'blue'},
+          {title: 'elf', value: 'elf', color:'green'},
+          {title: 'orc', value: 'orc', color:'red'}
+        ],
       },
       {
         name: 'interests',
@@ -186,6 +213,28 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         refDisplay: 'name',
         noFilter: true,
         operator: "in"
+      },
+      {
+        name: 'race',
+        type: 'select',
+        label: 'race',
+        default: null,
+        groupTab: 'BASIC',
+        items: [
+          {title: 'human', value: 'human', color:'blue', icon: 'mdi-human'},
+          {title: 'elf', value: 'elf', color:'green', icon: 'mdi-arrow-projectile'},
+          {title: 'orc', value: 'orc', color:'red', icon: 'mdi-torch'}
+        ],
+      },
+      {
+        name: 'live',
+        type: 'select',
+        label: 'live',
+        default: null,
+        items: [
+          {title: 'Vivo', value: true, color:'green'},
+          {title: 'Muerto', value: false, color:'red'},
+        ],
       },
     ]
   }

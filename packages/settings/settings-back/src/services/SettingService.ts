@@ -14,7 +14,6 @@ class SettingService extends AbstractService<ISetting, ISettingBase, ISettingBas
     constructor(repostitory: ISettingRepository) {
         super(repostitory, settingSchema)
         this._repository = repostitory
-        console.log("SettingService constructor")
     }
 
 

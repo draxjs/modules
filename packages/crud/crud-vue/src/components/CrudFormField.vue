@@ -170,6 +170,47 @@ defineEmits(['updateValue'])
     >
     </v-combobox>
 
+    <v-select
+        v-if="field.type === 'select'"
+        :name="name"
+        :label="label"
+        :hint="field.hint"
+        :persistent-hint="field.persistentHint"
+        v-model="valueModel"
+        :items="field.items"
+        item-title="title"
+        item-value="value"
+        :readonly="readonly"
+        :error-messages="inputErrors"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :rules="rules"
+        @update:modelValue="$emit('updateValue')"
+        :prepend-icon="prependIcon"
+        :append-icon="appendIcon"
+        :prepend-inner-icon="prependInnerIcon"
+        :append-inner-icon="appendInnerIcon"
+
+    >
+      <template v-slot:item="{ props: itemProps, item }">
+        <v-list-item
+            v-bind="itemProps"
+            density="compact"
+            :title="item.raw.title"
+            :color="item.raw.color"
+            :base-color="item.raw.color"
+            :prepend-icon="item.raw.icon"
+        />
+      </template>
+
+      <template v-slot:selection="{item}">
+        <v-chip tile density="compact" :color="item.raw.color" :prepend-icon="item.raw.icon">{{ item.raw.title }}</v-chip>
+      </template>
+    </v-select>
+
 
     <v-select
         v-if="field.type === 'enum' && field.noFilter"

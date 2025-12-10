@@ -8,7 +8,9 @@ import CrudFilters from "./components/CrudFilters.vue";
 import CrudNotify from "./components/CrudNotify.vue";
 import CrudSearch from "./components/CrudSearch.vue";
 import CrudAutocomplete from "./components/CrudAutocomplete.vue";
+import EntityCombobox from "./components/combobox/EntityCombobox.vue";
 import {useCrudStore} from "./stores/UseCrudStore";
+import {useEntityStore} from "./stores/UseEntityStore";
 import {useCrud} from "./composables/UseCrud";
 import {useFormUtils} from "./composables/UseFormUtils";
 import {useInputErrorI18n} from "./composables/UseInputErrorI18n";
@@ -30,6 +32,8 @@ export {
     useFormUtils,
     useCrudStore,
     useInputErrorI18n,
-    EntityCrud
+    EntityCrud,
+    useEntityStore,
+    EntityCombobox
 
 }

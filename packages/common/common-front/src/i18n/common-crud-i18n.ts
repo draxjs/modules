@@ -1,6 +1,7 @@
 const messages = {
   en: {
     crud: {
+      entity: 'Entity',
       endOfDayFilter: 'End of Day Filter',
       activeFilters: 'Active Filters',
       columns: {
@@ -30,6 +31,7 @@ const messages = {
   },
   es: {
     crud: {
+      entity: 'Entidad',
       endOfDayFilter: 'End of Day Filter',
       activeFilters: 'Filtros activos',
       columns: {

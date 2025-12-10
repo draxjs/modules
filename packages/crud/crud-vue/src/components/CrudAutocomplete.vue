@@ -123,7 +123,28 @@ defineEmits(['updateValue'])
       :append-icon="appendIcon"
       :prepend-inner-icon="prependInnerIcon"
       :append-inner-icon="appendInnerIcon"
-  ></v-select>
+  >
+    <template v-slot:item="{ props: itemProps, item }">
+      <v-list-item
+          v-bind="itemProps"
+          density="compact"
+          :title="item.raw[itemTitle]"
+          :color="item.raw?.color"
+          :base-color="item.raw?.color"
+          :prepend-icon="item.raw?.icon"
+      />
+    </template>
+
+    <template v-slot:selection="{item}">
+      <v-chip tile density="compact"
+              :color="item.raw?.color"
+              :prepend-icon="item.raw?.icon"
+      >
+        {{ item.raw[itemTitle] }}
+      </v-chip>
+    </template>
+
+  </v-select>
 
 
   <v-autocomplete
@@ -154,7 +175,28 @@ defineEmits(['updateValue'])
       :append-icon="appendIcon"
       :prepend-inner-icon="prependInnerIcon"
       :append-inner-icon="appendInnerIcon"
-  ></v-autocomplete>
+  >
+    <template v-slot:item="{ props: itemProps, item }">
+      <v-list-item
+          v-bind="itemProps"
+          density="compact"
+          :title="item.raw[itemTitle]"
+          :color="item.raw?.color"
+          :base-color="item.raw?.color"
+          :prepend-icon="item.raw?.icon"
+      />
+    </template>
+
+    <template v-slot:selection="{item}">
+      <v-chip tile density="compact"
+              :color="item.raw?.color"
+              :prepend-icon="item.raw?.icon"
+      >
+        {{ item.raw[itemTitle] }}
+      </v-chip>
+    </template>
+
+  </v-autocomplete>
 
 
 </template>
