@@ -1,6 +1,6 @@
 import {ref} from "vue";
 import type {UserSystem} from "@drax/identity-front";
-import  {UserSystemFactory} from "@drax/identity-front";
+import {UserSystemFactory} from "@drax/identity-front";
 import type {IClientInputError} from "@drax/common-front";
 import {ClientError} from "@drax/common-front";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
@@ -15,32 +15,38 @@ export function useUser() {
     let inputErrors = ref<IClientInputError>()
     let loading = ref(false);
 
-    async function paginateUser({page= 1, limit= 5, orderBy="", order = "asc", search = ""}:IDraxPaginateOptions) {
-        loading.value = true
-        let paginatedUser = userSystem.paginate({page, limit, orderBy, order, search})
-        loading.value = false
-        return paginatedUser
+    async function paginateUser({page = 1, limit = 5, orderBy = "", order = "asc", search = ""}: IDraxPaginateOptions) {
+        try {
+            loading.value = true
+            let paginatedUser = await userSystem.paginate({page, limit, orderBy, order, search})
+            return paginatedUser
+        } catch (e) {
+            console.error(e)
+        } finally {
+            loading.value = false
+        }
     }
 
     async function createUser(userData: IUserCreate) {
         try {
             loading.value = true
-            let user: IUser =  await userSystem.create(userData)
+            let user: IUser = await userSystem.create(userData)
             return user
         } catch (err) {
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
-            }if(err instanceof Error) {
+            }
+            if (err instanceof Error) {
                 userError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
 
     }
 
-    async function changeUserPassword(id: string, newPassword: string){
+    async function changeUserPassword(id: string, newPassword: string) {
         try {
             loading.value = true
             return await userSystem.changeUserPassword(id, newPassword)
@@ -48,11 +54,11 @@ export function useUser() {
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 userError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
     }
@@ -66,11 +72,11 @@ export function useUser() {
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 userError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
     }
@@ -80,15 +86,15 @@ export function useUser() {
             loading.value = true
             await userSystem.delete(id)
         } catch (err) {
-            console.log("composable delete error: ", err, )
+            console.log("composable delete error: ", err,)
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 userError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
     }

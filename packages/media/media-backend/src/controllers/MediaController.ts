@@ -71,7 +71,7 @@ class MediaController extends CommonController {
             const month = request.params.month
             const filename = request.params.filename
 
-            console.log("dir: ", dir, " year: ", year, " month: ", month, " filename: ", filename)
+            //console.log("dir: ", dir, " year: ", year, " month: ", month, " filename: ", filename)
 
             if (this.validateDir(dir) == false) {
                 reply.statusCode = 400
@@ -92,7 +92,7 @@ class MediaController extends CommonController {
             }
 
             const fileDir = join(BASE_FILE_DIR, dir, year, month)
-            console.log("FILE_DIR: ", fileDir, " FILENAME:", filename)
+            //console.log("FILE_DIR: ", fileDir, " FILENAME:", filename)
             return reply.sendFile(filename, fileDir)
         } catch (e) {
             this.handleError(e, reply)

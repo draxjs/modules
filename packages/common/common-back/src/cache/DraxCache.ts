@@ -1,55 +1,51 @@
+import { ICacheAdapter } from '../interfaces/ICacheAdapter.js';
+import LocalCacheAdapter from './LocalCacheAdapter.js';
+import RedisCacheAdapter from './RedisCacheAdapter.js';
+
 class DraxCache<T> {
-    private data: Map<string, T>;
-    private timers: Map<string, NodeJS.Timeout>;
+    private adapter: ICacheAdapter<T>;
+    private redisAdapter?: RedisCacheAdapter<T>;
     private ttl: number;
 
     constructor(ttl: number = 10000) {
-        this.data = new Map<string, T>();
-        this.timers = new Map<string, NodeJS.Timeout>();
         this.ttl = ttl;
-    }
+        const redisUrl = process.env.DRAX_CACHE_REDIS_URL;
 
-    set(k: string, v: T, ttl?: number): void {
-        if (this.timers.has(k)) {
-            clearTimeout(this.timers.get(k) as NodeJS.Timeout);
+        if (redisUrl) {
+            this.redisAdapter = new RedisCacheAdapter<T>(redisUrl, ttl);
+            this.adapter = this.redisAdapter;
+        } else {
+            this.adapter = new LocalCacheAdapter<T>(ttl);
         }
-        const effectiveTTL = ttl ?? this.ttl;
-        const timer = setTimeout(() => this.delete(k), effectiveTTL);
-        this.timers.set(k, timer);
-        this.data.set(k, v);
     }
 
-    get(k: string): T | undefined {
-        return this.data.get(k);
+    async set(k: string, v: T, ttl?: number): Promise<void> {
+        return this.adapter.set(k, v, ttl);
     }
 
-    has(k: string): boolean {
-        return this.data.has(k);
+    async get(k: string): Promise<T | undefined> {
+        return this.adapter.get(k);
     }
 
-    delete(k: string): boolean {
-        if (this.timers.has(k)) {
-            clearTimeout(this.timers.get(k) as NodeJS.Timeout);
-        }
-        this.timers.delete(k);
-        return this.data.delete(k);
+    async has(k: string): Promise<boolean> {
+        return this.adapter.has(k);
     }
 
-    clear(): void {
-        this.data.clear();
-        for (const timer of this.timers.values()) {
-            clearTimeout(timer);
-        }
-        this.timers.clear();
+    async delete(k: string): Promise<boolean> {
+        return this.adapter.delete(k);
+    }
+
+    async clear(): Promise<void> {
+        return this.adapter.clear();
     }
 
     async getOrLoad(k: string, loader: (key: string) => Promise<T>, ttl?: number): Promise<T | undefined> {
-        if (!this.data.has(k)) {
+        if (!(await this.has(k))) {
             try {
                 const effectiveTTL = ttl ?? this.ttl;
                 const value = await loader(k);
                 if (value !== undefined) {
-                    this.set(k, value, effectiveTTL);
+                    await this.set(k, value, effectiveTTL);
                 }
                 return value;
             } catch (error) {
@@ -57,8 +53,27 @@ class DraxCache<T> {
                 throw error;
             }
         }
-        return this.data.get(k);
+        return this.get(k);
+    }
+
+    isUsingRedis(): boolean {
+        return this.redisAdapter?.isUsingRedis() ?? false;
+    }
+
+    isUsingFallback(): boolean {
+        return this.redisAdapter?.isUsingFallback() ?? false;
+    }
+
+    getCacheStatus(): string {
+        if (!this.redisAdapter) {
+            return 'LOCAL_CACHE';
+        }
+        if (this.redisAdapter.isUsingRedis()) {
+            return 'REDIS_CONNECTED';
+        }
+        return 'REDIS_FALLBACK_TO_LOCAL';
     }
 }
 
 export default DraxCache;
+export { DraxCache };

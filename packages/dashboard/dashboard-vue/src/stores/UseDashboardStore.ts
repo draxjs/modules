@@ -1,24 +1,24 @@
 import {defineStore} from "pinia";
-import type { IEntityCrud} from "@drax/crud-share";
+import type { IDashboardBase} from "@drax/dashboard-share";
 
 export const useDashboardStore = defineStore('DashboardStore', {
     state: () => (
         {
-            entities: [] as IEntityCrud[],
+            dashboards: [] as IDashboardBase[],
 
         }
     ),
     getters: {
-        getEntities(state: any) {
-                return state.entities
+        getDashboards(state: any) {
+                return state.dashboards
         }
     },
     actions: {
-        setEntities(entities: IEntityCrud) {
-            this.entities = entities
+        setDashboards(dashboards: IDashboardBase[]) {
+            this.dashboards = dashboards
         },
-        addEntity(entity: IEntityCrud) {
-            this.entities.push(entity)
+        addEntity(dashboard: IDashboardBase) {
+            this.dashboards.push(dashboard)
         }
     }
 

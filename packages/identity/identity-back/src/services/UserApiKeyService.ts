@@ -16,7 +16,6 @@ class UserApiKeyService extends AbstractService<IUserApiKey, IUserApiKeyBase, IU
     constructor(userApiKeyRepostitory: IUserApiKeyRepository) {
         super(userApiKeyRepostitory,UserApiKeyBaseSchema)
         this._repository = userApiKeyRepostitory
-        console.log("UserApiKeyService constructor")
     }
 
     async create(userApiKeyData: IUserApiKeyBase): Promise<IUserApiKey> {

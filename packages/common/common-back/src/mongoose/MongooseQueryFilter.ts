@@ -76,7 +76,7 @@ class MongooseQueryFilter{
                     throw new Error(`Unsupported operator ${filter.operator}`)
             }
         }
-        console.log("applyFilters Query", query)
+
         return query
     }
 

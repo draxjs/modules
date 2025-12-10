@@ -3,8 +3,10 @@
 import AuditCrud from '../../cruds/AuditCrud'
 import {Crud, useCrudStore} from "@drax/crud-vue";
 import {formatDateTime} from "@drax/common-front"
+import {EntityCombobox} from "@drax/crud-vue"
 import AuditView from "../../components/AuditView.vue";
 import {useI18n} from "vue-i18n";
+import CrudFormField from "@drax/crud-vue/src/components/CrudFormField.vue";
 
 const {t, te} = useI18n();
 const store = useCrudStore();
@@ -13,6 +15,18 @@ const store = useCrudStore();
 
 <template>
   <crud :entity="AuditCrud.instance">
+
+    <template v-slot:filter.entity="{filterIndex}">
+     <entity-combobox
+         v-model="store.filters[filterIndex].value"
+         :clearable="true"
+         density="compact"
+         variant="outlined"
+         hide-details
+         disable-rules
+         prepend-inner-icon="mdi-equal"
+     />
+    </template>
 
     <template v-slot:item.createdAt="{value}">
       {{ formatDateTime(value) }}

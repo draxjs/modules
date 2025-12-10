@@ -13,7 +13,6 @@ class RoleService extends AbstractService<IRole, IRoleBase, IRoleBase> {
     constructor(roleRepostitory: IRoleRepository) {
         super(roleRepostitory, RoleBaseSchema)
         this._repository = roleRepostitory
-        console.log("RoleService constructor")
     }
 
     async create(roleData: IRoleBase): Promise<IRole> {

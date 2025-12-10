@@ -17,23 +17,33 @@ export function useRole() {
 
     async function fetchPermissions(page = 1, perPage = 5) {
         loading.value = true
-        let permissions = roleSystem.fetchPermissions()
+        let permissions = await roleSystem.fetchPermissions()
         loading.value = false
         return permissions
     }
 
     async function fetchRole(page = 1, perPage = 5) {
-        loading.value = true
-        let roles = roleSystem.fetchRole()
-        loading.value = false
-        return roles
+        try {
+            loading.value = true
+            let roles = await roleSystem.fetchRole()
+            return roles
+        } catch (e) {
+            console.error(e)
+        } finally {
+            loading.value = false
+        }
     }
 
     async function paginateRole({page = 1, limit = 5, orderBy = "", order = "asc", search = ""}: IDraxPaginateOptions) {
-        loading.value = true
-        let paginatedrole = roleSystem.paginate({page, limit, orderBy, order, search})
-        loading.value = false
-        return paginatedrole
+        try {
+            loading.value = true
+            let paginatedrole = await roleSystem.paginate({page, limit, orderBy, order, search})
+            return paginatedrole
+        } catch (e) {
+            console.error(e)
+        } finally {
+            loading.value = false
+        }
     }
 
     async function createRole(roleData: IRoleBase) {

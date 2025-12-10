@@ -10,7 +10,7 @@ import type {
     IEntityCrudRules
 } from "@drax/crud-share";
 import {DashboardProvider} from "@drax/dashboard-front";
-import {useDashboardStore} from "../stores/UseDashboardStore";
+import {useEntityStore} from "@drax/crud-vue";
 
 //Import EntityCrud Refs
 
@@ -81,7 +81,7 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
     }
 
     get entities(){
-        const dashboardStore = useDashboardStore();
+        const dashboardStore = useEntityStore();
         return dashboardStore.entities.map((entity: any) => entity.name)
     }
 

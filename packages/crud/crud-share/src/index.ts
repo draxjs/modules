@@ -18,6 +18,7 @@ import type {IDraxExportResponse} from "./interfaces/IDraxExportResponse";
 import type {IEntityCrud} from "./interfaces/IEntityCrud";
 import type {IEntityCrudOperation} from "./interfaces/IEntityCrudOperation";
 import type {IEntityCrudField} from "./interfaces/IEntityCrudField";
+import type {IEntityCrudFieldSelectItem} from "./interfaces/IEntityCrudFieldSelectItem";
 import type {IEntityCrudFieldVariant} from "./interfaces/IEntityCrudFieldVariant";
 import type {IEntityCrudFilter} from "./interfaces/IEntityCrudFilter";
 import type {IEntityCrudForm} from "./interfaces/IEntityCrudForm";
@@ -28,6 +29,7 @@ import type {IEntityCrudRules} from "./interfaces/IEntityCrudRules";
 import type {IEntityCrudRefs} from "./interfaces/IEntityCrudRefs";
 
 import type {IDynamicForm,IDynamicFormBase} from "./interfaces/IDynamicForm";
+
 
 
 
@@ -54,6 +56,7 @@ export type {
     IEntityCrud,
     IEntityCrudOperation,
     IEntityCrudField,
+    IEntityCrudFieldSelectItem,
     IEntityCrudFieldVariant,
     IEntityCrudFilter,
     IEntityCrudForm,
