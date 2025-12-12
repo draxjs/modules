@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import {useSetting} from "../composables/UseSetting";
 import SettingEditor from "./SettingEditor.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, computed} from "vue";
 import {useI18n} from "vue-i18n";
 import type {ISetting} from "@drax/settings-share";
+import {CrudAutocomplete, useEntityStore} from "@drax/crud-vue";
 
 const {fetchSettings, settingsGrouped} = useSetting()
 const {t, te} = useI18n()
 
 onMounted(async () => {
   await fetchSettings()
+  onSearchUpdate('')
 })
 
 const settingEditing = ref()
@@ -21,7 +23,7 @@ function edit(setting: ISetting) {
   editing.value = true
 }
 
-function clearEdit() {
+function clearEdit(newValue: any) {
   editing.value = false
   settingEditing.value = null
 }
@@ -38,11 +40,47 @@ function getObfuscatedValue(value: string): string {
   return '•'.repeat(Math.min(value?.length || 8, 12))
 }
 
+const search = ref<string>('')
+function onSearchUpdate(value: string) {
+  search.value = value
+}
+
+const settingsGroupedFiltered = computed(() => {
+  if (!search.value) {
+    return settingsGrouped.value
+  }
+
+  const filtered: Record<string, ISetting[]> = {}
+  const searchLower = search.value.toLowerCase()
+
+  for (const groupKey of Object.keys(settingsGrouped.value)) {
+    const filteredSettings = settingsGrouped.value[groupKey].filter((setting: ISetting) =>
+      setting.key.toLowerCase().includes(searchLower) ||
+      (setting.description && setting.description.toLowerCase().includes(searchLower))
+    )
+
+    if (filteredSettings.length > 0) {
+      filtered[groupKey] = filteredSettings
+    }
+  }
+
+  return filtered
+})
+
+const entityStore = useEntityStore()
+
+const getEntity = computed(() => {
+  return (entity: string | undefined) => {
+    return entity ? entityStore.getEntity(entity) : undefined
+  }
+})
+
 </script>
 
 <template>
   <div>
-    <h1 class="mb-6 text-h2">{{t('setting.menu')}}</h1>
+    <h3 class="mb-2 text-h3">{{t('setting.menu')}}</h3>
+    <v-divider class="mb-3"></v-divider>
 
     <setting-editor
         v-if="editing"
@@ -52,21 +90,30 @@ function getObfuscatedValue(value: string): string {
     ></setting-editor>
 
     <v-row>
-      <v-col cols="12" v-for="(category,k) in settingsGrouped" class="mt-4">
+      <v-col>
+          <v-text-field
+              :placeholder="t('setting.search')"
+              persistent-placeholder
+              clearable variant="outlined"
+              prepend-inner-icon="mdi-magnify"
+              v-model="search"
+              @update:model-value="onSearchUpdate"
+          ></v-text-field>
+      </v-col>
+
+      <v-col cols="12" v-for="(category,k) in settingsGroupedFiltered">
         <v-card>
           <v-card-title>
-            <h4 class="text-h4 mt-2">{{ k }}</h4>
+            <h4 class="text-h4 mt-2 ">{{ k }}</h4>
           </v-card-title>
           <v-card-text>
 
             <v-data-table
                 hide-default-footer
                 :headers="[
-                { title: t('setting.field.key'), key: 'key', width: '130px', minWidth: '130px' },
-                { title: t('setting.field.label'), key: 'label', width: '130px', minWidth: '130px' },
+                { title: t('setting.field.variable'), key: 'label', width: '220px', minWidth: '220px', maxWidth: '220px' },
                 { title: t('setting.field.value'), key: 'value' },
-                { title: t('setting.field.type'), key: 'type', width: '120px', minWidth: '120px' },
-                { title: t('setting.field.scope'), key:'scope', width: '170px', minWidth: '170px' },
+                { title: t('setting.field.config'), key: 'config', width: '220px', minWidth: '220px', maxWidth: '220px' },
                 { title: t('action.edit'), key: 'actions', width: '70px' },
 
             ]"
@@ -74,18 +121,25 @@ function getObfuscatedValue(value: string): string {
 
             >
 
+
+              <template v-slot:item.label="{ item }">
+                <span class="font-weight-bold">{{item.label }}</span><br>
+                <span class="font-italic">{{ item.description }}</span>
+              </template>
+
               <template v-slot:item.value="{ item }">
-                <v-card variant="tonal" density="compact" class="my-1"><v-card-text>
-                {{ item.prefix }}
-                <template v-if="item.type === 'boolean'">
-                  <v-chip :color="item.value ? 'green' : 'red' " tile>
-                    {{ item.value }}
-                  </v-chip>
-                </template>
-                <template v-else-if="['stringList','numberList','enumList'].includes(item.type)">
-                  <v-chip v-for="(v,i) in item.value" :key="i">{{v}}</v-chip>
-                </template>
-                <template v-else-if="['password','secret'].includes(item.type)">
+                <v-card :variant="['stringList','numberList','enumList','boolean','ref'].includes(item.type) ? 'flat' : 'tonal'" density="compact" class="my-1">
+                  <v-card-text>
+                  {{ item.prefix }}
+                  <template v-if="item.type === 'boolean'">
+                    <v-chip size="large" :color="item.value ? 'green' : 'red' " tile>
+                      {{ item.value }}
+                    </v-chip>
+                  </template>
+                  <template v-else-if="['stringList','numberList','enumList'].includes(item.type)">
+                    <v-chip v-for="(v,i) in item.value" :key="i">{{v}}</v-chip>
+                  </template>
+                  <template v-else-if="['password','secret'].includes(item.type)">
                   <span class="d-inline-flex align-center">
                     <span class="mr-2">
                       {{ isSecretVisible(item.key) ? item.value : getObfuscatedValue(item.value) }}
@@ -97,24 +151,44 @@ function getObfuscatedValue(value: string): string {
                         @click="toggleSecretVisibility(item.key)"
                     ></v-btn>
                   </span>
-                </template>
-                <template v-else>
-                  {{item.value}}
-                </template>
-                {{ item.suffix }}
-                </v-card-text></v-card>
+                  </template>
+                    <template v-else-if="['ref'].includes(item.type)">
+                      <!--ref-->
+                      <crud-autocomplete
+                          readonly
+                          v-model="item.value"
+                          :entity="getEntity(item.entity)"
+                          :field="{name: item.key, type: 'ref', label: item.label, default:null}"
+                          :clearable="false"
+                      ></crud-autocomplete>
+                    </template>
+                  <template v-else>
+                    {{item.value}}
+                  </template>
+                  {{ item.suffix }}
+                </v-card-text>
+                </v-card>
               </template>
 
-              <template v-slot:item.scope="{ item }">
-                <div style="width: 200px;">
-                  <v-chip v-if="item?.permission" density="compact" color="purple">
+              <template v-slot:item.config="{ item }">
+                <div class="py-1">
+                <span class="font-weight-bold">{{item.key }}</span><br>
+                <span class="font-italic">{{ item.type }}</span>
+                <div>
+                  <v-chip tile v-if="item?.permission" density="compact" color="purple" prepend-icon="mdi-key">
                     {{
                       te('permission.' + item?.permission) ? t('permission.' + item?.permission) : item?.permission
                     }}
                   </v-chip>
-                  <v-chip v-else-if="item?.public" color="blue" density="compact">Public</v-chip>
-                  <v-chip v-else color="orange" density="compact">Private</v-chip>
+                  <v-chip tile v-else-if="item?.public" color="blue" density="compact" prepend-icon="mdi-earth">Public</v-chip>
+                  <v-chip tile v-else color="orange" density="compact" prepend-icon="mdi-lock">Private</v-chip>
                 </div>
+                </div>
+              </template>
+
+
+              <template v-slot:item.scope="{ item }">
+
               </template>
 
               <template v-slot:item.actions="{ item }">

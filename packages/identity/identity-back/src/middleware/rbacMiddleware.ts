@@ -22,9 +22,11 @@ async function rbacMiddleware (request, reply) {
                 const role : IRole = await draxCache.getOrLoad(cacheKey, roleLoader)
                 const rbac: IRbac = new Rbac(authUser,role)
                 request.rbac = rbac
+                reply.rbac = rbac
             }else{
                 const rbac: IRbac = new Rbac(null,null)
                 request.rbac = rbac
+                reply.rbac = rbac
             }
             return
         }catch (e) {

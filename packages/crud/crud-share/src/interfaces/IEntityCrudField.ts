@@ -1,9 +1,12 @@
+import {IEntityCrudFieldSelectItem} from "./IEntityCrudFieldSelectItem";
+
 interface IEntityCrudField {
     name: string
-    type: 'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' | 'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum' | 'array.fullFile'
+    type: 'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' | 'select' |'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum' | 'array.fullFile'
     ref?: string
     refDisplay?: string
     enum?: string[]
+    items?: IEntityCrudFieldSelectItem[]
     objectFields?: IEntityCrudField[]
     label: string
     default: any

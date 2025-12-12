@@ -24,7 +24,12 @@ async function changeTenant() {
       <b>{{t('tenant.current')}}:</b> {{authStore.authUser?.tenant ? authStore.authUser?.tenant?.name : '-'}}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <tenant-combobox v-model="tenant" hide-details variant="outlined" density="compact" clearable ></tenant-combobox>
+    <tenant-combobox v-model="tenant"
+                     hide-details
+                     variant="outlined"
+                     density="compact"
+                     clearable refresh
+    />
     <v-btn size="small" @click="changeTenant">{{t('action.change')}}</v-btn>
   </v-toolbar>
 

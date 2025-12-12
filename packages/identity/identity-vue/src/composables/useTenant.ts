@@ -1,47 +1,64 @@
 import {ref} from "vue";
 import type {ITenant, ITenantBase} from "@drax/identity-share";
-import type { TenantSystem} from "@drax/identity-front";
-import { TenantSystemFactory} from "@drax/identity-front";
+import type {TenantSystem} from "@drax/identity-front";
+import {TenantSystemFactory} from "@drax/identity-front";
 import {ClientError} from "@drax/common-front";
-import type { IClientInputError} from "@drax/common-front";
+import type {IClientInputError} from "@drax/common-front";
 import type {IDraxPaginateOptions} from "@drax/crud-share";
 
 
 export function useTenant() {
 
-    const tenantSystem : TenantSystem = TenantSystemFactory.getInstance()
+    const tenantSystem: TenantSystem = TenantSystemFactory.getInstance()
 
     let tenantError = ref<string>('')
     let inputErrors = ref<IClientInputError>()
     let loading = ref(false);
 
     async function fetchTenant(page = 1, perPage = 5) {
-        loading.value = true
-        let tenants = tenantSystem.fetchTenant()
-        loading.value = false
-        return tenants
+        try {
+            loading.value = true
+            let tenants = await tenantSystem.fetchTenant()
+            return tenants
+        } catch (e) {
+            console.error(e)
+        } finally {
+            loading.value = false
+        }
     }
 
-    async function paginateTenant({page= 1, limit= 5, orderBy="", order="asc", search = ""}: IDraxPaginateOptions) {
-        loading.value = true
-        let paginatedtenant = tenantSystem.paginate({page, limit, orderBy, order, search})
-        loading.value = false
-        return paginatedtenant
+    async function paginateTenant({
+                                      page = 1,
+                                      limit = 5,
+                                      orderBy = "",
+                                      order = "asc",
+                                      search = ""
+                                  }: IDraxPaginateOptions) {
+        try {
+            loading.value = true
+            let paginatedtenant = await tenantSystem.paginate({page, limit, orderBy, order, search})
+            return paginatedtenant
+        } catch (e) {
+            console.error(e)
+        } finally {
+            loading.value = false
+        }
     }
 
     async function createTenant(tenantData: ITenantBase) {
         try {
             loading.value = true
-            let tenant: ITenant =  await tenantSystem.create(tenantData)
+            let tenant: ITenant = await tenantSystem.create(tenantData)
             return tenant
         } catch (err) {
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
-            }if(err instanceof Error) {
+            }
+            if (err instanceof Error) {
                 tenantError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
 
@@ -57,11 +74,11 @@ export function useTenant() {
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 tenantError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
     }
@@ -71,19 +88,19 @@ export function useTenant() {
             loading.value = true
             await tenantSystem.delete(id)
         } catch (err) {
-            console.log("composable delete error: ", err, )
+            console.log("composable delete error: ", err,)
             if (err instanceof ClientError) {
                 inputErrors.value = err.inputErrors
             }
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 tenantError.value = err.message
             }
             throw err
-        }finally {
+        } finally {
             loading.value = false
         }
     }
 
-    return {fetchTenant,  paginateTenant, createTenant, editTenant, deleteTenant, loading, tenantError, inputErrors}
+    return {fetchTenant, paginateTenant, createTenant, editTenant, deleteTenant, loading, tenantError, inputErrors}
 
 }

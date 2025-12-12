@@ -13,7 +13,6 @@ class TenantService extends AbstractService<ITenant,ITenantBase,ITenantBase> {
     constructor(tenantRepostitory: ITenantRepository) {
         super(tenantRepostitory, TenantBaseSchema)
         this._repository = tenantRepostitory
-        console.log("TenantService constructor")
     }
 
     async create(tenantData: ITenantBase): Promise<ITenant> {

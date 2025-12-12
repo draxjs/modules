@@ -19,6 +19,8 @@ interface ISettingBase{
     suffix?: string
     public?: boolean
     permission?: string
+    updatedAt?: string
+    updatedBy?: string
 }
 
 interface ISetting{
@@ -40,6 +42,8 @@ interface ISetting{
     suffix?: string
     public?: boolean
     permission?: string
+    updatedAt?: string
+    updatedBy?: string
 }
 
 

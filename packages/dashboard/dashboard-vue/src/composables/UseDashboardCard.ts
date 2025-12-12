@@ -1,5 +1,5 @@
 import {computed} from 'vue'
-import {useDashboardStore} from "../stores/UseDashboardStore";
+import {useEntityStore} from "@drax/crud-vue";
 import type {IDashboardCard} from "@drax/dashboard-share";
 import type {IDraxCrudProvider, IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
@@ -8,7 +8,7 @@ import {useI18n} from "vue-i18n";
 export function useDashboardCard(card: IDashboardCard) {
 
 
-    const store = useDashboardStore()
+    const store = useEntityStore()
     const {t, te} = useI18n()
 
     const cardEntity = computed<IEntityCrud>(() => {

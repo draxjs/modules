@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import {ref, onMounted, defineModel} from 'vue'
 import type { PropType } from 'vue'
 import {useI18n} from "vue-i18n";
@@ -9,6 +8,7 @@ defineProps({
   clearable: {type: Boolean, default: false},
   readonly: {type: Boolean, default: false},
   hideDetails: {type: Boolean, default: false},
+  refresh: {type: Boolean, default: false},
   itemTitle: {type: String, default: "name"},
   itemValue: {type: String, default: "_id"},
   rules: {type: Array as PropType<any[]>, default: () => []},
@@ -19,12 +19,17 @@ defineProps({
 
 const model = defineModel<any>()
 import {useTenant} from "../composables/useTenant";
-const {fetchTenant} = useTenant()
+const {fetchTenant, loading} = useTenant()
 let items = ref([])
 
 onMounted(async () => {
-  items.value = await fetchTenant()
+ await fillItems()
 })
+
+async function fillItems() {
+    loading.value = true
+    items.value = await fetchTenant()
+}
 
 
 </script>
@@ -43,7 +48,13 @@ onMounted(async () => {
       :readonly="readonly"
       :hide-details="hideDetails"
       :density="density"
-  ></v-select>
+      :loading="loading"
+  >
+    <template v-if="refresh" v-slot:prepend>
+      <v-btn @click="fillItems" icon="mdi-refresh" :loading="loading"></v-btn>
+    </template>
+
+  </v-select>
 </template>
 
 <style scoped>

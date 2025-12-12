@@ -3,6 +3,7 @@ import type {ThemeDefinition} from 'vuetify'
 const LightTheme: ThemeDefinition = {
   dark: false,
   colors: {
+    menuIcon: '#070707ff',
     enable: '#152264',
     // primary: '#6200EE',
     // secondary: '#03DAC6',

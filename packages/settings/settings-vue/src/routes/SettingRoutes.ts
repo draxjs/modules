@@ -1,5 +1,6 @@
 import SettingPage from '../pages/SettingPage.vue'
 import SettingCardPage from '../pages/SettingCardPage.vue'
+import SettingAvPage from '../pages/SettingAvPage.vue'
 
 const routes = [
     {
@@ -20,7 +21,15 @@ const routes = [
             permission: 'setting:manage'
         }
     },
-
+    {
+        name: 'SettingAvPage',
+        path: '/settings/av',
+        component: SettingAvPage,
+        meta: {
+            auth: true,
+            permission: 'setting:manage'
+        }
+    },
 ]
 
 

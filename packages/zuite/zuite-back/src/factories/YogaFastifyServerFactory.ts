@@ -26,6 +26,9 @@ function YogaFastifyServerFactory(rootDir:string) {
     server.fastifyHook('onRequest',jwtMiddleware)
     server.fastifyHook('onRequest',apiKeyMiddleware)
     server.fastifyHook('onRequest',rbacMiddleware)
+
+
+
     server.fastifyRegister(UserRoutes)
     server.fastifyRegister(RoleRoutes)
     server.fastifyRegister(TenantRoutes)

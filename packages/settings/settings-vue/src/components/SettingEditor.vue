@@ -54,7 +54,7 @@ async function updateValue() {
       <v-card-text>
         <v-form v-if="setting" ref="form" autocomplete="off" @submit.prevent>
           <v-row>
-            <v-col cols="10">
+            <v-col cols="12">
               <setting-field
                   v-model="value"
                   :setting="setting"

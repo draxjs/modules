@@ -95,7 +95,6 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         this.permission = permission
         this.entityName = entityName || this.constructor.name.replace('Fastify', '').replace('Controller', '')
         this.eventEmitter = CrudEventEmitter.getInstance()
-        console.log("AbstractFastifyController created. Permissions", this.permission)
     }
 
 

@@ -21,6 +21,8 @@ const SettingSchema = new mongoose.Schema<ISetting>({
     suffix: {type: String, required: false, index: false},
     permission: {type: String, required: false, index: false},
     public: {type: Boolean, required: false, default: false, index: false},
+    updatedBy: {type: String, required: false, index: false},
+    
 }, {timestamps: true, toJSON: {  virtuals: true}, toObject: {virtuals: true} })
 
 SettingSchema.virtual("id").get(function () {

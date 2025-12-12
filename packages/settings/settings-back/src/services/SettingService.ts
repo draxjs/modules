@@ -14,7 +14,6 @@ class SettingService extends AbstractService<ISetting, ISettingBase, ISettingBas
     constructor(repostitory: ISettingRepository) {
         super(repostitory, settingSchema)
         this._repository = repostitory
-        console.log("SettingService constructor")
     }
 
 
@@ -50,7 +49,7 @@ class SettingService extends AbstractService<ISetting, ISettingBase, ISettingBas
         }, {} as { [key: string]: ISetting[] });
     }
 
-    async updateValue(id: string, value: string): Promise<ISetting | undefined> {
+    async updateValue(id: string, value: string, updatedBy: string): Promise<ISetting | undefined> {
         const setting = await this.findById(id)
         if(setting.regex){
             const regex = new RegExp(setting.regex)
@@ -60,7 +59,7 @@ class SettingService extends AbstractService<ISetting, ISettingBase, ISettingBas
                 ])
             }
         }
-        return this._repository.updatePartial(id, {value})
+        return this._repository.updatePartial(id, {value, updatedBy})
     }
 
     async create(data: ISettingBase): Promise<ISetting> {
