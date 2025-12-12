@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import type {ISetting} from "@drax/settings-share";
+import {CrudAutocomplete, useEntityStore} from "@drax/crud-vue";
 import {type PropType, ref, computed} from "vue";
 
 
@@ -44,6 +45,14 @@ const validateNumberList = computed(() => {
     }
     return true
   }]
+})
+
+const entityStore = useEntityStore()
+
+const getEntity = computed(() => {
+  return (entity: string | undefined) => {
+    return entity ? entityStore.getEntity(entity) : undefined
+  }
 })
 
 
@@ -221,17 +230,12 @@ const validateNumberList = computed(() => {
   </v-select>
 
   <!--ref-->
-  <!--        <v-select v-if="setting.type === 'ref'"-->
-  <!--                  prepend-icon="list"-->
-  <!--                  :name="setting.key"-->
-  <!--                  setting-text="entityText"-->
-  <!--                  setting-value="entityValue"-->
-  <!--                  :settings="entityOptions"-->
-  <!--                  v-model="valueModel"-->
-  <!--                  :label="setting.label"-->
-  <!--                  :placeholder="setting.label"-->
-  <!--                  color="secondary">-->
-  <!--        </v-select>-->
+<crud-autocomplete
+    v-if="setting.type ==='ref'"
+    v-model="valueModel"
+    :entity="getEntity(setting.entity)"
+    :field="{name: setting.key, type: 'ref', label: setting.label, default:null}"
+></crud-autocomplete>
 
 </template>
 

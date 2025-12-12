@@ -17,6 +17,8 @@ const messages = {
                 title: 'Settings Configuration'
             },
             field: {
+                config: 'Config',
+                variable: 'Variable',
                 key:'Key',
                 label: 'Label',
                 category: 'Category',
@@ -56,6 +58,8 @@ const messages = {
                 title: 'Configuración de variables'
             },
             field: {
+                config: 'Config',
+                variable: 'Variable',
                 key:'Clave',
                 label: 'Etiqueta',
                 category: 'Categoría',

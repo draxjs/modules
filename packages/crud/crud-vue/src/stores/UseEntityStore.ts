@@ -14,6 +14,9 @@ export const useEntityStore = defineStore('EntityStore', {
         },
         hasEntity(state: any) {
             return (name: string) => state.entities.some((entity: IEntityCrud) => entity.name === name)
+        },
+        getEntity(state: any) {
+            return (name: string) => state.entities.find((entity: IEntityCrud) => entity.name === name)
         }
     },
     actions: {

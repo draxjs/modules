@@ -1,0 +1,158 @@
+[
+  {
+    "name": "@drax/ai-back",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/ai/ai-back"
+  },
+  {
+    "name": "@drax/arch",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/arch"
+  },
+  {
+    "name": "@drax/common-back",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/common/common-back"
+  },
+  {
+    "name": "@drax/common-front",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/common/common-front"
+  },
+  {
+    "name": "@drax/common-share",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/common/common-share"
+  },
+  {
+    "name": "@drax/common-vue",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/common/common-vue"
+  },
+  {
+    "name": "@drax/crud-back",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/crud/crud-back"
+  },
+  {
+    "name": "@drax/crud-front",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/crud/crud-front"
+  },
+  {
+    "name": "@drax/crud-share",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/crud/crud-share"
+  },
+  {
+    "name": "@drax/crud-vue",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/crud/crud-vue"
+  },
+  {
+    "name": "@drax/dynamic-back",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/dynamic/dynamic-back"
+  },
+  {
+    "name": "@drax/dynamic-front",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/dynamic/dynamic-front"
+  },
+  {
+    "name": "@drax/dynamic-vue",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/dynamic/dynamic-vue"
+  },
+  {
+    "name": "@drax/email-back",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/email/email-back"
+  },
+  {
+    "name": "@drax/i18n-share",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/i18n/i18n-share"
+  },
+  {
+    "name": "@drax/identity-back",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/identity/identity-back"
+  },
+  {
+    "name": "@drax/identity-front",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/identity/identity-front"
+  },
+  {
+    "name": "@drax/identity-share",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/identity/identity-share"
+  },
+  {
+    "name": "@drax/identity-vue",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/identity/identity-vue"
+  },
+  {
+    "name": "@drax/media-back",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/media/media-backend"
+  },
+  {
+    "name": "@drax/media-front",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/media/media-front"
+  },
+  {
+    "name": "@drax/media-vue",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/media/media-vue"
+  },
+  {
+    "name": "@drax/settings-back",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/settings/settings-back"
+  },
+  {
+    "name": "@drax/settings-front",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/settings/settings-front"
+  },
+  {
+    "name": "@drax/settings-share",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/settings/settings-share"
+  },
+  {
+    "name": "@drax/settings-vue",
+    "version": "0.35.0",
+    "private": false,
+    "location": "/media/cincarnato/SSD480/code/drax/drax-framework/packages/settings/settings-vue"
+  }
+]

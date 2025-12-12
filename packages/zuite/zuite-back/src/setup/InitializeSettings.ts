@@ -5,6 +5,149 @@ async function InitializeSettings() {
     const settingService = SettingServiceFactory()
 
     await settingService.createOrUpdate({
+        category: 'Grupo 1',
+        key: 'STRING',
+        value: 'ASD',
+        label: 'String',
+        type: 'string',
+        prefix: 'Prefijo',
+        suffix: 'Sufijo',
+        public: true,
+        description: "La mar en coche"
+    })
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 1',
+        key: 'NUMBER',
+        value: '2',
+        label: 'Number',
+        type: 'number',
+        prefix: '',
+        suffix: 'HS',
+        public: true,
+        description: "Locomotora loca"
+    })
+
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 1',
+        key: 'BOOLEAN',
+        value: 'true',
+        label: 'Boolean',
+        type: 'boolean',
+        prefix: '',
+        suffix: '',
+        public: false,
+        description: "El estado de la coche"
+    })
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 1',
+        key: 'LONG_STRING',
+        value: 'LONGOOOSSS',
+        label: 'LongString',
+        type: 'longString',
+        prefix: '',
+        suffix: '',
+        public: true,
+        permission: 'setting:sensitive',
+        description: 'La guardia del leon'
+    })
+
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 2',
+        key: 'ENUM',
+        value: null,
+        label: 'Enum',
+        type: 'enum',
+        options: ['Option 1', 'Option 2', 'Option 3'],
+        prefix: '',
+        suffix: '',
+        public: false
+    })
+
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 2',
+        key: 'PASSWORD',
+        value: null,
+        label: 'Password',
+        type: 'password',
+        prefix: '',
+        suffix: '',
+        public: false
+    })
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 3',
+        key: 'STRINGLIST',
+        value: null,
+        label: 'StringList',
+        type: 'stringList',
+        prefix: '',
+        suffix: '',
+        public: false,
+        permission: 'setting:sensitive'
+    })
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 3',
+        key: 'NUMBERLIST',
+        value: null,
+        label: 'NumberList',
+        type: 'numberList',
+        prefix: '',
+        suffix: '',
+        public: false,
+        permission: 'setting:sensitive'
+    })
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 3',
+        key: 'ENUMLIST',
+        value: null,
+        label: 'EnumList',
+        options: ['Option 1', 'Option 2', 'Option 3'],
+        type: 'enumList',
+        prefix: '',
+        suffix: '',
+        public: false,
+        permission: 'setting:sensitive'
+    })
+
+
+    await settingService.createOrUpdate({
+        category: 'Grupo 2',
+        key: 'EntityRole',
+        value: null,
+        label: 'Role',
+        type: 'ref',
+        prefix: '',
+        suffix: '',
+        public: false,
+        entity: 'Role',
+        entityValue: '_id',
+        entityText: 'name',
+    })
+
+
+    await settingService.createOrUpdate({
+        category: 'VALIDATION',
+        key: 'ValidateRegex',
+        value: '',
+        label: 'String',
+        type: 'string',
+        prefix: '',
+        suffix: '',
+        regex: '^[a-zA-Z]+$',
+        public: true
+    })
+
+
+
+
+    await settingService.createOrUpdate({
         category: 'API',
         key: 'API_BASE_URL',
         value: 'https://api.example.com',
@@ -168,7 +311,7 @@ async function InitializeSettings() {
         public: true,
         description: 'Default tenant theme color for the application (hex color code)',
     })
-}   
+}
 
 
 export default InitializeSettings
