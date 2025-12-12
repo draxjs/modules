@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import {useSetting} from "../composables/UseSetting";
-import {onMounted, reactive, ref, watch} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import type {ISetting} from "@drax/settings-share";
 import dayjs from 'dayjs'
 import SettingField from "./SettingField.vue";
 
 const {fetchSettings, settingsGrouped, updateSettingValue} = useSetting()
-const {t, te} = useI18n()
+const {t} = useI18n()
 
 onMounted(async () => {
   await fetchSettings()
   onSearchUpdate('')
 })
 
-const settingEditing = ref()
-const editing = ref(false)
-const visibleSecrets = ref<Record<string, boolean>>({})
+
 
 function getTypeColor(type: string): string {
 
@@ -39,24 +37,16 @@ function getTypeColor(type: string): string {
 
 
 
-function getImpactColor(impact?: string): string {
-  switch (impact) {
-    case 'global': return 'success';
-    case 'server': return 'warning';
-    case 'client': return 'error';
-    case 'tenant': return 'info';
-    default: return 'grey';
-  }
-}
+
 
 const settingsGroupedFiltered = ref<Record<string, ISetting[]>>({})
 
 const search = ref<string>('')
 function onSearchUpdate(value: string) {
   if(!value) settingsGroupedFiltered.value = {...settingsGrouped.value};
-    
+
   for (const groupKey of Object.keys(settingsGroupedFiltered.value)) {
-    settingsGroupedFiltered.value[groupKey] = settingsGroupedFiltered.value[groupKey].filter((setting: ISetting) => 
+    settingsGroupedFiltered.value[groupKey] = settingsGroupedFiltered.value[groupKey].filter((setting: ISetting) =>
       setting.key.toLowerCase().includes(value.toLowerCase()) ||
       (setting.description && setting.description.toLowerCase().includes(value.toLowerCase()))
     )
@@ -136,7 +126,7 @@ const updateSetting = async (setting?: ISetting) => {
       setting.updatedBy = settingUpdated.updatedBy
     }
     closeInformationUpdatingModal()
-    showSuccess(t('setting.updated.successfuly'))    
+    showSuccess(t('setting.updated.successfuly'))
   } catch (e) {
     console.error(e)
   } finally {
@@ -168,7 +158,7 @@ const updateSetting = async (setting?: ISetting) => {
     class="px-16"
   >
     <div class="pa-0 ma-0" style="width: calc(100%); height: calc(100vh - 315px); overflow-y: auto; scrollbar-width: thin;">
-      <v-expansion-panels 
+      <v-expansion-panels
         class="pr-1 mb-4" variant="accordion" v-for="groupkey of Object.keys(settingsGroupedFiltered)" :key="groupkey"
         :model-value="1"
       >
@@ -206,15 +196,15 @@ const updateSetting = async (setting?: ISetting) => {
                     <v-col cols="1" class="pr-4 d-flex ga-2">
                       <template v-if="setting.value">
                         <v-icon size="small" color="grey" style="cursor: pointer;" @click="openShowModal(setting.key, setting.value, setting)">mdi-eye</v-icon>
-                        <span 
-                          class="text-caption text-grey" 
+                        <span
+                          class="text-caption text-grey"
                           style="display: inline-block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
                         >
                           {{ setting.value }}
                         </span>
                       </template>
                       <span v-else class="text-caption text-grey">-</span>
-                    </v-col>  
+                    </v-col>
                     <v-col cols="1" class="pr-4">
                       <v-chip :color="getTypeColor(setting.type)" density="compact" style="border-radius: 7px">
                         {{ setting.type }}
@@ -222,8 +212,8 @@ const updateSetting = async (setting?: ISetting) => {
                     </v-col>
                     <v-col cols="3" class="pr-4 d-flex ga-2">
                       <v-icon size="small" color="grey" style="cursor: pointer;" @click="openShowModal(setting.key, setting.description, getSettingDescription(setting.key, setting.description))">mdi-eye</v-icon>
-                      <span 
-                          class="text-caption text-grey" 
+                      <span
+                          class="text-caption text-grey"
                           style="display: inline-block; max-width: 700px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
                         >
                           {{ setting.description }}
@@ -241,7 +231,7 @@ const updateSetting = async (setting?: ISetting) => {
                     <v-col cols="1" class="pr-4">
                       <span class="text-caption" style="display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         {{ setting.permission ? setting.permission : 'N/A' }}
-                      </span>  
+                      </span>
                     </v-col>
                     <v-col cols="2" class="pr-4">
                       <span>
@@ -316,7 +306,7 @@ const updateSetting = async (setting?: ISetting) => {
       </v-toolbar>
       <v-card-text>
         {{ t('setting.configurationValue.subtitle') }}
-        
+
         <v-form ref="form">
           <v-row class="mt-5">
             <v-col cols="12" md="8" class="ma-0 pa-0 px-3" v-if="informationUpdatingModal.setting?.category">
@@ -328,7 +318,7 @@ const updateSetting = async (setting?: ISetting) => {
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="4" class="ma-0 pa-0 px-3">
-              <v-checkbox 
+              <v-checkbox
                 :label="t('setting.field.publicinfo')" density="compact"
                 readonly :model-value="informationUpdatingModal.setting?.public"
               ></v-checkbox>
@@ -388,10 +378,10 @@ const updateSetting = async (setting?: ISetting) => {
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn variant="text" @click="closeInformationUpdatingModal">{{ t('action.close') }}</v-btn>
-        <v-btn 
+        <v-btn
           v-if="!informationUpdatingModal.readonly"
-          variant="elevated" color="primary" 
-          @click="updateSetting(informationUpdatingModal.setting)" 
+          variant="elevated" color="primary"
+          @click="updateSetting(informationUpdatingModal.setting)"
           :loading="updateLoading"
         >
           {{ t('action.save') }}

@@ -187,10 +187,6 @@ const getEntity = computed(() => {
               </template>
 
 
-              <template v-slot:item.scope="{ item }">
-
-              </template>
-
               <template v-slot:item.actions="{ item }">
                 <v-btn
                     class="mr-1 mt-1"

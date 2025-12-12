@@ -25,7 +25,7 @@ defineProps({
 const model = defineModel<any>()
 
 const {fetchRole} = useRole()
-let items = ref<IRole[]>([])
+let items = ref<IRole[]|undefined>([])
 
 onMounted(async () => {
   items.value = await fetchRole()

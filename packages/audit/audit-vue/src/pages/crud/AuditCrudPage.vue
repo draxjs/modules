@@ -6,7 +6,6 @@ import {formatDateTime} from "@drax/common-front"
 import {EntityCombobox} from "@drax/crud-vue"
 import AuditView from "../../components/AuditView.vue";
 import {useI18n} from "vue-i18n";
-import CrudFormField from "@drax/crud-vue/src/components/CrudFormField.vue";
 
 const {t, te} = useI18n();
 const store = useCrudStore();
