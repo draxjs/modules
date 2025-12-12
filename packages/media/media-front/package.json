@@ -4,7 +4,7 @@
     "access": "public"
   },
   "type": "module",
-  "version": "0.41.0",
+  "version": "0.42.0",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",
@@ -41,5 +41,5 @@
     "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.4.0"
   },
-  "gitHead": "d8e9ad20ff3a5bd9e9d4383ef0926b79eac335d8"
+  "gitHead": "0ee378f27803da4a45a6f94189314fb7e9fbb5b8"
 }

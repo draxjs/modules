@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.41.0",
+  "version": "0.42.0",
   "description": "Identity share across modules",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -24,5 +24,5 @@
     "tsc-alias": "^1.8.10",
     "typescript": "^5.4.5"
   },
-  "gitHead": "d8e9ad20ff3a5bd9e9d4383ef0926b79eac335d8"
+  "gitHead": "0ee378f27803da4a45a6f94189314fb7e9fbb5b8"
 }
