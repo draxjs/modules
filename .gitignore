@@ -4,3 +4,4 @@ node_modules/
 **/*/types
 **/*/tsconfig.tsbuildinfo
 lerna-debug.log
+/dist/
