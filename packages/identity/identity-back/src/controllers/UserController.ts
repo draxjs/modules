@@ -141,15 +141,9 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
             if (request.authUser && request.token) {
                 const tenantId = request.body.tenantId
-                if (!tenantId) {
-                    throw new BadRequestError('Missing tenantId')
-                }
 
-                const tenant = await TenantServiceFactory().findById(tenantId);
 
-                if (!tenant) {
-                    throw new BadRequestError('Invalid tenantId')
-                }
+                const tenant = tenantId ? await TenantServiceFactory().findById(tenantId) : undefined;
 
                 const tenantName = tenant?.name;
                 const userService = UserServiceFactory()
