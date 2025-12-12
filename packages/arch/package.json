@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.42.1",
+  "version": "0.42.2",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -17,5 +17,5 @@
     "tsx": "^4.19.1",
     "typescript": "^5.6.2"
   },
-  "gitHead": "a3e5d28b2f2567678effb5e9be0e629f4869f9a5"
+  "gitHead": "f05f871b385f6a36867dccadd2fbfed990b296f9"
 }

@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.42.1",
+  "version": "0.42.2",
   "description": "Dynamic Forms",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -22,10 +22,10 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "@drax/common-back": "^0.42.1",
-    "@drax/common-share": "^0.42.1",
-    "@drax/identity-share": "^0.42.1",
-    "@drax/media-back": "^0.42.1",
+    "@drax/common-back": "^0.42.2",
+    "@drax/common-share": "^0.42.2",
+    "@drax/identity-share": "^0.42.2",
+    "@drax/media-back": "^0.42.2",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.4",
     "mongoose": "^8.6.3",
@@ -44,5 +44,5 @@
     "tsc-alias": "^1.8.10",
     "typescript": "^5.6.2"
   },
-  "gitHead": "a3e5d28b2f2567678effb5e9be0e629f4869f9a5"
+  "gitHead": "f05f871b385f6a36867dccadd2fbfed990b296f9"
 }
