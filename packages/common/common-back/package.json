@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.44.0",
+  "version": "0.44.1",
   "description": "Common utils across modules",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -44,5 +44,5 @@
     "typescript": "^5.6.2",
     "vitest": "^3.2.4"
   },
-  "gitHead": "f05f871b385f6a36867dccadd2fbfed990b296f9"
+  "gitHead": "b371faebf8981e503aabc8292052049f77655ddc"
 }
