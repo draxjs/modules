@@ -1,10 +1,17 @@
 import sqlite from "better-sqlite3";
-import type {IDraxCrud, IDraxFindOptions, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import type {
+    IDraxCrud,
+    IDraxFindOptions,
+    IDraxGroupByOptions,
+    IDraxPaginateOptions,
+    IDraxPaginateResult
+} from "@drax/crud-share";
 import {randomUUID} from "node:crypto";
 import {
     SqlSort, SqlQueryFilter, SqliteTableBuilder, SqliteTableField,
-    SqliteErrorToValidationError
+    SqliteErrorToValidationError, MongooseQueryFilter
 } from "@drax/common-back";
+import mongoose from "mongoose";
 
 
 class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
@@ -62,7 +69,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
     castToBoolean(item: any) {
         for (const field of this.booleanFields) {
-            if(item[field] != undefined){
+            if(item && item[field] != undefined){
                 item[field] = item[field] === 1 || item[field] === 'true'
             }
 
@@ -114,7 +121,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
             return item
 
         } catch (e) {
-            console.log(e)
+            console.error(e)
             throw SqliteErrorToValidationError(e, data)
         }
     }
@@ -153,7 +160,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
             return item
 
         } catch (e) {
-            console.log(e)
+            console.error(e)
             throw SqliteErrorToValidationError(e, data)
         }
 
@@ -296,6 +303,101 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
                                       WHERE ${field} = ?`).get(value);
         await this.decorate(item)
         return item
+    }
+
+    async findOne({
+                      search = '',
+                      filters = []
+                  }: IDraxFindOptions): Promise<T> {
+
+        let where = ""
+
+        if (search && this.searchFields.length > 0) {
+            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${search}%'`).join(" OR ")}`
+        }
+
+        if (filters.length > 0) {
+            where = SqlQueryFilter.applyFilters(where, filters)
+        }
+
+        const item = this.db.prepare(`SELECT *
+                                      FROM ${this.tableName} ${where} LIMIT 1`).get();
+
+        if (item) {
+            await this.decorate(item)
+        }
+
+        return item as T
+    }
+
+    async groupBy({fields = [], filters = [], dateFormat = 'day'}: IDraxGroupByOptions): Promise<Array<any>> {
+        if (fields.length === 0) {
+            throw new Error("At least one field is required for groupBy")
+        }
+
+        // Construir la cláusula WHERE con los filtros
+        let where = ""
+        if (filters.length > 0) {
+            where = SqlQueryFilter.applyFilters(where, filters)
+        }
+
+        // Función para obtener el formato de fecha según SQLite
+        const getDateFormatSQL = (field: string, format: string): string => {
+            const formats: { [key: string]: string } = {
+                'year': `strftime('%Y', ${field})`,
+                'month': `strftime('%Y-%m', ${field})`,
+                'day': `strftime('%Y-%m-%d', ${field})`,
+                'hour': `strftime('%Y-%m-%d %H:00:00', ${field})`,
+                'minute': `strftime('%Y-%m-%d %H:%M:00', ${field})`,
+                'second': `strftime('%Y-%m-%d %H:%M:%S', ${field})`
+            }
+            return formats[format] || formats['day']
+        }
+
+        // Determinar si cada campo es de fecha
+        const isDateField = (field: string): boolean => {
+            const tableField = this.tableFields.find(tf => tf.name === field)
+            return tableField ? tableField.type === 'TEXT' && (field.includes('Date') || field.includes('date')) : false
+        }
+
+        // Construir los campos SELECT con formato de fecha si aplica
+        const selectFields = fields.map(field => {
+            if (isDateField(field)) {
+                return `${getDateFormatSQL(field, dateFormat)} as ${field}`
+            }
+            return field
+        }).join(', ')
+
+        // Construir la cláusula GROUP BY
+        const groupByFields = fields.map(field => {
+            if (isDateField(field)) {
+                return getDateFormatSQL(field, dateFormat)
+            }
+            return field
+        }).join(', ')
+
+        // Construir y ejecutar la query
+        const query = `
+            SELECT ${selectFields}, COUNT(*) as count
+            FROM ${this.tableName}
+            ${where}
+            GROUP BY ${groupByFields}
+            ORDER BY count DESC
+        `
+
+        try {
+            const result = this.db.prepare(query).all() as Array<any>
+
+            // Decorar los items si tienen campos de población
+            for (const item of result) {
+                await this.decorate(item)
+            }
+
+            return result
+        } catch (e) {
+            console.error("GroupBy query error:", e)
+            throw e
+        }
     }
 }
 

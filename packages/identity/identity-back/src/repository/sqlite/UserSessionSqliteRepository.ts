@@ -17,7 +17,7 @@ class UserSessionSqliteRepository extends AbstractSqliteRepository<IUserSession,
     protected tableFields: SqliteTableField[] = [
         {name: "uuid", type: "TEXT", unique: false, primary: false},
         {name: "user", type: "TEXT", unique: false, primary: false},
-        {name: "agent", type: "TEXT", unique: false, primary: false},
+        {name: "userAgent", type: "TEXT", unique: false, primary: false},
         {name: "ip", type: "TEXT", unique: false, primary: false},
         {name: "createdAt", type: "TEXT", unique: false, primary: false},
         {name: "updatedAt", type: "TEXT", unique: false, primary: false},

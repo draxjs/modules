@@ -7,7 +7,7 @@ import UserSqliteRepository from "./UserSqliteRepository.js";
 class UserLoginFailSqliteRepository extends AbstractSqliteRepository<IUserLoginFail,IUserLoginFailBase,IUserLoginFailBase> implements IUserLoginFailRepository{
 
     protected db: any;
-    protected tableName: string = 'user_sessions';
+    protected tableName: string = 'user_login_fails';
     protected dataBaseFile: string;
     protected searchFields: string[] = [];
     protected booleanFields: string[] = [];
@@ -15,8 +15,8 @@ class UserLoginFailSqliteRepository extends AbstractSqliteRepository<IUserLoginF
     protected populateFields = [{field: 'user', table: 'users', identifier: '_id'}]
     protected tableFields: SqliteTableField[] = [
         {name: "uuid", type: "TEXT", unique: false, primary: false},
-        {name: "user", type: "TEXT", unique: false, primary: false},
-        {name: "agent", type: "TEXT", unique: false, primary: false},
+        {name: "username", type: "TEXT", unique: false, primary: false},
+        {name: "userAgent", type: "TEXT", unique: false, primary: false},
         {name: "ip", type: "TEXT", unique: false, primary: false},
         {name: "createdAt", type: "TEXT", unique: false, primary: false},
         {name: "updatedAt", type: "TEXT", unique: false, primary: false},

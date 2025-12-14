@@ -3,7 +3,7 @@ import {useSetting} from "../composables/UseSetting";
 import {onMounted, reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import type {ISetting} from "@drax/settings-share";
-import dayjs from 'dayjs'
+import {formatDateTime} from "@drax/common-front";
 import SettingField from "./SettingField.vue";
 
 const {fetchSettings, settingsGrouped, updateSettingValue} = useSetting()
@@ -235,7 +235,7 @@ const updateSetting = async (setting?: ISetting) => {
                     </v-col>
                     <v-col cols="2" class="pr-4">
                       <span>
-                        {{ dayjs(setting.updatedAt).format('DD/MM/YYYY HH:mm') }}<br>
+                        {{ setting?.updatedAt ? formatDateTime(setting?.updatedAt) : '' }}<br>
                         {{ setting.updatedBy }}
                       </span>
                     </v-col>

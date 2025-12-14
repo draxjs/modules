@@ -21,6 +21,8 @@ class RoleSqliteRepository extends AbstractSqliteRepository<IRole, IRoleBase, IR
         {name: "permissions", type: "TEXT", unique: false, primary: false},
         {name: "childRoles", type: "TEXT", unique: false, primary: false},
         {name: "readonly", type: "INTEGER", unique: false, primary: false},
+        {name: "icon", type: "TEXT", unique: false, primary: false},
+        {name: "color", type: "TEXT", unique: false, primary: false},
         {name: "createdAt", type: "TEXT", unique: false, primary: false},
         {name: "updatedAt", type: "TEXT", unique: false, primary: false},
     ]

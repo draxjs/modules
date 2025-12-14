@@ -10,7 +10,7 @@ class UserSessionMongoRepository extends AbstractMongoRepository<IUserSession, I
     constructor() {
         super();
         this._model = UserSessionModel;
-        this._searchFields = ['uuid', 'agent', 'ip'];
+        this._searchFields = ['uuid', 'userAgent', 'ip'];
          this._populateFields = ['user'];
     }
 

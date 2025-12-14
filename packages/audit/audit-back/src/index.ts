@@ -1,7 +1,8 @@
 import AuditPermissions from './permissions/AuditPermissions.js'
 import AuditSchema from './schemas/AuditSchema.js'
 import AuditModel from './models/AuditModel.js'
-import AuditRepository from './repository/AuditRepository.js'
+import AuditMongoRepository from './repository/mongo/AuditMongoRepository.js'
+import AuditSqliteRepository from './repository/sqlite/AuditSqliteRepository.js'
 import AuditService from './services/AuditService.js'
 import AuditServiceFactory from './factory/services/AuditServiceFactory.js'
 import AuditController from './controllers/AuditController.js'
@@ -17,7 +18,8 @@ export {
     AuditPermissions,
     AuditSchema,
     AuditModel,
-    AuditRepository,
+    AuditMongoRepository,
+    AuditSqliteRepository,
     AuditService,
     AuditServiceFactory,
     AuditController,

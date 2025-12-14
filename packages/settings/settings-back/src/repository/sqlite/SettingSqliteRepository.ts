@@ -12,7 +12,7 @@ class SettingSqliteRepository extends AbstractSqliteRepository<ISetting,ISetting
     protected tableName: string = 'settings';
     protected dataBaseFile: string;
     protected searchFields: string[] = [];
-    protected booleanFields: string[] = [];
+    protected booleanFields: string[] = ['public'];
     protected identifier: string = '_id';
     protected populateFields = []
     protected tableFields: SqliteTableField[] = [
@@ -28,8 +28,12 @@ class SettingSqliteRepository extends AbstractSqliteRepository<ISetting,ISetting
         {name: "entityText", type: "TEXT", unique: false, primary: false},
         {name: "prefix", type: "TEXT", unique: false, primary: false},
         {name: "suffix", type: "TEXT", unique: false, primary: false},
+        {name: "description", type: "TEXT", unique: false, primary: false},
+        {name: "public", type: "TEXT", unique: false, primary: false},
+        {name: "permission", type: "TEXT", unique: false, primary: false},
+        {name: "updatedBy", type: "TEXT", unique: false, primary: false},
     ]
-    protected verbose: boolean;
+    protected verbose: boolean = false;
 
 
     async updatePartial(id: string, data: any) {
@@ -49,13 +53,13 @@ class SettingSqliteRepository extends AbstractSqliteRepository<ISetting,ISetting
             data.value = data.value ? 1 : 0
         }
         if(data.type === 'stringList'){
-            data.value = data.value ? data.value.join(',') : ''
+            data.value = data.value && Array.isArray(data.value) ? data.value.join(',') : data.value
         }
         if(data.type === 'numberList'){
-            data.value = data.value ? data.value.join(',') : ''
+            data.value = data.value && Array.isArray(data.value) ? data.value.join(',') : data.value
         }
         if(data.type === 'enumList'){
-            data.value = data.value ? data.value.join(',') : ''
+            data.value = data.value && Array.isArray(data.value) ? data.value.join(',') : data.value
         }
         if(data.type === 'ref'){
 
@@ -66,7 +70,11 @@ class SettingSqliteRepository extends AbstractSqliteRepository<ISetting,ISetting
     }
 
     async prepareItem(item: any){
-        console.log('prepareItem', item)
+
+        if(!item){
+            return
+        }
+
         if(item && item.options){
            item.options = JSON.parse(item.options)
         }

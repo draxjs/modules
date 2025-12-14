@@ -1,7 +1,7 @@
 
 import {AbstractMongoRepository} from "@drax/crud-back";
-import {DashboardModel} from "../models/DashboardModel.js";
-import type {IDashboardRepository} from '../interfaces/IDashboardRepository'
+import {DashboardModel} from "../../models/DashboardModel.js";
+import type {IDashboardRepository} from '../../interfaces/IDashboardRepository'
 import type {IDashboard, IDashboardBase} from "@drax/dashboard-share";
 
 
