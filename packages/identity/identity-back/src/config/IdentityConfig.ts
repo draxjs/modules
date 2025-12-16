@@ -1,7 +1,5 @@
 enum IdentityConfig {
 
-
-
     JwtSecret = "DRAX_JWT_SECRET",
     JwtExpiration = "DRAX_JWT_EXPIRATION",
     JwtIssuer = "DRAX_JWT_ISSUER",
@@ -15,6 +13,7 @@ enum IdentityConfig {
 
     defaultRole = "DRAX_DEFAULT_ROLE",
 
+    VerifyIP = "DRAX_VERIFY_IP",
 
 }
 
