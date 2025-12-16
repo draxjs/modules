@@ -266,12 +266,16 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         this.eventEmitter.emitCrudEvent(eventData)
     }
 
+    async preCreate(request: CustomRequest, payload:any){
+        return payload
+    }
 
     async create(request: CustomRequest, reply: FastifyReply) {
         try {
             request.rbac.assertPermission(this.permission.Create)
             const payload = request.body
             this.applyUserAndTenantSetters(payload, request.rbac)
+            await this.preCreate(request, payload as C)
             let item = await this.service.create(payload as C)
             this.onCreated(request, item)
             return item
@@ -280,7 +284,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
-
+    async preUpdate(request: CustomRequest, payload:any):Promise<C>{
+        return payload
+    }
 
     async update(request: CustomRequest, reply: FastifyReply) {
         try {
@@ -308,6 +314,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             delete payload[this.tenantField]
             delete payload[this.userField]
 
+            await this.preUpdate(request, payload)
             let item = await this.service.update(id, payload as U)
 
             if (!item) {
@@ -320,6 +327,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         } catch (e) {
             this.handleError(e, reply)
         }
+    }
+
+    async preUpdatePartial(request: CustomRequest, payload:any):Promise<C>{
+        return payload
     }
 
     async updatePartial(request: CustomRequest, reply: FastifyReply) {
@@ -348,6 +359,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             delete payload[this.tenantField]
             delete payload[this.userField]
 
+            await this.preUpdatePartial(request, payload)
             let item = await this.service.updatePartial(id, payload as U)
             if (!item) {
                 throw new NotFoundError()
@@ -359,6 +371,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
+    async preDelete(request: CustomRequest, item:T){
+        return item
+    }
 
 
     async delete(request: CustomRequest, reply: FastifyReply) {
@@ -384,7 +399,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             this.assertTenant(item, request.rbac)
 
-
+            await this.preDelete(request, item)
             await this.service.delete(id)
 
             this.onDeleted(request, item)
