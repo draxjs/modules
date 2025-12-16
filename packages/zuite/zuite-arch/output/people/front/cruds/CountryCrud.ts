@@ -13,7 +13,8 @@ import type{
 import CountryProvider from "../providers/CountryProvider";
 
 //Import EntityCrud Refs
-
+import {TenantCrud} from "@drax/identity-vue"
+import {UserCrud} from "@drax/identity-vue"
 
 class CountryCrud extends EntityCrud implements IEntityCrud {
 
@@ -45,7 +46,9 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return [
         {title: 'name',key:'name', align: 'start'},
 {title: 'description',key:'description', align: 'start'},
-{title: 'flag',key:'flag', align: 'start'}
+{title: 'flag',key:'flag', align: 'start'},
+{title: 'tenant',key:'tenant', align: 'start'},
+{title: 'createdBy',key:'createdBy', align: 'start'}
     ]
   }
   
@@ -71,7 +74,8 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
   
   get refs(): IEntityCrudRefs{
     return {
-      
+      Tenant: TenantCrud.instance ,
+User: UserCrud.instance 
     }
   }
 
@@ -79,7 +83,9 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return {
       name: [(v: any) => !!v || 'validation.required'],
 description: [],
-flag: []
+flag: [],
+tenant: [(v: any) => !!v || 'validation.required'],
+createdBy: [(v: any) => !!v || 'validation.required']
     }
   }
 
@@ -87,7 +93,9 @@ flag: []
     return [
         {name:'name',type:'string',label:'name',default:''},
 {name:'description',type:'longString',label:'description',default:'Some Description',menu: 'BASIC'},
-{name:'flag',type:'file',label:'flag',default:'',menu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'}
+{name:'flag',type:'file',label:'flag',default:'',menu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'},
+{name:'tenant',type:'ref',label:'tenant',default:null,ref: 'Tenant',refDisplay: 'name'},
+{name:'createdBy',type:'ref',label:'createdBy',default:null,ref: 'User',refDisplay: 'username'}
     ]
   }
   

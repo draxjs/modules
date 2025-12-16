@@ -16,6 +16,10 @@ class EntityCrud implements IEntityCrud {
     throw new Error('EntityCrud instance not found')
   }
 
+  get identifier(){
+    return '_id'
+  }
+
   get headers(): IEntityCrudHeader[] {
     return [
       {title: 'ID', key: '_id'},

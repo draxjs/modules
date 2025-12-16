@@ -3,7 +3,10 @@ const getItemId = (item: any) => {
         return item._id
     }else if(item && item.id) {
         return item.id
+    }else if(item && item.uuid) {
+        return item.uuid
     }
+
     return null
 }
 

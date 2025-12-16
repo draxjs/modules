@@ -9,7 +9,9 @@ const messages = {
           field:{
                        name:'name',
            description:'description',
-           flag:'flag'
+           flag:'flag',
+           tenant:'tenant',
+           createdBy:'createdBy'
           }
       },
       permission: {
@@ -28,7 +30,9 @@ const messages = {
           field:{
                        name:'name',
            description:'description',
-           flag:'flag'
+           flag:'flag',
+           tenant:'tenant',
+           createdBy:'createdBy'
           }
       },
      permission: {

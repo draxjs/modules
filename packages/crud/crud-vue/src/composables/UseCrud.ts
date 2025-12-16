@@ -325,7 +325,8 @@ export function useCrud(entity: IEntityCrud) {
         try {
             store.setLoading(true)
             if (entity?.provider.update) {
-                let item = await entity?.provider.update(getItemId(formData), toRaw(formData))
+                const identifier = formData[entity?.identifier] || getItemId(formData)
+                let item = await entity?.provider.update(identifier, toRaw(formData))
                 await doPaginate()
                 closeDialog()
                 store.showMessage("Entity updated successfully!")
@@ -351,7 +352,8 @@ export function useCrud(entity: IEntityCrud) {
         try {
             store.setLoading(true)
             if (entity?.provider.delete) {
-                await entity?.provider.delete(getItemId(formData))
+                const identifier = formData[entity?.identifier] || getItemId(formData)
+                await entity?.provider.delete(identifier)
                 await doPaginate()
                 closeDialog()
                 store.showMessage("Entity deleted successfully!")

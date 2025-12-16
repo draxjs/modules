@@ -15,6 +15,7 @@ class AuditSqliteRepository extends AbstractSqliteRepository<IAudit, IAuditBase,
     protected booleanFields: string[] = [];
     protected identifier: string = '_id';
     protected populateFields = []
+    protected verbose: boolean = false;
     protected tableFields: SqliteTableField[] = [
         {name: "entity", type: "TEXT", unique: false, primary: false},
         {name: "resourceId", type: "TEXT", unique: false, primary: false},
@@ -31,7 +32,7 @@ class AuditSqliteRepository extends AbstractSqliteRepository<IAudit, IAuditBase,
         {name: "createdAt", type: "TEXT", unique: false, primary: false},
         {name: "updatedAt", type: "TEXT", unique: false, primary: false},
     ]
-    protected verbose: boolean = false;
+
 
 
     async prepareData(data: any) {

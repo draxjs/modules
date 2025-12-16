@@ -1,14 +1,31 @@
 
-import PersonRepository from '../../repository/PersonRepository.js'
+import PersonMongoRepository from '../../repository/mongo/PersonMongoRepository.js'
+import PersonSqliteRepository from '../../repository/sqlite/PersonSqliteRepository.js'
+import type {IPersonRepository} from "../../interfaces/IPersonRepository";
 import {PersonService} from '../../services/PersonService.js'
 import {PersonBaseSchema} from "../../schemas/PersonSchema.js";
+import {COMMON, CommonConfig, DraxConfig} from "@drax/common-back";
 
 class PersonServiceFactory {
     private static service: PersonService;
 
     public static get instance(): PersonService {
         if (!PersonServiceFactory.service) {
-            const repository = new PersonRepository();
+            
+            let repository: IPersonRepository
+            switch (DraxConfig.getOrLoad(CommonConfig.DbEngine)) {
+                case COMMON.DB_ENGINES.MONGODB:
+                    repository = new PersonMongoRepository()
+                    break;
+                case COMMON.DB_ENGINES.SQLITE:
+                    const dbFile = DraxConfig.getOrLoad(CommonConfig.SqliteDbFile)
+                    repository = new PersonSqliteRepository(dbFile, false)
+                    repository.build()
+                    break;
+                default:
+                    throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
+            }
+            
             const schema = PersonBaseSchema;
             PersonServiceFactory.service = new PersonService(repository, schema);
         }

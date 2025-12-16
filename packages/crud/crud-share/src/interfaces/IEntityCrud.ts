@@ -12,6 +12,7 @@ import type {IEntityCrudFieldVariant} from "./IEntityCrudFieldVariant";
 
 interface IEntityCrud {
   name: string
+  identifier: string
 
   headers: IEntityCrudHeader[]
   selectedHeaders: string[]  // Nuevo getter

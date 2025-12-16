@@ -22,9 +22,9 @@ function generatePopulateFields(schema: ISchema) {
 
 export const TemplateMongoRepository = (entity: IEntitySchema) => `
 import {AbstractMongoRepository} from "@drax/crud-back";
-import {${entity.name}Model} from "../models/${entity.name}Model.js";
-import type {I${entity.name}Repository} from '../interfaces/I${entity.name}Repository'
-import type {I${entity.name}, I${entity.name}Base} from "../interfaces/I${entity.name}";
+import {${entity.name}Model} from "../../models/${entity.name}Model.js";
+import type {I${entity.name}Repository} from '../../interfaces/I${entity.name}Repository'
+import type {I${entity.name}, I${entity.name}Base} from "../../interfaces/I${entity.name}";
 
 
 class ${entity.name}MongoRepository extends AbstractMongoRepository<I${entity.name}, I${entity.name}Base, I${entity.name}Base> implements I${entity.name}Repository {

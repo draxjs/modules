@@ -27,6 +27,7 @@ interface ISchema{
 
 interface IEntitySchema{
     name: string
+    identifier?: string
     module: string
     apiBasePath?: string
     apiTag?: string

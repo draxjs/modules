@@ -2,6 +2,7 @@ import type {IEntitySchema} from "../interfaces/IEntitySchema";
 import {TemplateService} from "./templates/back/TemplateService";
 import {writeFile} from "./helpers/writeFile";
 import {TemplateMongoRepository} from "./templates/back/TemplateMongoRepository";
+import {TemplateSqliteRepository} from "./templates/back/TemplateSqliteRepository";
 import {TemplatePermissions} from "./templates/back/TemplatePermissions";
 import {TemplateMongoModel} from "./templates/back/TemplateMongoModel";
 import {TemplateEntityInterface} from "./templates/share/TemplateEntityInterface";
@@ -38,6 +39,7 @@ class ArchGenerator{
             await this.mongoModel(entity)
             await this.permissions(entity)
             await this.mongoRepository(entity)
+            await this.sqliteRepository(entity)
             await this.service(entity)
             await this.serviceFactory(entity)
             await this.fastifyController(entity)
@@ -124,10 +126,18 @@ class ArchGenerator{
 
     async mongoRepository(entity: IEntitySchema){
         const content = TemplateMongoRepository(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/repository'
-        const fileName = `${entity.name}Repository.ts`
+        const path = this.outputPath + '/'+ entity.module + '/back/repository/mongo'
+        const fileName = `${entity.name}MongoRepository.ts`
         await this.writeToFile(path, fileName, content)
     }
+
+    async sqliteRepository(entity: IEntitySchema){
+        const content = TemplateSqliteRepository(entity)
+        const path = this.outputPath + '/'+ entity.module + '/back/repository/sqlite'
+        const fileName = `${entity.name}SqliteRepository.ts`
+        await this.writeToFile(path, fileName, content)
+    }
+
 
     async mongoModel(entity: IEntitySchema){
         const content = TemplateMongoModel(entity)
