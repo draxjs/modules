@@ -40,6 +40,8 @@ class UserApiKeySqliteRepository extends AbstractSqliteRepository<IUserApiKey, I
     }
 
     async prepareItem(item: any): Promise<any> {
+
+
         if (item && item.user) {
             item.user = await this.findUserById(item.user)
         }
@@ -48,16 +50,19 @@ class UserApiKeySqliteRepository extends AbstractSqliteRepository<IUserApiKey, I
             item.createdBy = await this.findUserById(item.createdBy)
         }
 
-        if (item && item.ipv4) {
-            item.ipv4 = item.ipv4 != "" ? item.ipv4.split(',') : []
+        if (item && item.hasOwnProperty('ipv4')) {
+            item.ipv4 = item.ipv4 ? item.ipv4.split(',') : []
         }
 
-        if (item && item.ipv6) {
-            item.ipv6 = item.ipv6 != "" ? item.ipv6.split(',') : []
+        if (item && item.hasOwnProperty('ipv6')) {
+            item.ipv6 = item.ipv6 ? item.ipv6.split(',') : []
         }
+
+        return item;
     }
 
     async prepareData(userApiKeyData) {
+
         if (userApiKeyData.ipv4 && Array.isArray(userApiKeyData.ipv4) && userApiKeyData.ipv4.length > 0) {
             userApiKeyData.ipv4 = userApiKeyData.ipv4.join(',')
         } else {
@@ -69,6 +74,15 @@ class UserApiKeySqliteRepository extends AbstractSqliteRepository<IUserApiKey, I
         } else {
             userApiKeyData.ipv6 = ""
         }
+
+        if(userApiKeyData.user && userApiKeyData.user.hasOwnProperty('_id')) {
+            userApiKeyData.user = userApiKeyData.user._id
+        }
+
+        if(userApiKeyData.createdBy && userApiKeyData.createdBy.hasOwnProperty('_id')) {
+            userApiKeyData.createdBy = userApiKeyData.createdBy._id
+        }
+
     }
 
 
