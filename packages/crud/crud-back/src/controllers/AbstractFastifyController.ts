@@ -652,10 +652,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
 
             const result = await this.service.groupBy({fields, filters, dateFormat})
-            // console.log("groupby fields",fields)
-            // console.log("groupby dateFormat",dateFormat)
-            // console.log("groupby filters",filters)
-            // console.log("groupby result",result)
+
             return result
         } catch (e) {
             this.handleError(e, reply)
