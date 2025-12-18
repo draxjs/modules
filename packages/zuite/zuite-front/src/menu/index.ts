@@ -114,6 +114,13 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'audit:manage'
       },
+      {
+        icon: 'mdi-police-badge',
+        text:'AuditCrudAvPage',
+        link: { name: "AuditCrudAvPage" },
+        gallery: true,
+        permission: 'audit:manage'
+      },
     ]
   }
 
