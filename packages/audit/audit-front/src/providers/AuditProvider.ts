@@ -110,7 +110,7 @@ class AuditProvider extends AbstractCrudRestProvider<IAudit, IAuditBase, IAuditB
     return now;
   }
 
-  async getStatistics(period: string): Promise<{activity: {user: string, actions: number}[], actionsPerEntity: {entity: string, actions: {name: string, value: number}}[], percentagePerAction: {action: string, percentage: number, color: string}[], actionsPerPeriod: number[]}> {
+  async getStatistics(period: string): Promise<{activity: {user: string, actions: number}[], actionsPerEntity: {entity: string, actions: {name: string, value: number}[]}[], percentagePerAction: {action: string, percentage: number, color: string}[], actionsPerPeriod: number[]}> {
     const promises: Promise<any>[] = []
     
     // activity
