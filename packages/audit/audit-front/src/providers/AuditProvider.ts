@@ -197,7 +197,7 @@ class AuditProvider extends AbstractCrudRestProvider<IAudit, IAuditBase, IAuditB
           ]
         })
         
-        let entities: {entity: string, actions: {name: string, count: number}[]}[] = []
+        let entities: {entity: string, actions: {name: string, value: number}[]}[] = []
 
         for(const item of result) {
           const { entity, action, count } = item;
