@@ -24,6 +24,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@drax/audit-share": "^0.44.1",
     "@drax/crud-front": "^0.44.1",
     "@drax/crud-share": "^0.44.1"
   },
