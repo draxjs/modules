@@ -1,13 +1,16 @@
 import { ICacheAdapter } from '../interfaces/ICacheAdapter.js';
 import LocalCacheAdapter from './LocalCacheAdapter.js';
 import RedisCacheAdapter from './RedisCacheAdapter.js';
+import {DraxConfig} from "../config/DraxConfig.js";
+
+const ttlDefault = DraxConfig.getOrLoad('DRAX_CACHE_TTL') ? parseInt(DraxConfig.getOrLoad('DRAX_CACHE_TTL')) : 10000;
 
 class DraxCache<T> {
     private adapter: ICacheAdapter<T>;
     private redisAdapter?: RedisCacheAdapter<T>;
     private ttl: number;
 
-    constructor(ttl: number = 10000) {
+    constructor(ttl: number = ttlDefault) {
         this.ttl = ttl;
         const redisUrl = process.env.DRAX_CACHE_REDIS_URL;
 

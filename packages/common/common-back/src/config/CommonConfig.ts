@@ -8,6 +8,8 @@ enum CommonConfig {
     FileDir = "DRAX_FILE_DIR",
     MaxUploadSize = "DRAX_MAX_UPLOAD_SIZE",
 
+    DraxCacheTTL = "DRAX_CACHE_TTL",
+
 }
 
 export default CommonConfig;
