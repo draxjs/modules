@@ -19,9 +19,9 @@ class CountryController extends AbstractFastifyController<ICountry, ICountryBase
         this.tenantAssert = false;
         this.tenantSetter = false;
 
-        this.userFilter = true;
-        this.userSetter = true;
-        this.userAssert = true;
+        this.userFilter = false;
+        this.userSetter = false;
+        this.userAssert = false;
 
     }
 
