@@ -282,8 +282,8 @@ const updateSetting = async (setting?: ISetting) => {
         </v-btn>
       </v-toolbar>
       <v-card-text>
-        <!-- @vue-ignore -->
         <setting-field
+          v-if="showModal.setting"
           :model-value="showModal.value"
           :setting="showModal.setting"
           :editing="false"
@@ -364,8 +364,8 @@ const updateSetting = async (setting?: ISetting) => {
               ></v-text-field>
             </v-col>
             <v-col cols="12" md="12" class="ma-0 pa-0 px-3">
-              <!-- @vue-ignore -->
               <setting-field
+                v-if="informationUpdatingModal.setting"
                 variant="outlined"
                 v-model="informationUpdatingModal.setting.value"
                 :setting="informationUpdatingModal.setting"
