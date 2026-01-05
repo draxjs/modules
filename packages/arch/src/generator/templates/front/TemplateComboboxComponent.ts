@@ -12,7 +12,7 @@ import type {PropType} from "vue";
 
 const valueModel = defineModel<any>({type: String})
 
-const entityName = CountryCrud.instance.name
+const entityName = ${entity.name}Crud.instance.name
 
 const {name, label} = defineProps({
   name: {type: String as PropType<string>, required: false},
@@ -56,10 +56,9 @@ const field: IEntityCrudField = {
     v-model="valueModel"
     :field="field"
     :entity="${entity.name}Crud.instance"
-    variant="outlined"
     :hint="hint"
     :persistent-hint="persistentHint"
-    :error-messages="inputErrors"
+    :error-messages="errorMessages"
     :rules="rules"
     :density="density"
     :variant="variant"
