@@ -13,7 +13,6 @@ class DraxCache<T> {
     private ttl: number;
 
     constructor(ttl: number = TTL_DEFAULT) {
-        console.log('Using DraxCache with TTL:', ttl);
         this.ttl = ttl;
         const redisUrl = REDIS_URL;
 
