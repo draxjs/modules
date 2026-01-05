@@ -1,5 +1,4 @@
-import { test, describe } from 'vitest';
-import assert from 'node:assert/strict';
+import { test, describe, assert } from 'vitest';
 import DraxCache from '../../src/cache/DraxCache.js';
 
 describe("CacheTest", ()=>{

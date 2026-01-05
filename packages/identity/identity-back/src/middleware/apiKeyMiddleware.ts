@@ -3,8 +3,9 @@ import {DraxCache, DraxConfig} from "@drax/common-back";
 import UserApiKeyServiceFactory from "../factory/UserApiKeyServiceFactory.js";
 import IdentityConfig from "../config/IdentityConfig.js";
 
-const verifyIp = DraxConfig.getOrLoad(IdentityConfig.VerifyIP) ? /true/i.test(DraxConfig.getOrLoad(IdentityConfig.VerifyIP)) : false;
-const cacheTTL = DraxConfig.getOrLoad(IdentityConfig.ApiKeyCacheTTL) ? parseInt(DraxConfig.getOrLoad(IdentityConfig.ApiKeyCacheTTL)) : 10000;
+const verifyIp = DraxConfig.getOrLoad(IdentityConfig.VerifyIP, 'boolean', true);
+const cacheTTL = DraxConfig.getOrLoad(IdentityConfig.ApiKeyCacheTTL, 'number',10000)
+
 const draxCache = new DraxCache<IUserApiKey>(cacheTTL);
 
 

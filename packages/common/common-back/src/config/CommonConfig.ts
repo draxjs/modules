@@ -10,6 +10,8 @@ enum CommonConfig {
 
     DraxCacheTTL = "DRAX_CACHE_TTL",
 
+    DraxCacheRedisURL = "DRAX_CACHE_REDIS_URL",
+
 }
 
 export default CommonConfig;

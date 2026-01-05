@@ -4,7 +4,7 @@ import RoleServiceFactory from "../factory/RoleServiceFactory.js";
 import Rbac from "../rbac/Rbac.js";
 import IdentityConfig from "../config/IdentityConfig.js";
 
-const cacheTTL = DraxConfig.getOrLoad(IdentityConfig.RbacCacheTTL) ? parseInt(DraxConfig.getOrLoad(IdentityConfig.RbacCacheTTL)) : 10000;
+const cacheTTL = DraxConfig.getOrLoad(IdentityConfig.RbacCacheTTL, 'number',10000) ;
 const draxCache = new DraxCache<IRole>(cacheTTL);
 
 
