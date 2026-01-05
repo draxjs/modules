@@ -11,8 +11,8 @@ interface IDynamicFormFieldSchema {
 interface IDynamicFormBase {
     identifier: string
     fields: Array<{
-        type: string
         name: string
+        type: string
         default: string
         required: boolean
         validationRegex: string

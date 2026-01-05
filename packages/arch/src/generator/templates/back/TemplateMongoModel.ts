@@ -101,7 +101,7 @@ ${entity.name}Schema.set('toJSON', {getters: true, virtuals: true});
 ${entity.name}Schema.set('toObject', {getters: true, virtuals: true});
 
 const MODEL_NAME = '${entity.name}';
-const COLLECTION_NAME = '${entity.name}';
+const COLLECTION_NAME = '${entity.collectionName ? entity.collectionName : entity.name}';
 const ${entity.name}Model = mongoose.model<I${entity.name}, PaginateModel<I${entity.name}>>(MODEL_NAME, ${entity.name}Schema,COLLECTION_NAME);
 
 export {
