@@ -8,7 +8,9 @@ const {t,te} = useI18n()
 
 const {operation,entity } = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-  operation: {type: String as PropType<IEntityCrudOperation>}
+  operation: {type: String as PropType<IEntityCrudOperation>},
+  fullscreen: {type: Boolean, default: undefined},
+  maxWidth: {type: String, default: undefined},
 })
 
 defineEmits(
@@ -32,8 +34,8 @@ const title = computed(() => {
 <template>
   <v-dialog v-model="dialog"
             :z-index="entity.dialogZindex"
-            :fullscreen="entity.dialogFullscreen"
-            :max-width="entity.dialogMaxWidth"
+            :fullscreen="fullscreen === undefined ?  entity.dialogFullscreen : fullscreen"
+            :max-width="maxWidth === undefined ? entity.dialogMaxWidth : maxWidth"
   >
     <v-card>
       <v-toolbar>

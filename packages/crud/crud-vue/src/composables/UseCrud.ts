@@ -6,7 +6,7 @@ import {useI18n} from "vue-i18n";
 
 export function useCrud(entity: IEntityCrud) {
 
-    const store = useCrudStore()
+    const store = useCrudStore(entity?.name)
 
     const {t: $t} = useI18n()
 

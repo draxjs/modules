@@ -146,7 +146,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
   }
 
   get dialogFullscreen() {
-    return false
+    return true
   }
 
   get tabs() {
@@ -166,6 +166,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
   get inputVariantEdit(): IEntityCrudFieldVariant{
     return 'filled'
   }
+
 
 
 }

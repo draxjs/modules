@@ -14,7 +14,7 @@ const {t, te} = useI18n()
 
 const {hasPermission} = useAuth()
 
-const store = useCrudStore()
+
 
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
@@ -39,6 +39,8 @@ const {index, entity, field, disableRules, parentField} = defineProps({
     default: 'filled'
   },
 })
+
+const store = useCrudStore(entity?.name)
 
 
 if (!field) {
@@ -382,6 +384,7 @@ defineEmits(['updateValue'])
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        :add-on-the-fly="field?.addOnTheFly"
     />
 
     <v-card v-if="field.type === 'object'" class="mt-3" variant="flat" border>
@@ -488,6 +491,7 @@ defineEmits(['updateValue'])
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        :add-on-the-fly="field?.addOnTheFly"
     />
 
 

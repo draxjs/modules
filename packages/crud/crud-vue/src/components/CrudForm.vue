@@ -21,7 +21,7 @@ const {onSubmit, onCancel, operation, error, form} = useCrud(entity)
 
 const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])
 
-const store = useCrudStore()
+const store = useCrudStore(entity?.name)
 
 const formRef = ref()
 

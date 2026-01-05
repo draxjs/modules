@@ -4,6 +4,7 @@ import { type PropType, type Ref} from "vue";
 import {ref, onBeforeMount} from "vue";
 import {getItemId} from "../helpers/getItemId"
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
+import CrudCreateOnTheFlyButton from "./buttons/CrudCreateOnTheFlyButton.vue";
 
 const valueModel = defineModel<string | string[]>({type: [String, Array], required: false})
 
@@ -28,6 +29,7 @@ const {entity, multiple} = defineProps({
   errorMessages: {type: Array as PropType<string[]>, default: () => []},
   hideDetails: {type: Boolean, default: false},
   singleLine: {type: Boolean, default: false},
+  addOnTheFly: {type: Boolean, default: false},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
   variant: {type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>, default: 'filled'},
 })
@@ -59,10 +61,7 @@ async function search(value: any) {
 
 }
 
-onBeforeMount(async () => {
-  await search('')
-  await checkIds()
-})
+
 
 async function checkIds(ids: Array<string> = []) {
   try{
@@ -88,6 +87,16 @@ async function checkIds(ids: Array<string> = []) {
   }catch (e){
     console.error(e)
   }
+}
+
+onBeforeMount(async () => {
+  await search('')
+  await checkIds()
+})
+
+function onCreated(item: any) {
+  items.value.push(item)
+  valueModel.value = item._id
 }
 
 defineEmits(['updateValue'])
@@ -124,6 +133,11 @@ defineEmits(['updateValue'])
       :prepend-inner-icon="prependInnerIcon"
       :append-inner-icon="appendInnerIcon"
   >
+
+    <template v-if="addOnTheFly" v-slot:append>
+      <crud-create-on-the-fly-button :entity="entity" @created="onCreated"></crud-create-on-the-fly-button>
+    </template>
+
     <template v-slot:item="{ props: itemProps, item }">
       <v-list-item
           v-bind="itemProps"
@@ -176,6 +190,11 @@ defineEmits(['updateValue'])
       :prepend-inner-icon="prependInnerIcon"
       :append-inner-icon="appendInnerIcon"
   >
+
+    <template v-if="addOnTheFly" v-slot:append>
+      <crud-create-on-the-fly-button :entity="entity" @created="onCreated"></crud-create-on-the-fly-button>
+    </template>
+
     <template v-slot:item="{ props: itemProps, item }">
       <v-list-item
           v-bind="itemProps"

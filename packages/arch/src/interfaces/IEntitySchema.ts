@@ -16,8 +16,8 @@ interface IFieldSchema{
     mdCol?: number
     lgCol?: number
     xlCol?: number
-    tab?: string
-    menu?: string
+    groupTab?: string
+    groupMenu?: string
 }
 
 interface ISchema{

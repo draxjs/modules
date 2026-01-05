@@ -8,7 +8,7 @@ import { useCrudStore } from '../stores/UseCrudStore'
 export function useCrudColumns(entity: IEntityCrud) {
   const { hasPermission } = useAuth()
   const { t, te } = useI18n()
-  const crudStore = useCrudStore()
+  const crudStore = useCrudStore(entity?.name)
 
   // Clave única para localStorage basada en el nombre de la entidad
   const storageKey = `crud_visible_columns_${entity.name.toLowerCase()}`
@@ -42,22 +42,22 @@ export function useCrudColumns(entity: IEntityCrud) {
 
       // Intentar cargar desde localStorage primero
       const storedColumns = loadColumnsFromStorage()
-      
+
       let initialColumns: string[]
-      
+
       if (storedColumns) {
         // Filtrar columnas almacenadas para asegurar que aún existen y tienen permisos
         initialColumns = storedColumns.filter(key => availableHeaders.includes(key))
-        
+
         // Si no quedaron columnas válidas, usar las predeterminadas
         if (initialColumns.length === 0) {
-          initialColumns = entity.selectedHeaders?.filter(key => 
+          initialColumns = entity.selectedHeaders?.filter(key =>
             availableHeaders.includes(key)
           ) || availableHeaders
         }
       } else {
         // Si no hay columnas guardadas, usar selectedHeaders o todas las disponibles
-        initialColumns = entity.selectedHeaders?.filter(key => 
+        initialColumns = entity.selectedHeaders?.filter(key =>
           availableHeaders.includes(key)
         ) || availableHeaders
       }
@@ -80,15 +80,15 @@ export function useCrudColumns(entity: IEntityCrud) {
       .filter(header => !header.permission || hasPermission(header.permission))
       .map(header => ({
         ...header,
-        title: te(`${entity.name.toLowerCase()}.field.${header.title}`) 
-          ? t(`${entity.name.toLowerCase()}.field.${header.title}`) 
+        title: te(`${entity.name.toLowerCase()}.field.${header.title}`)
+          ? t(`${entity.name.toLowerCase()}.field.${header.title}`)
           : header.title
       }))
   })
 
   // Headers filtrados por columnas visibles
   const filteredHeaders = computed<IEntityCrudHeader[]>(() => {
-    const filtered = translatedHeaders.value.filter(header => 
+    const filtered = translatedHeaders.value.filter(header =>
       visibleColumns.value.includes(header.key)
     )
     const actions = entity.actionHeaders.map(header => ({
@@ -111,19 +111,19 @@ export function useCrudColumns(entity: IEntityCrud) {
   const toggleColumn = (columnKey: string) => {
     const currentColumns = [...visibleColumns.value]
     const index = currentColumns.indexOf(columnKey)
-    
+
     if (index > -1) {
       currentColumns.splice(index, 1)
     } else {
       currentColumns.push(columnKey)
     }
-    
+
     crudStore.setVisibleColumns(currentColumns)
     // Guardar cambios en localStorage
     saveColumnsToStorage(currentColumns)
   }
 
-  const allSelected = computed(() => 
+  const allSelected = computed(() =>
     availableColumns.value.every(col => col.visible)
   )
 
@@ -150,7 +150,7 @@ export function useCrudColumns(entity: IEntityCrud) {
       .filter(header => !header.permission || hasPermission(header.permission))
       .map(header => header.key)
 
-    const defaultColumns = entity.selectedHeaders?.filter(key => 
+    const defaultColumns = entity.selectedHeaders?.filter(key =>
       availableHeaders.includes(key)
     ) || availableHeaders
 

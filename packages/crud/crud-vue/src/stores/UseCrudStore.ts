@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
 import type {IEntityCrudOperation, IDraxFieldFilter} from "@drax/crud-share";
 
-export const useCrudStore = defineStore('CrudStore', {
+export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+id, {
     state: () => (
         {
             operation: null as IEntityCrudOperation,
@@ -142,4 +142,4 @@ export const useCrudStore = defineStore('CrudStore', {
         }
     }
 
-})
+})()

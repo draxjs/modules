@@ -8,7 +8,7 @@ import CrudRefDisplay from "./CrudRefDisplay.vue";
 import {formatDate} from "@drax/common-front"
 
 const { t} = useI18n()
-const store = useCrudStore()
+
 const { filterIcon } = useFilterIcon()
 
 const props = defineProps({
@@ -17,6 +17,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const store = useCrudStore(props.entity?.name)
 
 const activeFilters = computed<any[]>(() => {
   return store.filters

@@ -8,7 +8,7 @@ import {useCrudStore} from '../stores/UseCrudStore'
 export const useCrudGroupBy = (entity: IEntityCrud) => {
   const { t, te } = useI18n()
   const groupBystore = useGroupByStore()
-  const crudStore = useCrudStore()
+  const crudStore = useCrudStore(entity?.name)
   const entityName = entity.name.toLowerCase()
 
   const availableFields = computed<IEntityCrudField[]>(() => {

@@ -6,7 +6,7 @@ import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useDisplay} from "vuetify"
 
-const store = useCrudStore()
+
 const {t, te} = useI18n()
 const valueModel = defineModel({type: Array, default: () => []});
 
@@ -23,6 +23,8 @@ const {field, entity} = defineProps({
     default: 'filled'
   },
 })
+
+const store = useCrudStore(entity?.name)
 
 function newItem() {
   return field.objectFields ? field.objectFields.reduce((acc, field) => ({

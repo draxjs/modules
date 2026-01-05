@@ -63,7 +63,8 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
         key: 'actions',
         sortable: false,
         align: 'center',
-        minWidth: '190px'
+        minWidth: '190px',
+        fixed: 'end'
       },
     ]
   }

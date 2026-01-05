@@ -5,17 +5,17 @@ const schema: IEntitySchema = {
     name: "Person",
     tabs: ["BASIC", "ADDRESS", "SKILLS", "MANAGE"],
     schema: {
-        fullname: {tab:"BASIC", type: 'string', required: true, unique: true, index: true, search:true, header: true},
-        live: {tab:"BASIC", type: 'boolean', required: false, unique: false, index: false, header: true},
-        birthdate: {tab:"BASIC", type: 'date', required: false, unique: false, index: false, header: true},
-        secret: {tab:"BASIC", type: 'password', required: false, unique: false, index: false, header: false},
-        nationality: {tab:"BASIC", type: 'ref', ref:'Country', refDisplay: 'name', required: false, unique: false, index: false, header: true},
-        hobbies: {tab:"BASIC", type: 'array.string', required: false, unique: false, index: false, search:true, header: true},
-        race: {tab:"BASIC", type: 'enum', enum:["human","elf","orc"], required: false, unique: false, index: false, search:true, header: true},
-        interests: {tab:"BASIC", type: 'array.enum', enum:["sports","music","reading","travel","cooking","technology"], default: ['sports', 'music'], required: false, unique: false, index: false, search:true, header: true},
-        languages: {tab:"BASIC", type: 'array.ref', ref:'Language', refDisplay: 'name', required: false, unique: false, index: false, header: true},
+        fullname: {groupTab:"BASIC", type: 'string', required: true, unique: true, index: true, search:true, header: true},
+        live: {groupTab:"BASIC", type: 'boolean', required: false, unique: false, index: false, header: true},
+        birthdate: {groupTab:"BASIC", type: 'date', required: false, unique: false, index: false, header: true},
+        secret: {groupTab:"BASIC", type: 'password', required: false, unique: false, index: false, header: false},
+        nationality: {groupTab:"BASIC", type: 'ref', ref:'Country', refDisplay: 'name', required: false, unique: false, index: false, header: true},
+        hobbies: {groupTab:"BASIC", type: 'array.string', required: false, unique: false, index: false, search:true, header: true},
+        race: {groupTab:"BASIC", type: 'enum', enum:["human","elf","orc"], required: false, unique: false, index: false, search:true, header: true},
+        interests: {groupTab:"BASIC", type: 'array.enum', enum:["sports","music","reading","travel","cooking","technology"], default: ['sports', 'music'], required: false, unique: false, index: false, search:true, header: true},
+        languages: {groupTab:"BASIC", type: 'array.ref', ref:'Language', refDisplay: 'name', required: false, unique: false, index: false, header: true},
         address: {
-            tab:"ADDRESS",
+            groupTab:"ADDRESS",
             type: 'object', header: true, schema: {
                 country: {type: 'string', required: false, unique: false, index: false},
                 city: {type: 'string', required: false, unique: false, index: false},
@@ -25,14 +25,14 @@ const schema: IEntitySchema = {
             }
         },
         skills: {
-            tab:"SKILLS",
+            groupTab:"SKILLS",
             type: 'array.object', header: false, schema: {
                 name: {type: 'string', required: true, unique: false, index: false},
                 level: {type: 'number', required: false, unique: false, index: false},
             }
         },
-        tenant: {tab:"MANAGE", type: 'ref', ref:'Tenant', refDisplay: 'name', required: false, unique: false, index: false, header: true},
-        user: {tab:"MANAGE", type: 'ref', ref:'User', refDisplay: 'username', required: false, unique: false, index: false, header: true},
+        tenant: {groupTab:"MANAGE", type: 'ref', ref:'Tenant', refDisplay: 'name', required: false, unique: false, index: false, header: true},
+        user: {groupTab:"MANAGE", type: 'ref', ref:'User', refDisplay: 'username', required: false, unique: false, index: false, header: true},
     }
 }
 

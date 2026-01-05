@@ -9,8 +9,8 @@ const CountrySchema = new mongoose.Schema<ICountry>({
             name: {type: String,   required: true, index: true, unique: true },
             description: {type: String,   required: false, index: false, unique: false },
             flag: {type: String,   required: false, index: false, unique: false },
-            tenant: {type: mongoose.Schema.Types.ObjectId, ref: 'Tenant',  required: true, index: true, unique: true },
-            createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User',  required: true, index: true, unique: true }
+            tenant: {type: mongoose.Schema.Types.ObjectId, ref: 'Tenant',  required: true, index: true, unique: false },
+            createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User',  required: true, index: true, unique: false }
 }, {timestamps: true});
 
 CountrySchema.plugin(uniqueValidator, {message: 'validation.unique'});

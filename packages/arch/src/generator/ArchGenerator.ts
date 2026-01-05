@@ -13,6 +13,7 @@ import {TemplateFastifyController} from "./templates/back/TemplateFastifyControl
 import {TemplateRoutes} from "./templates/back/TemplateRoutes";
 import {TemplateRestProvider} from "./templates/front/TemplateRestProvider";
 import {TemplateEntityCrud} from "./templates/front/TemplateEntityCrud";
+import {TemplateCrudComponent} from "./templates/front/TemplateCrudComponent";
 import {TemplateCrudPage} from "./templates/front/TemplateCrudPage";
 import {TemplateCrudRoute} from "./templates/front/TemplateCrudRoute";
 import {Templatei18n} from "./templates/front/Templatei18n";
@@ -47,8 +48,9 @@ class ArchGenerator{
 
             //FRONT
             await this.restProvider(entity)
-            await this.entityCrud(entity)
-            await this.crudPage(entity)
+            await this.entityCrudConfig(entity)
+            await this.entityCrudComponent(entity)
+            await this.entityCrudPage(entity)
             await this.crudRoute(entity)
             await this.i18n(entity)
         }
@@ -74,14 +76,21 @@ class ArchGenerator{
         await this.writeToFile(path, fileName, content)
     }
 
-    async entityCrud(entity: IEntitySchema){
+    async entityCrudConfig(entity: IEntitySchema){
         const content = TemplateEntityCrud(entity)
         const path = this.outputPath + '/'+ entity.module + '/front/cruds'
         const fileName = `${entity.name}Crud.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async crudPage(entity: IEntitySchema){
+    async entityCrudComponent(entity: IEntitySchema){
+        const content = TemplateCrudComponent(entity)
+        const path = this.outputPath + '/'+ entity.module + '/front/cruds'
+        const fileName = `${entity.name}Crud.vue`
+        await this.writeToFile(path, fileName, content)
+    }
+
+    async entityCrudPage(entity: IEntitySchema){
         const content = TemplateCrudPage(entity)
         const path = this.outputPath + '/'+ entity.module + '/front/pages/crud'
         const fileName = `${entity.name}CrudPage.vue`

@@ -110,14 +110,6 @@ const generateFields = (schema: ISchema | undefined) => {
         throw new Error("generateFields: schema is undefined")
     }
 
-    const tabAttribute = (field: string) => {
-        return schema[field].tab? `tab: '${schema[field].tab}',` : ''
-    }
-
-    const menuAttribute = (field: string) => {
-        return schema[field].menu? `menu: '${schema[field].menu}',` : ''
-    }
-
     for (const field in schema) {
 
         const compositionField = [
@@ -127,13 +119,14 @@ const generateFields = (schema: ISchema | undefined) => {
             `default:${generateDefault(field, schema[field])}`,
         ]
 
-        if(schema[field].menu){
-            compositionField.push(`menu: '${schema[field].menu}'`)
+        if(schema[field].groupMenu){
+            compositionField.push(`groupMenu: '${schema[field].groupMenu}'`)
         }
 
-        if(schema[field].tab){
-            compositionField.push(`tab: '${schema[field].tab}'`)
+        if(schema[field].groupTab){
+            compositionField.push(`groupTab: '${schema[field].groupTab}'`)
         }
+
 
         switch (schema[field].type) {
             case "file":

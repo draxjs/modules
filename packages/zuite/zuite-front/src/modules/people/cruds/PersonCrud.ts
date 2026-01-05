@@ -130,7 +130,8 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         groupTab: 'BASIC',
         ref: 'Country',
         refDisplay: 'name',
-        noFilter: true
+        noFilter: true,
+        addOnTheFly: true
       },
       {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
       // {
@@ -211,7 +212,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         groupTab: 'BASIC',
         ref: 'Country',
         refDisplay: 'name',
-        noFilter: true,
+        // noFilter: true,
         operator: "in"
       },
       {
