@@ -23,6 +23,7 @@ const {entity, multiple} = defineProps({
   closableChips: {type: Boolean, default: true},
   readonly: {type: Boolean, default: false},
   clearable: {type: Boolean, default: true},
+  noFilter: {type: Boolean, default: false},
   hint: {type: String},
   persistentHint: {type: Boolean, default: false},
   rules: {type: Array as PropType<any>, default: () => []},
@@ -106,12 +107,12 @@ defineEmits(['updateValue'])
 <template>
 
   <v-select
-      v-if="field.noFilter === true"
+      v-if="noFilter"
       v-model="valueModel"
       :label="label ? label : field.label"
-      :hint="field.hint"
-      :persistent-hint="field.persistentHint"
-      :placeholder="field.label"
+      :placeholder="label ? label : field.label"
+      :hint="hint"
+      :persistent-hint="persistentHint"
       :items="items"
       :multiple="multiple"
       :chips="chips"
@@ -165,9 +166,9 @@ defineEmits(['updateValue'])
       v-else
       v-model="valueModel"
       :label="label ? label : field.label"
-      :hint="field.hint"
-      :persistent-hint="field.persistentHint"
-      :placeholder="field.label"
+      :placeholder="label ? label : field.label"
+      :hint="hint"
+      :persistent-hint="persistentHint"
       :items="items"
       :multiple="multiple"
       :chips="chips"

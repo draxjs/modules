@@ -9,7 +9,7 @@ const country = ref()
 <template>
 <div>
   <h1>Lab Page</h1>
-  <country-combobox v-model="country" add-on-the-fly></country-combobox>
+  <country-combobox v-model="country" add-on-the-fly hint="asd" persistent-hint></country-combobox>
   <p>Country {{country}}</p>
 </div>
 </template>
