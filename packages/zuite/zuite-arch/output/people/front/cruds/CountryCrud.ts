@@ -93,8 +93,8 @@ createdBy: [(v: any) => !!v || 'validation.required']
   get fields(): IEntityCrudField[]{
     return [
         {name:'name',type:'string',label:'name',default:''},
-{name:'description',type:'longString',label:'description',default:'Some Description',menu: 'BASIC'},
-{name:'flag',type:'file',label:'flag',default:'',menu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'},
+{name:'description',type:'longString',label:'description',default:'Some Description',groupMenu: 'BASIC'},
+{name:'flag',type:'file',label:'flag',default:'',groupMenu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'},
 {name:'tenant',type:'ref',label:'tenant',default:null,ref: 'Tenant',refDisplay: 'name'},
 {name:'createdBy',type:'ref',label:'createdBy',default:null,ref: 'User',refDisplay: 'username'}
     ]

@@ -14,6 +14,7 @@ import {TemplateRoutes} from "./templates/back/TemplateRoutes";
 import {TemplateRestProvider} from "./templates/front/TemplateRestProvider";
 import {TemplateEntityCrud} from "./templates/front/TemplateEntityCrud";
 import {TemplateCrudComponent} from "./templates/front/TemplateCrudComponent";
+import {TemplateComboboxComponent} from "./templates/front/TemplateComboboxComponent";
 import {TemplateCrudPage} from "./templates/front/TemplateCrudPage";
 import {TemplateCrudRoute} from "./templates/front/TemplateCrudRoute";
 import {Templatei18n} from "./templates/front/Templatei18n";
@@ -50,6 +51,7 @@ class ArchGenerator{
             await this.restProvider(entity)
             await this.entityCrudConfig(entity)
             await this.entityCrudComponent(entity)
+            await this.entityComboboxComponent(entity)
             await this.entityCrudPage(entity)
             await this.crudRoute(entity)
             await this.i18n(entity)
@@ -89,6 +91,14 @@ class ArchGenerator{
         const fileName = `${entity.name}Crud.vue`
         await this.writeToFile(path, fileName, content)
     }
+
+    async entityComboboxComponent(entity: IEntitySchema){
+        const content = TemplateComboboxComponent(entity)
+        const path = this.outputPath + '/'+ entity.module + '/front/comboboxes'
+        const fileName = `${entity.name}Combobox.vue`
+        await this.writeToFile(path, fileName, content)
+    }
+
 
     async entityCrudPage(entity: IEntitySchema){
         const content = TemplateCrudPage(entity)

@@ -3,6 +3,7 @@ import LoginPage from "@/modules/base/pages/user/LoginPage.vue";
 import GoogleLoginCallback from "@/modules/base/pages/google/GoogleLoginCallback.vue";
 import PoliticaPrivacidad from "@/modules/base/pages/info/PoliticaPrivacidad.vue";
 import CondicionesServicio from "@/modules/base/pages/info/CondicionesServicio.vue";
+import LabPage from "@/modules/base/pages/lab/LabPage.vue";
 
 const index = [
   {
@@ -17,6 +18,14 @@ const index = [
     name: 'Home',
     path: '/home',
     component: HomePage,
+    meta: {
+      auth: true,
+    }
+  },
+  {
+    name: 'Lab',
+    path: '/lab',
+    component: LabPage,
     meta: {
       auth: true,
     }
