@@ -18,11 +18,13 @@ const valueModel = defineModel({type: [Object]})
 
 const emit = defineEmits(['submit', 'cancel'])
 
-const store = useCrudStore()
-const enablePassword = store.operation === 'create'
-
 const identityCrudStore = useIdentityCrudStore()
 const entity = identityCrudStore.userCrud
+
+const store = useCrudStore(entity.name)
+const enablePassword = store.operation === 'create'
+
+
 
 const valid = ref()
 const formRef = ref()
