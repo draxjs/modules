@@ -3,6 +3,7 @@ import {useFormUtils, useCrudStore} from "@drax/crud-vue";
 import {defineEmits, defineModel, ref} from "vue";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
+import {useIdentityCrudStore} from "../../stores/IdentityCrudStore";
 
 const {$ta} = useI18nValidation()
 const {t, te} = useI18n()
@@ -11,7 +12,10 @@ const valueModel = defineModel({type: [Object]})
 
 const emit = defineEmits(['submit', 'cancel'])
 
-const store = useCrudStore()
+const identityCrudStore = useIdentityCrudStore()
+const entity = identityCrudStore.userApiKeyCrud
+
+const store = useCrudStore(entity.name)
 
 const valid = ref()
 const formRef = ref()

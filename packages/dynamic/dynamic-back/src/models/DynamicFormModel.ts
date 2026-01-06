@@ -5,6 +5,7 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 import type {IDynamicForm, IDynamicFormFieldSchema} from '../interfaces/IDynamicForm'
 
 const DynamicFormFieldSchema = new mongoose.Schema<IDynamicFormFieldSchema>({
+    name: {type: String, required: true, index: false, unique: false},
     type: {
         type: String,
         enum: ['string', 'longString', 'number', 'boolean', 'date', 'ref', 'enum', 'password', 'file', 'array.string', 'array.number', 'array.ref', 'array.enum', 'array.file'],
@@ -12,7 +13,6 @@ const DynamicFormFieldSchema = new mongoose.Schema<IDynamicFormFieldSchema>({
         index: false,
         unique: false
     },
-    name: {type: String, required: true, index: false, unique: false},
     default: {type: String, required: false, index: false, unique: false},
     required: {type: Boolean, required: false, index: false, unique: false},
     validationRegex: {type: String, required: false, index: false, unique: false},
