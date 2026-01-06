@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-back",
-  "version": "0.49.0",
+  "version": "0.49.1",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -21,7 +21,7 @@
     "@drax/crud-back": "^0.49.0",
     "@drax/crud-share": "^0.49.0",
     "@drax/dashboard-back": "^0.49.0",
-    "@drax/dynamic-back": "^0.49.0",
+    "@drax/dynamic-back": "^0.49.1",
     "@drax/identity-back": "^0.49.0",
     "@drax/media-back": "^0.49.0",
     "@drax/settings-back": "^0.49.0",
