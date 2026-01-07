@@ -7,3 +7,14 @@ lerna-debug.log
 /dist/
 /.idea/
 /.npmrc
+/.idea/dataSources/
+/.idea/inspectionProfiles/
+/.idea/.gitignore
+/.idea/dataSources.local.xml
+/.idea/dataSources.xml
+/.idea/dracul-framework.iml
+/.idea/jpa-buddy.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
