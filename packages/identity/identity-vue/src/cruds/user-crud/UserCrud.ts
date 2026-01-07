@@ -39,7 +39,8 @@ class UserCrud extends EntityCrud implements IEntityCrud {
   }
 
   get isTenantEnabled(){
-    return import.meta.env.VITE_DRAX_TENANT === 'ENABLE'
+    const authStore = useAuthStore()
+    return import.meta.env.VITE_DRAX_TENANT === 'ENABLE' && authStore.hasPermission('tenant:view')
   }
 
 

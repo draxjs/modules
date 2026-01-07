@@ -52,6 +52,7 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
 
             <slot :name="`filter.${filter.name}`" v-bind="{filter, filterIndex: index}">
               <crud-form-field
+                  v-if="filter && valueModel[index] !== undefined"
                   :field="filter"
                   :entity="entity"
                   v-model="valueModel[index].value"

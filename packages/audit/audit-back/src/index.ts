@@ -1,5 +1,5 @@
 import AuditPermissions from './permissions/AuditPermissions.js'
-import AuditSchema from './schemas/AuditSchema.js'
+import {AuditSchema, AuditBaseSchema} from './schemas/AuditSchema.js'
 import AuditModel from './models/AuditModel.js'
 import AuditMongoRepository from './repository/mongo/AuditMongoRepository.js'
 import AuditSqliteRepository from './repository/sqlite/AuditSqliteRepository.js'
@@ -17,6 +17,7 @@ export type{
 export {
     AuditPermissions,
     AuditSchema,
+    AuditBaseSchema,
     AuditModel,
     AuditMongoRepository,
     AuditSqliteRepository,

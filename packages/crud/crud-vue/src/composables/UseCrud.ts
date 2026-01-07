@@ -8,7 +8,7 @@ export function useCrud(entity: IEntityCrud) {
 
     const store = useCrudStore(entity?.name)
 
-    const {t: $t} = useI18n()
+    const {t: $t, te: $te} = useI18n()
 
     const exportError = computed({
         get() {
@@ -177,7 +177,7 @@ export function useCrud(entity: IEntityCrud) {
             }
 
             const headers: string = entity.exportHeaders.join(',')
-            const headersTranslate: string | undefined = entity.exportHeadersTranslate?.map(t => $t(t)).join(',')
+            const headersTranslate: string | undefined = entity.exportHeadersTranslate?.map(t => $te(t) ? $t(t) : t).join(',')
             const fileName: string = entity.exportFileName
 
             const r: any = await entity?.provider.export({

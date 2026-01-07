@@ -18,6 +18,8 @@ async function AuditFastifyRoutes(fastify, options) {
 
     fastify.get('/api/audits/group-by', {schema: schemas.groupBySchema}, (req,rep) => controller.groupBy(req,rep))
 
+    fastify.get('/api/audits/export', {schema: schemas.exportSchema}, (req,rep) => controller.export(req,rep))
+
 
 }
 

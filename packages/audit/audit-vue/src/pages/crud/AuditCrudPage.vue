@@ -8,7 +8,7 @@ import AuditView from "../../components/AuditView.vue";
 import {useI18n} from "vue-i18n";
 
 const {t, te} = useI18n();
-const store = useCrudStore();
+const store = useCrudStore(AuditCrud.instance.name);
 
 </script>
 
@@ -17,6 +17,7 @@ const store = useCrudStore();
 
     <template v-slot:filter.entity="{filterIndex}">
      <entity-combobox
+         v-if="store.filters[filterIndex] !== undefined"
          v-model="store.filters[filterIndex].value"
          :clearable="true"
          density="compact"

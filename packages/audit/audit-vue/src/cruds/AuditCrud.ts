@@ -11,8 +11,6 @@ import type {
 } from "@drax/crud-share";
 import {AuditProvider} from "@drax/audit-front";
 
-//Import EntityCrud Refs
-
 class AuditCrud extends EntityCrud implements IEntityCrud {
 
     static singleton: AuditCrud
@@ -183,7 +181,37 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
     }
 
     get exportHeaders() {
-        return ['_id']
+        return [
+            '_id',
+            'createdAt',
+            'action',
+            'entity',
+            'tenant',
+            'user',
+            'ip',
+            'userAgent',
+            'changes',
+            'sessionId',
+            'requestId',
+            'detail'
+        ]
+    }
+
+    get exportHeadersTranslate() {
+        return [
+            'audit.field._id',
+            'audit.field.createdAt',
+            'audit.field.action',
+            'audit.field.entity',
+            'audit.field.tenant',
+            'audit.field.user',
+            'audit.field.ip',
+            'audit.field.userAgent',
+            'audit.field.changes',
+            'audit.field.sessionId',
+            'audit.field.requestId',
+            'audit.field.detail'
+        ]
     }
 
     get isImportable() {
