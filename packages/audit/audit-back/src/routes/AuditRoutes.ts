@@ -6,7 +6,7 @@ import {AuditSchema, AuditBaseSchema} from '../schemas/AuditSchema.js'
 async function AuditFastifyRoutes(fastify, options) {
 
     const controller: AuditController = new AuditController()
-    const schemas = new CrudSchemaBuilder(AuditSchema, AuditBaseSchema,AuditBaseSchema, 'Audit', 'openApi3', ['Audit']);
+    const schemas = new CrudSchemaBuilder(AuditSchema, AuditBaseSchema,AuditBaseSchema, 'Audit', 'openapi-3.0', ['Audit']);
 
     fastify.get('/api/audits', {schema: schemas.paginateSchema}, (req,rep) => controller.paginate(req,rep))
 

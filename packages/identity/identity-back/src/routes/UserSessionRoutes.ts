@@ -6,7 +6,7 @@ import {UserSessionSchema, UserSessionBaseSchema} from '../schemas/UserSessionSc
 async function UserSessionRoutes(fastify, options) {
 
     const controller: UserSessionController = new UserSessionController()
-    const schemas = new CrudSchemaBuilder(UserSessionSchema, UserSessionBaseSchema,UserSessionBaseSchema, 'UserSession', 'openApi3', ['Identity']);
+    const schemas = new CrudSchemaBuilder(UserSessionSchema, UserSessionBaseSchema,UserSessionBaseSchema, 'UserSession', 'openapi-3.0', ['Identity']);
 
     fastify.get('/api/user-sessions', {schema: schemas.paginateSchema}, (req,rep) => controller.paginate(req,rep))
 

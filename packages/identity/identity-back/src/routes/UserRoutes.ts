@@ -1,5 +1,4 @@
 import UserController from "../controllers/UserController.js";
-import {zodToJsonSchema} from "zod-to-json-schema";
 import {CrudSchemaBuilder} from "@drax/crud-back";
 import {LoginBodyRequestSchema, LoginBodyResponseSchema} from "../schemas/LoginSchema.js"
 import {UserSchema, UserCreateSchema, UserUpdateSchema} from "../schemas/UserSchema.js";
@@ -10,11 +9,12 @@ import {
     PasswordBodyResponseSchema
 } from "../schemas/PasswordSchema.js";
 import {SwitchTenantBodyRequestSchema, SwitchTenantBodyResponseSchema} from "../schemas/SwitchTenantSchema.js";
+import zod from "zod"
 
 async function UserRoutes(fastify, options) {
 
     const controller: UserController = new UserController()
-    const schemas = new CrudSchemaBuilder(UserSchema, UserCreateSchema, UserUpdateSchema, 'tenant', 'openApi3', ['Identity']);
+    const schemas = new CrudSchemaBuilder(UserSchema, UserCreateSchema, UserUpdateSchema, 'tenant', 'openapi-3.0', ['Identity']);
 
 
     fastify.get('/api/users/search', {schema: schemas.searchSchema}, async (req, rep) => await controller.search(req, rep))
@@ -35,9 +35,9 @@ async function UserRoutes(fastify, options) {
         {
             schema: {
                 tags: ['Auth'],
-                body: zodToJsonSchema(LoginBodyRequestSchema),
+                body: zod.toJSONSchema(LoginBodyRequestSchema),
                 response: {
-                    200: zodToJsonSchema(LoginBodyResponseSchema),
+                    200: zod.toJSONSchema(LoginBodyResponseSchema),
                     400: schemas.jsonErrorBodyResponse,
                 },
             },
@@ -59,9 +59,9 @@ async function UserRoutes(fastify, options) {
         {
             schema: {
                 tags: ['Auth'],
-                body: zodToJsonSchema(SwitchTenantBodyRequestSchema),
+                body: zod.toJSONSchema(SwitchTenantBodyRequestSchema),
                 response: {
-                    200: zodToJsonSchema(SwitchTenantBodyResponseSchema),
+                    200: zod.toJSONSchema(SwitchTenantBodyResponseSchema),
                     400: schemas.jsonErrorBodyResponse,
                 },
             },
@@ -72,9 +72,9 @@ async function UserRoutes(fastify, options) {
     fastify.post('/api/users/register', {
         schema: {
             tags: ['Auth'],
-            body: zodToJsonSchema(RegisterBodyRequestSchema),
+            body: zod.toJSONSchema(RegisterBodyRequestSchema),
             response: {
-                200: zodToJsonSchema(RegisterBodyResponseSchema),
+                200: zod.toJSONSchema(RegisterBodyResponseSchema),
                 400: schemas.jsonErrorBodyResponse,
                 500: schemas.jsonErrorBodyResponse,
             },
@@ -96,8 +96,8 @@ async function UserRoutes(fastify, options) {
     fastify.post('/api/users/password/change', {
         schema: {
             tags: ['Auth'],
-            body: zodToJsonSchema(MyPasswordBodyRequestSchema),
-            200: zodToJsonSchema(PasswordBodyResponseSchema),
+            body: zod.toJSONSchema(MyPasswordBodyRequestSchema),
+            200: zod.toJSONSchema(PasswordBodyResponseSchema),
             400: schemas.jsonErrorBodyResponse,
             500: schemas.jsonErrorBodyResponse,
         }
@@ -106,8 +106,8 @@ async function UserRoutes(fastify, options) {
     fastify.post('/api/users/password/change/:id', {
         schema: {
             tags: ['Auth'],
-            body: zodToJsonSchema(PasswordBodyRequestSchema),
-            200: zodToJsonSchema(PasswordBodyResponseSchema),
+            body: zod.toJSONSchema(PasswordBodyRequestSchema),
+            200: zod.toJSONSchema(PasswordBodyResponseSchema),
             400: schemas.jsonErrorBodyResponse,
             500: schemas.jsonErrorBodyResponse,
         }

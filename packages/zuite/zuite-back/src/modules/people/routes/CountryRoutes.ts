@@ -6,7 +6,7 @@ import {CountrySchema, CountryBaseSchema} from '../schemas/CountrySchema.js'
 async function CountryFastifyRoutes(fastify, options) {
 
     const controller: CountryController = new CountryController()
-    const schemas = new CrudSchemaBuilder(CountrySchema, CountryBaseSchema,CountryBaseSchema, 'Country', 'openApi3', ['ABM']);
+    const schemas = new CrudSchemaBuilder(CountrySchema, CountryBaseSchema,CountryBaseSchema, 'Country', 'openapi-3.0', ['ABM']);
 
     fastify.get('/api/countries/export', (req,rep) =>controller.export(req,rep))
 

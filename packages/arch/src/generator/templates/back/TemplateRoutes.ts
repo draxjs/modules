@@ -25,7 +25,7 @@ import {${entity.name}Schema, ${entity.name}BaseSchema} from '../schemas/${entit
 async function ${entity.name}FastifyRoutes(fastify, options) {
 
     const controller: ${entity.name}Controller = new ${entity.name}Controller()
-    const schemas = new CrudSchemaBuilder(${entity.name}Schema, ${entity.name}BaseSchema,${entity.name}BaseSchema, '${entity.name}', 'openApi3', ['${getApiTag(entity)}']);
+    const schemas = new CrudSchemaBuilder(${entity.name}Schema, ${entity.name}BaseSchema,${entity.name}BaseSchema, '${entity.name}', 'openapi-3.0', ['${getApiTag(entity)}']);
 
     fastify.get('${getApiBasePath(entity)}', {schema: schemas.paginateSchema}, (req,rep) => controller.paginate(req,rep))
     

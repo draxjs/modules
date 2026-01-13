@@ -5,7 +5,7 @@ import { z } from 'zod';
 const PersonBaseSchema = z.object({
       fullname: z.string().min(1,'validation.required'),
     live: z.boolean().optional(),
-    birthdate: z.coerce.date().nullable().optional(),
+    birthdate: z.iso.datetime().nullable().optional(),
     secret: z.string().optional(),
     nationality: z.string().optional().nullable(),
     hobbies: z.array(z.string()).optional(),

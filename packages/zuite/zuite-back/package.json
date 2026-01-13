@@ -15,7 +15,7 @@
     "recoveryAdmin": " node --env-file .env --loader ts-node/esm src/setup/scripts/RecoverAdminPassword.ts"
   },
   "dependencies": {
-    "@as-integrations/fastify": "^2.1.1",
+
     "@drax/audit-back": "^0.49.2",
     "@drax/common-back": "^0.49.0",
     "@drax/crud-back": "^0.49.0",
@@ -39,7 +39,7 @@
     "mongoose": "^8.7.1",
     "mongoose-paginate-v2": "^1.8.5",
     "mongoose-unique-validator": "^5.0.1",
-    "zod-to-json-schema": "^3.24.3"
+    "zod": "^4.3.5"
   },
   "author": "",
   "license": "ISC",
