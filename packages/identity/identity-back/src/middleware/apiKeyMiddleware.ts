@@ -39,7 +39,7 @@ async function apiKeyMiddleware(request, reply) {
         if (apiKey) {
             const userApiKey: IUserApiKey = await draxCache.getOrLoad(apiKey, userApiKeyLoader)
 
-            if (verifyIp) {
+            if (userApiKey && verifyIp) {
                 if (userApiKey.ipv4 && userApiKey.ipv4.length > 0) {
                     const clientIp = request.ip
                     if (!userApiKey.ipv4.includes(clientIp)) {
