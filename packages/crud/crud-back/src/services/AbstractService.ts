@@ -39,7 +39,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async create(data: C): Promise<T> {
         try {
             if (this._schema) {
-                await this._schema.parseAsync(data)
+                data = await this._schema.parseAsync(data) as C
             }
             if (this.transformCreate) {
                 data = await this.transformCreate(data)
@@ -61,7 +61,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async update(id: string, data: U): Promise<T> {
         try {
             if (this._schema) {
-                await this._schema.parseAsync(data)
+                data = await this._schema.parseAsync(data) as U
             }
             if (this.transformUpdate) {
                 data = await this.transformUpdate(data)
@@ -84,7 +84,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
         try {
 
             if (this._schema) {
-                await this._schema.partial().parseAsync(data)
+                data = await this._schema.partial().parseAsync(data)
             }
 
             const item: T = await this._repository.updatePartial(id, data)

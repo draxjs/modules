@@ -24,7 +24,7 @@
   "dependencies": {
     "@drax/crud-back": "^0.49.0",
     "@drax/crud-share": "^0.49.0",
-    "mongoose": "^8.6.3",
+    "mongoose": "^8.21.0",
     "mongoose-paginate-v2": "^1.8.3"
   },
   "peerDependencies": {
