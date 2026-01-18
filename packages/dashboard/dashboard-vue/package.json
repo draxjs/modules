@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "@drax/crud-front": "^0.51.0",
-    "@drax/crud-share": "^0.51.0"
+    "@drax/crud-share": "^0.51.0",
+    "@drax/dashboard-front": "^0.51.0"
   },
   "peerDependencies": {
     "pinia": "^2.2.2",
