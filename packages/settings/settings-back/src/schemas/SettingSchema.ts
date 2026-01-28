@@ -1,7 +1,7 @@
 import z from "zod"
 
 const settingSchema = z.object({
-    key: z.string({required_error: "validation.required"}).min(1, "validation.required"),
+    key: z.string({error: "validation.required"}).min(1, "validation.required"),
     label: z.string().optional().nullable(),
     description: z.string().optional().nullable(),
     category: z.string().optional().nullable(),
