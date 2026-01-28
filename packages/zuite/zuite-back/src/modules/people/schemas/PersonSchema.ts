@@ -3,12 +3,12 @@ import {z} from 'zod';
 
 const PersonBaseSchema = z.object({
     fullname: z.string().min(1, 'validation.required'),
-    live: z.boolean().optional(),
+    live: z.boolean({error: 'validation.invalid'}).optional(),
     birthdate: z.iso.datetime().nullable().optional(),
     secret: z.string().optional(),
     nationality: z.string().optional().nullable(),
     hobbies: z.array(z.string()).optional(),
-    race: z.enum(['human', 'elf', 'orc']).optional(),
+    race: z.enum(['human', 'elf', 'orc'],{error:'validation.invalid'}).optional(),
     interests: z.array(z.enum(['sports', 'music', 'reading', 'travel', 'cooking', 'technology'])).optional().default(["sports", "music"]),
     languages: z.array(z.string()).optional(),
     address: z.object({

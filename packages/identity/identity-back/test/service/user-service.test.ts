@@ -38,8 +38,8 @@ describe("UserServiceTest", function () {
     it("should changeUserPassword user", async function () {
         const userId = userAdminData._id
         const newPassword = "123"
-        let passwordChangedResult = await userService.changeUserPassword(userId, newPassword)
-        expect(passwordChangedResult).toBe(true)
+        let userPasswordChanged = await userService.changeUserPassword(userId, newPassword)
+        expect(userPasswordChanged._id.toString()).toBe(userId)
     })
 
     it("should fail create user with short password", async function () {

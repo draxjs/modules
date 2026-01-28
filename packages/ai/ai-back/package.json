@@ -21,7 +21,7 @@
     "jsdom": "^26.0.0",
     "office-text-extractor": "^3.0.3",
     "openai": "^6.0.0",
-    "zod": "^4.3.5"
+    "zod": "^4.3.6"
   },
   "peerDependenciesMeta": {
     "zod": {
