@@ -50,7 +50,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return item
         } catch (e) {
-            console.error("Error creating", e)
+            console.error("Error create", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, data)
             }
@@ -72,7 +76,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return item
         } catch (e) {
-            console.error("Error updating", e)
+            console.error("Error update", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, data)
             }
@@ -93,7 +101,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return item
         } catch (e) {
-            console.error("Error updating", e)
+            console.error("Error updatePartial", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, data)
             }
@@ -112,7 +124,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return result;
         } catch (e) {
-            console.error("Error deleting", e)
+            console.error("Error delete", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
@@ -126,7 +142,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return item
         } catch (e) {
-            console.error("Error finding Auto by id", e)
+            console.error("Error findById", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
     }
@@ -139,7 +159,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return items
         } catch (e) {
-            console.error("Error finding Auto by id", e)
+            console.error("Error findByIds", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
     }
@@ -152,7 +176,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return item
         } catch (e) {
-            console.error("Error finding Auto findOneBy", e)
+            console.error("Error findOneBy", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
@@ -167,7 +195,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return items
         } catch (e) {
-            console.error("Error finding Auto findBy", e)
+            console.error("Error findBy", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
@@ -181,7 +213,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return items
         } catch (e) {
-            console.error("Error fetching all Autos", e)
+            console.error("Error fetchAll", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
@@ -196,7 +232,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return items
         } catch (e) {
-            console.error("Error fetching all Autos", e)
+            console.error("Error search", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
@@ -221,7 +261,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
             return pagination;
         } catch (e) {
-            console.error("Error paginating", e)
+            console.error("Error paginate", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
@@ -242,7 +286,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
             return items;
         } catch (e) {
-            console.error("Error find", e)
+            console.error("Error find", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
@@ -256,7 +304,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             let item = await this._repository.findOne({search, filters});
             return item;
         } catch (e) {
-            console.error("Error findOne", e)
+            console.error("Error findOne", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
@@ -301,7 +353,11 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             }
 
         } catch (e) {
-            console.error("Error exporting", e)
+            console.error("Error export", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
             throw e;
         }
 
