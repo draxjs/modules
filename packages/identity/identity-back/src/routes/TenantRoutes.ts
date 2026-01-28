@@ -7,7 +7,7 @@ import {TenantSchema, TenantBaseSchema} from '../schemas/TenantSchema.js'
 async function TenantRoutes(fastify, options) {
 
     const controller: TenantController = new TenantController()
-    const schemas = new CrudSchemaBuilder(TenantSchema, TenantBaseSchema,TenantBaseSchema, 'tenant', 'openApi3', ['Identity']);
+    const schemas = new CrudSchemaBuilder(TenantSchema, TenantBaseSchema,TenantBaseSchema, 'tenant', 'openapi-3.0', ['Identity']);
 
     //Getters
     fastify.get('/api/tenants/search', {schema: schemas.searchSchema}, (req, rep) => controller.search(req, rep))

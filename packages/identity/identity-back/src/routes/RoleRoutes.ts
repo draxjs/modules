@@ -1,13 +1,12 @@
 import RoleController from "../controllers/RoleController.js";
 import {CrudSchemaBuilder} from "@drax/crud-back";
 import {RoleBaseSchema, RoleSchema} from "../schemas/RoleSchema.js";
-import {zodToJsonSchema} from "zod-to-json-schema";
 import zod from "zod";
 
 async function RoleRoutes(fastify, options) {
 
     const controller: RoleController = new RoleController()
-    const schemas = new CrudSchemaBuilder(RoleSchema, RoleBaseSchema, RoleBaseSchema, 'role','openApi3', ['Identity']);
+    const schemas = new CrudSchemaBuilder(RoleSchema, RoleBaseSchema, RoleBaseSchema, 'role','openapi-3.0', ['Identity']);
 
     fastify.get('/api/roles/search', {schema: schemas.searchSchema}, (req, rep) => controller.search(req, rep))
 
@@ -29,7 +28,7 @@ async function RoleRoutes(fastify, options) {
         schema: {
             tags: ['Identity'],
             response: {
-                200: zodToJsonSchema(zod.array(zod.string())),
+                200: zod.toJSONSchema(zod.array(zod.string())),
                 401: schemas.jsonErrorBodyResponse,
                 403: schemas.jsonErrorBodyResponse,
             }
@@ -39,7 +38,7 @@ async function RoleRoutes(fastify, options) {
     fastify.get('/api/roles/name/:name', {
         schema: {
             tags: ['Identity'],
-            params: zodToJsonSchema(zod.object({name: zod.string()})),
+            params: zod.toJSONSchema(zod.object({name: zod.string()})),
             response: {
                 200: schemas.jsonEntitySchema,
                 401: schemas.jsonErrorBodyResponse,

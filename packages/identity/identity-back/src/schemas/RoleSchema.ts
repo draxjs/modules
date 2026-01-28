@@ -1,7 +1,7 @@
-import {date, object, string, array, boolean} from "zod"
+import { object, string, array, boolean, iso} from "zod"
 
 const RoleBaseSchema = object({
-    name: string({ required_error: "validation.required" })
+    name: string({ error: "validation.required" })
         .min(1, "validation.required")
         .regex(/^[A-Z]/, "validation.startWithUpperCase"),
     permissions: array(string()).optional(),
@@ -22,8 +22,8 @@ const RoleSchema = RoleBaseSchema.extend({
         id: string().optional(),
         name: string()
     })).optional(),
-    createdAt: date().optional(),
-    updatedAt: date().optional()
+    createdAt: iso.datetime().optional(),
+    updatedAt: iso.datetime().optional()
 })
 
 

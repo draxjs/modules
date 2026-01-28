@@ -1,5 +1,4 @@
-import  {describe,it, beforeAll, afterAll} from "vitest"
-import assert from "assert";
+import  {describe,it, beforeAll, afterAll, assert} from "vitest"
 import RoleService from "../../src/services/RoleService";
 import MongoInMemory from "../db/MongoInMemory";
 import {IRole} from "../../../identity-share/src/interfaces/IRole";

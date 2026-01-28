@@ -6,7 +6,7 @@ import {PersonSchema, PersonBaseSchema} from '../schemas/PersonSchema.js'
 async function PersonFastifyRoutes(fastify, options) {
 
     const controller: PersonController = new PersonController()
-    const schemas = new CrudSchemaBuilder(PersonSchema, PersonBaseSchema,PersonBaseSchema, 'Person', 'openApi3', ['people']);
+    const schemas = new CrudSchemaBuilder(PersonSchema, PersonBaseSchema,PersonBaseSchema, 'Person', 'openapi-3.0', ['people']);
 
     fastify.get('/api/person', {schema: schemas.paginateSchema}, (req,rep) => controller.paginate(req,rep))
 

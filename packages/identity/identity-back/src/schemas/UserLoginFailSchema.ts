@@ -11,7 +11,7 @@ const UserLoginFailBaseSchema = z.object({
 const UserLoginFailSchema = UserLoginFailBaseSchema
     .extend({
         _id: z.string(),
-        createdAt: z.coerce.date().nullable().optional()
+        createdAt: z.iso.datetime().nullable().optional()
     })
 
 export default UserLoginFailSchema;

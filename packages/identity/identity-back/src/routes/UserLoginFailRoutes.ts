@@ -6,7 +6,7 @@ import {UserLoginFailSchema, UserLoginFailBaseSchema} from '../schemas/UserLogin
 async function UserLoginFailRoutes(fastify, options) {
 
     const controller: UserLoginFailController = new UserLoginFailController()
-    const schemas = new CrudSchemaBuilder(UserLoginFailSchema, UserLoginFailBaseSchema,UserLoginFailBaseSchema, 'UserLoginFail', 'openApi3', ['Identity']);
+    const schemas = new CrudSchemaBuilder(UserLoginFailSchema, UserLoginFailBaseSchema,UserLoginFailBaseSchema, 'UserLoginFail', 'openapi-3.0', ['Identity']);
 
     fastify.get('/api/user-login-fails', {schema: schemas.paginateSchema}, (req,rep) => controller.paginate(req,rep))
 

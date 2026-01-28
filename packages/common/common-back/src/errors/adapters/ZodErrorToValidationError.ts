@@ -3,7 +3,7 @@ import type {IValidationFieldError} from "../../interfaces/IValidationFieldError
 import ValidationError from '../ValidationError.js';
 
 function ZodErrorToValidationError(zodError: ZodError, payload?: any) {
-    let errors : IValidationFieldError[] = zodError.errors.map(err => {
+    let errors : IValidationFieldError[] = zodError.issues.map(err => {
         let path = err.path.join('.')
         return {
             field: err.path.join('.'),

@@ -13,7 +13,7 @@ const UserSessionSchema = UserSessionBaseSchema
     .extend({
         _id: z.string(),
         user: z.object({_id: z.string(), username: z.string()}),
-        createdAt: z.coerce.date().nullable().optional()
+        createdAt: z.iso.datetime().nullable().optional()
     })
 
 export default UserSessionSchema;

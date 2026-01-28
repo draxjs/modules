@@ -6,7 +6,7 @@ import {LanguageSchema, LanguageBaseSchema} from '../schemas/LanguageSchema.js'
 async function LanguageFastifyRoutes(fastify, options) {
 
     const controller: LanguageController = new LanguageController()
-    const schemas = new CrudSchemaBuilder(LanguageSchema, LanguageBaseSchema,LanguageBaseSchema, 'Language', 'openApi3', ['people']);
+    const schemas = new CrudSchemaBuilder(LanguageSchema, LanguageBaseSchema,LanguageBaseSchema, 'Language', 'openapi-3.0', ['people']);
 
     fastify.get('/api/language', {schema: schemas.paginateSchema}, (req,rep) => controller.paginate(req,rep))
 

@@ -1,6 +1,5 @@
 import z from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
-import type { Targets } from 'zod-to-json-schema';
+
 import {
   IdParamSchema,
   DeleteBodyResponseSchema,
@@ -21,9 +20,9 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
   private entityUpdateSchema: TUpdate;
   private entityName: string;
   private tags: string[];
-  private target: Targets = 'openApi3'; //"jsonSchema7" | "jsonSchema2019-09" | "openApi3" | "openAi"
+  private target: string = 'openapi-3.0'; //"jsonSchema7" | "jsonSchema2019-09" | "openapi-3.0" | "openAi"
 
-  constructor(entitySchema: T, entityCreateSchema: TCreate, entityUpdateSchema: TUpdate, entityName: string, target:Targets = 'openApi3', tags: string[] = []) {
+  constructor(entitySchema: T, entityCreateSchema: TCreate, entityUpdateSchema: TUpdate, entityName: string, target:string = 'openapi-3.0', tags: string[] = []) {
     this.entitySchema = entitySchema;
     this.entityCreateSchema = entityCreateSchema;
     this.entityUpdateSchema = entityUpdateSchema;
@@ -40,23 +39,23 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
   }
 
   get jsonEntityCreateSchema(){
-    return zodToJsonSchema(this.entityCreateSchema, {target: this.target})
+    return z.toJSONSchema(this.entityCreateSchema, {target: this.target})
   }
 
   get jsonEntityUpdateSchema(){
-    return zodToJsonSchema(this.entityUpdateSchema, {target: this.target})
+    return z.toJSONSchema(this.entityUpdateSchema, {target: this.target})
   }
 
   get jsonEntitySchema() {
-    return zodToJsonSchema(this.entitySchema, {target: this.target})
+    return z.toJSONSchema(this.entitySchema, {target: this.target})
   }
 
   get jsonEntityArraySchema() {
-    return zodToJsonSchema(z.array(this.entitySchema), {target: this.target})
+    return z.toJSONSchema(z.array(this.entitySchema), {target: this.target})
   }
 
   get jsonEntityGroupBySchema() {
-    return zodToJsonSchema(
+    return z.toJSONSchema(
       z.array(
         z.object({
           count: z.number()
@@ -67,49 +66,49 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
   }
 
   get jsonExportBodyResponse() {
-    return zodToJsonSchema(ExportBodyResponseSchema, {target: this.target})
+    return z.toJSONSchema(ExportBodyResponseSchema, {target: this.target})
   }
 
   get jsonErrorBodyResponse() {
-    return zodToJsonSchema(ErrorBodyResponseSchema, {target: this.target})
+    return z.toJSONSchema(ErrorBodyResponseSchema, {target: this.target})
   }
 
   get jsonValidationErrorBodyResponse() {
-    return zodToJsonSchema(ValidationErrorBodyResponseSchema, {target: this.target})
+    return z.toJSONSchema(ValidationErrorBodyResponseSchema, {target: this.target})
   }
 
   get jsonFindQuerySchema(){
-    return zodToJsonSchema(FindQuerySchema, {target: this.target})
+    return z.toJSONSchema(FindQuerySchema, {target: this.target})
   }
 
   get jsonGroupByQuerySchema(){
-    return zodToJsonSchema(GroupByQuerySchema, {target: this.target})
+    return z.toJSONSchema(GroupByQuerySchema, {target: this.target})
   }
 
   get jsonSearchQuerySchema(){
-    return zodToJsonSchema(SearchQuerySchema, {target: this.target})
+    return z.toJSONSchema(SearchQuerySchema, {target: this.target})
   }
 
   get jsonPaginateQuerySchema(){
-    return zodToJsonSchema(PaginateQuerySchema, {target: this.target})
+    return z.toJSONSchema(PaginateQuerySchema, {target: this.target})
   }
 
   get jsonDeleteBodyResponseSchema(){
-    return zodToJsonSchema(DeleteBodyResponseSchema, {target: this.target})
+    return z.toJSONSchema(DeleteBodyResponseSchema, {target: this.target})
   }
 
   get jsonFindByParamSchema(){
-    return zodToJsonSchema(FindByParamSchema, {target: this.target})
+    return z.toJSONSchema(FindByParamSchema, {target: this.target})
   }
 
   get jsonPaginateBodyResponseSchema(){
-    return zodToJsonSchema(PaginateBodyResponseSchema.extend({
+    return z.toJSONSchema(PaginateBodyResponseSchema.extend({
       items: z.array(this.entitySchema)
     }), {target: this.target})
   }
 
   get jsonIdParamSchema(){
-    return zodToJsonSchema(IdParamSchema, {target: this.target})
+    return z.toJSONSchema(IdParamSchema, {target: this.target})
   }
 
   /**
@@ -152,7 +151,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
   get findByIdsSchema() {
     return {
       ...(this.getTags),
-      params: zodToJsonSchema(z.object({
+      params: z.toJSONSchema(z.object({
         ids: z.string().regex(/^[^,]+(,[^,]+)*$/, "Debe ser una lista de valores separados por coma sin comas consecutivas")
       }), {target: this.target}),
       response: {
@@ -339,7 +338,7 @@ export class CrudSchemaBuilder<T extends z.ZodObject<z.ZodRawShape>, TCreate ext
     return {
       ...(this.getTags),
       params: this.jsonIdParamSchema,
-      body: zodToJsonSchema(this.entityUpdateSchema.partial(), {target: this.target}),
+      body: z.toJSONSchema(this.entityUpdateSchema.partial(), {target: this.target}),
       response: {
         200: this.jsonEntitySchema,
         401: this.jsonErrorBodyResponse,

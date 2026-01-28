@@ -37,7 +37,7 @@ describe("Test Schema", function () {
             }).optional().nullable()
         })
 
-        let jsonSchema = zodToJsonSchema(zSchema,{target:'openApi3'})
+        let jsonSchema = zodToJsonSchema(zSchema,{target:'openapi-3.0'})
         console.log("jsonUserSchema", JSON.stringify(jsonSchema, null,4))
 
         let row1 = {
