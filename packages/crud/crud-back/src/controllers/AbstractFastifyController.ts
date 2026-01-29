@@ -270,6 +270,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         return payload
     }
 
+    async postCreate(request: CustomRequest, item:T){
+        return item
+    }
+
     async create(request: CustomRequest, reply: FastifyReply) {
         try {
             request.rbac.assertPermission(this.permission.Create)
@@ -278,6 +282,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             await this.preCreate(request, payload as C)
             let item = await this.service.create(payload as C)
             this.onCreated(request, item)
+            await this.postCreate(request, item as T)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -286,6 +291,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async preUpdate(request: CustomRequest, payload:any):Promise<C>{
         return payload
+    }
+
+    async postUpdate(request: CustomRequest, item:T){
+        return item
     }
 
     async update(request: CustomRequest, reply: FastifyReply) {
@@ -323,6 +332,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             this.onUpdated(request, preItem, item)
 
+            await this.postUpdate(request, item as T)
+
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -331,6 +342,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async preUpdatePartial(request: CustomRequest, payload:any):Promise<C>{
         return payload
+    }
+
+    async postUpdatePartial(request: CustomRequest, item:T){
+        return item
     }
 
     async updatePartial(request: CustomRequest, reply: FastifyReply) {
@@ -364,7 +379,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             if (!item) {
                 throw new NotFoundError()
             }
+
             this.onUpdated(request, preItem, item)
+
+            await this.postUpdatePartial(request, item as T)
+
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -375,6 +394,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         return item
     }
 
+    async postDelete(request: CustomRequest, item:T){
+        return item
+    }
 
     async delete(request: CustomRequest, reply: FastifyReply) {
         try {
@@ -400,9 +422,12 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             this.assertTenant(item, request.rbac)
 
             await this.preDelete(request, item)
+
             await this.service.delete(id)
 
             this.onDeleted(request, item)
+
+            await this.postDelete(request, item)
 
             reply.send({
                 id: id,

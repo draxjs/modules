@@ -18,6 +18,26 @@ class LanguageController extends AbstractFastifyController<ILanguage, ILanguageB
         this.userAssert = false;
     }
 
+    async postCreate(req, item: ILanguage) {
+        console.log('Create new language:', item)
+        return item
+    }
+
+    async postUpdate(req, item: ILanguage) {
+        console.log('Update language:', item)
+        return item
+    }
+
+    async postUpdatePartial(req, item: ILanguage) {
+        console.log('UpdatePartial language:', item)
+        return item
+    }
+
+    async postDelete(req, item: ILanguage) {
+        console.log('Delete language:', item)
+        return item
+    }
+
 }
 
 export default LanguageController;
