@@ -24,7 +24,20 @@ UserLoginFailMongoSchema.set('toObject', {getters: true, virtuals: true});
 
 const MODEL_NAME = 'UserLoginFail';
 const COLLECTION_NAME = 'UserLoginFail';
-const UserLoginFailModel = mongoose.model<IUserLoginFail, PaginateModel<IUserLoginFail>>(MODEL_NAME, UserLoginFailMongoSchema,COLLECTION_NAME);
+
+let UserLoginFailModel;
+
+try {
+    UserLoginFailModel = mongoose.model<IUserLoginFail, PaginateModel<IUserLoginFail>>(MODEL_NAME, UserLoginFailMongoSchema, COLLECTION_NAME);
+} catch (e) {
+    if (e.name === 'OverwriteModelError') {
+        UserLoginFailModel = mongoose.model<IUserLoginFail, PaginateModel<IUserLoginFail>>(MODEL_NAME);
+    } else {
+        throw e;
+    }
+}
+
+
 
 export {
     UserLoginFailMongoSchema,

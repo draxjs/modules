@@ -1,7 +1,6 @@
 import {describe, it, beforeAll, afterAll} from "vitest"
 import {MongooseConector} from "@drax/common-back";
 import {UserSchema} from "../../src/schemas/UserSchema";
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import TenantServiceFactory from "../../src/factory/TenantServiceFactory";
 import UserServiceFactory from "../../src/factory/UserServiceFactory";
 import fastJson from "fast-json-stringify"
@@ -37,7 +36,7 @@ describe("Test Schema", function () {
             }).optional().nullable()
         })
 
-        let jsonSchema = zodToJsonSchema(zSchema,{target:'openapi-3.0'})
+        let jsonSchema = z.toJSONSchema(zSchema,{target:"openapi-3.0"})
         console.log("jsonUserSchema", JSON.stringify(jsonSchema, null,4))
 
         let row1 = {
@@ -71,8 +70,6 @@ describe("Test Schema", function () {
             lastname:"mock-lastname",
         }
 
-
-
         //@ts-ignore
         const stringify =  fastJson(jsonSchema  )
 
@@ -91,18 +88,21 @@ describe("Test Schema", function () {
     it("should create MOCK", async () => {
         console.log("should create mock")
 
-        let jsonUserSchema = zodToJsonSchema(UserSchema)
+        let jsonUserSchema = z.toJSONSchema(UserSchema, {target:"openapi-3.0"})
         console.log("jsonUserSchema", JSON.stringify(jsonUserSchema, null,4))
 
-
-
-
         let user = await userService.search('667618bfcd0dd6f880b90d82')
-        console.log("user",user)
+
+
+        // Convertir ObjectIds a strings
+        const userConverted = JSON.parse(JSON.stringify(user[0]))
+
+        console.log("user",user[0])
+        console.log("userConverted",userConverted)
 
         //@ts-ignore
         const stringify = fastJson(jsonUserSchema)
-        let ruser = stringify(user[0])
+        let ruser = stringify(userConverted)
 
         console.log("ruser",ruser)
 

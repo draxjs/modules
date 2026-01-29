@@ -21,9 +21,9 @@
     "testMongoRepositoryUserApiKey": "node --import tsx --test test/repository/mongo/user-apikey-mongo*",
     "testSqliteRepositoryUser": "node --import tsx --test test/repository/sqlite/user*",
     "testSqliteRepositoryRole": "node --import tsx --test test/repository/sqlite/role*",
-    "testServiceRole": "node --import tsx --test test/service/role*",
-    "testServiceUser": "node --import tsx --test test/service/user*",
-    "testcoverage": "node --import tsx --experimental-test-coverage  test/service/*"
+    "testServiceRole": "node --import tsx --test test/services/role*",
+    "testServiceUser": "node --import tsx --test test/services/user*",
+    "testcoverage": "node --import tsx --experimental-test-coverage  test/services/*"
   },
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",

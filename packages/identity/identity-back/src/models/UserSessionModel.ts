@@ -26,7 +26,19 @@ UserSessionMongoSchema.set('toObject', {getters: true, virtuals: true});
 
 const MODEL_NAME = 'UserSession';
 const COLLECTION_NAME = 'UserSession';
-const UserSessionModel = mongoose.model<IUserSession, PaginateModel<IUserSession>>(MODEL_NAME, UserSessionMongoSchema,COLLECTION_NAME);
+
+let UserSessionModel;
+
+try {
+    UserSessionModel = mongoose.model<IUserSession, PaginateModel<IUserSession>>(MODEL_NAME, UserSessionMongoSchema,COLLECTION_NAME);
+} catch (e) {
+    if (e.name === 'OverwriteModelError') {
+        UserSessionModel = mongoose.model<IUserSession, PaginateModel<IUserSession>>(MODEL_NAME);
+    } else {
+        throw e;
+    }
+}
+
 
 export {
     UserSessionMongoSchema,

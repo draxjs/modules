@@ -1,32 +1,36 @@
 import {describe, it, beforeAll, afterAll, expect} from "vitest"
-import MongoInMemory from "../db/MongoInMemory";
 import TenantRoute from "../../src/routes/TenantRoutes";
-
-process.env.DRAX_DB_ENGINE = "mongo"
-import {FastifyTestServerFactory} from './helpers/FastifyTestServerFactory'
+import TestSetup from "../setup/TestSetup";
 
 
 describe("Tenant Route Test", function () {
 
-    let FastifyTestServer = FastifyTestServerFactory()
-    FastifyTestServer.register(TenantRoute)
+    let testSetup = new TestSetup()
+    let FASTIFY_TEST_SERVER: any;
+    let ACCESS_TOKEN: any;
 
     beforeAll(async () => {
-        await MongoInMemory.connect()
-        console.log("BEFORE MOCK", MongoInMemory.mongooseStatus, MongoInMemory.serverStatus)
-        // const tenantService = TenantServiceFactory()
-        // await tenantService.create({name: "TestTenant"})
-
-
-        return
+        await testSetup.setup()
+        FASTIFY_TEST_SERVER = testSetup.fastifyInstance
+        const {accessToken} = await testSetup.login()
+        ACCESS_TOKEN = accessToken
     })
 
     afterAll(async () => {
-        await MongoInMemory.DropAndClose()
-        console.log("AFTER MOCK", MongoInMemory.status, MongoInMemory.serverStatus)
+        await testSetup.mongoInMemory.DropAndClose()
         return
     })
 
+    it("Me", async () => {
+
+        const resp = await FASTIFY_TEST_SERVER.inject({
+            method: 'get',
+            url: '/api/auth/me',
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
+        });
+        let body = resp.json()
+        console.log("me", body)
+    })
 
     it("Should paginate tenant", async () => {
         // First, create a few tenants
@@ -37,17 +41,18 @@ describe("Tenant Route Test", function () {
         ];
 
         for (const data of tenantData) {
-            await FastifyTestServer.inject({
+            await FASTIFY_TEST_SERVER.inject({
                 method: 'POST',
                 url: '/api/tenants',
-                payload: data
+                payload: data,
+                headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
             });
         }
 
-        const resp = await FastifyTestServer.inject({
+        const resp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
             url: '/api/tenants',
-
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         })
 
         const result = await resp.json()
@@ -65,10 +70,11 @@ describe("Tenant Route Test", function () {
             name: "NewTestTenant"
         };
 
-        const resp = await FastifyTestServer.inject({
+        const resp = await FASTIFY_TEST_SERVER.inject({
             method: 'POST',
             url: '/api/tenants',
-            payload: newTenant
+            payload: newTenant,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         const result = await resp.json();
@@ -77,9 +83,10 @@ describe("Tenant Route Test", function () {
         expect(result._id).toBeDefined();
 
         // Verify tenant was created by fetching it
-        const getResp = await FastifyTestServer.inject({
+        const getResp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
-            url: '/api/tenants/' + result.id
+            url: '/api/tenants/' + result.id,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         const getTenant = await getResp.json();
@@ -93,16 +100,18 @@ describe("Tenant Route Test", function () {
             name: "ExistTenant"
         };
 
-        const resp = await FastifyTestServer.inject({
+        const resp = await FASTIFY_TEST_SERVER.inject({
             method: 'POST',
             url: '/api/tenants',
-            payload: newTenant
+            payload: newTenant,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         // First, get existing tenants to extract the id
-        const getResp = await FastifyTestServer.inject({
+        const getResp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
             url: '/api/tenants',
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         })
 
         const result = await getResp.json()
@@ -114,10 +123,11 @@ describe("Tenant Route Test", function () {
         }
 
         // Send update request
-        const updateResp = await FastifyTestServer.inject({
+        const updateResp = await FASTIFY_TEST_SERVER.inject({
             method: 'PUT',
             url: `/api/tenants/${tenantId}`,
-            payload: updateData
+            payload: updateData,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         })
 
         // Verify update response
@@ -126,9 +136,10 @@ describe("Tenant Route Test", function () {
         expect(updatedTenant.name).toBe("UpdatedTenantName")
 
         // Verify the tenant was actually updated by fetching it again
-        const verifyResp = await FastifyTestServer.inject({
+        const verifyResp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
             url: `/api/tenants/${tenantId}`,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         })
 
         const verifiedTenant = await verifyResp.json()
@@ -136,10 +147,11 @@ describe("Tenant Route Test", function () {
         expect(verifiedTenant.name).toBe("UpdatedTenantName")
 
         // Send update inexistingId should return 404
-        const updateRespNotFound = await FastifyTestServer.inject({
+        const updateRespNotFound = await FASTIFY_TEST_SERVER.inject({
             method: 'PUT',
             url: `/api/tenants/66761bed94d57a42c3277bab`,
-            payload: updateData
+            payload: updateData,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         })
 
         // Verify update response
@@ -153,10 +165,11 @@ describe("Tenant Route Test", function () {
             name: "TenantToDelete"
         };
 
-        const createResp = await FastifyTestServer.inject({
+        const createResp = await FASTIFY_TEST_SERVER.inject({
             method: 'POST',
             url: '/api/tenants',
-            payload: newTenant
+            payload: newTenant,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         const createdTenant = await createResp.json();
@@ -164,9 +177,10 @@ describe("Tenant Route Test", function () {
         const tenantId = createdTenant.id;
 
         // Delete the tenant
-        const deleteResp = await FastifyTestServer.inject({
+        const deleteResp = await FASTIFY_TEST_SERVER.inject({
             method: 'DELETE',
-            url: `/api/tenants/${tenantId}`
+            url: `/api/tenants/${tenantId}`,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         // Verify delete response
@@ -175,9 +189,10 @@ describe("Tenant Route Test", function () {
         expect(deleteResult.deleted).toBe(true);
 
         // Verify the tenant was actually deleted by trying to fetch it
-        const verifyResp = await FastifyTestServer.inject({
+        const verifyResp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
-            url: `/api/tenants/${tenantId}`
+            url: `/api/tenants/${tenantId}`,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         // Should return 404 or empty response
@@ -190,10 +205,11 @@ describe("Tenant Route Test", function () {
             name: "FindByIdTenant"
         };
 
-        const createResp = await FastifyTestServer.inject({
+        const createResp = await FASTIFY_TEST_SERVER.inject({
             method: 'POST',
             url: '/api/tenants',
-            payload: newTenant
+            payload: newTenant,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         const createdTenant = await createResp.json();
@@ -201,9 +217,10 @@ describe("Tenant Route Test", function () {
         const tenantId = createdTenant.id;
 
         // Now fetch the tenant by ID
-        const getResp = await FastifyTestServer.inject({
+        const getResp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
-            url: `/api/tenants/${tenantId}`
+            url: `/api/tenants/${tenantId}`,
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         // Verify the response
@@ -223,17 +240,19 @@ describe("Tenant Route Test", function () {
 
         // Create the test tenants
         for (const data of tenantData) {
-            await FastifyTestServer.inject({
+            await FASTIFY_TEST_SERVER.inject({
                 method: 'POST',
                 url: '/api/tenants',
-                payload: data
+                payload: data,
+                headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
             });
         }
 
         // Test searching with a matching term
-        const searchResp = await FastifyTestServer.inject({
+        const searchResp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
             url: '/api/tenants/search?search=Search',
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         const searchResult = await searchResp.json();
@@ -256,17 +275,19 @@ describe("Tenant Route Test", function () {
         ];
 
         for (const data of tenantData) {
-            await FastifyTestServer.inject({
+            await FASTIFY_TEST_SERVER.inject({
                 method: 'POST',
                 url: '/api/tenants',
-                payload: data
+                payload: data,
+                headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
             });
         }
 
         // Get all tenants
-        const resp = await FastifyTestServer.inject({
+        const resp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
             url: '/api/tenants/all',
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         const result = await resp.json();
@@ -291,17 +312,19 @@ describe("Tenant Route Test", function () {
 
         // Create the test tenants
         for (const data of tenantData) {
-            await FastifyTestServer.inject({
+            await FASTIFY_TEST_SERVER.inject({
                 method: 'POST',
                 url: '/api/tenants',
-                payload: data
+                payload: data,
+                headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
             });
         }
 
         // Test finding by description field with value "Special"
-        const findByResp = await FastifyTestServer.inject({
+        const findByResp = await FASTIFY_TEST_SERVER.inject({
             method: 'GET',
             url: '/api/tenants/find-by/name/FieldTenantA',
+            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
         });
 
         const findByResult = await findByResp.json();
@@ -317,9 +340,10 @@ describe("Tenant Route Test", function () {
     // Try to fetch a non-existent tenant
     const nonExistentId = "123456789012345678901234"; // Valid MongoDB ObjectId that doesn't exist
 
-    const resp = await FastifyTestServer.inject({
+    const resp = await FASTIFY_TEST_SERVER.inject({
         method: 'GET',
-        url: `/api/tenants/${nonExistentId}`
+        url: `/api/tenants/${nonExistentId}`,
+        headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
     });
 
     // Verify response status code should be 404 Not Found

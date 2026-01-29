@@ -1,4 +1,4 @@
-import {PermissionService} from "../../../src/services/PermissionService.js"
+import {PermissionService} from "@drax/identity-back"
 
 const role = {
   name: "Admin",
