@@ -42,11 +42,16 @@ class MongooseConector{
     }
 
     setMongoUri(mongoUri: string) {
-        const regex = /^(mongodb(?:\+srv)?):\/\/(?:([^:]+):([^@]+)@)?([a-zA-Z0-9.-]+)(?::(\d+))?(?:\/([a-zA-Z0-9_-]+))?(?:\?(.+))?$/;
-        if (regex.test(mongoUri)) {
+        try {
+
+            // Validaciones básicas
+            if (!mongoUri.startsWith('mongodb://') && !mongoUri.startsWith('mongodb+srv://')) {
+                throw new Error("MongooseConector: URI must start with 'mongodb://' or 'mongodb+srv://'");
+            }
+
             this.mongoUri = mongoUri;
-        } else {
-            throw new Error("MongooseConector: Invalid MongoDB URI");
+        } catch (error) {
+            throw new Error(`MongooseConector: Invalid MongoDB URI - ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 
