@@ -6,7 +6,11 @@
     "moduleResolution": "node",
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "rootDir": "./src",       // Especifica dónde están los archivos TypeScript
+    "outDir": "./dist",       // Los archivos compilados irán aquí
+    "declaration": true,      // Genera archivos .d.ts
+    "declarationDir": "./types" // Archivos de declaración en esta carpeta
   },
   "exclude": ["test", "types","dist"],
   "ts-node": {
