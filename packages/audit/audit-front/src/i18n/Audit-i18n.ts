@@ -1,6 +1,5 @@
 const messages = {
     en: {
-
         audit: {
             entity: 'Audit',
             menu: 'Audit',
@@ -40,10 +39,10 @@ const messages = {
     },
     es: {
         audit: {
-            entity: 'Audit',
-            menu: 'Audit',
-            crud: 'Gestionar Audit',
-            dashboard: 'Audit Dashboard',
+            entity: 'Auditoria',
+            menu: 'Auditoria',
+            crud: 'Gestionar Auditoria',
+            dashboard: 'Auditoria Dashboard',
             field: {
                 _id: '_id',
                 entity: 'Entidad',
@@ -69,11 +68,11 @@ const messages = {
             }
         },
         permission: {
-            'audit:view': 'Ver Audit',
-            'audit:create': 'Crear Audit',
-            'audit:update': 'Editar Audit',
-            'audit:delete': 'Eliminar Audit',
-            'audit:manage': 'Gestionar Audit',
+            'audit:view': 'Ver Auditoria',
+            'audit:create': 'Crear Auditoria',
+            'audit:update': 'Editar Auditoria',
+            'audit:delete': 'Eliminar Auditoria',
+            'audit:manage': 'Gestionar Auditoria',
         }
     }
 }

@@ -2,6 +2,7 @@ const messages = {
     en: {
         tenant: {
             entity: "Tenant",
+            menu: "Tenants",
             name: "Name",
             createdAt: 'Created At',
             current: 'Current Tenant',
@@ -14,6 +15,7 @@ const messages = {
     es: {
         tenant:{
             entity: "Tenant",
+            menu: "Tenants",
             name: "Nombre",
             createdAt: 'Creado',
             current: 'Tenant actual',

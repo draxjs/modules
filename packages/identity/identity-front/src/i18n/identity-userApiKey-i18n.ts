@@ -2,7 +2,7 @@ const messages = {
     en: {
         userapikey: {
             entity: 'ApiKey',
-            menu: 'ApiKeys',
+            menu: 'APIKeys',
             crud: 'Manage UserApiKey',
             field:{
                 name: "Reference Name",
@@ -21,7 +21,7 @@ const messages = {
     es: {
         userapikey:{
             entity: 'ApiKey',
-            menu: 'ApiKeys',
+            menu: 'APIKeys',
             crud: 'Gestionar ApiKey',
             field:{
                 name: "Nombre de referencia",

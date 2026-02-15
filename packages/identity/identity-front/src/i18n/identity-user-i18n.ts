@@ -2,6 +2,7 @@ const messages = {
     en: {
         user: {
             entity: 'User',
+            menu: 'Users',
             profile:'Profile',
             code: "Code",
             passwordChanged: "Password Changed",
@@ -44,7 +45,7 @@ const messages = {
     es: {
         user:{
             entity: 'Usuario',
-
+            menu: 'Usuarios',
             profile:'Perfil',
             code: "Codigo",
             passwordChanged: "Contraseña Cambiada",
