@@ -1,25 +1,27 @@
-import type {IEntitySchema} from "../interfaces/IEntitySchema";
-import {TemplateService} from "./templates/back/TemplateService";
-import {writeFile} from "./helpers/writeFile";
-import {TemplateMongoRepository} from "./templates/back/TemplateMongoRepository";
-import {TemplateSqliteRepository} from "./templates/back/TemplateSqliteRepository";
-import {TemplatePermissions} from "./templates/back/TemplatePermissions";
-import {TemplateMongoModel} from "./templates/back/TemplateMongoModel";
-import {TemplateEntityInterface} from "./templates/share/TemplateEntityInterface";
-import {TemplateEntityRepositoryInterface} from "./templates/back/TemplateEntityRepositoryInterface";
-import {TemplateSchema} from "./templates/back/TemplateSchema";
-import {TemplateServiceFactory} from "./templates/back/TemplateServiceFactory";
-import {TemplateFastifyController} from "./templates/back/TemplateFastifyController";
-import {TemplateRoutes} from "./templates/back/TemplateRoutes";
-import {TemplateRestProvider} from "./templates/front/TemplateRestProvider";
-import {TemplateEntityCrud} from "./templates/front/TemplateEntityCrud";
-import {TemplateCrudComponent} from "./templates/front/TemplateCrudComponent";
-import {TemplateComboboxComponent} from "./templates/front/TemplateComboboxComponent";
-import {TemplateCrudPage} from "./templates/front/TemplateCrudPage";
-import {TemplateCrudRoute} from "./templates/front/TemplateCrudRoute";
-import {Templatei18n} from "./templates/front/Templatei18n";
+import type { IEntitySchema } from "../interfaces/IEntitySchema";
+import { TemplateService } from "./templates/back/TemplateService";
+import { writeFile } from "./helpers/writeFile";
+import { TemplateMongoRepository } from "./templates/back/TemplateMongoRepository";
+import { TemplateSqliteRepository } from "./templates/back/TemplateSqliteRepository";
+import { TemplatePermissions } from "./templates/back/TemplatePermissions";
+import { TemplateMongoModel } from "./templates/back/TemplateMongoModel";
+import { TemplateEntityInterface } from "./templates/share/TemplateEntityInterface";
+import { TemplateEntityRepositoryInterface } from "./templates/back/TemplateEntityRepositoryInterface";
+import { TemplateSchema } from "./templates/back/TemplateSchema";
+import { TemplateServiceFactory } from "./templates/back/TemplateServiceFactory";
+import { TemplateFastifyController } from "./templates/back/TemplateFastifyController";
+import { TemplateRoutes } from "./templates/back/TemplateRoutes";
+import { TemplateRestProvider } from "./templates/front/TemplateRestProvider";
+import { TemplateEntityCrud } from "./templates/front/TemplateEntityCrud";
+import { TemplateCrudComponent } from "./templates/front/TemplateCrudComponent";
+import { TemplateComboboxComponent } from "./templates/front/TemplateComboboxComponent";
+import { TemplateCrudPage } from "./templates/front/TemplateCrudPage";
+import { TemplateCrudRoute } from "./templates/front/TemplateCrudRoute";
+import { Templatei18n } from "./templates/front/Templatei18n";
+import { TemplateRoutesIndex } from "./templates/front/TemplateRoutesIndex";
+import { Templatei18nIndex } from "./templates/front/Templatei18nIndex";
 
-class ArchGenerator{
+class ArchGenerator {
 
     entitiesSchema: IEntitySchema[];
     outputPath: string = './output';
@@ -31,7 +33,7 @@ class ArchGenerator{
 
     async build() {
 
-        for(const entity of this.entitiesSchema){
+        for (const entity of this.entitiesSchema) {
             //SHARE
             await this.interfaceEntity(entity)
 
@@ -57,146 +59,165 @@ class ArchGenerator{
             await this.i18n(entity)
         }
 
-
+        const modules = [...new Set(this.entitiesSchema.map(entity => entity.module))]
+        for (const module of modules) {
+            const entities = this.entitiesSchema.filter(entity => entity.module === module)
+            await this.moduleRoutes(module, entities)
+            await this.moduleI18n(module, entities)
+        }
     }
 
-    async writeToFile(dirPath:string, fileName:string, content:string) {
+    async writeToFile(dirPath: string, fileName: string, content: string) {
         await writeFile(dirPath, fileName, content)
     }
 
-    async i18n(entity: IEntitySchema){
+    async i18n(entity: IEntitySchema) {
         const content = Templatei18n(entity)
-        const path = this.outputPath + '/'+ entity.module + '/front/i18n'
+        const path = this.outputPath + '/' + entity.module + '/front/i18n'
         const fileName = `${entity.name}-i18n.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async restProvider(entity: IEntitySchema){
+    async restProvider(entity: IEntitySchema) {
         const content = TemplateRestProvider(entity)
-        const path = this.outputPath + '/'+ entity.module + '/front/providers'
+        const path = this.outputPath + '/' + entity.module + '/front/providers'
         const fileName = `${entity.name}Provider.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async entityCrudConfig(entity: IEntitySchema){
+    async entityCrudConfig(entity: IEntitySchema) {
         const content = TemplateEntityCrud(entity)
-        const path = this.outputPath + '/'+ entity.module + '/front/cruds'
+        const path = this.outputPath + '/' + entity.module + '/front/cruds'
         const fileName = `${entity.name}Crud.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async entityCrudComponent(entity: IEntitySchema){
+    async entityCrudComponent(entity: IEntitySchema) {
         const content = TemplateCrudComponent(entity)
-        const path = this.outputPath + '/'+ entity.module + '/front/cruds'
+        const path = this.outputPath + '/' + entity.module + '/front/cruds'
         const fileName = `${entity.name}Crud.vue`
         await this.writeToFile(path, fileName, content)
     }
 
-    async entityComboboxComponent(entity: IEntitySchema){
+    async entityComboboxComponent(entity: IEntitySchema) {
         const content = TemplateComboboxComponent(entity)
-        const path = this.outputPath + '/'+ entity.module + '/front/comboboxes'
+        const path = this.outputPath + '/' + entity.module + '/front/comboboxes'
         const fileName = `${entity.name}Combobox.vue`
         await this.writeToFile(path, fileName, content)
     }
 
 
-    async entityCrudPage(entity: IEntitySchema){
+    async entityCrudPage(entity: IEntitySchema) {
         const content = TemplateCrudPage(entity)
-        const path = this.outputPath + '/'+ entity.module + '/front/pages/crud'
+        const path = this.outputPath + '/' + entity.module + '/front/pages/crud'
         const fileName = `${entity.name}CrudPage.vue`
         await this.writeToFile(path, fileName, content)
     }
 
-    async crudRoute(entity: IEntitySchema){
+    async crudRoute(entity: IEntitySchema) {
         const content = TemplateCrudRoute(entity)
-        const path = this.outputPath + '/'+ entity.module + '/front/routes'
+        const path = this.outputPath + '/' + entity.module + '/front/routes'
         const fileName = `${entity.name}CrudRoute.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async fastifyController(entity: IEntitySchema){
+    async fastifyController(entity: IEntitySchema) {
         const content = TemplateFastifyController(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/controllers'
+        const path = this.outputPath + '/' + entity.module + '/back/controllers'
         const fileName = `${entity.name}Controller.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async routes(entity: IEntitySchema){
+    async routes(entity: IEntitySchema) {
         const content = TemplateRoutes(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/routes'
+        const path = this.outputPath + '/' + entity.module + '/back/routes'
         const fileName = `${entity.name}Routes.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async service(entity: IEntitySchema){
+    async service(entity: IEntitySchema) {
         const content = TemplateService(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/services'
+        const path = this.outputPath + '/' + entity.module + '/back/services'
         const fileName = `${entity.name}Service.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async serviceFactory(entity: IEntitySchema){
+    async serviceFactory(entity: IEntitySchema) {
         const content = TemplateServiceFactory(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/factory/services'
+        const path = this.outputPath + '/' + entity.module + '/back/factory/services'
         const fileName = `${entity.name}ServiceFactory.ts`
         await this.writeToFile(path, fileName, content)
     }
 
 
-    async mongoRepository(entity: IEntitySchema){
+    async mongoRepository(entity: IEntitySchema) {
         const content = TemplateMongoRepository(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/repository/mongo'
+        const path = this.outputPath + '/' + entity.module + '/back/repository/mongo'
         const fileName = `${entity.name}MongoRepository.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async sqliteRepository(entity: IEntitySchema){
+    async sqliteRepository(entity: IEntitySchema) {
         const content = TemplateSqliteRepository(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/repository/sqlite'
+        const path = this.outputPath + '/' + entity.module + '/back/repository/sqlite'
         const fileName = `${entity.name}SqliteRepository.ts`
         await this.writeToFile(path, fileName, content)
     }
 
 
-    async mongoModel(entity: IEntitySchema){
+    async mongoModel(entity: IEntitySchema) {
         const content = TemplateMongoModel(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/models'
+        const path = this.outputPath + '/' + entity.module + '/back/models'
         const fileName = `${entity.name}Model.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async entitySchema(entity: IEntitySchema){
+    async entitySchema(entity: IEntitySchema) {
         const content = TemplateSchema(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/schemas'
+        const path = this.outputPath + '/' + entity.module + '/back/schemas'
         const fileName = `${entity.name}Schema.ts`
         await this.writeToFile(path, fileName, content)
     }
 
 
-    async interfaceEntity(entity: IEntitySchema){
+    async interfaceEntity(entity: IEntitySchema) {
         const content = TemplateEntityInterface(entity)
         const fileName = `I${entity.name}.ts`
-        const backPath = this.outputPath + '/'+ entity.module + '/back/interfaces'
+        const backPath = this.outputPath + '/' + entity.module + '/back/interfaces'
         await this.writeToFile(backPath, fileName, content)
-        const frontPath = this.outputPath + '/'+ entity.module + '/front/interfaces'
+        const frontPath = this.outputPath + '/' + entity.module + '/front/interfaces'
         await this.writeToFile(frontPath, fileName, content)
     }
 
-    async interfaceEntityRepository(entity: IEntitySchema){
+    async interfaceEntityRepository(entity: IEntitySchema) {
         const content = TemplateEntityRepositoryInterface(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/interfaces'
+        const path = this.outputPath + '/' + entity.module + '/back/interfaces'
         const fileName = `I${entity.name}Repository.ts`
         await this.writeToFile(path, fileName, content)
     }
 
-    async permissions(entity: IEntitySchema){
+    async permissions(entity: IEntitySchema) {
         const content = TemplatePermissions(entity)
-        const path = this.outputPath + '/'+ entity.module + '/back/permissions'
+        const path = this.outputPath + '/' + entity.module + '/back/permissions'
         const fileName = `${entity.name}Permissions.ts`
+        await this.writeToFile(path, fileName, content)
+    }
+
+    async moduleRoutes(module: string, entities: IEntitySchema[]) {
+        const content = TemplateRoutesIndex(entities)
+        const path = this.outputPath + '/' + module + '/front/routes'
+        const fileName = `index.ts`
+        await this.writeToFile(path, fileName, content)
+    }
+
+    async moduleI18n(module: string, entities: IEntitySchema[]) {
+        const content = Templatei18nIndex(entities)
+        const path = this.outputPath + '/' + module + '/front/i18n'
+        const fileName = `index.ts`
         await this.writeToFile(path, fileName, content)
     }
 
 }
 
 export default ArchGenerator
-export {ArchGenerator}
+export { ArchGenerator }
