@@ -64,6 +64,32 @@ describe("Country Service Test", function () {
 
     })
 
+    it("should create and partial update a country and finally find by id", async () => {
+
+        await testSetup.dropCollection('Country')
+
+        const newCountry = {
+            name: "Italia",
+            createdBy: testSetup.rootUser._id
+        };
+
+        const country = await countryService.create(newCountry);
+
+        expect(country.name).toBe("Italia");
+        expect(country._id).toBeDefined();
+
+        const updateData: ICountryBase = {
+            name: "ItaliaUpdated"
+        }
+
+        const updatedCountry = await countryService.updatePartial(country._id, updateData);
+        expect(updatedCountry.name).toBe(updateData.name)
+
+        const getCountry = await countryService.findById(country._id);
+        expect(getCountry.name).toBe("ItaliaUpdated");
+
+    })
+
     it("should create and delete a country", async () => {
 
         await testSetup.dropCollection('Country')

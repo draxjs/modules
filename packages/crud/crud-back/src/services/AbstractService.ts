@@ -42,7 +42,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             try {
                 return await this._baseSchema.parseAsync(data) as C
             } catch (e) {
-                console.error("Error on validateInput", {
+                console.error("Error on validateInputCreate", {
                     name: e?.name,
                     message: e?.message,
                     stack: e?.stack,
@@ -59,9 +59,9 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async validateInputUpdate(data: U): Promise<U> {
         if (this._baseSchema) {
             try {
-                return await this._baseSchema.parseAsync(data) as U
+                return await this._baseSchema.partial().parseAsync(data) as U
             } catch (e) {
-                console.error("Error on validateInput", {
+                console.error("Error on validateInputUpdate", {
                     name: e?.name,
                     message: e?.message,
                     stack: e?.stack,
@@ -80,7 +80,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             try {
                 return await this._baseSchema.partial().parseAsync(data) as U
             } catch (e) {
-                console.error("Error on validateInput", {
+                console.error("Error on validateInputUpdatePartial", {
                     name: e?.name,
                     message: e?.message,
                     stack: e?.stack,

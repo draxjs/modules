@@ -320,8 +320,13 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             }
 
             //Definido el tenant/user en el create no debe modificarse en un update
-            delete payload[this.tenantField]
-            delete payload[this.userField]
+            if(this.tenantSetter) {
+                delete payload[this.tenantField]
+            }
+
+            if(this.userSetter){
+                delete payload[this.userField]
+            }
 
             await this.preUpdate(request, payload)
             let item = await this.service.update(id, payload as U)
@@ -371,8 +376,13 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             }
 
             //Definido el tenant/user en el create no debe modificarse en un update
-            delete payload[this.tenantField]
-            delete payload[this.userField]
+            if(this.tenantSetter) {
+                delete payload[this.tenantField]
+            }
+
+            if(this.userSetter){
+                delete payload[this.userField]
+            }
 
             await this.preUpdatePartial(request, payload)
             let item = await this.service.updatePartial(id, payload as U)
