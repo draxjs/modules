@@ -180,7 +180,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
                 item.password = undefined
                 delete item.password
             }
-            console.log("Paginated users: ", JSON.stringify(paginateResult,null,4))
+
             return paginateResult
         } catch (e) {
             this.handleError(e, reply)

@@ -22,7 +22,7 @@ describe("UserServiceTest", function () {
     })
 
     afterAll(async () => {
-        await mongoInMemory.DropAndClose()
+        await mongoInMemory.dropAndClose()
         return
     })
 

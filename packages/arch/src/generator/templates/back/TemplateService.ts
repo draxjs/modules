@@ -8,8 +8,12 @@ import type {ZodObject, ZodRawShape} from "zod";
 
 class ${entity.name}Service extends AbstractService<I${entity.name}, I${entity.name}Base, I${entity.name}Base> {
 
-    constructor(${entity.name}Repository: I${entity.name}Repository, schema?: ZodObject<ZodRawShape>) {
-        super(${entity.name}Repository, schema);
+
+    constructor(${entity.name}Repository: I${entity.name}Repository, baseSchema?: ZodObject<ZodRawShape>, fullSchema?: ZodObject<ZodRawShape>) {
+        super(${entity.name}Repository, baseSchema, fullSchema);
+        
+        this._validateOutput = true
+        
     }
 
 }

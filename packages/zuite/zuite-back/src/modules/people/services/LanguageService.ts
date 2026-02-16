@@ -6,8 +6,12 @@ import type {ZodObject, ZodRawShape} from "zod";
 
 class LanguageService extends AbstractService<ILanguage, ILanguageBase, ILanguageBase> {
 
-    constructor(LanguageRepository: ILanguageRepository, schema?: ZodObject<ZodRawShape>) {
-        super(LanguageRepository, schema);
+
+    constructor(LanguageRepository: ILanguageRepository, baseSchema?: ZodObject<ZodRawShape>, fullSchema?: ZodObject<ZodRawShape>) {
+        super(LanguageRepository, baseSchema, fullSchema);
+        
+        this._validateOutput = true
+        
     }
 
 }

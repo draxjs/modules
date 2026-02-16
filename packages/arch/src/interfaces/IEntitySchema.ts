@@ -1,4 +1,4 @@
-type IType = 'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' | 'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum' | 'array.file' | 'array.fullFile'
+type IType = 'id' | 'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' | 'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum' | 'array.file' | 'array.fullFile'
 
 interface IFieldSchema{
     type: IType
@@ -17,7 +17,9 @@ interface IFieldSchema{
     lgCol?: number
     xlCol?: number
     groupTab?: string
-    groupMenu?: string
+    groupMenu?: string,
+    tenantField?: string
+    userField?: string
 }
 
 interface ISchema{

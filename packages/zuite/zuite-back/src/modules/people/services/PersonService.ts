@@ -6,8 +6,12 @@ import type {ZodObject, ZodRawShape} from "zod";
 
 class PersonService extends AbstractService<IPerson, IPersonBase, IPersonBase> {
 
-    constructor(PersonRepository: IPersonRepository, schema?: ZodObject<ZodRawShape>) {
-        super(PersonRepository, schema);
+
+    constructor(PersonRepository: IPersonRepository, baseSchema?: ZodObject<ZodRawShape>, fullSchema?: ZodObject<ZodRawShape>) {
+        super(PersonRepository, baseSchema, fullSchema);
+        
+        this._validateOutput = true
+        
     }
 
 }

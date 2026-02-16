@@ -1,7 +1,7 @@
 import {beforeAll, afterAll, describe, test, expect} from "vitest"
-import assert, {equal} from "assert";
+import  {equal} from "assert";
 import UserApiKeyMongoRepository from "../../../src/repository/mongo/UserApiKeyMongoRepository";
-import MongoInMemory from "../../db/MongoInMemory";
+import MongoInMemory from "../../setup/MongoInMemory";
 import RoleMongoInitializer from "../../initializers/RoleMongoInitializer";
 import UserMongoInitializer from "../../initializers/UserMongoInitializer";
 import {IUserApiKey} from "../../../../identity-share/src/interfaces/IUserApiKey";
@@ -15,9 +15,10 @@ describe("UserApiKeyRepositoryTest", function () {
     let data
     let adminRole
     let rootUser
+    const mongoInMemory = new MongoInMemory()
 
     beforeAll(async () => {
-        await MongoInMemory.connect()
+        await mongoInMemory.connect()
         adminRole = await RoleMongoInitializer.initAdminRole()
         rootUser = await UserMongoInitializer.initRootUser()
 
@@ -26,7 +27,7 @@ describe("UserApiKeyRepositoryTest", function () {
     })
 
     afterAll(async () => {
-        await MongoInMemory.DropAndClose()
+        await mongoInMemory.dropAndClose()
         //console.log("AFTER USER", MongoInMemory.status, MongoInMemory.serverStatus)
         return
     })

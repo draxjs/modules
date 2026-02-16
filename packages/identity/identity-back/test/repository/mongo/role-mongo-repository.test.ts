@@ -1,22 +1,23 @@
 import  {describe,it, beforeAll, afterAll} from "vitest"
 import {equal} from "assert";
 import RoleMongoRepository from "../../../src/repository/mongo/RoleMongoRepository";
-import MongoInMemory from "../../db/MongoInMemory";
+import MongoInMemory from "../../setup/MongoInMemory";
 import {IRole} from "../../../../identity-share/src/interfaces/IRole";
 import {IDraxPaginateResult} from "@drax/crud-share";
 
 describe("RoleRepositoryTest",  function() {
 
+    const mongoInMemory = new MongoInMemory()
     const roleReposirory = new RoleMongoRepository()
 
     beforeAll(async () => {
-        await MongoInMemory.connect()
+        await mongoInMemory.connect()
        // console.log("BEFORE ROLE", MongoInMemory.mongooseStatus, MongoInMemory.serverStatus)
         return
     })
 
     afterAll(async () => {
-        await MongoInMemory.DropAndClose()
+        await mongoInMemory.dropAndClose()
         //console.log("AFTER ROLE", MongoInMemory.status, MongoInMemory.serverStatus)
         return
     })

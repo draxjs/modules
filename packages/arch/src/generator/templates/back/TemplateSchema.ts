@@ -7,7 +7,16 @@ const generateEntityBaseSchema = (schema: ISchema) => {
 
     for(const field in schema){
 
+        if(field === "createdBy"){
+            fields.push(`    ${field}: z.coerce.string().optional()`)
+            continue;
+        }
+
+
         switch (schema[field].type) {
+            case "id":
+                fields.push(`    ${field}: z.coerce.string()${schema[field].required? ".min(1,'validation.required')" : ".optional()"}`)
+                break;
             case "string":
             case "password":
             case "file":
@@ -27,10 +36,10 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 fields.push(`    ${field}: z.boolean()${schema[field].required? "" : ".optional()"}`)
                 break;
             case "date":
-                fields.push(`    ${field}: ${schema[field].required ? 'z.iso.datetime({message: "validation.required"})' : 'z.coerce.date().nullable().optional()'}`)
+                fields.push(`    ${field}: ${schema[field].required ? 'z.iso.datetime({error: "validation.required"})' : 'z.iso.datetime().nullable().optional()'}`)
                 break;
             case "ref":
-                fields.push(`    ${field}: z.string()${schema[field].required ? ".min(1,'validation.required')" : ".optional().nullable()"}`)
+                fields.push(`    ${field}: z.coerce.string()${schema[field].required ? ".min(1,'validation.required')" : ".optional().nullable()"}`)
                 break;
             case "fullFile":
                 fields.push(`    ${field}: z.object({
@@ -60,7 +69,7 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 fields.push(`    ${field}: z.array(z.number())${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+JSON.stringify(schema[field].default)+")" : ""}`)
                 break;
             case "array.ref":
-                fields.push(`    ${field}: z.array(z.string())${schema[field].required ? "" : ".optional()"}`)
+                fields.push(`    ${field}: z.array(z.coerce.string())${schema[field].required ? "" : ".optional()"}`)
                 break;
             case "array.fullFile":
                 fields.push(`    ${field}: z.array(z.object({
@@ -94,14 +103,18 @@ const generateEntitySchema = (schema: ISchema) => {
 
     for(const field in schema){
 
-        switch (schema[field].type) {
 
+
+        switch (schema[field].type) {
+            case "id":
+                fields.push(`    ${field}: z.coerce.string()${schema[field].required? "" : ".optional()"}`)
+                break;
             case "ref":
-                fields.push(`${field}: z.object({_id: z.string(), ${schema[field].refDisplay}: z.string()})${schema[field].required ? "" : ".nullable().optional()"}`)
+                fields.push(`${field}: z.object({_id: z.coerce.string(), ${schema[field].refDisplay}: z.string()})${schema[field].required ? "" : ".nullable().optional()"}`)
                 break;
 
             case "array.ref":
-                fields.push(`${field}: z.array(z.object({_id: z.string(), ${schema[field].refDisplay}: z.string()}))${schema[field].required ? "" : ".optional()"}`)
+                fields.push(`${field}: z.array(z.object({_id: z.coerce.string(), ${schema[field].refDisplay}: z.string()}))${schema[field].required ? "" : ".optional()"}`)
                 break;
             default:
                 break;
@@ -140,7 +153,7 @@ const ${entity.name}BaseSchema = z.object({
 
 const ${entity.name}Schema = ${entity.name}BaseSchema
     .extend({
-      _id: z.string(),
+      _id: z.coerce.string(),
        ${generateEntitySchema(entity.schema)}
     })
 

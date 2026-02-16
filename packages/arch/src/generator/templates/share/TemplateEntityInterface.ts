@@ -7,6 +7,7 @@ const generateEntityInterface = (schema: ISchema) => {
 
     for(const field in schema){
         switch (schema[field].type) {
+            case "id":
             case "string":
             case "password":
             case "enum":

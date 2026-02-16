@@ -1,7 +1,12 @@
+
+import PersonCrudRoute from "./PersonCrudRoute"
 import CountryCrudRoute from "./CountryCrudRoute"
 import LanguageCrudRoute from "./LanguageCrudRoute"
-import PersonCrudRoute from "./PersonCrudRoute"
 
-const messages = [...CountryCrudRoute,...LanguageCrudRoute,...PersonCrudRoute]
+export const routes = [
+    ...PersonCrudRoute,
+...CountryCrudRoute,
+...LanguageCrudRoute
+]
 
-export default messages
+export default routes

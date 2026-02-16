@@ -1,69 +1,37 @@
 import {describe, it, beforeAll, afterAll, expect} from "vitest"
 
 import {TestSetup} from "../setup/TestSetup"
-import {IUserCreate} from "@drax/identity-share";
+import {USER1} from "./data/users-data"
 
-
-
-
-const USER1: IUserCreate = {
-    active: true,
-    password: "12345678",
-    phone: "",
-    role: "",
-    name: "John Wick",
-    username: "johnwick",
-    email: "johnwick@example.com"
-}
-const USER2: IUserCreate = {
-    active: true,
-    password: "12345678",
-    phone: "",
-    role: "",
-    name: "John Rambo",
-    username: "rambo",
-    email: "rambo@example.com"
-}
-const USER3: IUserCreate = {
-    active: true,
-    password: "12345678",
-    phone: "",
-    role: "",
-    name: "John Depp",
-    username: "depp",
-    email: "depp@example.com"
-}
 
 describe("User Route Test", async function () {
 
     let testSetup = new TestSetup()
-    let FASTIFY_TEST_SERVER: any;
-    let ROOT_USER: any;
-    let ADMIN_ROLE: any;
-    let ACCESS_TOKEN: any;
 
     beforeAll(async () => {
         await testSetup.setup()
-        FASTIFY_TEST_SERVER = testSetup.fastifyInstance
-        ROOT_USER = testSetup.rootUser
-        ADMIN_ROLE = testSetup.adminRole
-        const {accessToken} = await testSetup.login()
-        ACCESS_TOKEN = accessToken
     })
 
     afterAll(async () => {
-        await testSetup.mongoInMemory.DropAndClose()
+        await testSetup.dropAndClose()
         return
     })
 
-    it("Login & Me (express)", async () => {
-        let {accessToken} = await testSetup.login()
+    it("RootLogin", async () => {
+        let {accessToken} = await testSetup.rootUserLogin()
         expect(accessToken).toBeTruthy()
         let user = await testSetup.me(accessToken)
         expect(user.username).toBe(testSetup.rootUserData.username)
     })
 
-    it("Login & Me (detailed)", async () => {
+    it("BasicUserLogin", async () => {
+        let {accessToken} = await testSetup.basicUserLogin()
+        expect(accessToken).toBeTruthy()
+        let user = await testSetup.me(accessToken)
+        expect(user.username).toBe(testSetup.basicUserData.username)
+    })
+
+    it("Login", async () => {
 
         const loginResp = await testSetup.fastifyInstance.inject({
             method: 'POST',
@@ -98,11 +66,14 @@ describe("User Route Test", async function () {
 
     it("should create a new user", async () => {
 
-        const resp = await FASTIFY_TEST_SERVER.inject({
+        const {accessToken} = await testSetup.rootUserLogin()
+        expect(accessToken).toBeTruthy()
+
+        const resp = await testSetup.fastifyInstance.inject({
             method: 'POST',
             url: '/api/users',
-            payload: {...USER1, ...{role: ADMIN_ROLE._id}},
-            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
+            payload: {...USER1, ...{role: testSetup.adminRole._id}},
+            headers: {Authorization: `Bearer ${accessToken}`}
         });
 
         const result = await resp.json();
@@ -111,11 +82,11 @@ describe("User Route Test", async function () {
         expect(result._id).toBeDefined();
 
 
-        // Verify tenant was created by fetching it
-        const getResp = await FASTIFY_TEST_SERVER.inject({
+        // Verify user was created by fetching it
+        const getResp = await testSetup.fastifyInstance.inject({
             method: 'GET',
             url: '/api/users/search?search=' + result._id,
-            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
+            headers: {Authorization: `Bearer ${accessToken}`}
         });
 
         const items = await getResp.json();
@@ -125,44 +96,35 @@ describe("User Route Test", async function () {
 
 
     it("Should paginate user", async () => {
-        // First, create a few Users
-        const users = [
-            USER1, USER2, USER3
-        ];
+        const {accessToken} = await testSetup.rootUserLogin()
+        expect(accessToken).toBeTruthy()
 
-        for (const data of users) {
-            await FASTIFY_TEST_SERVER.inject({
-                method: 'POST',
-                url: '/api/users',
-                payload: {...data, ...{role: ADMIN_ROLE._id.toString()}},
-                headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
-            });
-        }
 
-        const resp = await FASTIFY_TEST_SERVER.inject({
+        const resp = await testSetup.fastifyInstance.inject({
             method: 'GET',
             url: '/api/users',
-            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
+            headers: {Authorization: `Bearer ${accessToken}`}
         })
 
         const result = await resp.json()
         expect(resp.statusCode).toBe(200)
-        expect(result.items.length).toBe(4)
-        expect(result.items[0].name).toBe(ROOT_USER.name)
+        expect(result.items.length).toBe(3)
+        expect(result.items[0].name).toBe(testSetup.rootUser.name)
         expect(result.page).toBe(1)
         expect(result.limit).toBe(10)
-        expect(result.total).toBe(4)
+        expect(result.total).toBe(3)
 
     })
 
     it("should change my password", async () => {
+        const {accessToken} = await testSetup.basicUserLogin()
+        expect(accessToken).toBeTruthy()
 
-
-        const respPassword = await FASTIFY_TEST_SERVER.inject({
+        const respPassword = await testSetup.fastifyInstance.inject({
             method: 'POST',
             url: '/api/users/password/change',
-            payload: {currentPassword: "root.123", newPassword: "newpass"},
-            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
+            payload: {currentPassword: "basic.123", newPassword: "newpass"},
+            headers: {Authorization: `Bearer ${accessToken}`}
         });
 
         const resultPassword = await respPassword.json();
@@ -173,13 +135,14 @@ describe("User Route Test", async function () {
     })
 
     it("should change password", async () => {
+        const {accessToken} = await testSetup.rootUserLogin()
+        expect(accessToken).toBeTruthy()
 
-
-        const respPassword = await FASTIFY_TEST_SERVER.inject({
+        const respPassword = await testSetup.fastifyInstance.inject({
             method: 'POST',
-            url: '/api/users/password/change/'+ROOT_USER._id,
+            url: '/api/users/password/change/'+testSetup.rootUser._id,
             payload: {currentPassword: "root.123", newPassword: "newpass"},
-            headers: {Authorization: `Bearer ${ACCESS_TOKEN}`}
+            headers: {Authorization: `Bearer ${accessToken}`}
         });
 
         const resultPassword = await respPassword.json();

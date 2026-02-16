@@ -471,7 +471,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             },
             {$sort: {count: -1}}
         )
-        console.log("pipeline", JSON.stringify(pipeline, null, 2))
+        // console.log("pipeline", JSON.stringify(pipeline, null, 2))
         const result = await this._model.aggregate(pipeline).exec()
         return result
     }

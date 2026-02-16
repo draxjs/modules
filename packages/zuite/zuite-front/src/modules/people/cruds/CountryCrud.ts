@@ -1,20 +1,20 @@
+
 import {EntityCrud} from "@drax/crud-vue";
-import type {
+import type{
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader,
+  IEntityCrudHeader, 
   IEntityCrudPermissions,
   IEntityCrudRefs,
-  IEntityCrudRules,
-  IEntityCrudFieldVariant
+  IEntityCrudRules
 } from "@drax/crud-share";
-
 import CountryProvider from "../providers/CountryProvider";
 
 //Import EntityCrud Refs
-
+import {TenantCrud} from "@drax/identity-vue"
+import {UserCrud} from "@drax/identity-vue"
 
 class CountryCrud extends EntityCrud implements IEntityCrud {
 
@@ -24,149 +24,147 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     super();
     this.name = 'Country'
   }
-
+  
   static get instance(): CountryCrud {
-    if (!CountryCrud.singleton) {
+    if(!CountryCrud.singleton){
       CountryCrud.singleton = new CountryCrud()
     }
     return CountryCrud.singleton
   }
 
-  get permissions(): IEntityCrudPermissions {
+  get permissions(): IEntityCrudPermissions{
     return {
-      manage: 'country:manage',
-      view: 'country:view',
-      create: 'country:create',
-      update: 'country:update',
+      manage: 'country:manage', 
+      view: 'country:view', 
+      create: 'country:create', 
+      update: 'country:update', 
       delete: 'country:delete'
     }
   }
 
-  get selectedHeaders(){
-    return ['name',  'flag', 'createdBy']
-  }
-
   get headers(): IEntityCrudHeader[] {
     return [
-      {title: 'name', key: 'name', align: 'start'},
-      {title: 'description', key: 'description', align: 'start'},
-      {title: 'flag', key: 'flag', align: 'start'},
-      {title: 'createdBy', key: 'createdBy', align: 'start'},
+        {title: 'name',key:'name', align: 'start'},
+{title: 'description',key:'description', align: 'start'},
+{title: 'flag',key:'flag', align: 'start'},
+{title: 'tenant',key:'tenant', align: 'start'},
+{title: 'createdBy',key:'createdBy', align: 'start'}
     ]
   }
-
-  get actionHeaders(): IEntityCrudHeader[] {
+  
+  get selectedHeaders(): string[] {
+    return this.headers.map(header => header.key)
+  }
+  
+  get actionHeaders():IEntityCrudHeader[]{
     return [
       {
         title: 'action.actions',
         key: 'actions',
         sortable: false,
         align: 'center',
-        minWidth: '190px'
+        minWidth: '190px',
+        fixed: 'end'
       },
     ]
   }
 
-  get provider(): IDraxCrudProvider<any, any, any> {
+  get provider(): IDraxCrudProvider<any, any, any>{
     return CountryProvider.instance
   }
-
-  get refs(): IEntityCrudRefs {
-    return {}
-  }
-
-  get rules(): IEntityCrudRules {
+  
+  get refs(): IEntityCrudRefs{
     return {
-      name: [(v: any) => !!v || 'validation.required'],
-      description: [],
-      flag: []
+      Tenant: TenantCrud.instance ,
+User: UserCrud.instance 
     }
   }
 
-  get fields(): IEntityCrudField[] {
+  get rules():IEntityCrudRules{
+    return {
+      name: [(v: any) => !!v || 'validation.required'],
+description: [],
+flag: [],
+tenant: [],
+createdBy: [(v: any) => !!v || 'validation.required']
+    }
+  }
+
+  get fields(): IEntityCrudField[]{
     return [
-      {name: 'name', type: 'string', label: 'name', default: '', hint: 'Aca pone nombre', persistentHint: true},
-      {name: 'description', type: 'longString', label: 'description', default: '', groupMenu: 'BASIC'},
-      {
-        name: 'flag',
-        type: 'file',
-        label: 'flag',
-        default: '',
-        groupMenu: 'EXTENDED',
-        prependInnerIcon: 'mdi mdi-attachment'
-      }
+        {name:'name',type:'string',label:'name',default:''},
+{name:'description',type:'longString',label:'description',default:'Some Description',groupMenu: 'BASIC'},
+{name:'flag',type:'file',label:'flag',default:'',groupMenu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'},
+{name:'tenant',type:'ref',label:'tenant',default:null,ref: 'Tenant',refDisplay: 'name'},
+{name:'createdBy',type:'ref',label:'createdBy',default:null,ref: 'User',refDisplay: 'username'}
     ]
   }
-
-  get filters(): IEntityCrudFilter[] {
+  
+  get filters():IEntityCrudFilter[]{
     return [
-      {name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
-      {name: 'name', type: 'string', label: 'name', default: '', operator: 'eq' },
+      //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
     ]
   }
-
-  get isViewable() {
+  
+  get isViewable(){
     return true
   }
 
-  get isEditable() {
+  get isEditable(){
     return true
   }
 
-  get isCreatable() {
+  get isCreatable(){
     return true
   }
 
-  get isDeletable() {
+  get isDeletable(){
     return true
   }
 
-  get isExportable() {
+  get isExportable(){
     return true
   }
 
-  get exportFormats() {
+  get exportFormats(){
     return ['CSV', 'JSON']
   }
 
-  get exportHeaders() {
-    return ['_id', 'name', 'description']
+  get exportHeaders(){
+    return ['_id']
   }
 
-  get exportHeadersTranslate() {
-    return ['countryCrud.id', 'countryCrud.name', 'countryCrud.description']
+  get isImportable(){
+    return true
+  }
+  
+  get isColumnSelectable() {
+    return true
   }
 
-  get isImportable() {
+  get isGroupable() {
+    return true
+  }
+
+  get importFormats(){
+    return ['CSV', 'JSON']
+  }
+
+  get dialogFullscreen(){
     return false
   }
-
-  get importFormats() {
-    return ['CSV', 'JSON']
-  }
-
-  get dialogFullscreen() {
-    return true
-  }
-
+  
   get tabs() {
-    return []
-  }
-
-  get menus() {
     return [
-      'BASIC', 'EXTENDED'
+     
     ]
   }
-
-  get filterButtons(){
-    return true
+  
+  get menus() {
+    return [
+     'BASIC', 'EXTENDED'
+    ]
   }
-
-  get inputVariantEdit(): IEntityCrudFieldVariant{
-    return 'filled'
-  }
-
 
 
 }

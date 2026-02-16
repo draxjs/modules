@@ -6,7 +6,9 @@
   "main": "dist/index.js",
   "private": true,
   "scripts": {
-    "build": "tsx src/index.ts"
+    "build": "tsx src/index.ts",
+    "copy:safe": "tsx src/copy-safe.ts",
+    "copy:force": "tsx src/copy-force.ts"
   },
   "author": "Cristian Incarnato",
   "license": "ISC",

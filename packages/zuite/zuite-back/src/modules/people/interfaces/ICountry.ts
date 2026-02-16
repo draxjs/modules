@@ -3,10 +3,10 @@ interface ICountryBase {
     name: string
     description?: string
     flag?: string
+    tenant?: any
+    createdBy?: any
     createdAt?: Date
     updatedAt?: Date
-    company?: any
-    createdBy?: any
 }
 
 interface ICountry {
@@ -14,10 +14,10 @@ interface ICountry {
     name: string
     description?: string
     flag?: string
+    tenant?: any
+    createdBy: any
     createdAt?: Date
     updatedAt?: Date
-    company?: any
-    createdBy?: any
 }
 
 export type {

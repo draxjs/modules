@@ -3,7 +3,7 @@ import PersonMongoRepository from '../../repository/mongo/PersonMongoRepository.
 import PersonSqliteRepository from '../../repository/sqlite/PersonSqliteRepository.js'
 import type {IPersonRepository} from "../../interfaces/IPersonRepository";
 import {PersonService} from '../../services/PersonService.js'
-import {PersonBaseSchema} from "../../schemas/PersonSchema.js";
+import {PersonBaseSchema, PersonSchema} from "../../schemas/PersonSchema.js";
 import {COMMON, CommonConfig, DraxConfig} from "@drax/common-back";
 
 class PersonServiceFactory {
@@ -26,8 +26,9 @@ class PersonServiceFactory {
                     throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
             }
             
-            const schema = PersonBaseSchema;
-            PersonServiceFactory.service = new PersonService(repository, schema);
+            const baseSchema = PersonBaseSchema;
+            const fullSchema = PersonSchema;
+            PersonServiceFactory.service = new PersonService(repository, baseSchema, fullSchema);
         }
         return PersonServiceFactory.service;
     }

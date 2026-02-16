@@ -1,8 +1,13 @@
-import CountryI18n from "./Country-i18n"
-import LanguageI18n from "./Language-i18n"
-import PersonI18n from "./Person-i18n"
-import merge from 'deepmerge'
 
-const messages =  merge.all([CountryI18n,LanguageI18n,PersonI18n])
+import merge from "deepmerge";
+import PersonMessages from "./Person-i18n"
+import CountryMessages from "./Country-i18n"
+import LanguageMessages from "./Language-i18n"
+
+const messages = merge.all([
+    PersonMessages,
+    CountryMessages,
+    LanguageMessages
+])
 
 export default messages

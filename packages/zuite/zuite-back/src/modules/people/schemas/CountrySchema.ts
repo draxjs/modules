@@ -4,16 +4,17 @@ import { z } from 'zod';
 
 const CountryBaseSchema = z.object({
       name: z.string().min(1,'validation.required'),
-    //description: z.string().min(1,'validation.required'),
-    description: z.string().optional().nullable(),
-    flag: z.string().optional()
+    description: z.string().optional().default('Some Description'),
+    flag: z.string().optional(),
+    tenant: z.coerce.string().optional().nullable(),
+    createdBy: z.coerce.string().optional()
 });
 
 const CountrySchema = CountryBaseSchema
     .extend({
-      _id: z.string(),
-        company: z.object({_id: z.string(), name: z.string()}).nullable().optional(),
-        createdBy: z.object({_id: z.string(), username: z.string()}).nullable().optional()
+      _id: z.coerce.string(),
+       tenant: z.object({_id: z.coerce.string(), name: z.string()}).nullable().optional(),
+createdBy: z.object({_id: z.coerce.string(), username: z.string()})
     })
 
 export default CountrySchema;

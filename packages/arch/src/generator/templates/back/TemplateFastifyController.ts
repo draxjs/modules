@@ -4,10 +4,6 @@ function hasTenantField(schema: any): boolean {
     return schema.hasOwnProperty("tenant");
 }
 
-function hasUserField(schema: any): boolean {
-    return schema.hasOwnProperty("user");
-}
-
 export const TemplateFastifyController = (entity: IEntitySchema) => `
 import ${entity.name}ServiceFactory from "../factory/services/${entity.name}ServiceFactory.js";
 import {AbstractFastifyController} from "@drax/crud-back";
@@ -18,13 +14,15 @@ class ${entity.name}Controller extends AbstractFastifyController<I${entity.name}
 
     constructor() {
         super(${entity.name}ServiceFactory.instance, ${entity.name}Permissions)
-        this.tenantField = "tenant";
-        this.userField = "user";
+        this.tenantField = "${(getTenantField(entity.schema))}";
+        this.userField = "${(getUserField(entity.schema))}";
+        
         this.tenantFilter = ${(hasTenantField(entity.schema))};
-        this.userFilter = ${(hasUserField(entity.schema))};
         this.tenantSetter = ${(hasTenantField(entity.schema))};
-        this.userSetter = ${(hasUserField(entity.schema))};
         this.tenantAssert = ${(hasTenantField(entity.schema))};
+        
+        this.userFilter = ${(hasUserField(entity.schema))};
+        this.userSetter = ${(hasUserField(entity.schema))};
         this.userAssert = ${(hasUserField(entity.schema))};
     }
 
@@ -36,3 +34,33 @@ export {
 }
 
 `
+
+function hasUserField(schema: any): boolean {
+    return schema.hasOwnProperty("user") || schema.hasOwnProperty("createdBy");
+}
+
+function getTenantField(schema: any): string {
+
+    if(schema.tenantField){
+        return schema.tenantField;
+    }
+
+    return "tenant"
+}
+
+function getUserField(schema: any): string {
+
+    if(schema.userField){
+        return schema.userField;
+    }
+
+    if(schema.hasOwnProperty("user")){
+        return "user";
+    }
+
+    if(schema.hasOwnProperty("createdBy")){
+        return "createdBy";
+    }
+
+    return "user"
+}

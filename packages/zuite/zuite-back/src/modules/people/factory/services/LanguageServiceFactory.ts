@@ -3,7 +3,7 @@ import LanguageMongoRepository from '../../repository/mongo/LanguageMongoReposit
 import LanguageSqliteRepository from '../../repository/sqlite/LanguageSqliteRepository.js'
 import type {ILanguageRepository} from "../../interfaces/ILanguageRepository";
 import {LanguageService} from '../../services/LanguageService.js'
-import {LanguageBaseSchema} from "../../schemas/LanguageSchema.js";
+import {LanguageBaseSchema, LanguageSchema} from "../../schemas/LanguageSchema.js";
 import {COMMON, CommonConfig, DraxConfig} from "@drax/common-back";
 
 class LanguageServiceFactory {
@@ -26,8 +26,9 @@ class LanguageServiceFactory {
                     throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
             }
             
-            const schema = LanguageBaseSchema;
-            LanguageServiceFactory.service = new LanguageService(repository, schema);
+            const baseSchema = LanguageBaseSchema;
+            const fullSchema = LanguageSchema;
+            LanguageServiceFactory.service = new LanguageService(repository, baseSchema, fullSchema);
         }
         return LanguageServiceFactory.service;
     }

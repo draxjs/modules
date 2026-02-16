@@ -5,7 +5,7 @@ import ${entity.name}MongoRepository from '../../repository/mongo/${entity.name}
 import ${entity.name}SqliteRepository from '../../repository/sqlite/${entity.name}SqliteRepository.js'
 import type {I${entity.name}Repository} from "../../interfaces/I${entity.name}Repository";
 import {${entity.name}Service} from '../../services/${entity.name}Service.js'
-import {${entity.name}BaseSchema} from "../../schemas/${entity.name}Schema.js";
+import {${entity.name}BaseSchema, ${entity.name}Schema} from "../../schemas/${entity.name}Schema.js";
 import {COMMON, CommonConfig, DraxConfig} from "@drax/common-back";
 
 class ${entity.name}ServiceFactory {
@@ -28,8 +28,9 @@ class ${entity.name}ServiceFactory {
                     throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
             }
             
-            const schema = ${entity.name}BaseSchema;
-            ${entity.name}ServiceFactory.service = new ${entity.name}Service(repository, schema);
+            const baseSchema = ${entity.name}BaseSchema;
+            const fullSchema = ${entity.name}Schema;
+            ${entity.name}ServiceFactory.service = new ${entity.name}Service(repository, baseSchema, fullSchema);
         }
         return ${entity.name}ServiceFactory.service;
     }

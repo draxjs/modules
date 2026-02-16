@@ -48,6 +48,10 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     ]
   }
   
+  get selectedHeaders(): string[] {
+    return this.headers.map(header => header.key)
+  }
+  
   get actionHeaders():IEntityCrudHeader[]{
     return [
       {
@@ -55,7 +59,8 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
         key: 'actions',
         sortable: false,
         align: 'center',
-        minWidth: '190px'
+        minWidth: '190px',
+        fixed: 'end'
       },
     ]
   }
@@ -119,6 +124,14 @@ icon: []
   }
 
   get isImportable(){
+    return true
+  }
+  
+  get isColumnSelectable() {
+    return true
+  }
+
+  get isGroupable() {
     return true
   }
 
