@@ -21,6 +21,7 @@ class CountrySqliteRepository extends AbstractSqliteRepository<ICountry, ICountr
         {name: "name", type: "TEXT", unique: true, primary: false},
 {name: "description", type: "TEXT", unique: false, primary: false},
 {name: "flag", type: "TEXT", unique: false, primary: false},
+{name: "metadata", type: "TEXT", unique: false, primary: false},
 {name: "tenant", type: "TEXT", unique: false, primary: false},
 {name: "createdBy", type: "TEXT", unique: false, primary: false}
     ]

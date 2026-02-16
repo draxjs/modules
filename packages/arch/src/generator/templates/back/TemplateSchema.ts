@@ -41,6 +41,9 @@ const generateEntityBaseSchema = (schema: ISchema) => {
             case "ref":
                 fields.push(`    ${field}: z.coerce.string()${schema[field].required ? ".min(1,'validation.required')" : ".optional().nullable()"}`)
                 break;
+            case "record":
+                fields.push(`    ${field}: z.any()${schema[field].required ? "" : ".optional().nullable()"}`)
+                break;
             case "fullFile":
                 fields.push(`    ${field}: z.object({
                 filename: z.string().min(1,'validation.required'),
@@ -67,6 +70,9 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 break;
             case "array.number":
                 fields.push(`    ${field}: z.array(z.number())${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+JSON.stringify(schema[field].default)+")" : ""}`)
+                break;
+            case "array.record":
+                fields.push(`    ${field}: z.array(z.any())${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+JSON.stringify(schema[field].default)+")" : ""}`)
                 break;
             case "array.ref":
                 fields.push(`    ${field}: z.array(z.coerce.string())${schema[field].required ? "" : ".optional()"}`)

@@ -23,6 +23,8 @@ async function LanguageFastifyRoutes(fastify, options) {
     fastify.post('/api/language', {schema: schemas.createSchema}, (req,rep) =>controller.create(req,rep))
 
     fastify.put('/api/language/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.update(req,rep))
+    
+    fastify.patch('/api/language/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.updatePartial(req,rep))
 
     fastify.delete('/api/language/:id', {schema: schemas.deleteSchema}, (req,rep) =>controller.delete(req,rep))
     

@@ -10,6 +10,7 @@ const messages = {
                        name:'name',
            description:'description',
            flag:'flag',
+           metadata:'metadata',
            tenant:'tenant',
            createdBy:'createdBy'
           }
@@ -31,6 +32,7 @@ const messages = {
                        name:'name',
            description:'description',
            flag:'flag',
+           metadata:'metadata',
            tenant:'tenant',
            createdBy:'createdBy'
           }

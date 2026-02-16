@@ -23,6 +23,8 @@ async function PersonFastifyRoutes(fastify, options) {
     fastify.post('/api/person', {schema: schemas.createSchema}, (req,rep) =>controller.create(req,rep))
 
     fastify.put('/api/person/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.update(req,rep))
+    
+    fastify.patch('/api/person/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.updatePartial(req,rep))
 
     fastify.delete('/api/person/:id', {schema: schemas.deleteSchema}, (req,rep) =>controller.delete(req,rep))
     

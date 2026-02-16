@@ -47,6 +47,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
         {title: 'name',key:'name', align: 'start'},
 {title: 'description',key:'description', align: 'start'},
 {title: 'flag',key:'flag', align: 'start'},
+{title: 'metadata',key:'metadata', align: 'start'},
 {title: 'tenant',key:'tenant', align: 'start'},
 {title: 'createdBy',key:'createdBy', align: 'start'}
     ]
@@ -85,6 +86,7 @@ User: UserCrud.instance
       name: [(v: any) => !!v || 'validation.required'],
 description: [],
 flag: [],
+metadata: [],
 tenant: [],
 createdBy: [(v: any) => !!v || 'validation.required']
     }
@@ -93,8 +95,9 @@ createdBy: [(v: any) => !!v || 'validation.required']
   get fields(): IEntityCrudField[]{
     return [
         {name:'name',type:'string',label:'name',default:''},
-{name:'description',type:'longString',label:'description',default:'Some Description',groupMenu: 'BASIC'},
-{name:'flag',type:'file',label:'flag',default:'',groupMenu: 'EXTENDED',prependInnerIcon: 'mdi mdi-attachment'},
+{name:'description',type:'longString',label:'description',default:'Some Description'},
+{name:'flag',type:'file',label:'flag',default:'',prependInnerIcon: 'mdi mdi-attachment'},
+{name:'metadata',type:'record',label:'metadata',default:null},
 {name:'tenant',type:'ref',label:'tenant',default:null,ref: 'Tenant',refDisplay: 'name'},
 {name:'createdBy',type:'ref',label:'createdBy',default:null,ref: 'User',refDisplay: 'username'}
     ]
@@ -162,7 +165,7 @@ createdBy: [(v: any) => !!v || 'validation.required']
   
   get menus() {
     return [
-     'BASIC', 'EXTENDED'
+     
     ]
   }
 

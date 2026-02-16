@@ -21,6 +21,8 @@ const generateModelSchema = (schema: ISchema) => {
                 return "Date";
             case "ref":
                 return "mongoose.Schema.Types.ObjectId";
+            case "record":
+                return "Map";
             case "enum":
                 return "String";
             default:
@@ -29,16 +31,16 @@ const generateModelSchema = (schema: ISchema) => {
     }
 
     function generateField(field:IFieldSchema, fieldType: IType){
-        return `{type: ${mapType(fieldType)}, ${fieldType === 'ref' ? "ref: '"+ field.ref + "'," : "" } ${fieldType === 'enum' ? "enum: ['"+ field?.enum?.join("', '") + "']," : "" } required: ${field.required}, index: ${field.index}, unique: ${field.unique} }`
+        return `{type: ${mapType(fieldType)}, ${fieldType === 'ref' ? "ref: '"+ field.ref + "'," : "" } ${fieldType === 'enum' ? "enum: ['"+ field?.enum?.join("', '") + "']," : "" } required: ${field.required ? field.required : false}, index: ${field.index ? field.index : false}, unique: ${field.unique ? field.unique : false} }`
     }
 
     function generateFullFile(field:IFieldSchema){
         return `{
-        filename: {type: String ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
-        filepath: {type: String ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
-        size: {type: Number ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
-        mimetype: {type: String ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
-        url: {type: String ,  required: ${field.required}, index: ${field.index}, unique: ${field.unique} },
+        filename: {type: String ,  required: ${field.required ? field.required : false}, index: ${field.index ? field.index : false}, unique: ${field.unique ? field.unique : false} },
+        filepath: {type: String ,  required: ${field.required ? field.required : false}, index: ${field.index ? field.index : false}, unique: ${field.unique ? field.unique : false} },
+        size: {type: Number ,  required: ${field.required ? field.required : false}, index: ${field.index ? field.index : false}, unique: ${field.unique ? field.unique : false} },
+        mimetype: {type: String ,  required: ${field.required ? field.required : false}, index: ${field.index ? field.index : false}, unique: ${field.unique ? field.unique : false} },
+        url: {type: String ,  required: ${field.required ? field.required : false}, index: ${field.index ? field.index : false}, unique: ${field.unique ? field.unique : false} },
         }`
     }
 

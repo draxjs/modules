@@ -9,9 +9,9 @@ class CountryService extends AbstractService<ICountry, ICountryBase, ICountryBas
 
     constructor(CountryRepository: ICountryRepository, baseSchema?: ZodObject<ZodRawShape>, fullSchema?: ZodObject<ZodRawShape>) {
         super(CountryRepository, baseSchema, fullSchema);
-
+        
         this._validateOutput = true
-
+        
     }
 
 }

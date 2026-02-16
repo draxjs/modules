@@ -27,6 +27,9 @@ const generateEntityInterface = (schema: ISchema) => {
             case "ref":
                 fields.push(`    ${field}${!schema[field].required ? "?" : ""}: any`)
                 break;
+            case "record":
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Record<string, any>`)
+                break;
             case "fullFile":
                 fields.push(`    ${field}${!schema[field].required ? "?" : ""}: {
                 filename: string,
@@ -45,6 +48,9 @@ const generateEntityInterface = (schema: ISchema) => {
             case "array.string":
             case "array.enum":
                 fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<string>`)
+                break;
+            case "array.record":
+                fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Record<string, any>[]`)
                 break;
             case "array.number":
                 fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<number>`)

@@ -3,6 +3,7 @@ interface ICountryBase {
     name: string
     description?: string
     flag?: string
+    metadata?: Record<string, any>
     tenant?: any
     createdBy: any
     createdAt?: Date
@@ -14,6 +15,7 @@ interface ICountry {
     name: string
     description?: string
     flag?: string
+    metadata?: Record<string, any>
     tenant?: any
     createdBy: any
     createdAt?: Date

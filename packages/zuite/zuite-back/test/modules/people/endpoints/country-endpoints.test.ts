@@ -27,7 +27,8 @@ describe("Country Route Test", function () {
         await testSetup.dropCollection('Country')
 
         const newCountry = {
-            name: "Italia"
+            name: "Italia",
+            metadata: {best: 'AI', worst: 'OU'}
         };
 
         const resp = await testSetup.fastifyInstance.inject({
@@ -40,6 +41,8 @@ describe("Country Route Test", function () {
         const country = await resp.json();
         expect(resp.statusCode).toBe(200);
         expect(country.name).toBe("Italia");
+        expect(country.metadata.best).toBe("AI");
+        expect(country.metadata.worst).toBe("OU");
         expect(country._id).toBeDefined();
 
         // Verify country was created by fetching it

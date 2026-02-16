@@ -23,6 +23,8 @@ async function CountryFastifyRoutes(fastify, options) {
     fastify.post('/api/countries', {schema: schemas.createSchema}, (req,rep) =>controller.create(req,rep))
 
     fastify.put('/api/countries/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.update(req,rep))
+    
+    fastify.patch('/api/countries/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.updatePartial(req,rep))
 
     fastify.delete('/api/countries/:id', {schema: schemas.deleteSchema}, (req,rep) =>controller.delete(req,rep))
     

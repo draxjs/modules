@@ -26,6 +26,7 @@ describe("Country Service Test", function () {
 
         const newCountry = {
             name: "Italia",
+            metadata: {best: 'AI', worst: 'OU'},
             createdBy: testSetup.rootUser._id
         };
 
@@ -52,7 +53,7 @@ describe("Country Service Test", function () {
         expect(country.name).toBe("Italia");
         expect(country._id).toBeDefined();
 
-        const updateData: ICountryBase = {
+        const updateData: any = {
             name: "ItaliaUpdated"
         }
 
@@ -78,7 +79,7 @@ describe("Country Service Test", function () {
         expect(country.name).toBe("Italia");
         expect(country._id).toBeDefined();
 
-        const updateData: ICountryBase = {
+        const updateData: any = {
             name: "ItaliaUpdated"
         }
 
