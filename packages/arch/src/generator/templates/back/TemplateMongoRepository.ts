@@ -33,7 +33,8 @@ class ${entity.name}MongoRepository extends AbstractMongoRepository<I${entity.na
         super();
         this._model = ${entity.name}Model;
         this._searchFields = [${generateSearchFields(entity.schema)}];
-         this._populateFields = [${generatePopulateFields(entity.schema)}];
+        this._populateFields = [${generatePopulateFields(entity.schema)}];
+        this._lean = true
     }
 
 }

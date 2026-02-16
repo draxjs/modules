@@ -36,7 +36,7 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 fields.push(`    ${field}: z.boolean()${schema[field].required? "" : ".optional()"}`)
                 break;
             case "date":
-                fields.push(`    ${field}: ${schema[field].required ? 'z.iso.datetime({error: "validation.required"})' : 'z.iso.datetime().nullable().optional()'}`)
+                fields.push(`    ${field}: ${schema[field].required ? 'z.date({error: "validation.required"})' : 'z.date().nullable().optional()'}`)
                 break;
             case "ref":
                 fields.push(`    ${field}: z.coerce.string()${schema[field].required ? ".min(1,'validation.required')" : ".optional().nullable()"}`)
