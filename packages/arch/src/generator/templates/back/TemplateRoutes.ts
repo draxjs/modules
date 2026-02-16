@@ -42,6 +42,8 @@ async function ${entity.name}FastifyRoutes(fastify, options) {
     fastify.post('${getApiBasePath(entity)}', {schema: schemas.createSchema}, (req,rep) =>controller.create(req,rep))
 
     fastify.put('${getApiBasePath(entity)}/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.update(req,rep))
+    
+    fastify.patch('${getApiBasePath(entity)}/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.updatePartial(req,rep))
 
     fastify.delete('${getApiBasePath(entity)}/:id', {schema: schemas.deleteSchema}, (req,rep) =>controller.delete(req,rep))
     
