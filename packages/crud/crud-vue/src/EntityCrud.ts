@@ -111,6 +111,8 @@ class EntityCrud implements IEntityCrud {
         value = field.default
       } else if (field.type === 'object') {
         value = this.objectFields(field)
+      } else if (field.type === 'record') {
+        value = {}
       } else if (/array/.test(field.type)) {
         value = []
       } else {

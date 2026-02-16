@@ -30,6 +30,7 @@ const messages = {
       chart: 'Chart',
       summary: 'Summary',
       apply: 'Apply',
+      addEntry: 'Add Entry'
     }
   },
   es: {
@@ -63,6 +64,7 @@ const messages = {
       chart: 'Gráfico',
       summary: 'Resumen',
       apply: 'Aplicar',
+      addEntry: 'Agregar entrada'
     }
   }
 }

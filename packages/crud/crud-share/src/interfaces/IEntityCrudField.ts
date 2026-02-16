@@ -2,7 +2,7 @@ import {IEntityCrudFieldSelectItem} from "./IEntityCrudFieldSelectItem";
 
 interface IEntityCrudField {
     name: string
-    type: 'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'ref' | 'enum' | 'select' |'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.ref' | 'array.enum' | 'array.fullFile'
+    type: 'id' |'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'record' | 'ref' | 'enum' | 'select' |'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.record' | 'array.ref' | 'array.enum' | 'array.fullFile'
     ref?: string
     refDisplay?: string
     enum?: string[]

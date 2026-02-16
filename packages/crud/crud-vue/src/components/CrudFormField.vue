@@ -3,6 +3,7 @@ import {computed, ref} from "vue";
 import type {PropType} from "vue";
 import CrudFormList from "./CrudFormList.vue";
 import CrudAutocomplete from "./CrudAutocomplete.vue";
+import CrudFormRecord from "./CrudFormRecord.vue";
 import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {VDateInput} from 'vuetify/labs/VDateInput'
@@ -535,6 +536,21 @@ defineEmits(['updateValue'])
         :clearable="clearable"
         :hide-details="hideDetails"
         :single-line="singleLine"
+        @updateValue="$emit('updateValue')"
+    />
+
+    <crud-form-record
+        v-if="field.type === 'record'"
+        :entity="entity"
+        :field="field"
+        v-model="valueModel"
+        :readonly="readonly"
+        :density="density"
+        :variant="variant"
+        :clearable="clearable"
+        :hide-details="hideDetails"
+        :single-line="singleLine"
+        :error-messages="inputErrors"
         @updateValue="$emit('updateValue')"
     />
 
