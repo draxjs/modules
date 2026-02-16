@@ -21,6 +21,12 @@ class AbstractCrudRestProvider<T, C, U> extends AbstractBaseRestProvider impleme
         return item as T
     }
 
+    async updatePartial(id: string, data: U): Promise<T> {
+        const url = this.basePath + '/' + id
+        const item = await this.httpClient.patch(url, data)
+        return item as T
+    }
+
     async delete(id: string): Promise<any> {
         const url = this.basePath + '/' + id
         const item = await this.httpClient.delete(url)
