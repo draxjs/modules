@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -24,7 +24,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/crud-front": "^1.0.0",
+    "@drax/crud-front": "^1.4.1",
     "@drax/crud-share": "^1.4.0",
     "@drax/dashboard-front": "^1.4.0"
   },

@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -25,8 +25,8 @@
   },
   "dependencies": {
     "@drax/common-front": "^1.4.0",
-    "@drax/crud-vue": "^1.4.0",
-    "@drax/identity-vue": "^1.4.0",
+    "@drax/crud-vue": "^1.4.1",
+    "@drax/identity-vue": "^1.4.1",
     "@drax/settings-front": "^1.0.0",
     "@drax/settings-share": "^1.0.0"
   },
