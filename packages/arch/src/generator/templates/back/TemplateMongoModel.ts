@@ -22,7 +22,7 @@ const generateModelSchema = (schema: ISchema) => {
             case "ref":
                 return "mongoose.Schema.Types.ObjectId";
             case "record":
-                return "Map";
+                return "mongoose.Schema.Types.Mixed";
             case "enum":
                 return "String";
             default:
