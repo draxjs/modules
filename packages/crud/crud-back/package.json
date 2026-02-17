@@ -28,7 +28,7 @@
     "@drax/media-back": "^1.4.1",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.4",
-    "mongoose": "^8.21.0",
+    "mongoose": "^8.23.0",
     "mongoose-lean-virtuals": "^1.1.0",
     "mongoose-paginate-v2": "^1.8.3"
   },
@@ -38,13 +38,13 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20.12.10",
+    "@types/node": "^25.2.3",
     "copyfiles": "^2.4.1",
     "mongoose-paginate-v2": "^1.8.3",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.6.2"
+    "typescript": "^5.9.3"
   },
   "gitHead": "e0ef450276ded01fd9e957e30ff18b409cd11fa9"
 }

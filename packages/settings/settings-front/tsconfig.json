@@ -1,12 +1,16 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "outDir": "./dist",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true
+    "rootDir": "src",
+    "outDir": "dist",
+    "declarationDir": "types"
   },
-  "include": ["src", "test", "env.d.ts"]
+  "exclude": ["types", "test", "dist","node_modules","tmp"],
+  "ts-node": {
+    "esm": true
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
+  }
 }

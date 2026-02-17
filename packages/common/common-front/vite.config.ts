@@ -12,8 +12,8 @@ export default defineConfig({
     build: {
         lib: {
             entry: resolve(__dirname, "src/index.ts"),
-            name: "@drax/identity-front",
-            fileName: "drax-identity-front",
+            name: "@drax/common-front",
+            fileName: "drax-common-front",
         },
 
     },

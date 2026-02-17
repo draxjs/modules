@@ -24,7 +24,7 @@
   "dependencies": {
     "@drax/crud-back": "^1.4.1",
     "@drax/crud-share": "^1.4.0",
-    "mongoose": "^8.21.0",
+    "mongoose": "^8.23.0",
     "mongoose-paginate-v2": "^1.8.3"
   },
   "peerDependencies": {
@@ -32,7 +32,7 @@
     "mongoose-paginate-v2": "^1.8.3"
   },
   "devDependencies": {
-    "@types/node": "^20.12.10",
+    "@types/node": "^25.2.3",
     "copyfiles": "^2.4.1",
     "mongoose-paginate-v2": "^1.8.3",
     "ts-node": "^10.9.2",

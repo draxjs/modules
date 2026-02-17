@@ -13,10 +13,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "type-check": "vue-tsc --build --force",
-    "tsc": "vue-tsc"
+    "build": "vite build",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@drax/audit-share": "^1.0.0",
@@ -24,11 +22,9 @@
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {
-    "@babel/types": "^7.24.0",
-    "@types/node": "^20.11.25",
-    "typescript": "^5.4.2",
-    "vite": "^5.1.5",
-    "vue-tsc": "^2.0.6"
+    "@types/node": "^25.2.3",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   },
   "gitHead": "e0ef450276ded01fd9e957e30ff18b409cd11fa9"
 }

@@ -1,20 +1,16 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.vitest.json"
-    }
-  ],
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "typeRoots": [
-      "./types"
-    ]
+    "rootDir": "src",
+    "outDir": "dist",
+    "declarationDir": "types"
+  },
+  "exclude": ["types", "test", "dist","node_modules","tmp"],
+  "ts-node": {
+    "esm": true
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
   }
 }
