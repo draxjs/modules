@@ -27,16 +27,15 @@ export class CrudSchemaBuilder<
   private target: string = 'openapi-3.0'; //"jsonSchema7" | "jsonSchema2019-09" | "openapi-3.0" | "openAi"
 
   constructor(entitySchema: T, entityCreateSchema: TCreate, entityUpdateSchema: TUpdate, entityName: string, target:string = 'openapi-3.0', tags: string[] = []) {
-    this.entitySchema = this.schemaAdapter(entitySchema);
-    this.entityCreateSchema = entityCreateSchema;
-    this.entityUpdateSchema = entityUpdateSchema;
-    this.entityName = entityName;
+    this.entitySchema = this.schemaAdapter(entitySchema)
+    this.entityCreateSchema = this.schemaAdapter(entityCreateSchema)
+    this.entityUpdateSchema = this.schemaAdapter(entityUpdateSchema)
+    this.entityName = entityName
     this.tags = tags
-    this.target = target;
+    this.target = target
   }
 
   private getTypeName(field: any): string | undefined {
-    // Zod v4 suele tener constructor.name útil en runtime
     return field?.constructor?.name;
   }
 

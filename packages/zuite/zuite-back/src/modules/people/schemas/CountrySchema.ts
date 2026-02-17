@@ -14,7 +14,7 @@ const CountrySchema = CountryBaseSchema
     .extend({
         _id: z.coerce.string(),
         tenant: z.object({_id: z.coerce.string(), name: z.string()}).nullable().optional(),
-        createdBy: z.object({_id: z.coerce.string(), username: z.string()}),
+        createdBy: z.object({_id: z.coerce.string(), username: z.string()}).optional(),
         createdAt: z.date()
 
     })
