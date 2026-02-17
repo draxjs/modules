@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-arch",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -13,10 +13,10 @@
   "author": "Cristian Incarnato",
   "license": "ISC",
   "devDependencies": {
-    "@drax/arch": "^1.4.1",
-    "@drax/common-back": "^1.1.1",
-    "@drax/crud-front": "^1.4.1",
-    "@drax/crud-vue": "^1.4.1",
+    "@drax/arch": "^2.0.0",
+    "@drax/common-back": "^2.0.0",
+    "@drax/crud-front": "^2.0.0",
+    "@drax/crud-vue": "^2.0.0",
     "@tsconfig/recommended": "^1.0.2",
     "@types/node": "^25.2.3",
     "ts-node": "^10.9.2",

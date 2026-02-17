@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "Audit backend",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -22,8 +22,8 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "@drax/crud-back": "^1.4.1",
-    "@drax/crud-share": "^1.4.0",
+    "@drax/crud-back": "^2.0.0",
+    "@drax/crud-share": "^2.0.0",
     "mongoose": "^8.23.0",
     "mongoose-paginate-v2": "^1.8.3"
   },

@@ -4,7 +4,7 @@
     "access": "public"
   },
   "type": "module",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",
@@ -17,8 +17,8 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@drax/audit-share": "^1.0.0",
-    "@drax/common-front": "^1.4.0",
+    "@drax/audit-share": "^2.0.0",
+    "@drax/common-front": "^2.0.0",
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {
