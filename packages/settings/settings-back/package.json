@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Setting module for nice management options.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -29,7 +29,7 @@
   "license": "ISC",
   "dependencies": {
     "@drax/common-back": "^2.0.0",
-    "@drax/crud-back": "^2.0.0",
+    "@drax/crud-back": "^2.0.1",
     "@drax/crud-share": "^2.0.0",
     "@drax/email-back": "^2.0.0",
     "@drax/identity-share": "^2.0.0"
