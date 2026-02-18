@@ -153,11 +153,7 @@ const isImage = computed(() => {
         @change="onFileChanged"
     >
 
-    {{preview}} {{isImage}}
-
     <v-btn  @click="onFileClick" :loading="loading" density="compact" color="grey" variant="text">Click | Drag & Drop</v-btn>
-
-
 
     <template v-if="preview && isImage">
       <v-img :src="valueModel" alt="Preview" :height="previewHeight" class="mt-4"></v-img>
