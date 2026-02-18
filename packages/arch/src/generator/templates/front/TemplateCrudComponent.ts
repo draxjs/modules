@@ -30,7 +30,7 @@ const generateRenders = (schema: ISchema) => {
 
 export const TemplateCrudComponent = (entity: IEntitySchema) => `
 <script setup lang="ts">
-import ${entity.name}Crud from './${entity.name}Crud'
+import ${entity.name}Crud from '../../cruds/${entity.name}Crud'
 import {Crud} from "@drax/crud-vue";
 import {formatDate} from "@drax/common-front"
 

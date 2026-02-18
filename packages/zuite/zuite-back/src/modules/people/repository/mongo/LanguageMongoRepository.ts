@@ -11,7 +11,8 @@ class LanguageMongoRepository extends AbstractMongoRepository<ILanguage, ILangua
         super();
         this._model = LanguageModel;
         this._searchFields = ['name'];
-         this._populateFields = [];
+        this._populateFields = [];
+        this._lean = true
     }
 
 }

@@ -9,7 +9,7 @@ const CountrySchema = new mongoose.Schema<ICountry>({
             name: {type: String,   required: true, index: true, unique: true },
             description: {type: String,   required: false, index: false, unique: false },
             flag: {type: String,   required: false, index: false, unique: false },
-            metadata: {type: Map,   required: false, index: false, unique: false },
+            metadata: {type: mongoose.Schema.Types.Mixed,   required: false, index: false, unique: false },
             tenant: {type: mongoose.Schema.Types.ObjectId, ref: 'Tenant',  required: false, index: false, unique: false },
             createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User',  required: true, index: false, unique: false }
 }, {timestamps: true});

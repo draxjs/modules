@@ -11,7 +11,8 @@ class CountryMongoRepository extends AbstractMongoRepository<ICountry, ICountryB
         super();
         this._model = CountryModel;
         this._searchFields = ['name'];
-         this._populateFields = ['tenant', 'createdBy'];
+        this._populateFields = ['tenant', 'createdBy'];
+        this._lean = true
     }
 
 }
