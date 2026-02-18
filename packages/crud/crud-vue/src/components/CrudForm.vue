@@ -163,6 +163,8 @@ const menuInputErrors = computed(() => {
                   :prepend-icon="field?.prependIcon"
                   :append-icon="field?.appendIcon"
                   :append-inner-icon="field?.appendInnerIcon"
+                  :preview="field?.preview"
+                  :previewHeight="field?.previewHeight"
               />
             </slot>
 

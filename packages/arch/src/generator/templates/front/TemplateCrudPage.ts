@@ -3,7 +3,7 @@ import {IEntitySchema, ISchema} from "../../../interfaces/IEntitySchema";
 
 export const TemplateCrudPage = (entity: IEntitySchema) => `
 <script setup lang="ts">
-import ${entity.name}Crud from '../../cruds/${entity.name}Crud.vue'
+import ${entity.name}Crud from '../../components/cruds/${entity.name}Crud.vue'
 
 </script>
 

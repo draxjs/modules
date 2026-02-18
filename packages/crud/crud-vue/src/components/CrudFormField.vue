@@ -32,6 +32,8 @@ const {index, entity, field, disableRules, parentField} = defineProps({
   multiple: {type: Boolean, default: false},
   clearable: {type: Boolean, default: false},
   disableRules: {type: Boolean, default: false},
+  preview: {type: Boolean, default: true},
+  previewHeight: {type: String, default: '100px'},
   parentField: {type: String, default: null, required: false},
   index: {type: Number, default: null, required: false},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
@@ -282,6 +284,8 @@ defineEmits(['updateValue'])
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        :preview="preview"
+        :previewHeight="previewHeight"
     />
 
     <media-full-field
@@ -302,6 +306,8 @@ defineEmits(['updateValue'])
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        :preview="preview"
+        :previewHeight="previewHeight"
     />
 
     <v-switch

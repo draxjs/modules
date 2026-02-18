@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {MediaSystemFactory} from "@drax/media-front"
-import {type PropType, ref} from "vue";
+import {type PropType, ref, computed} from "vue";
 
 const mediaSystem = MediaSystemFactory.getInstance()
 
@@ -30,6 +30,8 @@ const {dir, readonly, timeout} = defineProps({
     type: String as PropType<'underlined' | 'outlined' | 'filled' | 'solo' | 'solo-inverted' | 'solo-filled' | 'plain'>,
     default: 'filled'
   },
+  preview: {type: Boolean, default: false},
+  previewHeight: {type: String, default: '100px'},
 })
 
 let fileInput = ref()
@@ -95,6 +97,17 @@ const handleDragLeave = () => {
 
 defineEmits(['updateValue'])
 
+const isImage = computed(() => {
+
+  if (typeof valueModel.value !== 'string' || !valueModel.value.trim()) return false;
+
+  // matches: .jpg/.jpeg/.png/.gif/.webp/.bmp/.svg/.tif/.tiff/.avif/.ico
+  // supports optional query/hash: ".../file.jpg?x=1#y"
+  const imageExtRegex = /\.(?:jpe?g|png|gif|webp|bmp|svg|tiff?|avif|ico)(?:[?#].*)?$/i;
+
+  return imageExtRegex.test(valueModel.value);
+});
+
 </script>
 
 <template>
@@ -140,7 +153,15 @@ defineEmits(['updateValue'])
         @change="onFileChanged"
     >
 
+    {{preview}} {{isImage}}
+
     <v-btn  @click="onFileClick" :loading="loading" density="compact" color="grey" variant="text">Click | Drag & Drop</v-btn>
+
+
+
+    <template v-if="preview && isImage">
+      <v-img :src="valueModel" alt="Preview" :height="previewHeight" class="mt-4"></v-img>
+    </template>
 
   </div>
 

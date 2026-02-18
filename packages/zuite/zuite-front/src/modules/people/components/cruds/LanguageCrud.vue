@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import LanguageCrud from './LanguageCrud'
+import LanguageCrud from '../../cruds/LanguageCrud'
 import {Crud} from "@drax/crud-vue";
 
 </script>

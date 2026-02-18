@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import PersonCrud from '../../cruds/PersonCrud.vue'
+import PersonCrud from '../../components/cruds/PersonCrud.vue'
 
 </script>
 

@@ -32,6 +32,8 @@ interface IEntityCrudField {
     addOnTheFly?:boolean
     endOfDay?: boolean
     showEndOfDayChip?: boolean
+    preview?: boolean
+    previewHeight?: string
     max?: string
 }
 

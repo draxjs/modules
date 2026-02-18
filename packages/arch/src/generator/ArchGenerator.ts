@@ -94,7 +94,7 @@ class ArchGenerator {
 
     async entityCrudComponent(entity: IEntitySchema) {
         const content = TemplateCrudComponent(entity)
-        const path = this.outputPath + '/' + entity.module + '/front/cruds'
+        const path = this.outputPath + '/' + entity.module + '/front/components/cruds'
         const fileName = `${entity.name}Crud.vue`
         await this.writeToFile(path, fileName, content)
     }

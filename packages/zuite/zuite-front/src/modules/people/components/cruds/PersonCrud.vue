@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import PersonCrud from './PersonCrud'
+import PersonCrud from '../../cruds/PersonCrud'
 import {Crud} from "@drax/crud-vue";
 import {formatDate} from "@drax/common-front"
 

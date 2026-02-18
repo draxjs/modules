@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import CountryCrud from '../../cruds/CountryCrud.vue'
+import CountryCrud from '../../components/cruds/CountryCrud.vue'
 
 </script>
 

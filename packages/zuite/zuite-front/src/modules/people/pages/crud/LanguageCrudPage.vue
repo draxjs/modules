@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import LanguageCrud from '../../cruds/LanguageCrud.vue'
+import LanguageCrud from '../../components/cruds/LanguageCrud.vue'
 
 </script>
 

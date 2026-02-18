@@ -1,11 +1,10 @@
-
 import {EntityCrud} from "@drax/crud-vue";
-import type{
+import type {
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader, 
+  IEntityCrudHeader,
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
@@ -23,36 +22,36 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     super();
     this.name = 'Language'
   }
-  
+
   static get instance(): LanguageCrud {
-    if(!LanguageCrud.singleton){
+    if (!LanguageCrud.singleton) {
       LanguageCrud.singleton = new LanguageCrud()
     }
     return LanguageCrud.singleton
   }
 
-  get permissions(): IEntityCrudPermissions{
+  get permissions(): IEntityCrudPermissions {
     return {
-      manage: 'language:manage', 
-      view: 'language:view', 
-      create: 'language:create', 
-      update: 'language:update', 
+      manage: 'language:manage',
+      view: 'language:view',
+      create: 'language:create',
+      update: 'language:update',
       delete: 'language:delete'
     }
   }
 
   get headers(): IEntityCrudHeader[] {
     return [
-        {title: 'name',key:'name', align: 'start'},
-{title: 'icon',key:'icon', align: 'start'}
+      {title: 'name', key: 'name', align: 'start'},
+      {title: 'icon', key: 'icon', align: 'start'}
     ]
   }
-  
+
   get selectedHeaders(): string[] {
     return this.headers.map(header => header.key)
   }
-  
-  get actionHeaders():IEntityCrudHeader[]{
+
+  get actionHeaders(): IEntityCrudHeader[] {
     return [
       {
         title: 'action.actions',
@@ -65,68 +64,66 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     ]
   }
 
-  get provider(): IDraxCrudProvider<any, any, any>{
+  get provider(): IDraxCrudProvider<any, any, any> {
     return LanguageProvider.instance
   }
-  
-  get refs(): IEntityCrudRefs{
-    return {
-      
-    }
+
+  get refs(): IEntityCrudRefs {
+    return {}
   }
 
-  get rules():IEntityCrudRules{
+  get rules(): IEntityCrudRules {
     return {
       name: [(v: any) => !!v || 'validation.required'],
-icon: []
+      icon: []
     }
   }
 
-  get fields(): IEntityCrudField[]{
+  get fields(): IEntityCrudField[] {
     return [
-        {name:'name',type:'string',label:'name',default:''},
-{name:'icon',type:'fullFile',label:'icon',default:{},prependInnerIcon: 'mdi mdi-attachment'}
+      {name: 'name', type: 'string', label: 'name', default: ''},
+      {name: 'icon', type: 'fullFile', preview: true, label: 'icon', default: {}, prependInnerIcon: 'mdi mdi-attachment'}
     ]
   }
-  
-  get filters():IEntityCrudFilter[]{
+
+  get filters(): IEntityCrudFilter[] {
     return [
       //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
     ]
   }
-  
-  get isViewable(){
+
+  get isViewable() {
     return true
   }
 
-  get isEditable(){
+  get isEditable() {
     return true
   }
 
-  get isCreatable(){
+  get isCreatable() {
     return true
   }
 
-  get isDeletable(){
+  get isDeletable() {
     return true
   }
 
-  get isExportable(){
+  get isExportable() {
     return true
   }
 
-  get exportFormats(){
+  get exportFormats() {
     return ['CSV', 'JSON']
   }
 
-  get exportHeaders(){
+  get exportHeaders() {
     return ['_id']
   }
 
-  get isImportable(){
+  get isImportable() {
     return true
   }
-  
+
   get isColumnSelectable() {
     return true
   }
@@ -135,24 +132,20 @@ icon: []
     return true
   }
 
-  get importFormats(){
+  get importFormats() {
     return ['CSV', 'JSON']
   }
 
-  get dialogFullscreen(){
+  get dialogFullscreen() {
     return false
   }
-  
+
   get tabs() {
-    return [
-     
-    ]
+    return []
   }
-  
+
   get menus() {
-    return [
-     
-    ]
+    return []
   }
 
 
