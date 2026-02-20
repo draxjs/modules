@@ -141,7 +141,7 @@ class EntityCrud implements IEntityCrud {
       throw new Error("Ref not found: " + ref)
     }
 
-    return this.refs[ref]
+    return this.refs[ref] as IEntityCrud
   }
 
   get rules(): IEntityCrudRules {
