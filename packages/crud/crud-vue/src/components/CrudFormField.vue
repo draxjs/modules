@@ -19,7 +19,7 @@ const {hasPermission} = useAuth()
 
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
-const {index, entity, field, disableRules, parentField} = defineProps({
+const {index, entity, field, disableRules, parentField, errorMessages} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField | IEntityCrudFilter | undefined>, required: true},
   prependIcon: {type: String, default: ''},
@@ -35,6 +35,7 @@ const {index, entity, field, disableRules, parentField} = defineProps({
   preview: {type: Boolean, default: true},
   previewHeight: {type: String, default: '100px'},
   parentField: {type: String, default: null, required: false},
+  errorMessages: {type: Array as PropType<string[]>, default: null, required: false},
   index: {type: Number, default: null, required: false},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
   variant: {
@@ -64,12 +65,16 @@ const rules = computed(() => {
   return entity.getRule(field.name) as any
 })
 
-const inputErrors = computed(() => {
+const storeErrorMessages = computed(() => {
       let sIndex = (index != null && index >= 0) ? `${index}.` : ''
       let name = parentField ? `${parentField}.${sIndex}${field.name}` : field.name
       return store.getFieldInputErrors(name).map((error: string) =>te(error) ? t(error) : error)
     }
 )
+
+const inputErrors = computed(() => {
+  return errorMessages ?? storeErrorMessages.value
+})
 
 defineEmits(['updateValue'])
 

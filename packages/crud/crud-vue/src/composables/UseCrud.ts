@@ -399,7 +399,8 @@ export function useCrud(entity: IEntityCrud) {
 
 
     return {
-        doPaginate, doExport, onView, onCreate, onEdit, onDelete, onCancel, onSubmit, resetCrudStore,
+        doPaginate, doExport, doUpdate, doCreate, doDelete,
+        onView, onCreate, onEdit, onDelete, onCancel, onSubmit, resetCrudStore,
         operation, dialog, form, notify, error, message, formValid,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
         prepareFilters, filters, clearFilters, applyFilters,
