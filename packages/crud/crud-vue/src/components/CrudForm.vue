@@ -184,7 +184,7 @@ const menuInputErrors = computed(() => {
           <v-card-text>
             <v-tabs-window v-model="tabSelected">
               <v-tabs-window-item v-for="tab in entity.tabs" :value="tab">
-                <v-row>
+                <v-row class="pt-3">
                   <v-col
                       v-for="field in tabFields(tab)"
                       :key="field.name"
@@ -277,7 +277,7 @@ const menuInputErrors = computed(() => {
           {{ operation == 'view' ? t('action.close') : t('action.cancel') }}
         </v-btn>
         <v-btn variant="flat" v-if="operation != 'view'" :class="entity.submitBtnFormClass" @click="submit" :loading="store.loading">
-          {{ operation ? t('action.' + operation) : t('action.sent') }}
+          {{ operation ? t('action.save') : t('action.save') }}
         </v-btn>
       </v-card-actions>
     </v-card>

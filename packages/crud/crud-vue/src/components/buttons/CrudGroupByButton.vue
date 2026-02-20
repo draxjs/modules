@@ -109,6 +109,7 @@ const totalCount = computed(() => {
             chips
             closable-chips
             return-object
+            :menu-props="{ zIndex: 3000 }"
           >
           </v-select>
 
@@ -121,6 +122,7 @@ const totalCount = computed(() => {
             density="compact"
             variant="outlined"
             class="mt-4"
+            :menu-props="{ zIndex: 3000 }"
           >
             <template v-slot:prepend-inner>
               <v-icon>mdi-calendar-clock</v-icon>
