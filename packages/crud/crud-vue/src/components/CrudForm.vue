@@ -277,7 +277,7 @@ const menuInputErrors = computed(() => {
           {{ operation == 'view' ? t('action.close') : t('action.cancel') }}
         </v-btn>
         <v-btn variant="flat" v-if="operation != 'view'" :class="entity.submitBtnFormClass" @click="submit" :loading="store.loading">
-          {{ operation ? t('action.save') : t('action.save') }}
+          {{ operation ? t('action.'+operation) : t('action.sent') }}
         </v-btn>
       </v-card-actions>
     </v-card>
