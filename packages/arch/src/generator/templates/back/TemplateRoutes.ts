@@ -47,6 +47,8 @@ async function ${entity.name}FastifyRoutes(fastify, options) {
 
     fastify.delete('${getApiBasePath(entity)}/:id', {schema: schemas.deleteSchema}, (req,rep) =>controller.delete(req,rep))
     
+    fastify.get('${getApiBasePath(entity)}/export', (req,rep) =>controller.export(req,rep))
+    
 }
 
 export default ${entity.name}FastifyRoutes;
