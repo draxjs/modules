@@ -252,6 +252,11 @@ export function useCrud(entity: IEntityCrud) {
         openDialog()
     }
 
+    function prepareEdit(item: object) {
+        store.setForm(cast(cloneItem(item)))
+        store.setOperation("edit")
+    }
+
     function cloneItem(item: object): object {
         try {
             return JSON.parse(JSON.stringify(item))
@@ -398,7 +403,8 @@ export function useCrud(entity: IEntityCrud) {
         operation, dialog, form, notify, error, message, formValid,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
         prepareFilters, filters, clearFilters, applyFilters,
-        exportFiles, exportLoading, exportListVisible, exportError
+        exportFiles, exportLoading, exportListVisible, exportError,
+        cloneItem, cast, prepareEdit
     }
 
 }
