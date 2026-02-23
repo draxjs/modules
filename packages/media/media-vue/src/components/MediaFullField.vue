@@ -18,7 +18,6 @@ const {dir, readonly, timeout} = defineProps({
   hideDetails: {type: Boolean, default: false},
   singleLine: {type: Boolean, default: false},
   clearable: {type: Boolean, default: false},
-  disableRules: {type: Boolean, default: false},
   parentField: {type: String, default: null, required: false},
   index: {type: Number, default: null, required: false},
   name: {type: String, default: 'file'},

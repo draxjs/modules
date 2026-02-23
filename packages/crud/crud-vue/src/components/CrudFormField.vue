@@ -18,7 +18,7 @@ const {hasPermission} = useAuth()
 
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
-const {index, entity, field, disableRules, parentField, errorMessages, rules} = defineProps({
+const {index, entity, field, parentField, errorMessages, rules} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField | IEntityCrudFilter | undefined>, required: true},
   prependIcon: {type: String, default: ''},
@@ -30,7 +30,6 @@ const {index, entity, field, disableRules, parentField, errorMessages, rules} = 
   singleLine: {type: Boolean, default: false},
   multiple: {type: Boolean, default: false},
   clearable: {type: Boolean, default: false},
-  disableRules: {type: Boolean, default: false},
   preview: {type: Boolean, default: true},
   previewHeight: {type: String, default: '100px'},
   parentField: {type: String, default: null, required: false},
@@ -74,6 +73,8 @@ const inputErrors = computed(() => {
 })
 
 defineEmits(['updateValue'])
+
+
 
 
 </script>

@@ -60,7 +60,7 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
                   density="compact"
                   variant="outlined"
                   :prepend-inner-icon="filterIcon(filter)"
-                  hide-details  disable-rules
+                  hide-details
                   @updateValue="onUpdateValue"
               />
             </slot>

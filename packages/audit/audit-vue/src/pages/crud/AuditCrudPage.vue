@@ -23,7 +23,6 @@ const store = useCrudStore(AuditCrud.instance.name);
          density="compact"
          variant="outlined"
          hide-details
-         disable-rules
          prepend-inner-icon="mdi-equal"
      />
     </template>
