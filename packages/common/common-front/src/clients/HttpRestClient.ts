@@ -26,6 +26,14 @@ class HttpRestClient implements IHttpClient {
     this.timeout = timeout;
   }
 
+  getBaseHeaders(): IHttpHeader{
+    return this.baseHeaders
+  }
+
+  getHeaderValue(name: string): string {
+    return this.baseHeaders[name]
+  }
+
   addHeader(name: string, value: string): void {
     this.baseHeaders[name] = value;
   }

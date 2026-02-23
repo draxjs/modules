@@ -46,11 +46,11 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 break;
             case "fullFile":
                 fields.push(`    ${field}: z.object({
-                filename: z.string().min(1,'validation.required'),
-                filepath: z.string().min(1,'validation.required'),
-                size: z.number().min(1,'validation.required'),
+                filename: z.string().optional(),
+                filepath: z.string().optional(),
+                size: z.number().optional(),
                 mimetype: z.string().optional(),
-                url: z.string().min(1,'validation.required')
+                url: z.string().optional()
                 })${schema[field].required ? "" : ".optional()"}`)
                 break;
             case "object":
@@ -79,11 +79,11 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 break;
             case "array.fullFile":
                 fields.push(`    ${field}: z.array(z.object({
-                filename: z.string().min(1,'validation.required'),
-                filepath: z.string().min(1,'validation.required'),
-                size: z.number().min(1,'validation.required'),
+                filename: z.string().optional(),
+                filepath: z.string().optional(),
+                size: z.number().optional(),
                 mimetype: z.string().optional(),
-                url: z.string().min(1,'validation.required')
+                url: z.string().optional()
                 }))${schema[field].required ? "" : ".optional()"}`)
                 break;
             case "array.object":

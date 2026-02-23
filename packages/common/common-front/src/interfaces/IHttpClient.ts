@@ -27,6 +27,10 @@ interface IHttpClient {
   addHeader(name: string, value: string): void
 
   removeHeader(name: string): void
+
+  getBaseHeaders(): IHttpHeader
+
+  getHeaderValue(name: string): string
 }
 
 export type {IHttpClient, IHttpOptions, IHttpHeader}
