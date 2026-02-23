@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {computed, ref} from "vue";
+import type {ValidationRule} from "vuetify"
 import type {PropType} from "vue";
 import CrudFormList from "./CrudFormList.vue";
 import CrudAutocomplete from "./CrudAutocomplete.vue";
@@ -15,11 +16,9 @@ const {t, te} = useI18n()
 
 const {hasPermission} = useAuth()
 
-
-
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
-const {index, entity, field, disableRules, parentField, errorMessages} = defineProps({
+const {index, entity, field, disableRules, parentField, errorMessages, rules} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField | IEntityCrudFilter | undefined>, required: true},
   prependIcon: {type: String, default: ''},
@@ -36,6 +35,7 @@ const {index, entity, field, disableRules, parentField, errorMessages} = defineP
   previewHeight: {type: String, default: '100px'},
   parentField: {type: String, default: null, required: false},
   errorMessages: {type: Array as PropType<string[]>, default: null, required: false},
+  rules: {type: Array as PropType<ValidationRule[]>, required: false},
   index: {type: Number, default: null, required: false},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
   variant: {
@@ -60,10 +60,7 @@ const label = computed(() => {
   return te(i18n) ? t(i18n) : field.label
 })
 
-const rules = computed(() => {
-  if (disableRules) return undefined
-  return entity.getRule(field.name) as any
-})
+
 
 const storeErrorMessages = computed(() => {
       let sIndex = (index != null && index >= 0) ? `${index}.` : ''
@@ -77,6 +74,7 @@ const inputErrors = computed(() => {
 })
 
 defineEmits(['updateValue'])
+
 
 </script>
 

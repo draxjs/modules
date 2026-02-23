@@ -8,6 +8,7 @@ import type {PropType} from "vue";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useCrud} from "../composables/UseCrud";
 import {useAuth} from '@drax/identity-vue'
+import type {ValidationRule} from "vuetify";
 
 const {hasPermission} = useAuth()
 const {t, te} = useI18n()
@@ -125,6 +126,11 @@ const menuInputErrors = computed(() => {
     }
 )
 
+const rules = computed(() => {
+  return (fieldName: string) => {
+    return entity.getRule(fieldName) as ValidationRule[] || undefined
+  }
+})
 
 </script>
 
@@ -165,6 +171,7 @@ const menuInputErrors = computed(() => {
                   :append-inner-icon="field?.appendInnerIcon"
                   :preview="field?.preview"
                   :previewHeight="field?.previewHeight"
+                  :rules="rules(field.name)"
               />
             </slot>
 
@@ -206,6 +213,7 @@ const menuInputErrors = computed(() => {
                           :prepend-icon="field?.prependIcon"
                           :append-icon="field?.appendIcon"
                           :append-inner-icon="field?.appendInnerIcon"
+                          :rules="rules(field.name)"
                       />
                     </slot>
 
@@ -259,6 +267,7 @@ const menuInputErrors = computed(() => {
                           :prepend-icon="field?.prependIcon"
                           :append-icon="field?.appendIcon"
                           :append-inner-icon="field?.appendInnerIcon"
+                          :rules="rules(field.name)"
                       />
                     </slot>
 

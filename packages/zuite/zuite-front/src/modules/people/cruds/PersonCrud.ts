@@ -1,11 +1,10 @@
-
 import {EntityCrud} from "@drax/crud-vue";
-import type{
+import type {
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader, 
+  IEntityCrudHeader,
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
@@ -26,45 +25,45 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     super();
     this.name = 'Person'
   }
-  
+
   static get instance(): PersonCrud {
-    if(!PersonCrud.singleton){
+    if (!PersonCrud.singleton) {
       PersonCrud.singleton = new PersonCrud()
     }
     return PersonCrud.singleton
   }
 
-  get permissions(): IEntityCrudPermissions{
+  get permissions(): IEntityCrudPermissions {
     return {
-      manage: 'person:manage', 
-      view: 'person:view', 
-      create: 'person:create', 
-      update: 'person:update', 
+      manage: 'person:manage',
+      view: 'person:view',
+      create: 'person:create',
+      update: 'person:update',
       delete: 'person:delete'
     }
   }
 
   get headers(): IEntityCrudHeader[] {
     return [
-        {title: 'fullname',key:'fullname', align: 'start'},
-{title: 'live',key:'live', align: 'start'},
-{title: 'birthdate',key:'birthdate', align: 'start'},
-{title: 'nationality',key:'nationality', align: 'start'},
-{title: 'hobbies',key:'hobbies', align: 'start'},
-{title: 'race',key:'race', align: 'start'},
-{title: 'interests',key:'interests', align: 'start'},
-{title: 'languages',key:'languages', align: 'start'},
-{title: 'address',key:'address', align: 'start'},
-{title: 'tenant',key:'tenant', align: 'start'},
-{title: 'user',key:'user', align: 'start'}
+      {title: 'fullname', key: 'fullname', align: 'start'},
+      {title: 'live', key: 'live', align: 'start'},
+      {title: 'birthdate', key: 'birthdate', align: 'start'},
+      {title: 'nationality', key: 'nationality', align: 'start'},
+      {title: 'hobbies', key: 'hobbies', align: 'start'},
+      {title: 'race', key: 'race', align: 'start'},
+      {title: 'interests', key: 'interests', align: 'start'},
+      {title: 'languages', key: 'languages', align: 'start'},
+      {title: 'address', key: 'address', align: 'start'},
+      {title: 'tenant', key: 'tenant', align: 'start'},
+      {title: 'user', key: 'user', align: 'start'}
     ]
   }
-  
+
   get selectedHeaders(): string[] {
     return this.headers.map(header => header.key)
   }
-  
-  get actionHeaders():IEntityCrudHeader[]{
+
+  get actionHeaders(): IEntityCrudHeader[] {
     return [
       {
         title: 'action.actions',
@@ -77,98 +76,144 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     ]
   }
 
-  get provider(): IDraxCrudProvider<any, any, any>{
+  get provider(): IDraxCrudProvider<any, any, any> {
     return PersonProvider.instance
   }
-  
-  get refs(): IEntityCrudRefs{
+
+  get refs(): IEntityCrudRefs {
     return {
-      Country: CountryCrud.instance ,
-Language: LanguageCrud.instance ,
-Tenant: TenantCrud.instance ,
-User: UserCrud.instance 
+      Country: CountryCrud.instance,
+      Language: LanguageCrud.instance,
+      Tenant: TenantCrud.instance,
+      User: UserCrud.instance
     }
   }
 
-  get rules():IEntityCrudRules{
+  get rules(): IEntityCrudRules {
     return {
-      fullname: [(v: any) => !!v || 'validation.required'],
-live: [],
-birthdate: [],
-secret: [],
-nationality: [],
-hobbies: [],
-race: [],
-interests: [],
-languages: [],
-address: [],
-skills: [],
-tenant: [],
-user: []
+      fullname: [(v: any) => !!v || 'Requerido'],
+      live: [],
+      birthdate: [],
+      secret: [],
+      nationality: [],
+      hobbies: [],
+      race: [],
+      interests: [],
+      languages: [],
+      address: [],
+      skills: [],
+      tenant: [],
+      user: [],
+
     }
   }
 
-  get fields(): IEntityCrudField[]{
+  get fields(): IEntityCrudField[] {
     return [
-        {name:'fullname',type:'string',label:'fullname',default:'',groupTab: 'BASIC'},
-{name:'live',type:'boolean',label:'live',default:false,groupTab: 'BASIC'},
-{name:'birthdate',type:'date',label:'birthdate',default:null,groupTab: 'BASIC'},
-{name:'secret',type:'password',label:'secret',default:'',groupTab: 'BASIC'},
-{name:'nationality',type:'ref',label:'nationality',default:null,groupTab: 'BASIC',ref: 'Country',refDisplay: 'name'},
-{name:'hobbies',type:'array.string',label:'hobbies',default:[],groupTab: 'BASIC'},
-{name:'race',type:'enum',label:'race',default:null,groupTab: 'BASIC',enum: ['human', 'elf', 'orc']},
-{name:'interests',type:'array.enum',label:'interests',default:["sports","music"],groupTab: 'BASIC',enum: ['sports', 'music', 'reading', 'travel', 'cooking', 'technology']},
-{name:'languages',type:'array.ref',label:'languages',default:[],groupTab: 'BASIC',ref: 'Language',refDisplay: 'name'},
-{name:'address',type:'object',label:'address',default:{"country":"''","city":"''","street":"''","zip":null,"casa":false},groupTab: 'ADDRESS',objectFields: [{name:'country',type:'string',label:'country',default:''},
-{name:'city',type:'string',label:'city',default:''},
-{name:'street',type:'longString',label:'street',default:''},
-{name:'zip',type:'number',label:'zip',default:null},
-{name:'casa',type:'boolean',label:'casa',default:false}]},
-{name:'skills',type:'array.object',label:'skills',default:[],groupTab: 'SKILLS',objectFields: [{name:'name',type:'string',label:'name',default:''},
-{name:'level',type:'number',label:'level',default:null}]},
-{name:'tenant',type:'ref',label:'tenant',default:null,groupTab: 'MANAGE',ref: 'Tenant',refDisplay: 'name'},
-{name:'user',type:'ref',label:'user',default:null,groupTab: 'MANAGE',ref: 'User',refDisplay: 'username'}
+      {name: 'fullname', type: 'string', label: 'fullname', default: '', groupTab: 'BASIC'},
+      {name: 'live', type: 'boolean', label: 'live', default: false, groupTab: 'BASIC'},
+      {name: 'birthdate', type: 'date', label: 'birthdate', default: null, groupTab: 'BASIC'},
+      {name: 'secret', type: 'password', label: 'secret', default: '', groupTab: 'BASIC'},
+      {
+        name: 'nationality',
+        type: 'ref',
+        label: 'nationality',
+        default: null,
+        groupTab: 'BASIC',
+        ref: 'Country',
+        refDisplay: 'name'
+      },
+      {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
+      {name: 'race', type: 'enum', label: 'race', default: null, groupTab: 'BASIC', enum: ['human', 'elf', 'orc']},
+      {
+        name: 'interests',
+        type: 'array.enum',
+        label: 'interests',
+        default: ["sports", "music"],
+        groupTab: 'BASIC',
+        enum: ['sports', 'music', 'reading', 'travel', 'cooking', 'technology']
+      },
+      {
+        name: 'languages',
+        type: 'array.ref',
+        label: 'languages',
+        default: [],
+        groupTab: 'BASIC',
+        ref: 'Language',
+        refDisplay: 'name'
+      },
+      {
+        name: 'address',
+        type: 'object',
+        label: 'address',
+        default: {"country": "", "city": "", "street": "", "zip": null, "casa": false},
+        groupTab: 'ADDRESS',
+        objectFields: [{name: 'country', type: 'string', label: 'country', default: ''},
+          {name: 'city', type: 'string', label: 'city', default: ''},
+          {name: 'street', type: 'longString', label: 'street', default: ''},
+          {name: 'zip', type: 'number', label: 'zip', default: null},
+          {name: 'casa', type: 'boolean', label: 'casa', default: false}]
+      },
+      {
+        name: 'skills',
+        type: 'array.object',
+        label: 'skills',
+        default: [],
+        groupTab: 'SKILLS',
+        objectFields: [{name: 'name', type: 'string', label: 'name', default: ''},
+          {name: 'level', type: 'number', label: 'level', default: null}]
+      },
+      {
+        name: 'tenant',
+        type: 'ref',
+        label: 'tenant',
+        default: null,
+        groupTab: 'MANAGE',
+        ref: 'Tenant',
+        refDisplay: 'name'
+      },
+      {name: 'user', type: 'ref', label: 'user', default: null, groupTab: 'MANAGE', ref: 'User', refDisplay: 'username'}
     ]
   }
-  
-  get filters():IEntityCrudFilter[]{
+
+  get filters(): IEntityCrudFilter[] {
     return [
       //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
     ]
   }
-  
-  get isViewable(){
+
+  get isViewable() {
     return true
   }
 
-  get isEditable(){
+  get isEditable() {
     return true
   }
 
-  get isCreatable(){
+  get isCreatable() {
     return true
   }
 
-  get isDeletable(){
+  get isDeletable() {
     return true
   }
 
-  get isExportable(){
+  get isExportable() {
     return true
   }
 
-  get exportFormats(){
+  get exportFormats() {
     return ['CSV', 'JSON']
   }
 
-  get exportHeaders(){
+  get exportHeaders() {
     return ['_id']
   }
 
-  get isImportable(){
+  get isImportable() {
     return true
   }
-  
+
   get isColumnSelectable() {
     return true
   }
@@ -177,24 +222,22 @@ user: []
     return true
   }
 
-  get importFormats(){
+  get importFormats() {
     return ['CSV', 'JSON']
   }
 
-  get dialogFullscreen(){
+  get dialogFullscreen() {
     return false
   }
-  
+
   get tabs() {
     return [
-     'BASIC', 'ADDRESS', 'SKILLS', 'MANAGE'
+      'BASIC', 'ADDRESS', 'SKILLS', 'MANAGE'
     ]
   }
-  
+
   get menus() {
-    return [
-     
-    ]
+    return []
   }
 
 

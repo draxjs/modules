@@ -41,9 +41,15 @@ const generateRules = (schema: ISchema) => {
     for (const field in schema) {
         if (schema[field].required) {
             fields.push(`${field}: [(v: any) => !!v || 'validation.required']`)
-        } else {
+        } else if(['object','array.object'].includes(schema[field].type)) {
             fields.push(`${field}: []`)
         }
+        //TODO add object rules support
+        // if(schema[field].type === 'object' && schema[field].schema){
+        //     for (const sfield in schema[field].schema) {
+        //         fields.push(`${field}_${sfield}: []`)
+        //     }
+        // }
     }
     content += fields.join(",\n")
     return content;
