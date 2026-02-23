@@ -78,7 +78,9 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     async validateInputUpdatePartial(data: U): Promise<U> {
         if (this._baseSchema) {
             try {
-                return await this._baseSchema.partial().parseAsync(data) as U
+                //Fix no retornamos el parseo porque completa todos los campos con default
+                await this._baseSchema.partial().parseAsync(data) as U
+                return data
             } catch (e) {
                 console.error("Error on validateInputUpdatePartial", {
                     name: e?.name,
