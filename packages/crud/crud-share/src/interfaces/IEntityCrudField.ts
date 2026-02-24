@@ -19,6 +19,7 @@ interface IEntityCrudField {
     hint?: string
     persistentHint?: boolean
     arrayObjectUI ?: 'menu' | 'accordion' | 'chips'
+    arrayObjectShowField ?: string
     menuMaxHeight?: string
     groupTab?:string //Group Tabs
     groupMenu?: string //Group Menu

@@ -160,6 +160,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         label: 'skills',
         default: [],
         groupTab: 'SKILLS',
+        arrayObjectShowField: 'name',
         objectFields: [{name: 'name', type: 'string', label: 'name', default: ''},
           {name: 'level', type: 'number', label: 'level', default: null}]
       },

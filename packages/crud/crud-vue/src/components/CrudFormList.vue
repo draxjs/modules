@@ -99,7 +99,7 @@ const {xs} = useDisplay()
           <v-expansion-panel-title>
             <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
             {{//@ts-ignore
-              valueModel[index][Object.keys(valueModel[index] as any)[0]]
+              valueModel[index][field?.arrayObjectShowField ?? Object.keys(valueModel[index] as any)[0]]
             }}
 
             <template v-slot:actions="{expanded}">
@@ -163,7 +163,7 @@ const {xs} = useDisplay()
                              label class="pr-0" :color="indexSelected === index ? 'primary' : ''"
                 >
                     {{//@ts-ignore
-                  valueModel[index][Object.keys(valueModel[index] as any)[0]] || (index)
+                  valueModel[index][field?.arrayObjectShowField ?? Object.keys(valueModel[index] as any)[0]] || (index)
                     }}
 
                   <template v-slot:append>
@@ -223,7 +223,7 @@ const {xs} = useDisplay()
                   <v-list-item-title>
                     <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
                     {{//@ts-ignore
-                  valueModel[index][Object.keys(valueModel[index] as any)[0]]
+                  valueModel[index][field?.arrayObjectShowField ?? Object.keys(valueModel[index] as any)[0]]
                     }}
                   </v-list-item-title>
                 </v-list-item>
