@@ -48,7 +48,7 @@ function onFileClick() {
 }
 
 const valueModelUrl = computed(() =>
-    valueModel.value.url || '')
+    valueModel.value?.url || '')
 
 async function onFileChanged(e: Event) {
   if (e.target && (e.target as HTMLInputElement).files) {
@@ -101,12 +101,12 @@ defineEmits(['updateValue'])
 
 const isImage = computed(() => {
 
-  if (typeof valueModel.value.url !== 'string' || !valueModel.value.url.trim()) return false;
+  if (valueModel.value && (typeof valueModel.value?.url !== 'string' || !valueModel.value?.url.trim())) return false;
 
   // supports optional query/hash: ".../file.jpg?x=1#y"
   const imageExtRegex = /\.(?:jpe?g|png|gif|webp|bmp|svg|tiff?|avif|ico)(?:[?#].*)?$/i;
 
-  return imageExtRegex.test(valueModel.value.url);
+  return imageExtRegex.test(valueModel.value?.url);
 });
 
 </script>
@@ -157,7 +157,7 @@ const isImage = computed(() => {
     <v-btn @click="onFileClick" :loading="loading" density="compact" color="grey" variant="text">Click | Drag & Drop</v-btn>
 
     <template v-if="preview && isImage">
-      <v-img :src="valueModel.url" alt="Preview" :height="previewHeight" class="mt-4"></v-img>
+      <v-img :src="valueModel?.url" alt="Preview" :height="previewHeight" class="mt-4"></v-img>
     </template>
 
   </div>
