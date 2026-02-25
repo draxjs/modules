@@ -18,6 +18,9 @@ interface IEntityCrudField {
     readonly?: boolean
     hint?: string
     persistentHint?: boolean
+    placeholder?: string
+    persistentPlaceholder?: boolean
+    hideDetails?: boolean
     arrayObjectUI ?: 'menu' | 'accordion' | 'chips'
     arrayObjectShowField ?: string
     menuMaxHeight?: string

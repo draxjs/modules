@@ -110,7 +110,8 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 
   get fields(): IEntityCrudField[] {
     return [
-      {name: 'fullname', type: 'string', label: 'fullname', default: '', groupTab: 'BASIC'},
+      {name: 'fullname', type: 'string', label: 'fullname', default: '', groupTab: 'BASIC',
+        placeholder:'El nombre viste', persistentPlaceholder:true},
       {name: 'live', type: 'boolean', label: 'live', default: false, groupTab: 'BASIC'},
       {name: 'birthdate', type: 'date', label: 'birthdate', default: null, groupTab: 'BASIC'},
       {name: 'secret', type: 'password', label: 'secret', default: '', groupTab: 'BASIC'},
@@ -124,6 +125,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         refDisplay: 'name'
       },
       {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
+      {name: 'fullfile', type: 'fullFile', label: 'fullfile', default: '', groupTab: 'BASIC'},
       {name: 'race', type: 'enum', label: 'race', default: null, groupTab: 'BASIC', enum: ['human', 'elf', 'orc']},
       {
         name: 'interests',
@@ -161,7 +163,9 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         default: [],
         groupTab: 'SKILLS',
         arrayObjectShowField: 'name',
-        objectFields: [{name: 'name', type: 'string', label: 'name', default: ''},
+        objectFields: [
+          {name: 'fullfile', type: 'fullFile', label: 'fullfile', default: ''},
+          {name: 'name', type: 'string', label: 'name', default: ''},
           {name: 'level', type: 'number', label: 'level', default: null}]
       },
       {

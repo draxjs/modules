@@ -172,6 +172,10 @@ const rules = computed(() => {
                   :preview="field?.preview"
                   :previewHeight="field?.previewHeight"
                   :rules="rules(field.name)"
+                  :hint="field.hint"
+                  :persistent-hint="field.persistentHint"
+                  :placeholder="field.placeholder"
+                  :persistent-placeholder="field.persistentPlaceholder"
               />
             </slot>
 
@@ -214,6 +218,10 @@ const rules = computed(() => {
                           :append-icon="field?.appendIcon"
                           :append-inner-icon="field?.appendInnerIcon"
                           :rules="rules(field.name)"
+                          :hint="field.hint"
+                          :persistent-hint="field.persistentHint"
+                          :placeholder="field.placeholder"
+                          :persistent-placeholder="field.persistentPlaceholder"
                       />
                     </slot>
 
@@ -268,6 +276,10 @@ const rules = computed(() => {
                           :append-icon="field?.appendIcon"
                           :append-inner-icon="field?.appendInnerIcon"
                           :rules="rules(field.name)"
+                          :hint="field.hint"
+                          :persistent-hint="field.persistentHint"
+                          :placeholder="field.placeholder"
+                          :persistent-placeholder="field.persistentPlaceholder"
                       />
                     </slot>
 
