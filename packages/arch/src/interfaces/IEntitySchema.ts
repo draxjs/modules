@@ -20,6 +20,17 @@ interface IFieldSchema{
     groupMenu?: string,
     tenantField?: string
     userField?: string
+    hint?: string
+    persistentHint?: boolean
+    placeholder?: string
+    persistentPlaceholder?: boolean
+    prependIcon?: string
+    prependInnerIcon?: string
+    appendIcon?: string
+    appendInnerIcon?: string
+    permission?: string
+    readonly?: boolean
+    hideDetails?: boolean
 }
 
 interface ISchema{

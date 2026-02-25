@@ -133,12 +133,52 @@ const generateFields = (schema: ISchema | undefined) => {
             compositionField.push(`groupTab: '${schema[field].groupTab}'`)
         }
 
+        if(schema[field].hint){
+            compositionField.push(`hint: '${schema[field].hint}'`)
+        }
+
+
+        if (schema[field].persistentHint !== undefined) {
+            compositionField.push(`persistentHint: ${schema[field].persistentHint}`)
+        }
+
+        if (schema[field].placeholder) {
+            compositionField.push(`placeholder: '${schema[field].placeholder}'`)
+        }
+
+        if (schema[field].persistentPlaceholder !== undefined) {
+            compositionField.push(`persistentPlaceholder: ${schema[field].persistentPlaceholder}`)
+        }
+
+        if (schema[field].prependIcon) {
+            compositionField.push(`prependIcon: '${schema[field].prependIcon}'`)
+        }
+
+        if (schema[field].prependInnerIcon) {
+            compositionField.push(`prependInnerIcon: '${schema[field].prependInnerIcon}'`)
+        }
+
+        if (schema[field].appendIcon) {
+            compositionField.push(`appendIcon: '${schema[field].appendIcon}'`)
+        }
+
+        if (schema[field].appendInnerIcon) {
+            compositionField.push(`appendInnerIcon: '${schema[field].appendInnerIcon}'`)
+        }
+
+        if (schema[field].permission) {
+            compositionField.push(`permission: '${schema[field].permission}'`)
+        }
+
+        if (schema[field].readonly !== undefined) {
+            compositionField.push(`readonly: ${schema[field].readonly}`)
+        }
+
+        if (schema[field].hideDetails !== undefined) {
+            compositionField.push(`hideDetails: ${schema[field].hideDetails}`)
+        }
 
         switch (schema[field].type) {
-            case "file":
-            case "fullFile":
-                compositionField.push(`prependInnerIcon: 'mdi mdi-attachment'`)
-                break;
             case "ref":
             case "array.ref":
                 compositionField.push(`ref: '${schema[field].ref}'`)
