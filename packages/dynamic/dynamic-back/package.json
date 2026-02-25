@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Dynamic Forms",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -25,7 +25,7 @@
     "@drax/common-back": "^2.0.0",
     "@drax/common-share": "^2.0.0",
     "@drax/identity-share": "^2.0.0",
-    "@drax/media-back": "^2.3.0",
+    "@drax/media-back": "^2.4.0",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.4",
     "mongoose": "^8.23.0",
