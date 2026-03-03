@@ -7,7 +7,13 @@ import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import path from 'path';
 import { fileURLToPath } from 'url';
-import {InternalServerError} from "@drax/common-back";
+import {
+    BadRequestError, ForbiddenError,
+    InternalServerError, InvalidIdError, LimitError, MethodNotAllowedError,
+    NotFoundError, SecuritySensitiveError,
+    UnauthorizedError, UploadFileError,
+    ValidationError
+} from "@drax/common-back";
 import builderStringify from "fast-json-stringify"
 import pino from 'pino'
 
@@ -179,11 +185,26 @@ class FastifyServer {
 
 
     setupErrorHandler(){
-        this.fastifyServer.setErrorHandler((error, request, reply) => {
-            console.error("Main Error Handler:", error)
-            let serverError = new InternalServerError()
-            reply.status(serverError.statusCode).send(serverError.body)
-        },)
+        this.fastifyServer.setErrorHandler((e, request, reply) => {
+            if(
+                e instanceof ValidationError ||
+                e instanceof NotFoundError ||
+                e instanceof BadRequestError ||
+                e instanceof UnauthorizedError ||
+                e instanceof ForbiddenError ||
+                e instanceof MethodNotAllowedError ||
+                e instanceof InvalidIdError ||
+                e instanceof SecuritySensitiveError ||
+                e instanceof UploadFileError ||
+                e instanceof LimitError
+            ) {
+                reply.status(e.statusCode).send(e.body);
+            } else {
+                const serverError = new InternalServerError()
+                reply.statusCode = serverError.statusCode
+                reply.status(500).send(serverError.body);
+            }
+        })
     }
 
     setupMultipart() {

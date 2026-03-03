@@ -4,6 +4,7 @@ const messages = {
       entity: 'Entity',
       endOfDayFilter: 'End of Day Filter',
       activeFilters: 'Active Filters',
+      noData: 'No Data',
       columns: {
         select: "Select columns",
         title: "Visible columns",
@@ -34,6 +35,7 @@ const messages = {
       entity: 'Entidad',
       endOfDayFilter: 'End of Day Filter',
       activeFilters: 'Filtros activos',
+      noData: 'No hay datos',
       columns: {
         select: "Seleccionar columnas",
         title: "Columnas visibles",

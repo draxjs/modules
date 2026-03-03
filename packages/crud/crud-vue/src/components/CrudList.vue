@@ -26,7 +26,7 @@ const {entity} = defineProps({
 
 const {
   loading, itemsPerPage, page, sortBy, search, totalItems, items,
-  doPaginate, filters, applyFilters, clearFilters
+  doPaginate, filters, applyFilters, clearFilters, paginationError
 } = useCrud(entity)
 
 // Usar el composable de columnas
@@ -61,6 +61,19 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       @update:options="doPaginate"
   >
 
+    <template v-slot:no-data>
+      <v-alert
+          v-if="paginationError"
+          variant="tonal"
+          class="w-100 ma-2"
+          style="width: 100%; min-width: 100%"
+          prominent
+          type="error"
+          :text="te(paginationError) ? t(paginationError) : paginationError"
+      />
+      <v-alert v-else variant="tonal"  class="w-100 ma-2 " type="info" :text="te('crud.noData') ? t('crud.noData') : 'No data' " />
+    </template>
+
     <template v-slot:bottom>
       <v-data-table-footer :class="entity.footerClass"
                            :items-per-page-options="[5, 10, 20, 50]"
@@ -80,12 +93,12 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
         <crud-import-button
             :entity="entity"
-            @import="v => $emit('import', v)"
+            @import="(v:any) => $emit('import', v)"
         />
 
         <crud-export-button
             :entity="entity"
-            @export="v => $emit('export',v)"
+            @export="(v:any) => $emit('export',v)"
         />
 
         <crud-group-by-button

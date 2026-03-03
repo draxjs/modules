@@ -11,6 +11,7 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
             notify: false as boolean,
             message: '' as string,
             error: '' as string,
+            paginationError: '' as string,
             filters: [] as IDraxFieldFilter[],
             items: [] as any[],
             totalItems: 0 as number,
@@ -139,6 +140,9 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
 
         clearVisibleColumns() {
             this.visibleColumns = []
+        },
+        setPaginationError(val: string){
+            this.paginationError = val
         }
     }
 

@@ -18,6 +18,14 @@ export function useCrud(entity: IEntityCrud) {
         }
     })
 
+    const paginationError = computed({
+        get() {
+            return store.paginationError
+        }, set(value) {
+            store.setPaginationError(value)
+        }
+    })
+
     const dialog = computed({
         get() {
             return store.dialog
@@ -148,6 +156,7 @@ export function useCrud(entity: IEntityCrud) {
 
     async function doPaginate() {
         store.setLoading(true)
+        store.setPaginationError("")
         try {
 
             const r: IDraxPaginateResult<any> = await entity?.provider.paginate({
@@ -160,7 +169,13 @@ export function useCrud(entity: IEntityCrud) {
             })
             store.setItems(r.items)
             store.setTotalItems(r.total)
-        } catch (e) {
+        } catch (e: any) {
+            store.setItems([])
+            store.setTotalItems(0)
+            if(e && e.message){
+                store.setPaginationError(e.message)
+
+            }
             console.error("Error paginating", e)
         } finally {
             store.setLoading(false)
@@ -401,7 +416,7 @@ export function useCrud(entity: IEntityCrud) {
     return {
         doPaginate, doExport, doUpdate, doCreate, doDelete,
         onView, onCreate, onEdit, onDelete, onCancel, onSubmit, resetCrudStore,
-        operation, dialog, form, notify, error, message, formValid,
+        operation, dialog, form, notify, error, paginationError, message, formValid,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
         prepareFilters, filters, clearFilters, applyFilters,
         exportFiles, exportLoading, exportListVisible, exportError,
