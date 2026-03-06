@@ -14,8 +14,6 @@ const router = useRouter()
 
 const {register} = useAuth()
 
-const rform = ref()
-
 const variant = ref<"outlined" | "plain" | "filled" | "underlined" | "solo" | "solo-inverted" | "solo-filled" | undefined>('filled')
 
 const form = ref({

@@ -2,7 +2,7 @@
 import CountryCrud from '../cruds/CountryCrud'
 import {CrudAutocomplete} from "@drax/crud-vue";
 import {IEntityCrudField} from "@drax/crud-share";
-import {defineProps, type PropType} from "vue";
+import {type PropType} from "vue";
 
 
 const valueModel = defineModel<any>({type: String})

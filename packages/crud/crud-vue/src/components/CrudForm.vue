@@ -3,7 +3,7 @@ import {useI18n} from "vue-i18n";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 import {getItemId} from "../helpers/getItemId";
 import CrudFormField from "./CrudFormField.vue";
-import {computed, defineEmits, defineProps, ref} from "vue";
+import {computed, ref} from "vue";
 import type {PropType} from "vue";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useCrud} from "../composables/UseCrud";
@@ -132,6 +132,10 @@ const rules = computed(() => {
   }
 })
 
+const onlyView = computed(()=> {
+  return ['delete','view'].includes(operation?.value)
+})
+
 </script>
 
 <template>
@@ -158,12 +162,13 @@ const rules = computed(() => {
               :xl="field.xl ? field.xl : undefined"
           >
             <slot :name="`field.${field.name}`" v-bind="{field}">
+
               <crud-form-field
                   :field="field"
                   :entity="entity"
                   v-model="form[field.name]"
                   :clearable="false"
-                  :readonly="['delete','view'].includes(operation) || field.readonly"
+                  :readonly="onlyView || field.readonly"
                   :variant="variant"
                   :prepend-inner-icon="field?.prependInnerIcon"
                   :prepend-icon="field?.prependIcon"
@@ -206,12 +211,15 @@ const rules = computed(() => {
                       :xl="field.xl ? field.xl : undefined"
                   >
                     <slot :name="`field.${field.name}`" v-bind="{field}">
+
+
+
                       <crud-form-field
                           :field="field"
                           :entity="entity"
                           v-model="form[field.name]"
                           :clearable="false"
-                          :readonly="['delete','view'].includes(operation) || field.readonly"
+                          :readonly="onlyView || field.readonly"
                           :variant="variant"
                           :prepend-inner-icon="field?.prependInnerIcon"
                           :prepend-icon="field?.prependIcon"

@@ -6,7 +6,7 @@ import GroupByTableRender from "./renders/GroupByTableRender.vue";
 import GroupByPieRender from "./renders/GroupByPieRender.vue";
 import GroupByBarsRender from "./renders/GroupByBarsRender.vue";
 import GroupByGalleryRender from "./renders/GroupByGalleryRender.vue";
-import {ref, onMounted, defineProps } from "vue";
+import {ref, onMounted} from "vue";
 
 
 const {card} = defineProps({

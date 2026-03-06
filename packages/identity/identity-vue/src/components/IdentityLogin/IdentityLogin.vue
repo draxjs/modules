@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, defineEmits} from 'vue'
+import {computed, ref} from 'vue'
 import {useAuth} from '../../composables/useAuth.js'
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 import {useI18n} from "vue-i18n";

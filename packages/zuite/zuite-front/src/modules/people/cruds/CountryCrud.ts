@@ -1,11 +1,10 @@
-
 import {EntityCrud} from "@drax/crud-vue";
-import type{
+import type {
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader, 
+  IEntityCrudHeader,
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
@@ -24,40 +23,40 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     super();
     this.name = 'Country'
   }
-  
+
   static get instance(): CountryCrud {
-    if(!CountryCrud.singleton){
+    if (!CountryCrud.singleton) {
       CountryCrud.singleton = new CountryCrud()
     }
     return CountryCrud.singleton
   }
 
-  get permissions(): IEntityCrudPermissions{
+  get permissions(): IEntityCrudPermissions {
     return {
-      manage: 'country:manage', 
-      view: 'country:view', 
-      create: 'country:create', 
-      update: 'country:update', 
+      manage: 'country:manage',
+      view: 'country:view',
+      create: 'country:create',
+      update: 'country:update',
       delete: 'country:delete'
     }
   }
 
   get headers(): IEntityCrudHeader[] {
     return [
-        {title: 'name',key:'name', align: 'start'},
-{title: 'description',key:'description', align: 'start'},
-{title: 'flag',key:'flag', align: 'start'},
-{title: 'metadata',key:'metadata', align: 'start'},
-{title: 'tenant',key:'tenant', align: 'start'},
-{title: 'createdBy',key:'createdBy', align: 'start'}
+      {title: 'Nombre', key: 'name', align: 'start'},
+      {title: 'descripcion', key: 'description', align: 'start'},
+      {title: 'flag', key: 'flag', align: 'start'},
+      {title: 'metadata', key: 'metadata', align: 'start'},
+      {title: 'tenant', key: 'tenant', align: 'start'},
+      {title: 'createdBy', key: 'createdBy', align: 'start'}
     ]
   }
-  
+
   get selectedHeaders(): string[] {
     return this.headers.map(header => header.key)
   }
-  
-  get actionHeaders():IEntityCrudHeader[]{
+
+  get actionHeaders(): IEntityCrudHeader[] {
     return [
       {
         title: 'action.actions',
@@ -70,77 +69,77 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     ]
   }
 
-  get provider(): IDraxCrudProvider<any, any, any>{
+  get provider(): IDraxCrudProvider<any, any, any> {
     return CountryProvider.instance
   }
-  
-  get refs(): IEntityCrudRefs{
+
+  get refs(): IEntityCrudRefs {
     return {
-      Tenant: TenantCrud.instance ,
-User: UserCrud.instance 
+      Tenant: TenantCrud.instance,
+      User: UserCrud.instance
     }
   }
 
-  get rules():IEntityCrudRules{
+  get rules(): IEntityCrudRules {
     return {
       name: [(v: any) => !!v || 'validation.required'],
-description: [],
-flag: [],
-metadata: [],
-tenant: [],
-createdBy: [(v: any) => !!v || 'validation.required']
+      description: [],
+      flag: [],
+      metadata: [],
+      tenant: [],
+      createdBy: [(v: any) => !!v || 'validation.required']
     }
   }
 
-  get fields(): IEntityCrudField[]{
+  get fields(): IEntityCrudField[] {
     return [
-        {name:'name',type:'string',label:'name',default:''},
-{name:'description',type:'longString',label:'description',default:'Some Description'},
-{name:'flag',type:'file',label:'flag',default:'',prependInnerIcon: 'mdi mdi-attachment'},
-{name:'metadata',type:'record',label:'metadata',default:null},
-{name:'tenant',type:'ref',label:'tenant',default:null,ref: 'Tenant',refDisplay: 'name'},
-{name:'createdBy',type:'ref',label:'createdBy',default:null,ref: 'User',refDisplay: 'username'}
+      {name: 'name', type: 'string', label: 'name', default: ''},
+      {name: 'description', type: 'longString', label: 'description', default: 'Some Description'},
+      {name: 'flag', type: 'file', label: 'flag', default: '', prependInnerIcon: 'mdi mdi-attachment'},
+      {name: 'metadata', type: 'record', label: 'metadata', default: null},
+      {name: 'tenant', type: 'ref', label: 'tenant', default: null, ref: 'Tenant', refDisplay: 'name'},
+      {name: 'createdBy', type: 'ref', label: 'createdBy', default: null, ref: 'User', refDisplay: 'username'}
     ]
   }
-  
-  get filters():IEntityCrudFilter[]{
+
+  get filters(): IEntityCrudFilter[] {
     return [
       //{name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
     ]
   }
-  
-  get isViewable(){
+
+  get isViewable() {
     return true
   }
 
-  get isEditable(){
+  get isEditable() {
     return true
   }
 
-  get isCreatable(){
+  get isCreatable() {
     return true
   }
 
-  get isDeletable(){
+  get isDeletable() {
     return true
   }
 
-  get isExportable(){
+  get isExportable() {
     return true
   }
 
-  get exportFormats(){
+  get exportFormats() {
     return ['CSV', 'JSON']
   }
 
-  get exportHeaders(){
+  get exportHeaders() {
     return ['_id']
   }
 
-  get isImportable(){
+  get isImportable() {
     return true
   }
-  
+
   get isColumnSelectable() {
     return true
   }
@@ -149,24 +148,20 @@ createdBy: [(v: any) => !!v || 'validation.required']
     return true
   }
 
-  get importFormats(){
+  get importFormats() {
     return ['CSV', 'JSON']
   }
 
-  get dialogFullscreen(){
+  get dialogFullscreen() {
     return false
   }
-  
+
   get tabs() {
-    return [
-     
-    ]
+    return []
   }
-  
+
   get menus() {
-    return [
-     
-    ]
+    return []
   }
 
 

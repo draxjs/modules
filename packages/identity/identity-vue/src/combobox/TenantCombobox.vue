@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onMounted, defineModel} from 'vue'
+import {ref, onMounted} from 'vue'
 import type { PropType } from 'vue'
 import {useI18n} from "vue-i18n";
 const {t,te} = useI18n()

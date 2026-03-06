@@ -7,6 +7,8 @@ import MenuCard from "./components/MenuCard/MenuCard.vue";
 import SidebarMenu from "./components/SidebarMenu/SidebarMenu.vue";
 import IconCombobox from './components/IconCombobox/IconCombobox.vue'
 import ColorCombobox from './components/ColorCombobox/ColorCombobox.vue'
+import DraxImagePreview from './components/DraxImagePreview/DraxImagePreview.vue'
+import DraxInfoItem from './components/DraxInfoItem/DraxInfoItem.vue'
 
 
 export {
@@ -19,5 +21,8 @@ export {
     MenuCard,
     SidebarMenu,
     IconCombobox,
-    ColorCombobox
+    ColorCombobox,
+
+    DraxInfoItem,
+    DraxImagePreview
 }

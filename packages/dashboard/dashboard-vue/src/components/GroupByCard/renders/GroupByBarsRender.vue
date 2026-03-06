@@ -100,7 +100,7 @@ const drawBarChart = () => {
   canvas.width = containerWidth
   canvas.height = containerHeight
 
-  const padding = { top: 20, right: 20, bottom: 60, left: 60 }
+  const padding = { top: 40, right: 20, bottom: 80, left: 60 }
   const chartWidth = containerWidth - padding.left - padding.right
   const chartHeight = containerHeight - padding.top - padding.bottom
 
@@ -162,26 +162,37 @@ const drawBarChart = () => {
     ctx.lineWidth = 2
     ctx.strokeRect(x, y, barWidth - barPadding, barHeight)
 
-    // Dibujar el valor encima de la barra
+    // Dibujar el valor y porcentaje encima de la barra
     ctx.fillStyle = '#333'
-    ctx.font = 'bold 11px sans-serif'
+    ctx.font = 'bold 12px sans-serif'
     ctx.textAlign = 'center'
+
+    // Valor
     ctx.fillText(
         segment.value.toString(),
+        x + (barWidth - barPadding) / 2,
+        y - 18
+    )
+
+    // Porcentaje
+    ctx.font = '11px sans-serif'
+    ctx.fillStyle = '#666'
+    ctx.fillText(
+        `(${segment.percentage.toFixed(1)}%)`,
         x + (barWidth - barPadding) / 2,
         y - 5
     )
 
     // Dibujar etiqueta del eje X (rotada si es necesario)
     ctx.save()
-    ctx.translate(x + (barWidth - barPadding) / 2, padding.top + chartHeight + 10)
+    ctx.translate(x + (barWidth - barPadding) / 2, padding.top + chartHeight + 12)
     ctx.rotate(-Math.PI / 4)
     ctx.fillStyle = '#666'
-    ctx.font = '10px sans-serif'
+    ctx.font = '12px sans-serif'
     ctx.textAlign = 'right'
 
     // Truncar label si es muy largo
-    const maxLabelLength = 15
+    const maxLabelLength = 20
     const label = segment.label.length > maxLabelLength
         ? segment.label.substring(0, maxLabelLength) + '...'
         : segment.label
@@ -212,6 +223,16 @@ onMounted(() => {
     </div>
 
     <template v-else>
+      <div v-if="showLegend" class="total-container-top">
+        <div class="d-flex align-center justify-space-between">
+          <span class="text-h6 font-weight-bold">Total</span>
+          <v-chip color="primary" size="large" variant="flat">
+            {{ totalCount }}
+          </v-chip>
+        </div>
+        <v-divider class="my-2"></v-divider>
+      </div>
+
       <div class="chart-wrapper">
         <canvas ref="canvasRef"></canvas>
       </div>
@@ -232,16 +253,6 @@ onMounted(() => {
               <span class="legend-percentage">{{ segment.percentage.toFixed(1) }}%</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div v-if="showLegend" class="total-container">
-        <v-divider class="my-1"></v-divider>
-        <div class="d-flex align-center justify-space-between">
-          <span class="text-subtitle-1 font-weight-medium ml-2">Total</span>
-          <v-chip color="primary" variant="flat">
-            {{ totalCount }}
-          </v-chip>
         </div>
       </div>
     </template>
@@ -317,9 +328,8 @@ onMounted(() => {
   font-size: 13px;
   font-weight: 500;
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-word;
+  line-height: 1.3;
 }
 
 .legend-stats {
@@ -336,8 +346,11 @@ onMounted(() => {
   text-align: right;
 }
 
-.total-container {
-  margin-top: 8px;
+.total-container-top {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
 }
 
 /* Scrollbar personalizado para la leyenda */

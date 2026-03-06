@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineModel } from 'vue'
+import { ref } from 'vue'
 import type { PropType } from 'vue'
 
 defineProps({

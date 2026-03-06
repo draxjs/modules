@@ -3,7 +3,6 @@
 import CountryCrud from '../cruds/CountryCrud'
 import {CrudAutocomplete} from "@drax/crud-vue";
 import {IEntityCrudField} from "@drax/crud-share";
-import {defineProps} from "vue";
 import type {PropType} from "vue";
 
 

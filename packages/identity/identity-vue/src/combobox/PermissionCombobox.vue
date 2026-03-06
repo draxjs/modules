@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref, onMounted, defineModel} from 'vue'
+import {ref, onMounted} from 'vue'
 import type { PropType } from 'vue'
 
 defineProps({

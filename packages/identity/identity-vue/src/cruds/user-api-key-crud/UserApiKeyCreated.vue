@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useCopy} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
-import {defineModel, type PropType} from "vue";
+import { type PropType} from "vue";
 import type {IUserApiKey} from "@drax/identity-share";
 
 const {t} = useI18n()

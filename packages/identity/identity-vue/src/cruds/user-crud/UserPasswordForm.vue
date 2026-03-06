@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, defineModel, type PropType} from "vue";
+import {ref, type PropType} from "vue";
 import type {IClientInputError} from "@drax/common-front";
 import type {IUserPassword} from "@drax/identity-front";
 import {useI18nValidation} from "@drax/common-vue";

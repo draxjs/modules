@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import {defineProps, type PropType, ref} from "vue";
+import { type PropType, ref} from "vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import CrudForm from "../CrudForm.vue";
 import CrudDialog from "../CrudDialog.vue";

@@ -18,7 +18,7 @@ const {hasPermission} = useAuth()
 
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
-const {index, entity, field, parentField, errorMessages, rules} = defineProps({
+const {index, entity, field, parentField, errorMessages, rules, readonly, hideDetails} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField | IEntityCrudFilter | undefined>, required: true},
   prependIcon: {type: String, default: ''},
@@ -79,7 +79,14 @@ const inputErrors = computed(() => {
 defineEmits(['updateValue'])
 
 
+const hasHideDetails = computed(()=>{
+  if(readonly){
+    return true
+  }else{
+    return hideDetails ?? field.hideDetails
+  }
 
+})
 
 </script>
 
@@ -102,7 +109,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
@@ -128,7 +135,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
@@ -152,7 +159,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
@@ -179,7 +186,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
         @update:modelValue="$emit('updateValue')"
@@ -208,7 +215,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
         @update:modelValue="$emit('updateValue')"
@@ -250,7 +257,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
         @update:modelValue="$emit('updateValue')"
@@ -279,7 +286,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         @update:modelValue="$emit('updateValue')"
         :prepend-icon="prependIcon"
@@ -299,7 +306,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         @update:modelValue="$emit('updateValue')"
         :prepend-icon="prependIcon"
@@ -321,7 +328,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         @update:modelValue="$emit('updateValue')"
         :prepend-icon="prependIcon"
@@ -347,7 +354,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         @update:modelValue="$emit('updateValue')"
         :prepend-icon="prependIcon"
@@ -371,7 +378,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         @update:modelValue="(v) => {
           if(field.endOfDay){
@@ -412,7 +419,7 @@ defineEmits(['updateValue'])
         :variant="variant"
         :readonly="readonly"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
@@ -425,23 +432,31 @@ defineEmits(['updateValue'])
 
       <v-card-title class="text-h5">{{ field.label }}</v-card-title>
       <v-card-text>
-        <crud-form-field
-            v-for="oField in field.objectFields"
-            :entity="entity"
-            :field="oField"
-            :parent-field="field.name"
-            v-model="valueModel[oField.name]"
-            :density="density"
-            :variant="variant"
-            :clearable="clearable"
-            :hide-details="hideDetails ?? field.hideDetails"
-            :single-line="singleLine"
-            @updateValue="$emit('updateValue')"
-            :prepend-icon="prependIcon"
-            :append-icon="appendIcon"
-            :prepend-inner-icon="prependInnerIcon"
-            :append-inner-icon="appendInnerIcon"
-        ></crud-form-field>
+
+        <v-row dense>
+          <v-col cols="12"  v-for="oField in field.objectFields">
+            <crud-form-field
+
+                :entity="entity"
+                :field="oField"
+                :parent-field="field.name"
+                :readonly="readonly"
+                v-model="valueModel[oField.name]"
+                :density="density"
+                :variant="variant"
+                :clearable="clearable"
+                :hide-details="hasHideDetails"
+                :single-line="singleLine"
+                @updateValue="$emit('updateValue')"
+                :prepend-icon="prependIcon"
+                :append-icon="appendIcon"
+                :prepend-inner-icon="prependInnerIcon"
+                :append-inner-icon="appendInnerIcon"
+            ></crud-form-field>
+          </v-col>
+
+        </v-row>
+
       </v-card-text>
 
     </v-card>
@@ -464,7 +479,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
         @update:modelValue="$emit('updateValue')"
@@ -494,7 +509,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
         @update:modelValue="$emit('updateValue')"
@@ -525,7 +540,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         @updateValue="$emit('updateValue')"
         :prepend-icon="prependIcon"
@@ -553,7 +568,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
         @update:modelValue="$emit('updateValue')"
@@ -574,7 +589,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         @updateValue="$emit('updateValue')"
     />
@@ -588,7 +603,7 @@ defineEmits(['updateValue'])
         :density="density"
         :variant="variant"
         :clearable="clearable"
-        :hide-details="hideDetails ?? field.hideDetails"
+        :hide-details="hasHideDetails"
         :single-line="singleLine"
         :error-messages="inputErrors"
         @updateValue="$emit('updateValue')"

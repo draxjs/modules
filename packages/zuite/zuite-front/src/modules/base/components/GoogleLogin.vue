@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import GoogleProvider from "@/modules/base/providers/GoogleProvider";
-import {defineEmits} from "vue";
 import {useDarkMode} from "@/composables/useDarkMode";
 
 declare global {

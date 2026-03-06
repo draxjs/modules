@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import {computed, ref, onMounted, watch} from "vue";
+import {computed, ref, onMounted, onUnmounted, watch} from "vue";
 import {useDateFormat} from "@drax/common-vue"
 import type {IDraxDateFormatUnit} from "@drax/common-share";
 import type {IEntityCrudField} from "@drax/crud-share";
@@ -22,6 +22,21 @@ const colors = [
   '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF9F40',
   '#36A2EB', '#FFCE56', '#9966FF', '#FF6384', '#4BC0C0'
 ]
+
+const truncateLabel = (label: string, maxLength = 18) => {
+  if (!label) return 'N/A'
+  return label.length > maxLength ? `${label.slice(0, maxLength)}…` : label
+}
+
+const getContrastColor = (hexColor: string) => {
+  const hex = hexColor.replace('#', '')
+  const r = Number.parseInt(hex.substring(0, 2), 16)
+  const g = Number.parseInt(hex.substring(2, 4), 16)
+  const b = Number.parseInt(hex.substring(4, 6), 16)
+  const luminance = (0.299 * r) + (0.587 * g) + (0.114 * b)
+
+  return luminance > 186 ? '#1f2937' : '#ffffff'
+}
 
 // Calcular el total de todos los counts
 const totalCount = computed(() => {
@@ -72,6 +87,7 @@ const chartData = computed(() => {
 
     return {
       label,
+      shortLabel: truncateLabel(label),
       value: item.count || 0,
       percentage,
       color: colors[index % colors.length]
@@ -87,57 +103,117 @@ const drawPieChart = () => {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  // Configurar el tamaño del canvas
-  const size = Math.min(canvas.parentElement?.clientWidth || 400, 400)
-  canvas.width = size
-  canvas.height = size
+  const parentWidth = canvas.parentElement?.clientWidth || 420
+  const width = Math.min(parentWidth, 520)
+  const height = 300
 
-  const centerX = size / 2
-  const centerY = size / 2
-  const radius = (size / 2) * 0.7
+  canvas.width = width
+  canvas.height = height
 
-  // Limpiar el canvas
-  ctx.clearRect(0, 0, size, size)
+  const centerX = width / 2
+  const centerY = height / 2
+  const radius = Math.min(width * 0.24, height * 0.34)
+  const labelRadius = radius + 16
+  const labelOffset = 22
+  const donutRadius = radius * 0.45
 
-  // Dibujar cada segmento
-  let currentAngle = -Math.PI / 2 // Comenzar desde arriba
+  ctx.clearRect(0, 0, width, height)
+  ctx.textBaseline = 'middle'
+
+  let currentAngle = -Math.PI / 2
 
   chartData.value.forEach((segment) => {
     const sliceAngle = (segment.percentage / 100) * 2 * Math.PI
+    const endAngle = currentAngle + sliceAngle
+    const midAngle = currentAngle + (sliceAngle / 2)
 
-    // Dibujar el segmento
+    // Segmento
     ctx.beginPath()
     ctx.moveTo(centerX, centerY)
-    ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle)
+    ctx.arc(centerX, centerY, radius, currentAngle, endAngle)
     ctx.closePath()
     ctx.fillStyle = segment.color
     ctx.fill()
 
-    // Dibujar borde blanco
     ctx.strokeStyle = '#ffffff'
     ctx.lineWidth = 2
     ctx.stroke()
 
-    currentAngle += sliceAngle
+    // Porcentaje dentro del segmento
+    if (segment.percentage >= 4) {
+      const textRadius = radius * 0.68
+      const textX = centerX + Math.cos(midAngle) * textRadius
+      const textY = centerY + Math.sin(midAngle) * textRadius
+
+      ctx.fillStyle = getContrastColor(segment.color)
+      ctx.font = 'bold 12px sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText(`${segment.percentage.toFixed(1)}%`, textX, textY)
+    }
+
+    // Label al costado con línea guía
+    const lineStartX = centerX + Math.cos(midAngle) * radius
+    const lineStartY = centerY + Math.sin(midAngle) * radius
+    const lineMidX = centerX + Math.cos(midAngle) * labelRadius
+    const lineMidY = centerY + Math.sin(midAngle) * labelRadius
+    const isRightSide = Math.cos(midAngle) >= 0
+    const lineEndX = lineMidX + (isRightSide ? labelOffset : -labelOffset)
+    const lineEndY = lineMidY
+
+    ctx.beginPath()
+    ctx.moveTo(lineStartX, lineStartY)
+    ctx.lineTo(lineMidX, lineMidY)
+    ctx.lineTo(lineEndX, lineEndY)
+    ctx.strokeStyle = segment.color
+    ctx.lineWidth = 1.5
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.arc(lineEndX, lineEndY, 2.5, 0, 2 * Math.PI)
+    ctx.fillStyle = segment.color
+    ctx.fill()
+
+    ctx.fillStyle = '#374151'
+    ctx.font = '500 12px sans-serif'
+    ctx.textAlign = isRightSide ? 'left' : 'right'
+    ctx.fillText(
+      segment.shortLabel,
+      lineEndX + (isRightSide ? 6 : -6),
+      lineEndY
+    )
+
+    currentAngle = endAngle
   })
 
-  // Dibujar círculo blanco en el centro para efecto "donut" (opcional)
+  // Centro blanco para efecto donut
   ctx.beginPath()
-  ctx.arc(centerX, centerY, radius * 0.5, 0, 2 * Math.PI)
+  ctx.arc(centerX, centerY, donutRadius, 0, 2 * Math.PI)
   ctx.fillStyle = '#ffffff'
   ctx.fill()
+
+  // Total al centro
+  ctx.fillStyle = '#6b7280'
+  ctx.font = '500 11px sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText('Total', centerX, centerY - 8)
+
+  ctx.fillStyle = '#111827'
+  ctx.font = 'bold 16px sans-serif'
+  ctx.fillText(String(totalCount.value), centerX, centerY + 10)
 }
 
 // Redibujar cuando cambien los datos
-watch(() => data, () => {
+watch(chartData, () => {
   setTimeout(drawPieChart, 100)
 }, { deep: true })
 
 onMounted(() => {
   drawPieChart()
-
-  // Redibujar al cambiar el tamaño de la ventana
   window.addEventListener('resize', drawPieChart)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', drawPieChart)
 })
 </script>
 
@@ -151,35 +227,6 @@ onMounted(() => {
     <template v-else>
       <div class="chart-wrapper">
         <canvas ref="canvasRef"></canvas>
-      </div>
-
-      <div class="legend-container">
-        <div
-            v-for="(segment, index) in chartData"
-            :key="index"
-            class="legend-item"
-        >
-          <div class="legend-color" :style="{ backgroundColor: segment.color }"></div>
-          <div class="legend-content">
-            <div class="legend-label">{{ segment.label }}</div>
-            <div class="legend-stats">
-              <v-chip color="primary" size="x-small" variant="flat">
-                {{ segment.value }}
-              </v-chip>
-              <span class="legend-percentage">{{ segment.percentage.toFixed(1) }}%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="total-container">
-        <v-divider class="my-1"></v-divider>
-        <div class="d-flex align-center justify-space-between">
-          <span class="text-subtitle-1 font-weight-medium ml-2">Total</span>
-          <v-chip color="primary" variant="flat">
-            {{ totalCount }}
-          </v-chip>
-        </div>
       </div>
     </template>
   </div>
@@ -203,96 +250,15 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 2px;
-  padding: 2px;
+  padding: 8px 4px;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .chart-wrapper canvas {
-  max-width: 200px;
-  max-height: 180px;
-  height: auto;
-}
-
-.legend-container {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 2px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 2px 4px;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-}
-
-.legend-item:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-.legend-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  flex-shrink: 0;
-}
-
-.legend-content {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 6px;
-}
-
-.legend-label {
-  font-size: 13px;
-  font-weight: 500;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.legend-stats {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legend-percentage {
-  font-size: 11px;
-  color: rgba(0, 0, 0, 0.6);
-  font-weight: 500;
-  min-width: 40px;
-  text-align: right;
-}
-
-.total-container {
-  margin-top: 8px;
-}
-
-/* Scrollbar personalizado para la leyenda */
-.legend-container::-webkit-scrollbar {
-  width: 4px;
-}
-
-.legend-container::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 2px;
-}
-
-.legend-container::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-}
-
-.legend-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 520px;
+  height: 300px;
+  display: block;
 }
 </style>

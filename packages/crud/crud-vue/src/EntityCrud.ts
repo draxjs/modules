@@ -303,11 +303,11 @@ class EntityCrud implements IEntityCrud {
   }
 
   get inputVariantView(): IEntityCrudFieldVariant {
-    return 'filled'
+    return 'solo-filled'
   }
 
   get inputVariantDelete() : IEntityCrudFieldVariant{
-    return 'underlined'
+    return 'solo-filled'
   }
 
 

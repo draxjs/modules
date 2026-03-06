@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {useAuth} from "../../composables/useAuth";
-import {defineModel} from "vue";
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";

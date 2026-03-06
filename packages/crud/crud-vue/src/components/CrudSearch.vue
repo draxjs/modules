@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import {debounce} from "@drax/common-front"
-import {ref, defineModel, watch} from "vue"
+import {ref, watch} from "vue"
 
 
 const {t} = useI18n()

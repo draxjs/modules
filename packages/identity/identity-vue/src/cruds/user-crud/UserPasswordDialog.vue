@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import UserPasswordForm from "./UserPasswordForm.vue";
-import {defineModel, defineProps, type PropType, ref} from "vue";
+import { type PropType, ref} from "vue";
 import type {IUserPassword} from "@drax/identity-front";
 import type {IUser} from "@drax/identity-share";
 import {UserSystemFactory} from "@drax/identity-front";

@@ -1,6 +1,7 @@
 
 import DashboardCrudPage from "../pages/crud/DashboardCrudPage.vue";
 import DashboardViewPage from "../pages/DashboardViewPage.vue";
+import DashboardConfigPage from "../pages/DashboardConfigPage.vue";
 import DashboardIdentifierPage from "../pages/DashboardIdentifierPage.vue";
 
 
@@ -24,8 +25,17 @@ const DashboardCrudRoute = [
     }
   },
   {
+    name: 'DashboardConfigPage',
+    path: '/dashboard/config/:identifier',
+    component: DashboardConfigPage,
+    meta: {
+      auth: true,
+      permission: 'dashboard:manage',
+    }
+  },
+  {
     name: 'DashboardIdentifierPage',
-    path: '/dashboard/identifier/:identifier',
+    path: '/dashboard/view/:identifier',
     component: DashboardIdentifierPage,
     meta: {
       auth: true,
