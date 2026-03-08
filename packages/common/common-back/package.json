@@ -11,7 +11,7 @@
   "scripts": {
     "prepublish": "tsc && npm run copygql",
     "tscrun": "tsc",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist types tsconfig.tsbuildinfo",
     "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
     "tsc": "tsc -b tsconfig.json",
     "test": "node --import tsx --test test/**/*",

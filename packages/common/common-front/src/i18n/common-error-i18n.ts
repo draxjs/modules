@@ -8,6 +8,7 @@ const messages = {
       unknown: 'Unknown Error',
       badCredentials: 'Bad Credentials',
       deletionFailed: 'Deletion Failed',
+      invalidId: 'Invalid Id',
       crud: {
         export: "The file could not be generated. Please check your internet connection, reload the page, or try again later.The file could not be generated. Please check your internet connection, reload the page, or try again later."
       }
@@ -22,6 +23,7 @@ const messages = {
       unknown: 'Error Desconocido',
       badCredentials: 'Credenciales Incorrectas',
       deletionFailed: 'Eliminación Fallida',
+      invalidId: 'ID Invalido',
       crud: {
         export: "No se pudo generar el archivo. Verifique su conexión a internet, recargue la página o inténtelo de nuevo más tarde."
       }

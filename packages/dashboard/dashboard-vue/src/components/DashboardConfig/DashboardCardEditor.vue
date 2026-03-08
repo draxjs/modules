@@ -176,6 +176,7 @@ function addFilter() {
 function normalizeFieldType(type: string): IEntityCrudFieldTypes {
   if (type === 'array.ref') return 'ref';
   if (type === 'array.string') return 'string';
+  if (type === 'longString') return 'string';
   if (type === 'array.number') return 'number';
   if (type === 'array.enum') return 'enum';
   return type as IEntityCrudFieldTypes;

@@ -2,11 +2,9 @@
 import {computed, type PropType} from "vue";
 import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud, IEntityCrudFilter} from "@drax/crud-share";
-import {useI18n} from "vue-i18n";
 import {useAuth} from "@drax/identity-vue";
-import {useFilterIcon} from "../composables/UseFilterIcon.ts";
+import {useFilterIcon} from "../composables/UseFilterIcon";
 
-const {t} = useI18n()
 const valueModel = defineModel({type: [Object]})
 const {hasPermission} = useAuth()
 const {filterIcon} = useFilterIcon()
@@ -24,9 +22,11 @@ function filter() {
   emit('applyFilter')
 }
 
+/*
 function clear() {
   emit('clearFilter')
 }
+*/
 
 function onUpdateValue(){
   if(autoFilter){

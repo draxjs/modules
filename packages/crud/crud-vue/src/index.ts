@@ -12,7 +12,7 @@ import EntityCombobox from "./components/combobox/EntityCombobox.vue";
 import {useCrudStore} from "./stores/UseCrudStore";
 import {useEntityStore} from "./stores/UseEntityStore";
 import {useCrud} from "./composables/UseCrud";
-import {useFilterIcon} from "./composables/UseFilterIcon.ts";
+import {useFilterIcon} from "./composables/UseFilterIcon";
 import {useFormUtils} from "./composables/UseFormUtils";
 import {useInputErrorI18n} from "./composables/UseInputErrorI18n";
 import {EntityCrud} from "./EntityCrud";

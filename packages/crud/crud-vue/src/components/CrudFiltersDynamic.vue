@@ -4,7 +4,7 @@ import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud, IEntityCrudFilter} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import {useAuth} from "@drax/identity-vue";
-import {useFilterIcon} from "../composables/UseFilterIcon.ts";
+import {useFilterIcon} from "../composables/UseFilterIcon";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useEntityStore} from "../stores/UseEntityStore";
 
@@ -29,7 +29,7 @@ const aFields = computed(() => {
 })
 
 const dynamicFilter = computed(() => {
-  return (index: number) => {
+  return (index: string | number) => {
     return store.dynamicFilters[index]
   }
 })
@@ -38,9 +38,11 @@ function filter() {
   emit('applyFilter')
 }
 
+/*
 function clear() {
   emit('clearFilter')
 }
+*/
 
 function onUpdateValue() {
   if (autoFilter) {
@@ -63,12 +65,13 @@ const selectableFields = computed(() => {
 function normalizeFieldType(type: string) :string{
   if (type === 'array.ref') return 'ref';
   if (type === 'array.string') return 'string';
+  if (type === 'longString') return 'string';
   if (type === 'array.number') return 'number';
   if (type === 'array.enum') return 'enum';
   return type;
 }
 
-function onUpdateField(index: number, val: string){
+function onUpdateField(index: string | number, val: string){
 
   const field = storeEntity.fields.find((e: any) => e.name === val)
   dynamicFilter.value(index).value = null
@@ -106,7 +109,7 @@ const operations = [
  // {title: t('operation.notIn'), value: 'nin'},
 ]
 
-function removeFilter(index: number){
+function removeFilter(index: string | number){
   store.removeDynamicFilter(index)
 }
 

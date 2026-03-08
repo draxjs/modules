@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb'
 
 import {isValidIsoDate} from '../utils/IsValidIsoDate.js'
 import {isValidObjectId} from '../utils/IsValidObjectId.js'
+import {BadRequestError} from "../errors/BadRequestError.js";
 
 
 class MongooseQueryFilter{
@@ -26,6 +27,10 @@ class MongooseQueryFilter{
             //Valid ObjectId
             if(isValidObjectId(filter.value) && !['in', 'nin'].includes(filter.operator)){
                 filter.value = ObjectId.createFromHexString(filter.value)
+            }
+
+            if(filter.field === '_id' && !isValidObjectId(filter.value)){
+                throw new BadRequestError('Invalid ObjectId','error.invalidId')
             }
 
             if(filter.value === undefined || filter.value === null) return

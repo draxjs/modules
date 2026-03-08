@@ -59,7 +59,7 @@ interface IEntityCrud {
 
   footerClass?: string
 
-  listMode?: 'table' | 'gallery' | 'responsive'
+  listMode?: 'table' | 'gallery' | 'responsive' | string
 
   searchEnable?: boolean
   filtersEnable?: boolean

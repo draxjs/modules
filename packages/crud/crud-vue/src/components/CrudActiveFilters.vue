@@ -3,7 +3,7 @@ import { computed,  type PropType } from 'vue'
 import type { IEntityCrud } from '@drax/crud-share'
 import { useCrudStore } from '../stores/UseCrudStore'
 import { useI18n } from 'vue-i18n'
-import { useFilterIcon } from '../composables/UseFilterIcon.ts'
+import { useFilterIcon } from '../composables/UseFilterIcon'
 import CrudRefDisplay from "./CrudRefDisplay.vue";
 import {formatDate} from "@drax/common-front"
 
@@ -92,7 +92,7 @@ const removeFilter = (index: number) => {
   const filterDef = props.entity.filters[index]
 
   // Resetear al valor por defecto
-  filter.value = filterDef.default
+  filter.value = filterDef?.default
 
   // Emitir evento para aplicar filtros
   emit('filterRemoved')

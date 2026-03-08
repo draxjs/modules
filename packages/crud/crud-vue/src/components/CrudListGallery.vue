@@ -28,7 +28,7 @@ const {entity} = defineProps({
 })
 
 const {
-  loading, itemsPerPage, page, sortBy, search, totalItems, items,
+  loading, itemsPerPage, page, search, totalItems, items,
   doPaginate, filters, applyFilters, clearFilters, paginationError
 } = useCrud(entity)
 
