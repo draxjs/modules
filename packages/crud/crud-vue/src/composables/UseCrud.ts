@@ -8,11 +8,14 @@ import {useCrudStore} from "../stores/UseCrudStore";
 import {computed, nextTick, toRaw} from "vue";
 import getItemId from "../helpers/getItemId";
 import {useI18n} from "vue-i18n";
+import {useRouter} from "vue-router";
 import type {IEntityCrudFilterDynamic} from "@drax/crud-share/types/interfaces/IEntityCrudFilterDynamic";
 
 export function useCrud(entity: IEntityCrud) {
 
     const store = useCrudStore(entity?.name)
+
+    const router = useRouter();
 
     const {t: $t, te: $te} = useI18n()
 
@@ -366,6 +369,9 @@ export function useCrud(entity: IEntityCrud) {
                 await doPaginate()
                 closeDialog()
                 store.showMessage("Entity created successfully!")
+                if(entity.redirectOnCreate){
+                    router.push(entity.redirectOnCreate(item))
+                }
                 return {status: 'created', item: item}
             }
             throw new Error("provider.create not implemented")

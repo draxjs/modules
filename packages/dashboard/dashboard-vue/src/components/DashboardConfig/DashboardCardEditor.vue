@@ -86,7 +86,7 @@ watch(() => props.modelValue, (newVal) => {
 
 // Ensure nested objects exist to avoid v-model errors
 const ensureStructure = () => {
-  if (!form.value.layout) form.value.layout = {cols: 12, sm: 12, md: 12, lg: 12, height: 450, cardVariant: 'outlined'};
+  if (!form.value.layout) form.value.layout = {cols: 12, sm: 12, md: 12, lg: 12, height: 450, cardVariant: 'elevated'};
   if (!form.value.groupBy) form.value.groupBy = {fields: [], dateFormat: 'day', render: 'pie'};
   if (!form.value.paginate) form.value.paginate = {columns: [], orderBy: '', order: ''};
   if (!form.value.filters) form.value.filters = [];
@@ -227,7 +227,7 @@ function onUpdateField(index: number, val: string) {
             <v-text-field v-model="form.title" label="Título de la tarjeta" variant="outlined" density="compact"
                           hide-details="auto" class="mb-3"></v-text-field>
           </v-col>
-          <v-col cols="12" md="6" lg="4">
+          <v-col cols="12" md="6" lg="6">
             <v-select :items="entities"
                       v-model="form.entity"
                       label="Entidad (ej. User, Country)"
@@ -239,12 +239,18 @@ function onUpdateField(index: number, val: string) {
                       @update:modelValue="onEntityChange"
             ></v-select>
           </v-col>
-          <v-col cols="12" md="6" lg="4">
+          <v-col cols="12" md="6" lg="6">
             <v-select v-model="form.type" :items="['groupBy' , 'paginate']" label="Tipo de tarjeta" variant="outlined"
                       density="compact" hide-details="auto" class="mb-3"></v-select>
           </v-col>
 
-          <v-col cols="12" md="6" lg="4">
+          <v-col cols="12" md="6" lg="6">
+            <v-select v-model="form.layout!.cardVariant" :items="['elevated', 'outlined',  'flat','text','tonal','plain']" label="Tipo de tarjeta" variant="outlined"
+                      density="compact" hide-details="auto" class="mb-3"></v-select>
+          </v-col>
+
+
+          <v-col cols="12" md="6" lg="6">
             <v-text-field v-if="form.layout" v-model="form.layout!.height" label="Altura" variant="outlined"
                           density="compact" hide-details="auto" class="mb-3"></v-text-field>
           </v-col>

@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import {onBeforeMount, type PropType} from "vue";
+import {computed, onBeforeMount, type PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share";
-import CrudList from "./CrudList.vue";
+import CrudListTable from "./CrudListTable.vue";
+import CrudListGallery from "./CrudListGallery.vue";
 import CrudForm from "./CrudForm.vue";
 import CrudNotify from "./CrudNotify.vue";
 import CrudDialog from "./CrudDialog.vue";
 import {useCrud} from "../composables/UseCrud";
+import {useDisplay} from 'vuetify'
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
@@ -24,6 +26,22 @@ onBeforeMount(() => {
 
 const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])
 
+const listComponent = computed(() => {
+  const listMode = entity?.listMode
+  switch (listMode){
+    case 'responsive':
+      return xs.value ? CrudListGallery : CrudListTable
+    case 'gallery':
+      return CrudListGallery
+    case 'table':
+      return CrudListTable
+    default:
+      return xs.value ? CrudListGallery : CrudListTable
+  }
+})
+
+const {xs} = useDisplay()
+
 
 </script>
 
@@ -31,7 +49,8 @@ const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled']
   <v-container :fluid="entity.containerFluid" class="mt-5">
     <v-card :class="entity.cardClass" :density="entity.cardDensity">
 
-      <crud-list
+      <component
+          :is="listComponent"
           :entity="entity"
           @create="onCreate"
           @edit="onEdit"
@@ -66,13 +85,18 @@ const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled']
           </slot>
         </template>
 
+        <template  v-slot:item="{item}">
+          <slot name="item" v-bind="{item}">
+          </slot>
+        </template>
+
 
         <template v-slot:item.actions="{item}">
           <slot name="item.actions" v-bind="{item}">
           </slot>
         </template>
 
-      </crud-list>
+      </component>
     </v-card>
 
     <crud-dialog

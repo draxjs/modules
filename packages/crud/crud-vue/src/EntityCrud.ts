@@ -5,6 +5,7 @@ import type {
 } from "@drax/crud-share";
 
 
+
 class EntityCrud implements IEntityCrud {
 
   name: string = ''

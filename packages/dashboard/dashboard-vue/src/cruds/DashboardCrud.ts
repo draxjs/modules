@@ -89,75 +89,75 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
         return [
             {name: 'identifier', type: 'string', label: 'identifier', default: ''},
             {name: 'title', type: 'string', label: 'title', default: ''},
-            {
-                name: 'cards',
-                type: 'array.object',
-                label: 'cards',
-                default: [],
-                objectFields: [
-                    {name: 'title', type: 'string', label: 'title', default: ''},
-                    {name: 'entity', type: 'enum', enum: this.entities, label: 'entity', default: ''},
-                    {name: 'type', type: 'enum', label: 'type', default: null, enum: ['paginate', 'groupBy']},
-                    {
-                        name: 'filters',
-                        type: 'array.object',
-                        label: 'filters',
-                        default: [],
-                        objectFields: [
-                            {name: 'field', type: 'string', label: 'field', default: ''},
-                            {name: 'operator', type: 'string', label: 'operator', default: ''},
-                            {name: 'value', type: 'string', label: 'value', default: ''}]
-                    },
-                    {
-                        name: 'layout',
-                        type: 'object',
-                        label: 'layout',
-                        default: {"cols": 12, "sm": 12, "md": 12, "lg": 12, "height": 350, "cardVariant": "elevated"},
-                        objectFields: [
-                            {name: 'cols', type: 'number', label: 'cols', default: 12, sm: 3, md: 3, lg: 3},
-                            {name: 'sm', type: 'number', label: 'sm', default: 12, sm: 3, md: 3, lg: 3},
-                            {name: 'md', type: 'number', label: 'md', default: 12, sm: 3, md: 3, lg: 3},
-                            {name: 'lg', type: 'number', label: 'lg', default: 12, sm: 3, md: 3, lg: 3},
-                            {name: 'height', type: 'number', label: 'height', default: 350},
-                            {
-                                name: 'cardVariant',
-                                type: 'enum',
-                                label: 'cardVariant',
-                                default: 'elevated',
-                                enum: ['text', 'flat', 'elevated', 'tonal', 'outlined', 'plain']
-                            }]
-                    },
-                    {
-                        name: 'groupBy',
-                        type: 'object',
-                        label: 'groupBy',
-                        default: {"fields": [], "dateFormat": "day", "render": "table"},
-                        objectFields: [{name: 'fields', type: 'array.string', label: 'fields', default: []},
-                            {
-                                name: 'dateFormat',
-                                type: 'enum',
-                                label: 'dateFormat',
-                                default: 'day',
-                                enum: ['year', 'month', 'day', 'hour', 'minute', 'second']
-                            },
-                            {
-                                name: 'render',
-                                type: 'enum',
-                                label: 'render',
-                                default: 'table',
-                                enum: ['table', 'gallery', 'pie', 'bars']
-                            }]
-                    },
-                    {
-                        name: 'paginate',
-                        type: 'object',
-                        label: 'paginate',
-                        default: {"columns": [], "orderBy": "", "order": null},
-                        objectFields: [{name: 'columns', type: 'array.string', label: 'columns', default: []},
-                            {name: 'orderBy', type: 'string', label: 'orderBy', default: ''},
-                            {name: 'order', type: 'enum', label: 'order', default: null, enum: ['asc', 'desc']}]
-                    }]
-            }
+            // {
+            //     name: 'cards',
+            //     type: 'array.object',
+            //     label: 'cards',
+            //     default: [],
+            //     objectFields: [
+            //         {name: 'title', type: 'string', label: 'title', default: ''},
+            //         {name: 'entity', type: 'enum', enum: this.entities, label: 'entity', default: ''},
+            //         {name: 'type', type: 'enum', label: 'type', default: null, enum: ['paginate', 'groupBy']},
+            //         {
+            //             name: 'filters',
+            //             type: 'array.object',
+            //             label: 'filters',
+            //             default: [],
+            //             objectFields: [
+            //                 {name: 'field', type: 'string', label: 'field', default: ''},
+            //                 {name: 'operator', type: 'string', label: 'operator', default: ''},
+            //                 {name: 'value', type: 'string', label: 'value', default: ''}]
+            //         },
+            //         {
+            //             name: 'layout',
+            //             type: 'object',
+            //             label: 'layout',
+            //             default: {"cols": 12, "sm": 12, "md": 12, "lg": 12, "height": 350, "cardVariant": "elevated"},
+            //             objectFields: [
+            //                 {name: 'cols', type: 'number', label: 'cols', default: 12, sm: 3, md: 3, lg: 3},
+            //                 {name: 'sm', type: 'number', label: 'sm', default: 12, sm: 3, md: 3, lg: 3},
+            //                 {name: 'md', type: 'number', label: 'md', default: 12, sm: 3, md: 3, lg: 3},
+            //                 {name: 'lg', type: 'number', label: 'lg', default: 12, sm: 3, md: 3, lg: 3},
+            //                 {name: 'height', type: 'number', label: 'height', default: 350},
+            //                 {
+            //                     name: 'cardVariant',
+            //                     type: 'enum',
+            //                     label: 'cardVariant',
+            //                     default: 'elevated',
+            //                     enum: ['text', 'flat', 'elevated', 'tonal', 'outlined', 'plain']
+            //                 }]
+            //         },
+            //         {
+            //             name: 'groupBy',
+            //             type: 'object',
+            //             label: 'groupBy',
+            //             default: {"fields": [], "dateFormat": "day", "render": "table"},
+            //             objectFields: [{name: 'fields', type: 'array.string', label: 'fields', default: []},
+            //                 {
+            //                     name: 'dateFormat',
+            //                     type: 'enum',
+            //                     label: 'dateFormat',
+            //                     default: 'day',
+            //                     enum: ['year', 'month', 'day', 'hour', 'minute', 'second']
+            //                 },
+            //                 {
+            //                     name: 'render',
+            //                     type: 'enum',
+            //                     label: 'render',
+            //                     default: 'table',
+            //                     enum: ['table', 'gallery', 'pie', 'bars']
+            //                 }]
+            //         },
+            //         {
+            //             name: 'paginate',
+            //             type: 'object',
+            //             label: 'paginate',
+            //             default: {"columns": [], "orderBy": "", "order": null},
+            //             objectFields: [{name: 'columns', type: 'array.string', label: 'columns', default: []},
+            //                 {name: 'orderBy', type: 'string', label: 'orderBy', default: ''},
+            //                 {name: 'order', type: 'enum', label: 'order', default: null, enum: ['asc', 'desc']}]
+            //         }]
+            // }
         ]
     }
 
@@ -168,11 +168,11 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
     }
 
     get isViewable() {
-        return true
+        return false
     }
 
     get isEditable() {
-        return true
+        return false
     }
 
     get isCreatable() {
@@ -223,6 +223,25 @@ class DashboardCrud extends EntityCrud implements IEntityCrud {
         return []
     }
 
+    get listMode(): 'table' | 'gallery' {
+        return 'gallery'
+    }
+
+    get searchEnable(){
+        return false
+    }
+
+    get dynamicFiltersEnable(){
+        return false
+    }
+
+    get filterButtons(){
+        return false
+    }
+
+    redirectOnCreate(item: any){
+        return '/dashboard/config/'+item.identifier
+    }
 
 }
 

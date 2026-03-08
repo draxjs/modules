@@ -258,6 +258,10 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
+  get listMode(){
+    return 'gallery'
+  }
+
 }
 
 export default PersonCrud

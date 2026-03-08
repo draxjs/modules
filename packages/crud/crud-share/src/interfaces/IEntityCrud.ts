@@ -59,6 +59,8 @@ interface IEntityCrud {
 
   footerClass?: string
 
+  listMode?: 'table' | 'gallery' | 'responsive'
+
   searchEnable?: boolean
   filtersEnable?: boolean
   dynamicFiltersEnable?: boolean
@@ -86,6 +88,10 @@ interface IEntityCrud {
   inputVariantEdit?: IEntityCrudFieldVariant
   inputVariantView?: IEntityCrudFieldVariant
   inputVariantDelete?: IEntityCrudFieldVariant
+
+  redirectOnCreate?: (item?: any) => string
+  redirectOnUpdate?: (item?: any) => string
+  redirectOnDelete?: (item?: any) => string
 }
 
 

@@ -8,6 +8,7 @@ const messages = {
       filter: 'Filter',
       field: 'Field',
       operator: 'Operator',
+      itemsPerPage: 'ItemsPerPage',
       columns: {
         select: "Select columns",
         title: "Visible columns",
@@ -42,6 +43,7 @@ const messages = {
       filter: 'Filtro',
       field: 'Campo',
       operator: 'Operador',
+      itemsPerPage: 'Elementos por página',
       columns: {
         select: "Seleccionar columnas",
         title: "Columnas visibles",

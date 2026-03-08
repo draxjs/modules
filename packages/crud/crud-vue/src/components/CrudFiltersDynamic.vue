@@ -132,9 +132,9 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
   <v-row dense class="mt-4">
     <v-col v-for="(filter,index) in aFields"
            :key="filter.name"
-           cols="12"
+           cols="12" class="tdash"
     >
-      <v-row>
+      <v-row >
         <v-col cols="12" sm="4">
           <v-select
               :items="selectableFields"
@@ -156,7 +156,7 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
               hide-details
           />
         </v-col>
-        <v-col cols="12" sm="4">
+        <v-col cols="10" sm="4">
           <crud-form-field
               :field="filter"
               :entity="entity"
@@ -169,7 +169,7 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
               @updateValue="onUpdateValue"
           />
         </v-col>
-        <v-col cols="12" sm="1">
+        <v-col cols="2" sm="1">
           <v-btn @click="removeFilter(index)"
                  icon="mdi-delete"
                  class="mr-1"
@@ -192,5 +192,10 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
 </template>
 
 <style scoped>
-
+.tdash{
+  border-bottom-width: 0.5px;
+  border-bottom-color: lightgray;
+  border-bottom-style: dashed;
+  margin-bottom: 10px;
+}
 </style>

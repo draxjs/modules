@@ -11,7 +11,7 @@ const {dashboard} = defineProps({
 </script>
 
 <template>
-  <v-card v-if="dashboard" class="mt-3" >
+  <v-card v-if="dashboard" class="mt-3" variant="flat" >
     <v-card-title style="font-size: 2rem">{{dashboard.title}}</v-card-title>
     <v-card-text>
       <v-row>
@@ -21,7 +21,7 @@ const {dashboard} = defineProps({
                :md="card?.layout?.md || 12"
                :lg="card?.layout?.lg || 12"
         >
-          <v-card :variant="card?.layout?.cardVariant || 'outlined' " :height="card?.layout?.height || 300" style="overflow-y: auto">
+          <v-card :variant="card?.layout?.cardVariant || 'elevated' " hover :height="card?.layout?.height || 300" style="overflow-y: auto">
             <v-card-title>{{card?.title}}</v-card-title>
             <v-card-text >
               <paginate-card v-if="card?.type === 'paginate'" :card="card" />

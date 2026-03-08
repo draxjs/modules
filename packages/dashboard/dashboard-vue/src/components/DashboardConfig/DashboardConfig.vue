@@ -4,6 +4,7 @@ import type {IDashboardBase, IDashboardCard} from "@drax/dashboard-share";
 import GroupByCard from "../GroupByCard/GroupByCard.vue";
 import PaginateCard from "../PaginateCard/PaginateCard.vue";
 import DashboardCardEditor from "./DashboardCardEditor.vue";
+import {debounce} from "@drax/common-front"
 
 const valueModel = defineModel<IDashboardBase>({required: true})
 
@@ -90,15 +91,19 @@ const addNewCard = () => {
     entity: '',
     filters: [],
     type: 'groupBy',
-    layout: {cols: 12, sm: 12, md: 6, lg: 6, height: 450, cardVariant: 'outlined'}
+    layout: {cols: 12, sm: 12, md: 6, lg: 6, height: 450, cardVariant: 'elevated'}
   });
   editingCardIndex.value = valueModel.value.cards.length - 1;
 };
+
+
 
 const onSaveCard = () => {
   emit("dashboardUpdated")
   editingCardIndex.value = null;
 };
+
+const debouncedSave = debounce(onSaveCard, 500)
 
 const onCancelCard = () => {
   editingCardIndex.value = null;
@@ -111,7 +116,12 @@ const emit = defineEmits(["dashboardUpdated"])
 <template>
   <v-card v-if="valueModel" class="mt-3 valueModel-config-wrapper" variant="flat" >
     <v-card-title class="px-0 d-flex align-center">
-      <span class="text-h5 font-weight-bold">{{ valueModel.title || 'Configuración de Dashboard' }}</span>
+        <v-text-field
+            variant="solo-filled"
+            class="font-weight-semibold"
+            v-model="valueModel.title"
+            @update:modelValue="debouncedSave"
+        ></v-text-field>
       <v-spacer></v-spacer>
       <slot name="buttons"></slot>
       <v-btn color="primary" prepend-icon="mdi-plus" @click="addNewCard" elevation="2">Añadir Tarjeta</v-btn>
