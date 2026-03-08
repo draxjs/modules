@@ -1,8 +1,14 @@
-import type {IDraxPaginateResult, IEntityCrud} from "@drax/crud-share";
+import type {
+    IDraxFieldFilter,
+    IDraxPaginateResult,
+    IEntityCrud,
+    IEntityCrudFilter,
+} from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {computed, nextTick, toRaw} from "vue";
 import getItemId from "../helpers/getItemId";
 import {useI18n} from "vue-i18n";
+import type {IEntityCrudFilterDynamic} from "@drax/crud-share/types/interfaces/IEntityCrudFilterDynamic";
 
 export function useCrud(entity: IEntityCrud) {
 
@@ -33,6 +39,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setDialog(value)
         }
     })
+
     const operation = computed({
         get() {
             return store.operation
@@ -40,6 +47,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setOperation(value)
         }
     })
+
     const form = computed({
         get() {
             return store.form
@@ -47,6 +55,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setForm(value)
         }
     })
+
     const formValid = computed({
         get() {
             return store.formValid
@@ -54,6 +63,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setFormValid(value)
         }
     })
+
     const notify = computed({
         get() {
             return store.notify
@@ -61,6 +71,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setNotify(value)
         }
     })
+
     const error = computed({
         get() {
             return store.error
@@ -68,6 +79,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setError(value)
         }
     })
+
     const message = computed({
         get() {
             return store.message
@@ -75,6 +87,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setMessage(value)
         }
     })
+
     const loading = computed({
         get() {
             return store.loading
@@ -82,6 +95,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setLoading(value)
         }
     })
+
     const itemsPerPage = computed({
         get() {
             return store.itemsPerPage
@@ -89,6 +103,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setItemsPerPage(value)
         }
     })
+
     const page = computed({
         get() {
             return store.page
@@ -96,6 +111,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setPage(value)
         }
     })
+
     const sortBy = computed({
         get() {
             return store.sortBy
@@ -103,6 +119,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setSortBy(value)
         }
     })
+
     const search = computed({
         get() {
             return store.search
@@ -110,6 +127,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setSearch(value)
         }
     })
+
     const totalItems = computed({
         get() {
             return store.totalItems
@@ -117,6 +135,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setTotalItems(value)
         }
     })
+
     const items = computed({
         get() {
             return store.items
@@ -124,6 +143,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setItems(value)
         }
     })
+
     const exportFiles = computed({
         get() {
             return store.exportFiles
@@ -131,6 +151,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setExportFiles(value)
         }
     })
+
     const exportLoading = computed({
         get() {
             return store.exportLoading
@@ -138,6 +159,7 @@ export function useCrud(entity: IEntityCrud) {
             store.setExportLoading(value)
         }
     })
+
     const exportListVisible = computed({
         get() {
             return store.exportListVisible
@@ -145,12 +167,31 @@ export function useCrud(entity: IEntityCrud) {
             store.setExportListVisible(value)
         }
     })
+
     const filters = computed({
         get() {
             return store.filters
         }, set(value) {
             store.setFilters(value)
         }
+    })
+
+    const prepareDynamicFilters = computed(() => {
+        return store.dynamicFilters.map((filter: IEntityCrudFilterDynamic) => {
+            return {
+                field: filter.name,
+                operator: filter.operator,
+                value: filter.value
+            }
+        }) as IDraxFieldFilter[]
+    })
+
+
+    const getAllFilters = computed(() =>{
+        return [
+            ...store.filters,
+            ...prepareDynamicFilters.value
+        ]  as IDraxFieldFilter[]
     })
 
 
@@ -165,7 +206,7 @@ export function useCrud(entity: IEntityCrud) {
                 orderBy: store.sortBy[0]?.key,
                 order: store.sortBy[0]?.order,
                 search: store.search,
-                filters: store.filters
+                filters: getAllFilters.value
             })
             store.setItems(r.items)
             store.setTotalItems(r.total)
@@ -204,7 +245,7 @@ export function useCrud(entity: IEntityCrud) {
                 orderBy: store.sortBy[0]?.key,
                 order: store.sortBy[0]?.order,
                 search: store.search,
-                filters: store.filters
+                filters: getAllFilters.value
             })
 
             if (r && r.url) {
@@ -395,7 +436,17 @@ export function useCrud(entity: IEntityCrud) {
     }
 
     function prepareFilters() {
-        store.setFilters(entity.formFilters)
+
+        const staticFilters : IDraxFieldFilter[] = entity.filters.map(
+            (filter: IEntityCrudFilter) =>
+                ({
+                    field: filter.name,
+                    value: filter.default ? filter.default : null,
+                    operator: (filter.operator ? filter.operator : 'eq')
+                })
+        ) as IDraxFieldFilter[]
+
+        store.setFilters(staticFilters)
     }
 
     async function clearFilters() {

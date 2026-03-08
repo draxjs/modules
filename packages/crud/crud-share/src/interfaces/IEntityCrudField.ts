@@ -1,8 +1,10 @@
 import {IEntityCrudFieldSelectItem} from "./IEntityCrudFieldSelectItem";
 
+type IEntityCrudFieldTypes =  'id' |'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'record' | 'ref' | 'enum' | 'select' |'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.record' | 'array.ref' | 'array.enum' | 'array.fullFile'
+
 interface IEntityCrudField {
     name: string
-    type: 'id' |'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'record' | 'ref' | 'enum' | 'select' |'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.record' | 'array.ref' | 'array.enum' | 'array.fullFile'
+    type: IEntityCrudFieldTypes
     ref?: string
     refDisplay?: string
     enum?: string[]
@@ -41,4 +43,4 @@ interface IEntityCrudField {
     max?: string
 }
 
-export type { IEntityCrudField }
+export type { IEntityCrudField, IEntityCrudFieldTypes }

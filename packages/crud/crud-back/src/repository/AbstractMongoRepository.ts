@@ -219,6 +219,8 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         MongooseQueryFilter.applyFilters(query, filters)
 
+       // console.log("Paginate Query", query)
+
         const sort = MongooseSort.applySort(orderBy, order)
         const populate = this._populateFields
         const lean = this._lean
@@ -319,6 +321,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const query = {}
 
         MongooseQueryFilter.applyFilters(query, filters)
+        //  console.log("groupBy Query", query)
 
         // Obtener el schema para identificar campos de referencia y fechas
         const schema = this._model.schema

@@ -146,14 +146,14 @@ defineEmits(['updateValue'])
           :title="item.raw[itemTitle]"
           :color="item.raw?.color"
           :base-color="item.raw?.color"
-          :prepend-icon="item.raw?.icon"
+          :prepend-icon="typeof item.raw?.icon=== 'string' ? item.raw?.icon : null"
       />
     </template>
 
     <template v-slot:selection="{item}">
       <v-chip tile density="compact"
               :color="item.raw?.color"
-              :prepend-icon="item.raw?.icon"
+              :prepend-icon="typeof item.raw?.icon=== 'string' ? item.raw?.icon : null"
       >
         {{ item.raw[itemTitle] }}
       </v-chip>
@@ -203,14 +203,14 @@ defineEmits(['updateValue'])
           :title="item.raw[itemTitle]"
           :color="item.raw?.color"
           :base-color="item.raw?.color"
-          :prepend-icon="item.raw?.icon"
+          :prepend-icon="typeof item.raw?.icon=== 'string' ? item.raw?.icon : null"
       />
     </template>
 
     <template v-slot:selection="{item}">
       <v-chip tile density="compact"
               :color="item.raw?.color"
-              :prepend-icon="item.raw?.icon"
+              :prepend-icon="typeof item.raw?.icon=== 'string' ? item.raw?.icon : null"
       >
         {{ item.raw[itemTitle] }}
       </v-chip>

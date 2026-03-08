@@ -51,7 +51,7 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 size: z.number().optional(),
                 mimetype: z.string().optional(),
                 url: z.string().optional()
-                })${schema[field].required ? "" : ".optional()"}`)
+                })${schema[field].required ? "" : ".optional().nullable().default(null)"}`)
                 break;
             case "object":
                 if(!schema[field].schema){

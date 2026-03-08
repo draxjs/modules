@@ -1,15 +1,12 @@
-import {IEntityCrud} from "@drax/crud-share";
+import type {IDraxFieldFilter, IEntityCrud} from "@drax/crud-share";
+
 
 interface IDashboardCard{
     entity: string
     entityInstance?: IEntityCrud,
     type: 'paginate' | 'groupBy'
     title: string
-    filters?: Array<{
-        field: string
-        operator: string
-        value: any
-    }>
+    filters: Array<IDraxFieldFilter>
     layout?: {
         cols: number
         sm: number
@@ -49,6 +46,6 @@ interface IDashboard {
 export type {
     IDashboardBase,
     IDashboard,
-    IDashboardCard
+    IDashboardCard,
 
 }

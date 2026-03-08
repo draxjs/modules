@@ -50,7 +50,7 @@ const DashboardSchema = new mongoose.Schema<IDashboard>({
         paginate: {
             columns: [{type: String, required: true, index: false, unique: false}],
             orderBy: {type: String, required: false, index: false, unique: false},
-            order: {type: String, enum: ['asc', 'desc', null], required: false, index: false, unique: false}
+            order: {type: String, enum: ['asc', 'desc', '', null], required: false, index: false, unique: false}
         }
     }]
 }, {timestamps: true});

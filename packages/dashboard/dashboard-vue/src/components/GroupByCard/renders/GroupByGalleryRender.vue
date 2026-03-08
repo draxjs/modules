@@ -90,10 +90,10 @@ const cardData = computed(() => {
         <v-col
             v-for="(card, index) in cardData"
             :key="index"
-            cols="6"
-            sm="4"
-            md="3"
-            lg="2"
+            cols="12"
+            sm="6"
+            md="4"
+            lg="4"
             class="pa-1"
         >
           <v-card
@@ -112,7 +112,7 @@ const cardData = computed(() => {
                 </div>
                 <v-chip
                     :color="card.color"
-                    size="x-small"
+                    size="small"
                     variant="flat"
                     class="mt-1"
                 >
@@ -126,16 +126,31 @@ const cardData = computed(() => {
 
       <v-divider class="my-2"></v-divider>
 
-      <div class="total-section pa-2">
-        <v-card variant="flat" color="grey-lighten-4">
-          <v-card-text class="pa-2 d-flex align-center justify-space-between">
-            <span class="text-subtitle-2 font-weight-bold">Total</span>
-            <v-chip color="primary" size="small" variant="flat">
+      <v-card
+          color="black"
+          variant="tonal"
+          class="gallery-card"
+          hover
+      >
+        <v-card-text class="pa-2">
+          <div class="d-flex flex-column align-center text-center">
+            <div class="card-value text-h5 font-weight-bold mb-1">
               {{ totalCount }}
+            </div>
+            <div class="card-label text-caption text-truncate" >
+              TOTAL
+            </div>
+            <v-chip
+                color="black"
+                size="small"
+                variant="flat"
+                class="mt-1"
+            >
+              100%
             </v-chip>
-          </v-card-text>
-        </v-card>
-      </div>
+          </div>
+        </v-card-text>
+      </v-card>
     </template>
   </div>
 </template>

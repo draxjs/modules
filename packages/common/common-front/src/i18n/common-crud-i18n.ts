@@ -5,6 +5,9 @@ const messages = {
       endOfDayFilter: 'End of Day Filter',
       activeFilters: 'Active Filters',
       noData: 'No Data',
+      filter: 'Filter',
+      field: 'Field',
+      operator: 'Operator',
       columns: {
         select: "Select columns",
         title: "Visible columns",
@@ -36,6 +39,9 @@ const messages = {
       endOfDayFilter: 'End of Day Filter',
       activeFilters: 'Filtros activos',
       noData: 'No hay datos',
+      filter: 'Filtro',
+      field: 'Campo',
+      operator: 'Operador',
       columns: {
         select: "Seleccionar columnas",
         title: "Columnas visibles",

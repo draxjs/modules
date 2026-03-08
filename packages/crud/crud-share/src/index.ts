@@ -17,12 +17,11 @@ import type {IDraxExportResponse} from "./interfaces/IDraxExportResponse";
 
 import type {IEntityCrud} from "./interfaces/IEntityCrud";
 import type {IEntityCrudOperation} from "./interfaces/IEntityCrudOperation";
-import type {IEntityCrudField} from "./interfaces/IEntityCrudField";
+import type {IEntityCrudField, IEntityCrudFieldTypes} from "./interfaces/IEntityCrudField";
 import type {IEntityCrudFieldSelectItem} from "./interfaces/IEntityCrudFieldSelectItem";
 import type {IEntityCrudFieldVariant} from "./interfaces/IEntityCrudFieldVariant";
-import type {IEntityCrudFilter} from "./interfaces/IEntityCrudFilter";
+import type {IEntityCrudFilter, IEntityCrudFilterOperators} from "./interfaces/IEntityCrudFilter";
 import type {IEntityCrudForm} from "./interfaces/IEntityCrudForm";
-import type {IEntityCrudFormFilter} from "./interfaces/IEntityCrudFormFilter";
 import type {IEntityCrudHeader} from "./interfaces/IEntityCrudHeader";
 import type {IEntityCrudPermissions} from "./interfaces/IEntityCrudPermissions";
 import type {IEntityCrudRules} from "./interfaces/IEntityCrudRules";
@@ -55,12 +54,11 @@ export type {
 
     IEntityCrud,
     IEntityCrudOperation,
-    IEntityCrudField,
+    IEntityCrudField, IEntityCrudFieldTypes,
     IEntityCrudFieldSelectItem,
     IEntityCrudFieldVariant,
-    IEntityCrudFilter,
+    IEntityCrudFilter, IEntityCrudFilterOperators,
     IEntityCrudForm,
-    IEntityCrudFormFilter,
     IEntityCrudHeader,
     IEntityCrudPermissions,
     IEntityCrudRules,

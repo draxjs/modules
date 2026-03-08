@@ -46,13 +46,17 @@ onMounted(() => {
 
 <template>
   <v-container fluid>
-    <v-btn size="small" prepend-icon="mdi-view-dashboard" :href="'/dashboard/view/'+identifier">ver</v-btn>
 
     <v-skeleton-loader :loading="loading"/>
     <dashboard-config v-if="dashboardSelected"
                       v-model="dashboardSelected"
                       @dashboardUpdated="updateDashboard"
-    ></dashboard-config>
+    >
+      <template v-slot:buttons>
+        <v-btn class="mx-3" prepend-icon="mdi-view-dashboard" :href="'/dashboard/view/'+identifier">ver</v-btn>
+      </template>
+
+    </dashboard-config>
 
   </v-container>
 

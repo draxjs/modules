@@ -4,16 +4,16 @@ import CrudFormField from "./CrudFormField.vue";
 import type {IEntityCrud, IEntityCrudFilter} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import {useAuth} from "@drax/identity-vue";
-import {useFilterIcon} from "../composables/useFilterIcon";
+import {useFilterIcon} from "../composables/UseFilterIcon.ts";
 
 const {t} = useI18n()
 const valueModel = defineModel({type: [Object]})
 const {hasPermission} = useAuth()
 const {filterIcon} = useFilterIcon()
 
-const {entity, actionButtons} = defineProps({
+const {entity, autoFilter} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
-  actionButtons: {type: Boolean, default: false},
+  autoFilter: {type: Boolean, default: false}
 })
 
 const aFields = computed(() => {
@@ -29,8 +29,8 @@ function clear() {
 }
 
 function onUpdateValue(){
-  if(!actionButtons){
-    emit('applyFilter')
+  if(autoFilter){
+    filter()
   }
 }
 
@@ -68,14 +68,6 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
           </v-col>
 
         </v-row>
-
-    <v-card-actions v-if="actionButtons" class="pb-0">
-      <v-spacer />
-      <v-btn  variant="text" density="compact" :class="entity.cleanFilterClass" @click="clear">{{ t('action.clear') }}</v-btn>
-      <v-btn variant="flat" density="compact" :class="entity.applyFilterClass"  @click="filter">
-        {{ t('action.filter') }}
-      </v-btn>
-    </v-card-actions>
 
   </v-card>
 </template>

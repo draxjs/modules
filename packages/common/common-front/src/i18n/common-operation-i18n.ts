@@ -7,6 +7,16 @@ const messages = {
       update: '{entity} Updating',
       delete: '{entity} Deleting',
       manage: '{entity} Managing',
+
+      equals: 'Equals',
+      notEquals: 'Not Equals',
+      greaterThan: 'Greater Than',
+      lessThan: 'Less Than',
+      greaterThanOrEqual: 'Greater Than Or Equal',
+      lessThanOrEqual: 'Less Than Or Equal',
+      contains: 'Contains',
+      in: 'In',
+      notIn: 'Not In',
     }
   },
   es: {
@@ -17,6 +27,16 @@ const messages = {
       update: 'Actualizando {entity}',
       delete: 'Eliminando {entity}',
       manage: 'Gestionando {entity}',
+
+      equals: 'Igual a',
+      notEquals: 'No igual a',
+      greaterThan: 'Mayor que',
+      lessThan: 'Menor que',
+      greaterThanOrEqual: 'Mayor o igual que',
+      lessThanOrEqual: 'Menor o igual que',
+      contains: 'Contiene',
+      in: 'Incluye',
+      notIn: 'No incluye',
     }
   }
 }

@@ -13,6 +13,7 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
             error: '' as string,
             paginationError: '' as string,
             filters: [] as IDraxFieldFilter[],
+            dynamicFilters: [] as IDraxFieldFilter[],
             items: [] as any[],
             totalItems: 0 as number,
             itemsPerPage: 10 as number,
@@ -132,6 +133,21 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
             const index = this.getFilterIndex(name)
             if (index >= 0) {
                 this.filters[index].value = value
+            }
+        },
+        addDynamicFilter(filter: IDraxFieldFilter) {
+            this.dynamicFilters.push(filter)
+        },
+        removeDynamicFilter(index: number) {
+            this.dynamicFilters.splice(index, 1)
+        },
+        setDynamicFilters(filters: IDraxFieldFilter[]) {
+            this.dynamicFilters = filters
+        },
+        setDynamicFilterValue(name:string, value:any) {
+            const index = this.getFilterIndex(name)
+            if (index >= 0) {
+                this.dynamicFilters[index].value = value
             }
         },
         setVisibleColumns(columns: string[]) {

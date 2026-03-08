@@ -31,9 +31,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container >
-
-    <v-skeleton-loader :loading="loading"  />
+  <v-container fluid >
+   <v-skeleton-loader :loading="loading"  />
    <dashboard-view v-if="dashboardSelected" :dashboard="dashboardSelected"></dashboard-view>
 
   </v-container>

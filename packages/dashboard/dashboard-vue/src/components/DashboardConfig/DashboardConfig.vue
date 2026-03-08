@@ -88,6 +88,7 @@ const addNewCard = () => {
   valueModel.value.cards.push({
     title: 'Nueva Tarjeta',
     entity: '',
+    filters: [],
     type: 'groupBy',
     layout: {cols: 12, sm: 12, md: 6, lg: 6, height: 450, cardVariant: 'outlined'}
   });
@@ -108,10 +109,11 @@ const emit = defineEmits(["dashboardUpdated"])
 </script>
 
 <template>
-  <v-card v-if="valueModel" class="mt-3 valueModel-config-wrapper" variant="flat" color="transparent">
+  <v-card v-if="valueModel" class="mt-3 valueModel-config-wrapper" variant="flat" >
     <v-card-title class="px-0 d-flex align-center">
       <span class="text-h5 font-weight-bold">{{ valueModel.title || 'Configuración de Dashboard' }}</span>
       <v-spacer></v-spacer>
+      <slot name="buttons"></slot>
       <v-btn color="primary" prepend-icon="mdi-plus" @click="addNewCard" elevation="2">Añadir Tarjeta</v-btn>
     </v-card-title>
 

@@ -16,6 +16,8 @@ import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import CrudFilters from "./CrudFilters.vue";
 import { useCrudColumns } from "../composables/UseCrudColumns";
+import CrudFiltersDynamic from "./CrudFiltersDynamic.vue";
+import CrudFiltersAction from "./CrudFiltersAction.vue";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -133,25 +135,45 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
         <v-card-text class="pt-0">
           <slot name="filters" v-bind="{filters}"></slot>
 
-          <crud-filters
-              v-if="!$slots.filters"
-              :entity="entity"
-              v-model="filters"
-              :action-buttons="entity.filterButtons"
-              @clearFilter="clearFilters()"
-              @applyFilter="applyFilters()"
-          >
+          <v-card variant="flat" v-if="!$slots.filters">
 
-            <template v-for="iFilter in entity.filters"
-                      :key="iFilter.name"
-                      v-slot:[`filter.${iFilter.name}`]="{filter, filterIndex}"
+            <crud-filters
+                v-if="entity.filtersEnable"
+                :entity="entity"
+                v-model="filters"
+                :auto-filter="!entity.filterButtons"
+                @clearFilter="clearFilters()"
+                @applyFilter="applyFilters()"
             >
-              <slot v-if="$slots[`filter.${iFilter.name}`]"
-                    :name="`filter.${iFilter.name}`"
-                    v-bind="{filter, filterIndex}"
-              />
-            </template>
-          </crud-filters>
+
+              <template v-for="iFilter in entity.filters"
+                        :key="iFilter.name"
+                        v-slot:[`filter.${iFilter.name}`]="{filter, filterIndex}"
+              >
+                <slot v-if="$slots[`filter.${iFilter.name}`]"
+                      :name="`filter.${iFilter.name}`"
+                      v-bind="{filter, filterIndex}"
+                />
+              </template>
+            </crud-filters>
+
+            <crud-filters-dynamic
+                v-if="entity.dynamicFiltersEnable"
+                :entity="entity"
+                v-model="filters"
+                :auto-filter="!entity.filterButtons"
+                @clearFilter="clearFilters()"
+                @applyFilter="applyFilters()"
+            >
+            </crud-filters-dynamic>
+
+            <crud-filters-action v-if="entity.filterButtons"
+                                 :entity="entity"
+                                 @clearFilter="clearFilters()"
+                                 @applyFilter="applyFilters()"
+            ></crud-filters-action>
+          </v-card>
+
         </v-card-text>
 
       </v-card>

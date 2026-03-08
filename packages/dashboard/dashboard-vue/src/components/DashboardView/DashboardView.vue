@@ -12,7 +12,7 @@ const {dashboard} = defineProps({
 
 <template>
   <v-card v-if="dashboard" class="mt-3" >
-    <v-card-title>{{dashboard.title}}</v-card-title>
+    <v-card-title style="font-size: 2rem">{{dashboard.title}}</v-card-title>
     <v-card-text>
       <v-row>
         <v-col v-for="(card,i) in dashboard.cards" :key="i"

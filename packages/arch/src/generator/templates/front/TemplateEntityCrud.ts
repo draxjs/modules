@@ -340,7 +340,7 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
   }
 
   get isImportable(){
-    return true
+    return false
   }
   
   get isColumnSelectable() {
@@ -369,6 +369,18 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
     return [
      ${generateMenus(entity)}
     ]
+  }
+  
+  get searchEnable() {
+    return true
+  }
+
+   get filtersEnable(){
+    return true
+  }
+
+  get dynamicFiltersEnable(){
+    return true
   }
 
 

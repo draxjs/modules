@@ -6,14 +6,13 @@ import type {IEntityCrudForm} from "./IEntityCrudForm";
 import type {IEntityCrudRules} from "./IEntityCrudRules";
 import type {IEntityCrudRefs} from "./IEntityCrudRefs";
 import type {IDraxCrudProvider} from "./IDraxCrudProvider";
-import type {IEntityCrudFormFilter} from "./IEntityCrudFormFilter";
+import type {IDraxFieldFilter} from "./IDraxFieldFilter";
 import type {IEntityCrudFieldVariant} from "./IEntityCrudFieldVariant";
 
 
 interface IEntityCrud {
   name: string
   identifier: string
-
   headers: IEntityCrudHeader[]
   selectedHeaders: string[]  // Nuevo getter
   actionHeaders: IEntityCrudHeader[]
@@ -25,7 +24,7 @@ interface IEntityCrud {
   viewFields: IEntityCrudField[]
   filters: IEntityCrudFilter[]
   form: IEntityCrudForm
-  formFilters: IEntityCrudFormFilter[]
+  formFilters: IDraxFieldFilter[]
   isViewable: boolean
   isEditable: boolean
   isItemEditable: (item?: any) => boolean
@@ -61,6 +60,8 @@ interface IEntityCrud {
   footerClass?: string
 
   searchEnable?: boolean
+  filtersEnable?: boolean
+  dynamicFiltersEnable?: boolean
 
   filterButtons?: boolean
   cleanFilterClass?: string

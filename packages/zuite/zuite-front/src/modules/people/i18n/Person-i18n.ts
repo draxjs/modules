@@ -1,7 +1,7 @@
 
 const messages = {
   en: {
-  
+
     person: {
           entity: 'Person',
           menu: 'Person',
@@ -45,9 +45,9 @@ const messages = {
           field:{
                        fullname:'fullname',
            live:'live',
-           birthdate:'birthdate',
-           secret:'secret',
-           nationality:'nationality',
+           birthdate:'Nacimiento',
+           secret:'Secreto',
+           nationality:'Nacionalidad',
            hobbies:'hobbies',
            race:'race',
            interests:'interests',
@@ -75,4 +75,4 @@ const messages = {
   }
 }
 
-export default messages;  
+export default messages;

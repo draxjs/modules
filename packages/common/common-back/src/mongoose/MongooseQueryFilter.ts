@@ -30,6 +30,13 @@ class MongooseQueryFilter{
 
             if(filter.value === undefined || filter.value === null) return
 
+            if(filter.value === 'true'){
+                filter.value = true
+            }
+            if(filter.value === 'false'){
+                filter.value = false
+            }
+
             switch (filter.operator) {
                 case 'like':
                     query[filter.field] = {...query[filter.field], ... {$regex: filter.value, $options: 'i'} }

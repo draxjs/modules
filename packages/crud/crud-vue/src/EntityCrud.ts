@@ -1,7 +1,7 @@
 import type {
   IEntityCrud, IEntityCrudForm, IEntityCrudHeader, IEntityCrudRefs,
   IEntityCrudRules, IEntityCrudField, IEntityCrudPermissions,
-  IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFormFilter, IEntityCrudFieldVariant
+  IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFieldVariant, IDraxFieldFilter
 } from "@drax/crud-share";
 
 
@@ -125,11 +125,11 @@ class EntityCrud implements IEntityCrud {
   }
 
 
-  get formFilters(): IEntityCrudFormFilter[] {
+  get formFilters(): IDraxFieldFilter[] {
     return this.filters.map(
       (filter: IEntityCrudFilter) =>
         ({field: filter.name, value: filter.default ? filter.default : null, operator: (filter.operator ? filter.operator : 'eq')})
-    ) as IEntityCrudFormFilter[]
+    ) as IDraxFieldFilter[]
   }
 
   get refs(): IEntityCrudRefs {
@@ -138,7 +138,7 @@ class EntityCrud implements IEntityCrud {
 
   getRef(ref: string): IEntityCrud {
     if (!this.refs.hasOwnProperty(ref)) {
-      throw new Error("Ref not found: " + ref)
+      throw new Error("Ref not found: " + ref + " Refs Available: " + Object.getOwnPropertyNames(this.refs).join(", "))
     }
 
     return this.refs[ref] as IEntityCrud
@@ -235,6 +235,14 @@ class EntityCrud implements IEntityCrud {
   }
 
   get searchEnable() {
+    return true
+  }
+
+   get filtersEnable(){
+    return true
+  }
+
+  get dynamicFiltersEnable(){
     return true
   }
 

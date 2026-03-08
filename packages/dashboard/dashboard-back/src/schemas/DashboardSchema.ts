@@ -32,7 +32,7 @@ const DashboardBaseSchema = z.object({
             paginate: z.object({
                 columns: z.array(z.string()).default([]),
                 orderBy: z.string().optional().nullable(),
-                order: z.enum(['asc', 'desc']).optional().nullable()
+                order: z.enum(['asc', 'desc','', null]).optional().nullable()
             })
         })
     ).optional()
