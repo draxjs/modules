@@ -46,11 +46,17 @@ const getPercentage = (count: number) => {
           v-slot:[`item.${field.name}`]="{ value }"
       >
         <template v-if="['ref','object'].includes(field.type) && field.refDisplay">
-          {{value[field.refDisplay]}}
+          {{value ? value[field.refDisplay] : '-' }}
         </template>
+
         <template v-else-if="field.type === 'date'">
           {{ formatDateByUnit(value, dateFormat) }}
         </template>
+
+        <template v-else-if="field.type === 'number'">
+          {{ value.toLocaleString('es-ar') }}
+        </template>
+
         <template v-else>
           {{ value }}
         </template>

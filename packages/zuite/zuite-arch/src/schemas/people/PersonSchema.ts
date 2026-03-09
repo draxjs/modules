@@ -9,6 +9,7 @@ const schema: IEntitySchema = {
         live: {groupTab:"BASIC", type: 'boolean', required: false, unique: false, index: false, header: true},
         birthdate: {groupTab:"BASIC", type: 'date', required: false, unique: false, index: false, header: true},
         secret: {groupTab:"BASIC", type: 'password', required: false, unique: false, index: false, header: false},
+        money: {groupTab:"BASIC", type: 'number', required: false, unique: false, index: false, header: false},
         nationality: {groupTab:"BASIC", type: 'ref', ref:'Country', refDisplay: 'name', required: false, unique: false, index: false, header: true},
         hobbies: {groupTab:"BASIC", type: 'array.string', required: false, unique: false, index: false, search:true, header: true},
         race: {groupTab:"BASIC", type: 'enum', enum:["human","elf","orc"], required: false, unique: false, index: false, search:true, header: true},

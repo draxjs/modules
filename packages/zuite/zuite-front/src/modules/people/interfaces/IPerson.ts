@@ -4,6 +4,7 @@ interface IPersonBase {
     live?: boolean
     birthdate?: Date
     secret?: string
+    money?: number
     nationality?: any
     hobbies?: Array<string>
     race?: string
@@ -30,6 +31,7 @@ interface IPerson {
     live?: boolean
     birthdate?: Date
     secret?: string
+    money?: number
     nationality?: any
     hobbies?: Array<string>
     race?: string

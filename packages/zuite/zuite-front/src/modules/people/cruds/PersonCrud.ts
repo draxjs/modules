@@ -47,6 +47,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return [
       {title: 'fullname', key: 'fullname', align: 'start'},
       {title: 'live', key: 'live', align: 'start'},
+      {title: 'money', key: 'money', align: 'start'},
       {title: 'birthdate', key: 'birthdate', align: 'start'},
       {title: 'nationality', key: 'nationality', align: 'start'},
       {title: 'hobbies', key: 'hobbies', align: 'start'},
@@ -114,6 +115,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         placeholder:'El nombre viste', persistentPlaceholder:true},
       {name: 'live', type: 'boolean', label: 'live', default: false, groupTab: 'BASIC'},
       {name: 'birthdate', type: 'date', label: 'birthdate', default: null, groupTab: 'BASIC'},
+      {name:'money',type:'number',label:'money',default:null,groupTab: 'BASIC'},
       {name: 'secret', type: 'password', label: 'secret', default: '', groupTab: 'BASIC'},
       {
         name: 'nationality',

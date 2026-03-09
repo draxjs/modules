@@ -332,6 +332,13 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const finalProjectFields: any = {count: 1, _id: 0}
         const refFields = new Set<string>()
         const dateFields = new Set<string>()
+        const numericFields = new Set<string>()
+        const groupFields: string[] = []
+        const numericInstances = new Set(['Number', 'Decimal128', 'Double', 'Int32', 'Long', 'BigInt'])
+        const totalGroupFields = fields.filter(field => {
+            const schemaPath = schema.path(field)
+            return !(schemaPath && numericInstances.has(schemaPath.instance))
+        }).length
 
         // Función para obtener el formato de fecha según el nivel de granularidad
         const getDateFormat = (field: string, format: string) => {
@@ -391,6 +398,15 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         fields.forEach(field => {
             const schemaPath = schema.path(field)
 
+            // Verificar si el campo es numérico: se agregará con $sum y no formará parte de la clave de agrupación
+            if (schemaPath && numericInstances.has(schemaPath.instance)) {
+                numericFields.add(field)
+                finalProjectFields[field] = 1
+                return
+            }
+
+            groupFields.push(field)
+
             // Verificar si el campo es de tipo Date
             if (schemaPath && schemaPath.instance === 'Date') {
                 dateFields.add(field)
@@ -408,7 +424,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
                 const collectionName = refModelInstance.collection.name
 
                 // Determinar el campo local correcto según si es un solo campo o múltiples
-                const localField = fields.length === 1 ? '_id' : `_id.${fieldName}`
+                const localField = totalGroupFields === 1 ? '_id' : `_id.${fieldName}`
 
                 lookupStages.push({
                     $lookup: {
@@ -437,15 +453,15 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         })
 
         // Construir la proyección final para campos de fecha
-        fields.forEach(field => {
+        groupFields.forEach(field => {
             if (dateFields.has(field)) {
-                if (fields.length === 1) {
+                if (groupFields.length === 1) {
                     finalProjectFields[field] = `$_id`
                 } else {
                     finalProjectFields[field] = `$_id.${field}`
                 }
             } else if (!refFields.has(field)) {
-                if (fields.length === 1) {
+                if (groupFields.length === 1) {
                     finalProjectFields[field] = `$_id`
                 } else {
                     finalProjectFields[field] = `$_id.${field}`
@@ -453,13 +469,26 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             }
         })
 
+        const groupStage: any = {
+            _id: null,
+            count: {$sum: 1}
+        }
+
+        numericFields.forEach(field => {
+            groupStage[field] = {$sum: {$ifNull: [`$${field}`, 0]}}
+        })
+
+        if (groupFields.length === 1) {
+            const field = groupFields[0]
+            groupStage._id = dateFields.has(field) ? getDateFormat(field, dateFormat) : groupId[field]
+        } else if (groupFields.length > 1) {
+            groupStage._id = groupId
+        }
+
         const pipeline: any[] = [
             {$match: query},
             {
-                $group: {
-                    _id: fields.length === 1 ? (dateFields.has(fields[0]) ? getDateFormat(fields[0], dateFormat) : `$${fields[0]}`) : groupId,
-                    count: {$sum: 1}
-                }
+                $group: groupStage
             }
         ]
 
