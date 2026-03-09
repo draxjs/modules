@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-front",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "private": true,
   "scripts": {
     "front": "vite",
@@ -18,7 +18,7 @@
     "@drax/crud-front": "^2.0.0",
     "@drax/crud-vue": "^2.8.0",
     "@drax/dashboard-front": "^2.8.0",
-    "@drax/dashboard-vue": "^2.8.0",
+    "@drax/dashboard-vue": "^2.9.0",
     "@drax/dynamic-front": "^2.0.0",
     "@drax/dynamic-vue": "^2.8.0",
     "@drax/i18n-share": "^2.0.0",
