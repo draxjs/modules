@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "2.8.0",
+  "version": "2.10.0",
   "description": "Common utils across modules",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
