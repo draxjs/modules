@@ -9,12 +9,27 @@ import { Model } from "mongoose"
 
 class MongooseQueryFilter{
 
-    static applyFilters<T>(query: object, filters: IQueryFilter[], model: Model<T>){
+    static applyFilters<T>(query: object, filters: IQueryFilter[], model?: Model<T>){
         if(!filters || filters.length === 0){
             return query;
         }
         this.assertQuerySchema(query)
         this.assertFiltersSchema(filters)
+
+        function isSchemaTypeObjectId(fieldName: string){
+            if(model){
+                const schemaType = model.schema.path(fieldName)
+                if(schemaType?.instance === 'ObjectId'){
+                    return true
+                }else{
+                    return false
+                }
+            }else{
+                return false
+            }
+        }
+
+        console.log("filters", filters)
 
         for(const filter of filters){
 
@@ -24,17 +39,22 @@ class MongooseQueryFilter{
                 filter.value = new Date(filter.value)
             }
 
-            const schemaType = model.schema.path(filter.field)
+           const isObjectId = isSchemaTypeObjectId(filter.field)
 
 
             //Valid ObjectId
 
-            if(schemaType?.instance === 'ObjectId' && isValidObjectId(filter.value) && !['in', 'nin'].includes(filter.operator) && filter.operator !== 'empty'){
-                filter.value = ObjectId.createFromHexString(filter.value)
-            }
-
             if(filter.field === '_id' && !isValidObjectId(filter.value)){
                 throw new BadRequestError('Invalid ObjectId','error.invalidId')
+            }
+
+            if(isObjectId && !isValidObjectId(filter.value)){
+                throw new BadRequestError('Invalid ObjectId','error.invalidId')
+            }
+
+
+            if(isValidObjectId(filter.value) && !['in', 'nin'].includes(filter.operator) && filter.operator !== 'empty'){
+                filter.value = ObjectId.createFromHexString(filter.value)
             }
 
             if((filter.value === undefined || filter.value === null) && filter.operator !== 'empty') return
@@ -48,7 +68,7 @@ class MongooseQueryFilter{
 
             switch (filter.operator) {
                 case 'empty':
-                    if(schemaType?.instance === 'ObjectId'){
+                    if(isObjectId){
                         query[filter.field] = null
                     }else{
                         query[filter.field] = { $in: [null, ""] }
@@ -101,7 +121,7 @@ class MongooseQueryFilter{
             }
         }
 
-        // console.log("query", query);
+         console.log("query", query);
         return query
     }
 

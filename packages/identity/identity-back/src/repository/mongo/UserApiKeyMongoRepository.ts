@@ -59,7 +59,7 @@ class UserApiKeyMongoRepository extends AbstractMongoRepository<IUserApiKey,IUse
             }
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters, UserApiKeyModel)
 
         const sort = MongooseSort.applySort(orderBy, order)
         const populate = ['user', 'user.tenant', 'user.role', 'createdBy']

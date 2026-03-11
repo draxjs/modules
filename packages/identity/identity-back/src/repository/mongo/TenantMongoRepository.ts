@@ -41,7 +41,7 @@ class TenantMongoRepository extends AbstractMongoRepository<ITenant, ITenantBase
             }
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters, TenantModel)
 
         const sort = MongooseSort.applySort(orderBy, order)
 

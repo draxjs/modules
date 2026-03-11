@@ -47,7 +47,7 @@ class RoleMongoRepository extends AbstractMongoRepository<IRole, IRoleBase,IRole
             }
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters,RoleModel)
 
         const sort = MongooseSort.applySort(orderBy, order)
 

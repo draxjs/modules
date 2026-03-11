@@ -153,7 +153,7 @@ class UserMongoRepository extends AbstractMongoRepository<IUser,IUserCreate,IUse
             }
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters, UserModel)
 
         const sort = MongooseSort.applySort(orderBy, order)
 
