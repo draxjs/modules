@@ -8,10 +8,13 @@ import type {
 } from "@drax/crud-share";
 import {randomUUID} from "node:crypto";
 import {
-    SqlSort, SqlQueryFilter, SqliteTableBuilder, SqliteTableField,
-    SqliteErrorToValidationError, MongooseQueryFilter
+    SqlSort,
+    SqlQueryFilter,
+    SqliteTableBuilder,
+    SqliteTableField,
+    SqliteErrorToValidationError
 } from "@drax/common-back";
-import mongoose from "mongoose";
+
 
 
 class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
@@ -195,31 +198,50 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const offset = page > 1 ? (page - 1) * limit : 0
 
         let where = ""
+        let params: any[] = []
+
+        // SEARCH
         if (search && this.searchFields.length > 0) {
-            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${search}%'`).join(" OR ")}`
+
+            const searchConditions = this.searchFields
+                .map(field => `${field} LIKE ?`)
+                .join(" OR ")
+
+            where = ` WHERE (${searchConditions})`
+
+            params.push(...this.searchFields.map(() => `%${search}%`))
         }
 
+        // FILTERS
         if (filters.length > 0) {
-            where = SqlQueryFilter.applyFilters(where, filters)
+
+            const result = SqlQueryFilter.applyFilters(where, filters)
+
+            where = result.where
+            params.push(...result.params)
         }
 
         const sort = SqlSort.applySort(orderBy, order)
 
-        const rCount = this.db.prepare(`SELECT COUNT(*) as count
-                                        FROM ${this.tableName} ${where}`).get();
-        const items = this.db.prepare(`SELECT *
-                                       FROM ${this.tableName} ${where} ${sort} LIMIT ?
-                                       OFFSET ? `).all([limit, offset]) as T[];
+        // COUNT
+        const rCount = this.db
+            .prepare(`SELECT COUNT(*) as count FROM ${this.tableName} ${where}`)
+            .get(params)
+
+        // DATA
+        const items = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where} ${sort} LIMIT ? OFFSET ?`)
+            .all([...params, limit, offset]) as T[]
 
         for (const item of items) {
             await this.decorate(item)
         }
 
         return {
-            page: page,
-            limit: limit,
+            page,
+            limit,
             total: rCount.count,
-            items: items
+            items
         }
     }
 
@@ -229,24 +251,37 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
                    order = 'desc',
                    search = '',
                    filters = []
-               }: IDraxFindOptions): Promise<any[]> {
-
+               }: IDraxFindOptions): Promise<T[]> {
 
         let where = ""
+        let params: any[] = []
+
+        // SEARCH
         if (search && this.searchFields.length > 0) {
-            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${search}%'`).join(" OR ")}`
+
+            const searchConditions = this.searchFields
+                .map(field => `${field} LIKE ?`)
+                .join(" OR ")
+
+            where = ` WHERE (${searchConditions})`
+
+            params.push(...this.searchFields.map(() => `%${search}%`))
         }
 
+        // FILTERS
         if (filters.length > 0) {
-            where = SqlQueryFilter.applyFilters(where, filters)
+
+            const result = SqlQueryFilter.applyFilters(where, filters)
+
+            where = result.where
+            params.push(...result.params)
         }
 
         const sort = SqlSort.applySort(orderBy, order)
 
-        const rCount = this.db.prepare(`SELECT COUNT(*) as count
-                                        FROM ${this.tableName} ${where}`).get();
-        const items = this.db.prepare(`SELECT *
-                                       FROM ${this.tableName} ${where} ${sort} LIMIT ? `).all([limit]) as T[];
+        const items = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where} ${sort} LIMIT ?`)
+            .all([...params, limit]) as T[]
 
         for (const item of items) {
             await this.decorate(item)
@@ -264,13 +299,25 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return items
     }
 
-    async search(value: any, limit: number = 1000): Promise<any[]> {
+    async search(value: any, limit: number = 1000): Promise<T[]> {
+
         let where = ""
+        let params: any[] = []
+
         if (value && this.searchFields.length > 0) {
-            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${value}%'`).join(" OR ")}`
+
+            const searchConditions = this.searchFields
+                .map(field => `${field} LIKE ?`)
+                .join(" OR ")
+
+            where = ` WHERE (${searchConditions})`
+
+            params.push(...this.searchFields.map(() => `%${value}%`))
         }
-        const items = this.db.prepare(`SELECT *
-                                       FROM ${this.tableName} ${where} LIMIT ${limit}`).all();
+
+        const items = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where} LIMIT ?`)
+            .all([...params, limit]) as T[]
 
         for (const item of items) {
             await this.decorate(item)
@@ -311,17 +358,32 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
                   }: IDraxFindOptions): Promise<T> {
 
         let where = ""
+        let params: any[] = []
 
+        // SEARCH
         if (search && this.searchFields.length > 0) {
-            where = ` WHERE ${this.searchFields.map(field => `${field} LIKE '%${search}%'`).join(" OR ")}`
+
+            const searchConditions = this.searchFields
+                .map(field => `${field} LIKE ?`)
+                .join(" OR ")
+
+            where = ` WHERE (${searchConditions})`
+
+            params.push(...this.searchFields.map(() => `%${search}%`))
         }
 
+        // FILTERS
         if (filters.length > 0) {
-            where = SqlQueryFilter.applyFilters(where, filters)
+
+            const result = SqlQueryFilter.applyFilters(where, filters)
+
+            where = result.where
+            params.push(...result.params)
         }
 
-        const item = this.db.prepare(`SELECT *
-                                      FROM ${this.tableName} ${where} LIMIT 1`).get();
+        const item = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where} LIMIT 1`)
+            .get(params)
 
         if (item) {
             await this.decorate(item)
@@ -331,17 +393,20 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async groupBy({fields = [], filters = [], dateFormat = 'day'}: IDraxGroupByOptions): Promise<Array<any>> {
+
         if (fields.length === 0) {
             throw new Error("At least one field is required for groupBy")
         }
 
-        // Construir la cláusula WHERE con los filtros
         let where = ""
+        let params: any[] = []
+
         if (filters.length > 0) {
-            where = SqlQueryFilter.applyFilters(where, filters)
+            const result = SqlQueryFilter.applyFilters(where, filters)
+            where = result.where
+            params.push(...result.params)
         }
 
-        // Función para obtener el formato de fecha según SQLite
         const getDateFormatSQL = (field: string, format: string): string => {
             const formats: { [key: string]: string } = {
                 'year': `strftime('%Y', ${field})`,
@@ -354,46 +419,68 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
             return formats[format] || formats['day']
         }
 
-        // Determinar si cada campo es de fecha
         const isDateField = (field: string): boolean => {
             const tableField = this.tableFields.find(tf => tf.name === field)
-            return tableField ? tableField.type === 'TEXT' && (field.includes('Date') || field.includes('date')) : false
+            return tableField
+                ? tableField.type === 'TEXT' && (field.includes('Date') || field.includes('date'))
+                : false
         }
 
-        // Construir los campos SELECT con formato de fecha si aplica
-        const selectFields = fields.map(field => {
-            if (isDateField(field)) {
-                return `${getDateFormatSQL(field, dateFormat)} as ${field}`
-            }
-            return field
-        }).join(', ')
+        const isNumericField = (field: string): boolean => {
+            const tableField = this.tableFields.find(tf => tf.name === field)
+            if (!tableField) return false
+            const type = tableField.type.toUpperCase()
+            return ['INTEGER', 'REAL', 'NUMERIC'].includes(type)
+        }
 
-        // Construir la cláusula GROUP BY
-        const groupByFields = fields.map(field => {
-            if (isDateField(field)) {
-                return getDateFormatSQL(field, dateFormat)
-            }
-            return field
-        }).join(', ')
+        const selectParts: string[] = []
+        const groupParts: string[] = []
 
-        // Construir y ejecutar la query
+        for (const field of fields) {
+
+            const tableField = this.tableFields.find(tf => tf.name === field)
+
+            if (!tableField) {
+                throw new Error(`Invalid field ${field}`)
+            }
+
+            if (isNumericField(field)) {
+                selectParts.push(`SUM(${field}) as ${field}`)
+                continue
+            }
+
+            if (isDateField(field)) {
+                const formatted = getDateFormatSQL(field, dateFormat)
+                selectParts.push(`${formatted} as ${field}`)
+                groupParts.push(formatted)
+                continue
+            }
+
+            selectParts.push(field)
+            groupParts.push(field)
+        }
+
+        const selectFields = selectParts.join(", ")
+        const groupByFields = groupParts.join(", ")
+
         const query = `
-            SELECT ${selectFields}, COUNT(*) as count
-            FROM ${this.tableName}
-            ${where}
-            GROUP BY ${groupByFields}
-            ORDER BY count DESC
-        `
+        SELECT ${selectFields}, COUNT(*) as count
+        FROM ${this.tableName}
+        ${where}
+        ${groupByFields ? `GROUP BY ${groupByFields}` : ''}
+        ORDER BY count DESC
+    `
 
         try {
-            const result = this.db.prepare(query).all() as Array<any>
 
-            // Decorar los items si tienen campos de población
+            const result = this.db.prepare(query).all(params) as Array<any>
+
             for (const item of result) {
                 await this.decorate(item)
             }
 
             return result
+
         } catch (e) {
             console.error("GroupBy query error:", e)
             throw e

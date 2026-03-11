@@ -9,11 +9,6 @@ import {formatDate} from "@drax/common-front"
 <template>
   <crud :entity="PersonCrud.instance">
 
-    <template v-slot:item="{item}">
-      <div class="h-100 pa-2">
-        <h3>{{item.fullname}}</h3>
-      </div>
-    </template>
 
     <template v-slot:item.birthdate="{value}">{{formatDate(value)}}</template>
     <template v-slot:item.nationality="{value}">{{value?.name}}</template>

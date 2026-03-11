@@ -114,7 +114,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             filterArray.forEach((filter) => {
                 const [field, operator, value] = filter.split(";")
 
-                if(field && operator && (value !== undefined && value !== '') ) {
+                if(field && operator && ( operator === 'empty' || (value !== undefined && value !== '')) ) {
                     filters.push({field, operator, value})
                 }
 

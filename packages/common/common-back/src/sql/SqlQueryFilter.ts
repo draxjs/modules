@@ -1,70 +1,112 @@
 import z from "zod";
 import type {IQueryFilter} from "../interfaces/IQueryFilter";
 
-
 class SqlQueryFilter {
 
-    static applyFilters(where: string = "", filters: IQueryFilter[]){
-        if(filters.length === 0) return where
+    static applyFilters(
+        where: string = "",
+        filters: IQueryFilter[]
+    ): { where: string, params: any[] } {
 
-        where += where ? ` AND ` : ` WHERE `
-        let whereFilters= []
+        if (!filters || filters.length === 0) {
+            return { where, params: [] }
+        }
+
         this.assertFiltersSchema(filters)
 
-        for(const filter of filters){
+        let params: any[] = []
+        let whereFilters: string[] = []
 
-            if(filter.value === undefined || filter.value === null) return
+        for (const filter of filters) {
+
+            if ((filter.value === undefined || filter.value === null) && filter.operator !== 'empty') {
+                continue
+            }
 
             switch (filter.operator) {
+
                 case 'like':
-                    whereFilters.push(` ${filter.field} LIKE '%${filter.value}%' `)
-                    break;
+                    whereFilters.push(`${filter.field} LIKE ?`)
+                    params.push(`%${filter.value}%`)
+                    break
+
                 case 'eq':
-                    whereFilters.push(` ${filter.field} = '${filter.value}' `)
-                    break;
+                    whereFilters.push(`${filter.field} = ?`)
+                    params.push(filter.value)
+                    break
+
                 case 'ne':
-                    whereFilters.push(` ${filter.field} != '${filter.value}' `)
-                    break;
+                    whereFilters.push(`${filter.field} != ?`)
+                    params.push(filter.value)
+                    break
+
+                case 'empty':
+                    whereFilters.push(`(${filter.field} IS NULL OR ${filter.field} = '')`)
+                    break
+
                 case 'in':
-                    if(Array.isArray(filter.value)){
-                        filter.value = filter.value.map(v => `'${v}'`  ).join(',')
+                    if (!Array.isArray(filter.value)) {
+                        filter.value = filter.value.split(',').map((v: string) => v.trim())
                     }
-                    whereFilters.push(` ${filter.field} IN (${filter.value}) `)
-                    break;
+
+                    const inPlaceholders = filter.value.map(() => '?').join(',')
+                    whereFilters.push(`${filter.field} IN (${inPlaceholders})`)
+                    params.push(...filter.value)
+                    break
+
                 case 'nin':
-                    if(Array.isArray(filter.value)){
-                        filter.value = filter.value.map(v => `'${v}'`  ).join(',')
+                    if (!Array.isArray(filter.value)) {
+                        filter.value = filter.value.split(',').map((v: string) => v.trim())
                     }
-                    whereFilters.push(` ${filter.field} NOT IN (${filter.value}) `)
-                    break;
+
+                    const ninPlaceholders = filter.value.map(() => '?').join(',')
+                    whereFilters.push(`${filter.field} NOT IN (${ninPlaceholders})`)
+                    params.push(...filter.value)
+                    break
+
                 case 'gt':
-                    whereFilters.push(` ${filter.field} > '${filter.value}' `)
-                    break;
+                    whereFilters.push(`${filter.field} > ?`)
+                    params.push(filter.value)
+                    break
+
                 case 'gte':
-                    whereFilters.push(` ${filter.field} >= '${filter.value}' `)
-                    break;
+                    whereFilters.push(`${filter.field} >= ?`)
+                    params.push(filter.value)
+                    break
+
                 case 'lt':
-                    whereFilters.push(` ${filter.field} < '${filter.value}' `)
-                    break;
+                    whereFilters.push(`${filter.field} < ?`)
+                    params.push(filter.value)
+                    break
+
                 case 'lte':
-                    whereFilters.push(` ${filter.field} <= '${filter.value}' `)
-                    break;
+                    whereFilters.push(`${filter.field} <= ?`)
+                    params.push(filter.value)
+                    break
+
                 default:
                     throw new Error(`Unsupported operator ${filter.operator}`)
             }
         }
+
+        if (whereFilters.length === 0) {
+            return { where, params }
+        }
+
+        where += where ? ` AND ` : ` WHERE `
         where += whereFilters.join(" AND ")
-        return where
+
+        return { where, params }
     }
 
-    static assertFiltersSchema(filters : IQueryFilter[]){
+    static assertFiltersSchema(filters: IQueryFilter[]) {
         z.array(this.filterSchema).parse(filters)
     }
 
-    static  get filterSchema(){
+    static get filterSchema() {
         return z.object({
             field: z.string(),
-            operator: z.enum(['eq', 'like','ne', 'in', 'nin','gt', 'gte', 'lt', 'lte']),
+            operator: z.enum(['eq', 'like', 'ne', 'in', 'nin', 'gt', 'gte', 'lt', 'lte', 'empty']),
             value: z.any()
         })
     }
@@ -72,4 +114,4 @@ class SqlQueryFilter {
 }
 
 export default SqlQueryFilter;
-export {SqlQueryFilter}
+export { SqlQueryFilter };

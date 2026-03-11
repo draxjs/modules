@@ -184,7 +184,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
 
         const items = await this._model
             .find(query)
@@ -217,7 +217,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             }
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
 
        // console.log("Paginate Query", query)
 
@@ -249,7 +249,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             }
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
 
         const item = this._model
             .findOne(query)
@@ -278,7 +278,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             }
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
 
         const sort = MongooseSort.applySort(orderBy, order)
         const items = await this._model
@@ -309,9 +309,9 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             ]
         }
 
-        MongooseQueryFilter.applyFilters(query, filters)
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
 
-        const sort = MongooseSort.applySort(orderBy, order)
+        const sort = MongooseSort.applySort(orderBy, order,)
 
         return this._model.find(query).limit(limit).sort(sort).cursor() as Cursor<T>;
     }
@@ -320,8 +320,8 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const query = {}
 
-        MongooseQueryFilter.applyFilters(query, filters)
-        //  console.log("groupBy Query", query)
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
+          // console.log("groupBy Query", query)
 
         // Obtener el schema para identificar campos de referencia y fechas
         const schema = this._model.schema

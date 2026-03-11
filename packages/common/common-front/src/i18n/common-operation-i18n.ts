@@ -17,6 +17,7 @@ const messages = {
       contains: 'Contains',
       in: 'In',
       notIn: 'Not In',
+      empty: 'Empty',
     }
   },
   es: {
@@ -37,6 +38,7 @@ const messages = {
       contains: 'Contiene',
       in: 'Incluye',
       notIn: 'No incluye',
+      empty: 'Vacio',
     }
   }
 }

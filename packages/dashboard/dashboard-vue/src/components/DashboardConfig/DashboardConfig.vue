@@ -59,8 +59,8 @@ const deleteCard = (index: number) => {
     valueModel.value.cards?.splice(index, 1);
     if (editingCardIndex.value === index) {
       editingCardIndex.value = null;
-      emit("dashboardUpdated")
     }
+    emit("dashboardUpdated")
   }
 };
 

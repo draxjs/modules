@@ -261,7 +261,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get listMode(){
-    return 'gallery'
+    return 'resonsive'
   }
 
 }

@@ -12,12 +12,13 @@ import type {
 import {useI18n} from "vue-i18n"
 import CrudFormField from "@drax/crud-vue/src/components/CrudFormField.vue";
 import {useFilterIcon} from "@drax/crud-vue";
+import {useDynamicFilters} from "@drax/crud-vue/src/composables/UseDynamicFilters.ts";
 
 const props = defineProps({
   modelValue: {type: Object as PropType<IDashboardCard>, required: true}
 });
 const {filterIcon} = useFilterIcon()
-const {t, te} = useI18n()
+const {t} = useI18n()
 
 const emit = defineEmits(['update:modelValue', 'save', 'cancel']);
 
@@ -122,92 +123,19 @@ function onEntityChange() {
   }
 }
 
-const fieldI18n = computed(() => {
-  return (field: IEntityCrudFilter) => {
-    return te(entitySelected.value?.name?.toLowerCase() + ".field." + field.name) ? t(entitySelected.value?.name?.toLowerCase() + ".field." + field.name) : field.label
-  }
-})
-
-const selectableFields = computed(() => {
-  return entitySelected.value ?
-      entitySelected.value.fields
-          .filter((f: any) => !['fullFile', 'object', 'array.object'].includes(f.type))
-          .map((f: any) => ({title: fieldI18n.value(f), value: f.name}))
-      : []
-})
-
-const dynamicFilter = computed(() => {
-  return (index: number) => {
-    return filters.value[index]
-  }
-})
-
-const operations = [
-  {title: t('operation.equals'), value: 'eq'},
-  {title: t('operation.notEquals'), value: 'ne'},
-  {title: t('operation.contains'), value: 'like'},
-  {title: t('operation.greaterThan'), value: 'gt'},
-  {title: t('operation.lessThan'), value: 'lt'},
-  {title: t('operation.greaterThanOrEqual'), value: 'gte'},
-  {title: t('operation.lessThanOrEqual'), value: 'lte'},
-]
-
-function removeFilter(index: number) {
-  if (filters.value) {
-    filters.value.splice(index, 1)
-  }
-}
-
-function addFilter() {
-  const filter: IEntityCrudFilter = {
-    default: undefined,
-    label: "",
-    name: '',
-    operator: 'eq',
-    type: 'string',
-    permission: '',
-    value: ''
-  }
-  if (filters.value) {
-    filters.value.push(filter)
-  }
-}
-
-function normalizeFieldType(type: string): IEntityCrudFieldTypes {
-  if (type === 'array.ref') return 'ref';
-  if (type === 'array.string') return 'string';
-  if (type === 'longString') return 'string';
-  if (type === 'array.number') return 'number';
-  if (type === 'array.enum') return 'enum';
-  return type as IEntityCrudFieldTypes;
-}
-
-function onUpdateField(index: number, val: string) {
-  const field = entitySelected.value.fields.find((e: any) => e.name === val)
-  let filter = dynamicFilter.value(index)
-  if (!filter) {
-    return
-  }
-  filter.value = null
-  if (!field) return
-
-  if (field.ref) {
-    filter.ref = field.ref
-  }
-  if (field.refDisplay) {
-    filter.refDisplay = field.refDisplay
-  }
-  if (field.enum) {
-    filter.enum = field.enum
-  }
-  if (field.type) {
-    filter.type = normalizeFieldType(field.type)
-    if(field.type === 'boolean'){
-      filter.value = false
-    }
-  }
-}
-
+const {
+  dynamicFilter,
+  selectableFields,
+  getOperations,
+  isValueRequired,
+  onUpdateField,
+  addFilter,
+  removeFilter
+} = useDynamicFilters(
+    computed(() => form.value.entity),
+    computed(() => entitySelected.value.fields || []),
+    filters
+)
 
 </script>
 
@@ -273,22 +201,23 @@ function onUpdateField(index: number, val: string) {
                       density="compact"
                       variant="outlined"
                       hide-details
-                      @update:modelValue="(v:string) => onUpdateField(index, v)"
+                      @update:modelValue="() => onUpdateField(index, true)"
                   />
                 </v-col>
                 <v-col cols="12" sm="3">
                   <v-select
-                      :items="operations"
+                      :items="getOperations(index)"
                       v-model="dynamicFilter(index)!.operator"
                       :label="t('crud.operator')"
                       density="compact"
                       variant="outlined"
                       hide-details
+                      @update:modelValue="() => onUpdateField(index)"
                   />
                 </v-col>
                 <v-col cols="12" sm="4">
                   <crud-form-field
-                      v-if="entitySelected"
+                      v-if="entitySelected && isValueRequired(index)"
                       :field="filter"
                       :entity="entitySelected"
                       v-model="dynamicFilter(index)!.value"
@@ -314,7 +243,7 @@ function onUpdateField(index: number, val: string) {
             </v-col>
 
             <v-col cols="12">
-              <v-btn small variant="outlined" color="primary" @click="addFilter">+ {{ t('action.addFilter') }}</v-btn>
+              <v-btn size="small" variant="outlined" color="primary" @click="addFilter">+ {{ t('action.addFilter') }}</v-btn>
             </v-col>
 
           </v-row>

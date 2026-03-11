@@ -5,11 +5,11 @@ import { ObjectId } from 'mongodb'
 import {isValidIsoDate} from '../utils/IsValidIsoDate.js'
 import {isValidObjectId} from '../utils/IsValidObjectId.js'
 import {BadRequestError} from "../errors/BadRequestError.js";
-
+import { Model } from "mongoose"
 
 class MongooseQueryFilter{
 
-    static applyFilters(query: object, filters: IQueryFilter[]){
+    static applyFilters<T>(query: object, filters: IQueryFilter[], model: Model<T>){
         if(!filters || filters.length === 0){
             return query;
         }
@@ -24,8 +24,12 @@ class MongooseQueryFilter{
                 filter.value = new Date(filter.value)
             }
 
+            const schemaType = model.schema.path(filter.field)
+
+
             //Valid ObjectId
-            if(isValidObjectId(filter.value) && !['in', 'nin'].includes(filter.operator)){
+
+            if(schemaType?.instance === 'ObjectId' && isValidObjectId(filter.value) && !['in', 'nin'].includes(filter.operator) && filter.operator !== 'empty'){
                 filter.value = ObjectId.createFromHexString(filter.value)
             }
 
@@ -33,7 +37,7 @@ class MongooseQueryFilter{
                 throw new BadRequestError('Invalid ObjectId','error.invalidId')
             }
 
-            if(filter.value === undefined || filter.value === null) return
+            if((filter.value === undefined || filter.value === null) && filter.operator !== 'empty') return
 
             if(filter.value === 'true'){
                 filter.value = true
@@ -43,6 +47,14 @@ class MongooseQueryFilter{
             }
 
             switch (filter.operator) {
+                case 'empty':
+                    if(schemaType?.instance === 'ObjectId'){
+                        query[filter.field] = null
+                    }else{
+                        query[filter.field] = { $in: [null, ""] }
+                    }
+
+                    break;
                 case 'like':
                     query[filter.field] = {...query[filter.field], ... {$regex: filter.value, $options: 'i'} }
                     break;
@@ -89,6 +101,7 @@ class MongooseQueryFilter{
             }
         }
 
+        // console.log("query", query);
         return query
     }
 
@@ -103,7 +116,7 @@ class MongooseQueryFilter{
     static  get filterSchema(){
         return z.object({
             field: z.string(),
-            operator: z.enum(['eq','like','ne', 'in', 'nin','gt', 'gte', 'lt', 'lte']),
+            operator: z.enum(['eq','like','ne', 'in', 'nin','gt', 'gte', 'lt', 'lte','empty']),
             value: z.any()
         })
     }

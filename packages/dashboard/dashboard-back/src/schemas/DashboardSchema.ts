@@ -13,7 +13,7 @@ const DashboardBaseSchema = z.object({
                 z.object({
                     field: z.string().min(1, 'validation.required'),
                     operator: z.string().min(1, 'validation.required'),
-                    value: z.string().min(1, 'validation.required')
+                    value: z.string().optional().nullable()
                 })
             ).optional(),
             layout: z.object({

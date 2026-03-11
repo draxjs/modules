@@ -7,6 +7,7 @@ import {useAuth} from "@drax/identity-vue";
 import {useFilterIcon} from "../composables/UseFilterIcon";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useEntityStore} from "../stores/UseEntityStore";
+import {useDynamicFilters} from "../composables/UseDynamicFilters.ts";
 
 const {t, te} = useI18n()
 const valueModel = defineModel({type: [Object]})
@@ -28,11 +29,25 @@ const aFields = computed(() => {
       .filter((field: IEntityCrudFilter) => !field.permission || hasPermission(field.permission))
 })
 
-const dynamicFilter = computed(() => {
-  return (index: string | number) => {
-    return store.dynamicFilters[index]
-  }
+
+const filtersRef = computed({
+  get: () => store.dynamicFilters,
+  set: v => store.dynamicFilters = v
 })
+
+const {
+  dynamicFilter,
+  selectableFields,
+  getOperations,
+  isValueRequired,
+  onUpdateField,
+  addFilter,
+  removeFilter
+} = useDynamicFilters(
+    computed(() => entity.name),
+    computed(() => storeEntity?.fields || []),
+    filtersRef
+)
 
 function filter() {
   emit('applyFilter')
@@ -50,81 +65,6 @@ function onUpdateValue() {
   }
 }
 
-const fieldI18n = computed(() => {
-  return (field: IEntityCrudFilter) => {
-    return te(entity.name.toLowerCase() + ".field." + field.name) ? t(entity.name.toLowerCase() + ".field." + field.name) : field.label
-  }
-})
-
-const selectableFields = computed(() => {
-  return storeEntity ? storeEntity.fields
-      .filter((f: any) => !['fullFile', 'object', 'array.object'].includes(f.type))
-      .map((f: any) => ({title: fieldI18n.value(f), value: f.name})) : []
-})
-
-function normalizeFieldType(type: string) :string{
-  if (type === 'array.ref') return 'ref';
-  if (type === 'array.string') return 'string';
-  if (type === 'longString') return 'string';
-  if (type === 'array.number') return 'number';
-  if (type === 'array.enum') return 'enum';
-  return type;
-}
-
-function onUpdateField(index: string | number, val: string){
-
-  const field = storeEntity.fields.find((e: any) => e.name === val)
-  dynamicFilter.value(index).value = null
-
-  if (!field) return
-
-  if(field.ref){
-    dynamicFilter.value(index).ref = field.ref
-  }
-  if(field.refDisplay){
-    dynamicFilter.value(index).refDisplay = field.refDisplay
-  }
-  if(field.enum){
-    dynamicFilter.value(index).enum = field.enum
-  }
-  if(field.type){
-    dynamicFilter.value(index).type = normalizeFieldType(field.type)
-
-    if(field.type === 'boolean'){
-      dynamicFilter.value(index).value = false
-    }
-
-  }
-}
-
-const operations = [
-  {title: t('operation.equals'), value: 'eq'},
-  {title: t('operation.notEquals'), value: 'ne'},
-  {title: t('operation.contains'), value: 'like'},
-  {title: t('operation.greaterThan'), value: 'gt'},
-  {title: t('operation.lessThan'), value: 'lt'},
-  {title: t('operation.greaterThanOrEqual'), value: 'gte'},
-  {title: t('operation.lessThanOrEqual'), value: 'lte'},
- // {title: t('operation.in'), value: 'in'},
- // {title: t('operation.notIn'), value: 'nin'},
-]
-
-function removeFilter(index: string | number){
-  store.removeDynamicFilter(index)
-}
-
-function addFilter() {
-  const filter: IEntityCrudFilter = {
-    default: undefined,
-    label: "",
-    name: '',
-    operator: 'eq',
-    type: 'string',
-    permission: '',
-    value: ''
-  }
-  store.addDynamicFilter(filter)
-}
 
 
 const emit = defineEmits(['applyFilter', 'clearFilter'])
@@ -141,29 +81,31 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
         <v-col cols="12" sm="4">
           <v-select
               :items="selectableFields"
-              v-model="dynamicFilter(index).name"
+              v-model="dynamicFilter(index)!.name"
               :label="t('crud.field')"
               density="compact"
               variant="outlined"
               hide-details
-              @update:modelValue="(v:string) => onUpdateField(index, v)"
+              @update:modelValue="(v:string) => onUpdateField(index, true)"
           />
         </v-col>
         <v-col cols="12" sm="3">
           <v-select
-              :items="operations"
-              v-model="dynamicFilter(index).operator"
+              :items="getOperations(index)"
+              v-model="dynamicFilter(index)!.operator"
               :label="t('crud.operator')"
               density="compact"
               variant="outlined"
               hide-details
+              @update:modelValue="(v:string) => onUpdateField(index)"
           />
         </v-col>
         <v-col cols="10" sm="4">
           <crud-form-field
+              v-if="isValueRequired(index)"
               :field="filter"
               :entity="entity"
-              v-model="dynamicFilter(index).value"
+              v-model="dynamicFilter(index)!.value"
               :clearable="true"
               density="compact"
               variant="outlined"
