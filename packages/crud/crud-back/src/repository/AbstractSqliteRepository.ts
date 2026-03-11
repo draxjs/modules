@@ -475,9 +475,9 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
             const result = this.db.prepare(query).all(params) as Array<any>
 
-            for (const item of result) {
-                await this.decorate(item)
-            }
+            // for (const item of result) {
+            //     await this.decorate(item)
+            // }
 
             return result
 

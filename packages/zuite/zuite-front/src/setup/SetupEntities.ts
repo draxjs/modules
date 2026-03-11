@@ -1,6 +1,7 @@
 import {UserCrud, RoleCrud, TenantCrud} from "@drax/identity-vue"
 import PersonCrud from "../modules/people/cruds/PersonCrud"
 import CountryCrud from "../modules/people/cruds/CountryCrud"
+import LanguageCrud from "../modules/people/cruds/LanguageCrud"
 import { useEntityStore } from '@drax/crud-vue'
 
 function setupEntities(){
@@ -10,6 +11,7 @@ function setupEntities(){
   entityStore.addEntity(TenantCrud.instance)
   entityStore.addEntity(PersonCrud.instance)
   entityStore.addEntity(CountryCrud.instance)
+  entityStore.addEntity(LanguageCrud.instance)
 }
 
 export default setupEntities

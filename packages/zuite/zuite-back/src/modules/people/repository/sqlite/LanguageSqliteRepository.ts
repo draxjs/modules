@@ -13,14 +13,23 @@ class LanguageSqliteRepository extends AbstractSqliteRepository<ILanguage, ILang
     protected booleanFields: string[] = [];
     protected identifier: string = '_id';
     protected populateFields = [
-        
+
     ]
     protected verbose: boolean = false;
     protected tableFields: SqliteTableField[] = [
         {name: "name", type: "TEXT", unique: true, primary: false},
 {name: "icon", type: "TEXT", unique: false, primary: false}
     ]
-  
+
+
+    async prepareData(data: any): Promise<any> {
+        data.icon = JSON.stringify(data.icon)
+    }
+
+    async prepareItem(item: any): Promise<any> {
+        item.icon = JSON.parse(item.icon)
+    }
+
 }
 
 export default LanguageSqliteRepository
