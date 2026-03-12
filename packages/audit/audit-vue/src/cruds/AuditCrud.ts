@@ -242,6 +242,10 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
         return []
     }
 
+    get containerFluid(){
+        return true
+    }
+
 
 }
 

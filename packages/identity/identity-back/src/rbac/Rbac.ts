@@ -56,6 +56,10 @@ class Rbac implements IRbac{
         return this?.authUser?.roleName
     }
 
+    get hasTenant(): boolean  {
+        return !!this?.authUser?.tenantId;
+    }
+
     get tenantId(): string | undefined  {
         return this?.authUser?.tenantId?.toString();
     }

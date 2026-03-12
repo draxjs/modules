@@ -1,7 +1,7 @@
 import type {FastifyRequest, FastifyReply} from "fastify";
 import {createSchema, createYoga} from 'graphql-yoga'
 import {IJwtUser, IRbac} from "@drax/identity-share";
-import path from 'path';
+import * as path from 'path';
 import {fileURLToPath} from 'url';
 
 import FastifyServer from "./FastifyServer.js";

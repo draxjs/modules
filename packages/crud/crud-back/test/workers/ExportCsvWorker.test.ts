@@ -1,7 +1,7 @@
 
 // Reemplazo de __dirname para ES modules
 import {test} from "node:test";
-import path from "path";
+import * as path from "path";
 import assert from "node:assert";
 import {WorkerHandler} from "@drax/common-back"
 import {fileURLToPath} from "url";

@@ -13,6 +13,7 @@ interface IRbac {
     readonly apiKeyId: string | undefined;
     readonly apiKeyName: string | undefined;
     readonly session: string | undefined;
+    readonly hasTenant: boolean;
 
     hasPermission(requiredPermission: string): boolean;
     hasSomePermission(requiredPermission: string[]): boolean;

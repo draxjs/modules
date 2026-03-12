@@ -1,4 +1,4 @@
-import path from "path";
+import * as path from "path";
 import {fileURLToPath} from "url";
 
 import SetupDrax from './setup/SetupDrax.js'
@@ -10,5 +10,4 @@ import YogaFastifyServerFactory from './factories/YogaFastifyServerFactory.js'
 
 const serverYogaFastify = YogaFastifyServerFactory(ROOT_DIR)
 await serverYogaFastify.start(8082);
-
 

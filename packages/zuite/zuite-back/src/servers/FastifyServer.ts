@@ -5,7 +5,7 @@ import fastifyStatic from '@fastify/static';
 import fastifyMultipart from '@fastify/multipart';
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
-import path from 'path';
+import * as path from 'path';
 import { fileURLToPath } from 'url';
 import {
     BadRequestError, ForbiddenError,

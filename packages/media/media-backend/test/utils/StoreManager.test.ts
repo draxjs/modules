@@ -5,7 +5,7 @@ import type {IUploadFile} from "../../../../common/common-back/src/interfaces/IU
 import {join} from "path";
 import UploadFileError from "../../../../common/common-back/src/errors/UploadFileError";
 import StoreManager from "../../../../common/common-back/src/store/StoreManager";
-import path from "path";
+import * as path from "path";
 import {fileURLToPath} from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

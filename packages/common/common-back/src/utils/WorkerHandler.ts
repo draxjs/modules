@@ -1,5 +1,5 @@
 import { Worker } from 'worker_threads';
-import path from 'path';
+import * as path from 'path';
 
 const WorkerHandler = (workerFile: string, params: any) => {
     return new Promise((resolve, reject) => {

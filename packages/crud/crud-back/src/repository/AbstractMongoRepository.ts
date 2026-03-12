@@ -122,12 +122,16 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return item as T;
     }
 
-    async findByIds(ids: Array<string>): Promise<T[]> {
+    async findByIds(ids: Array<string>, filters: IDraxFieldFilter[] = []): Promise<T[]> {
 
         ids.map(id => this.assertId(id))
 
+        const query: any = {_id: {$in: ids}}
+
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
+
         const items = await this._model
-            .find({_id: {$in: ids}})
+            .find(query)
             .populate(this._populateFields)
             .lean(this._lean)
             .exec()
@@ -136,11 +140,13 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return items as T[]
     }
 
-    async findOneBy(field: string, value: any): Promise<T | null> {
-        const filter: any = {[field]: value}
+    async findOneBy(field: string, value: any, filters: IDraxFieldFilter[] = []): Promise<T | null> {
+        const query: any = {[field]: value}
+
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
 
         const item = await this._model
-            .findOne(filter)
+            .findOne(query)
             .populate(this._populateFields)
             .lean(this._lean)
             .exec()
@@ -149,10 +155,13 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return item as T
     }
 
-    async findBy(field: string, value: any, limit: number = 0): Promise<T[]> {
-        const filter: any = {[field]: value}
+    async findBy(field: string, value: any, limit: number = 0, filters: IDraxFieldFilter[] = []): Promise<T[]> {
+        const query: any = {[field]: value}
+
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
+
         const items = await this._model
-            .find(filter)
+            .find(query)
             .limit(limit)
             .populate(this._populateFields)
             .lean(this._lean)

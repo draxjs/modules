@@ -1,6 +1,6 @@
 import sqlite from "better-sqlite3";
 import type {
-    IDraxCrud,
+    IDraxCrud, IDraxFieldFilter,
     IDraxFindOptions,
     IDraxGroupByOptions,
     IDraxPaginateOptions,
@@ -299,7 +299,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return items
     }
 
-    async search(value: any, limit: number = 1000): Promise<T[]> {
+    async search(value: any, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[]> {
 
         let where = ""
         let params: any[] = []
@@ -334,22 +334,73 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return item
     }
 
-    async findBy(field: string, value: any, limit: number = 0): Promise<T[] | null> {
-        const items = this.db.prepare(`SELECT *
-                                       FROM ${this.tableName}
-                                       WHERE ${field} = ? LIMIT ${limit}`).all(value);
+    async findByIds(ids: string[], filters: IDraxFieldFilter[] = []): Promise<T[] | null> {
+
+        const inPlaceholders = ids.map(() => '?').join(',')
+
+        let where = `WHERE ID IN(${inPlaceholders})`
+        let params: any[] = [ids]
+
+        if (filters.length > 0) {
+            const result = SqlQueryFilter.applyFilters(where, filters)
+            where = result.where
+            params.push(...result.params)
+        }
+
+        const items = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where}`)
+            .all(params) as T[]
+
         for (const item of items) {
             await this.decorate(item)
         }
+
         return items
+
     }
 
-    async findOneBy(field: string, value: any): Promise<T | null> {
-        const item = this.db.prepare(`SELECT *
-                                      FROM ${this.tableName}
-                                      WHERE ${field} = ?`).get(value);
+    async findBy(field: string, value: any, limit: number = 0, filters: IDraxFieldFilter[] = []): Promise<T[] | null> {
+
+        let where = `WHERE ${field} = ?`
+        let params: any[] = [value]
+
+        if (filters.length > 0) {
+            const result = SqlQueryFilter.applyFilters(where, filters)
+            where = result.where
+            params.push(...result.params)
+        }
+
+        const items = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where}  LIMIT ?`)
+            .all([...params, limit]) as T[]
+
+        for (const item of items) {
+            await this.decorate(item)
+        }
+
+        return items
+
+    }
+
+    async findOneBy(field: string, value: any, filters: IDraxFieldFilter[] = []): Promise<T | null> {
+
+        let where = `WHERE ${field} = ?`
+        let params: any[] = [value]
+
+        if (filters.length > 0) {
+            const result = SqlQueryFilter.applyFilters(where, filters)
+            where = result.where
+            params.push(...result.params)
+        }
+
+        const item = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where} LIMIT 1`)
+            .get(params) as T
+
         await this.decorate(item)
+
         return item
+
     }
 
     async findOne({

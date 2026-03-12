@@ -150,9 +150,17 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     }
 
     protected assertTenant(item: T, rbac: IRbac) {
-        if (this.tenantAssert) {
-            const itemTenantId = item[this.tenantField]?._id ? item[this.tenantField]._id.toString() : null
-            rbac.assertTenantId(itemTenantId)
+
+        //Si tenantAssert esta habilitado y si ademas el usuario pertenece a un tenant
+        if (this.tenantAssert && rbac.hasTenant) {
+
+            //Si esta populado
+            if(item[this.tenantField]?._id){
+                rbac.assertTenantId(item[this.tenantField]._id.toString())//
+            //Si esta crudo
+            }else if(item[this.tenantField]){
+                rbac.assertTenantId(item[this.tenantField].toString())
+            }
         }
     }
 
@@ -309,21 +317,24 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let preItem = await this.service.findById(id)
 
-            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
-
-                if (!preItem) {
-                    reply.statusCode = 404
-                    reply.send({error: 'NOT_FOUND'})
-                }
-
-                this.assertUser(preItem, request.rbac)
+            if (!preItem) {
+                reply.statusCode = 404
+                reply.send({error: 'NOT_FOUND'})
             }
 
-            //Definido el tenant/user en el create no debe modificarse en un update
+            if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
+                //Si assertUser habilitado y si el usuario no tiene UpdateAll/All, solo puede modificar sus propios registros
+                this.assertUser(preItem, request.rbac)
+            }
+            //Si assertTenant habilitado y si usuario tiene tenant, solo puede modificar registros de su tenant
+            this.assertTenant(preItem, request.rbac)
+
+            //Definido el tenant en create no debe modificarse en un update
             if(this.tenantSetter) {
                 delete payload[this.tenantField]
             }
 
+            //Definido el user en create no debe modificarse en un update
             if(this.userSetter){
                 delete payload[this.userField]
             }
@@ -365,21 +376,25 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let preItem = await this.service.findById(id)
 
+            if (!preItem) {
+                reply.statusCode = 404
+                reply.send({error: 'NOT_FOUND'})
+            }
+
             if (!request.rbac.hasSomePermission([this.permission.All, this.permission.UpdateAll])) {
-
-                if (!preItem) {
-                    reply.statusCode = 404
-                    reply.send({error: 'NOT_FOUND'})
-                }
-
+                //Si assertUser habilitado y si el usuario no tiene UpdateAll/All, solo puede modificar sus propios registros
                 this.assertUser(preItem, request.rbac)
             }
 
-            //Definido el tenant/user en el create no debe modificarse en un update
+            //Si assertTenant habilitado y si usuario tiene tenant, solo puede modificar registros de su tenant
+            this.assertTenant(preItem, request.rbac)
+
+            //Definido el tenant en el create no debe modificarse en un update
             if(this.tenantSetter) {
                 delete payload[this.tenantField]
             }
 
+            //Definido el user en el create no debe modificarse en un update
             if(this.userSetter){
                 delete payload[this.userField]
             }
@@ -552,11 +567,15 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const limit = this.defaultLimit
             const field = request.params.field
             const value = request.params.value
-            let items = await this.service.findBy(field, value, limit)
 
-            for (let item of items) {
-                this.assertUserAndTenant(item, request.rbac)
-            }
+            let filters = []
+            this.applyUserAndTenantFilters(filters, request.rbac);
+
+            let items = await this.service.findBy(field, value, limit, filters)
+
+            // for (let item of items) {
+            //     this.assertUserAndTenant(item, request.rbac)
+            // }
 
             return items
         } catch (e) {
@@ -574,8 +593,13 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             const field = request.params.field
             const value = request.params.value
-            let item = await this.service.findOneBy(field, value)
-            this.assertUserAndTenant(item, request.rbac);
+
+            let filters = []
+            this.applyUserAndTenantFilters(filters, request.rbac);
+
+            let item = await this.service.findOneBy(field, value, filters)
+
+            // this.assertUserAndTenant(item, request.rbac);
 
             return item
         } catch (e) {

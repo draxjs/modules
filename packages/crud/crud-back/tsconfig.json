@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "declarationDir": "types"
+    "declarationDir": "types",
+
   },
   "exclude": ["test", "types","dist","node_modules"],
   "ts-node": {

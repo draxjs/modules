@@ -3,7 +3,7 @@ import {EmailLayoutService} from '../src/services/EmailLayoutService.js'
 import {EmailTransportService} from '../src/services/EmailTransportService'
 import previewEmail from 'preview-email';
 import {fileURLToPath} from "url";
-import path from "path";
+import * as path from "path";
 
 
 let body = `

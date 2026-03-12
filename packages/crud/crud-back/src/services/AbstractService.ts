@@ -24,10 +24,12 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     transformCreate?: (data: C) => Promise<C>;
     transformUpdate?: (data: U) => Promise<U>;
+    transformUpdatePartial?: (data: U) => Promise<U>;
     transformRead?: (data: T) => Promise<T>;
 
     onCreated?: (data: T) => Promise<void>;
     onUpdated?: (data: T) => Promise<void>;
+    onUpdatedPartial?: (data: T) => Promise<void>;
     onDeleted?: (id: string) => Promise<void>;
 
 
@@ -156,10 +158,14 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
         data = await this.validateInputUpdatePartial(data)
 
+        if (this.transformUpdatePartial) {
+            data = await this.transformUpdatePartial(data)
+        }
+
         let item: T = await this._repository.updatePartial(id, data)
 
-        if (this.onUpdated) {
-            await this.onUpdated(item)
+        if (this.onUpdatedPartial) {
+            await this.onUpdatedPartial(item)
         }
 
         item = await this.validateOutput(item)
@@ -214,10 +220,10 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
 
 
-    async findOneBy(field: string, value: any): Promise<T | null> {
+    async findOneBy(field: string, value: any, filters: IDraxFieldFilter[] = []): Promise<T | null> {
         try {
 
-            let item: T = await this._repository.findOneBy(field, value)
+            let item: T = await this._repository.findOneBy(field, value, filters)
 
             if (item && this.transformRead) {
                 item = await this.transformRead(item)
@@ -286,10 +292,10 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
         }
     }
 
-    async findBy(field: string, value: any, limit: number = 1000): Promise<T[] | null> {
+    async findBy(field: string, value: any, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[] | null> {
         try {
 
-            let items: T[] = await this._repository.findBy(field, value, limit);
+            let items: T[] = await this._repository.findBy(field, value, limit, filters);
             if (this.transformRead) {
                 items = await Promise.all(items.map(item => this.transformRead(item)))
             }

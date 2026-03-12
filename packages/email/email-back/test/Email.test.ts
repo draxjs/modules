@@ -1,7 +1,7 @@
 import {describe, test} from "vitest";
 import {EmailLayoutService} from '../src/services/EmailLayoutService.js'
 import {fileURLToPath} from "url";
-import path from "path";
+import * as path from "path";
 import {EmailTransportServiceFactory} from "../src/factory/EmailTransportServiceFactory";
 
 

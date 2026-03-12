@@ -14,14 +14,14 @@ interface IDraxCrud<T,C,U>{
   updatePartial?(id: string, input: any): Promise<T>
 
   findById?(id: string): Promise<T | null>
-  findByIds?(ids: Array<string>): Promise<T[]>
+  findByIds?(ids: Array<string>, filters?: IDraxFieldFilter[]): Promise<T[]>
   fetchAll?(): Promise<T[]>
   search?(value: any, limit: number, filters: IDraxFieldFilter[]): Promise<T[]>
   find?(options: IDraxFindOptions): Promise<T[]>
   findOne?(options: IDraxFindOneOptions): Promise<T>
 
-  findBy?(field: string, value: any, limit: number): Promise<T[]>
-  findOneBy?(field: string, value: any): Promise<T | null>
+  findBy?(field: string, value: any, limit: number, filters?: IDraxFieldFilter[]): Promise<T[]>
+  findOneBy?(field: string, value: any, filters?: IDraxFieldFilter[]): Promise<T | null>
 
   groupBy?(options: IDraxGroupByOptions): Promise<Array<any>>
 

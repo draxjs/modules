@@ -1,4 +1,4 @@
-import type {IDraxCrud, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/common-share";
+import type {IDraxCrud, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 
 class MockRepository implements IDraxCrud<any, any, any> {
     async create(data: any): Promise<any> {

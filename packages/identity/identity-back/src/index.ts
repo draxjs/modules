@@ -32,6 +32,7 @@ import IdentityConfig from "./config/IdentityConfig.js";
 import BadCredentialsError from "./errors/BadCredentialsError.js";
 
 import CreateUserIfNotExist from "./setup/CreateUserIfNotExist.js";
+import CreateTenantIfNotExist from "./setup/CreateTenantIfNotExist.js";
 import CreateOrUpdateRole from "./setup/CreateOrUpdateRole.js";
 import LoadPermissions from "./setup/LoadPermissions.js";
 import LoadIdentityConfigFromEnv from "./setup/LoadIdentityConfigFromEnv.js";
@@ -197,6 +198,7 @@ export {
     LoadPermissions,
     CreateOrUpdateRole,
     CreateUserIfNotExist,
+    CreateTenantIfNotExist,
     RecoveryUserPassword
 }
 
