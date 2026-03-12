@@ -20,6 +20,21 @@ describe("Person Controller Test", function () {
         return
     })
 
+    it("Me Admin Root", async () => {
+
+        const {accessToken} = await testSetup.rootUserLogin()
+        expect(accessToken).toBeTruthy()
+
+        const resp = await testSetup.fastifyInstance.inject({
+            method: 'get',
+            url: '/api/auth/me',
+            headers: {Authorization: `Bearer ${accessToken}`}
+        });
+        let body = resp.json()
+        console.log("me", body)
+        expect(body.username).toBe(testSetup.rootUserData.username)
+    })
+
     it("Me Tenant One", async () => {
 
         const {accessToken} = await testSetup.tenantOneUserLogin()

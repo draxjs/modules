@@ -6,7 +6,7 @@ const tenantTwoUser = {
   password: "123456789",
   email: "tenanttwouser@example.com",
   phone: "123456789",
-  role: "Admin",
+  role: "Restricted",
   tenant: 'two'
 };
 
