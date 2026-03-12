@@ -6,10 +6,11 @@ enum PersonPermissions {
     Delete = "person:delete",
     View = "person:view",
     Manage = "person:manage",
-    
+
     ViewAll = "person:viewAll",
     UpdateAll = "person:updateAll",
-    DeleteAll = "person:deleteAll"
+    DeleteAll = "person:deleteAll",
+
 }
 
 export { PersonPermissions };

@@ -15,9 +15,13 @@ async function PersonFastifyRoutes(fastify, options) {
     fastify.get('/api/person/search', {schema: schemas.searchSchema}, (req,rep) => controller.search(req,rep))
 
     fastify.get('/api/person/:id', {schema: schemas.findByIdSchema}, (req,rep) => controller.findById(req,rep))
-
+    
     fastify.get('/api/person/find-one', {schema: schemas.findOneSchema}, (req,rep) => controller.findOne(req,rep))
 
+    fastify.get('/api/person/find-by/:field/:value', {schema: schemas.findBySchema}, (req,rep) => controller.findBy(req,rep))
+
+    fastify.get('/api/person/find-one-by/:field/:value', {schema: schemas.findOneBySchema}, (req,rep) => controller.findOneBy(req,rep))
+    
     fastify.get('/api/person/group-by', {schema: schemas.groupBySchema}, (req,rep) => controller.groupBy(req,rep))
 
     fastify.post('/api/person', {schema: schemas.createSchema}, (req,rep) =>controller.create(req,rep))
