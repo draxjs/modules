@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import FileCrud from '../cruds/FileCrud'
+import FileEntityCrud from '../cruds/FileEntityCrud.ts'
 import {CrudAutocomplete} from "@drax/crud-vue";
 import {IEntityCrudField} from "@drax/crud-share";
 import {defineProps} from "vue";
@@ -9,7 +9,7 @@ import type {PropType} from "vue";
 
 const valueModel = defineModel<any>({type: String})
 
-const entityName = FileCrud.instance.name
+const entityName = FileEntityCrud.instance.name
 
 const {name, label} = defineProps({
   name: {type: String as PropType<string>, required: false},
@@ -52,7 +52,7 @@ const field: IEntityCrudField = {
   <crud-autocomplete
     v-model="valueModel"
     :field="field"
-    :entity="FileCrud.instance"
+    :entity="FileEntityCrud.instance"
     :hint="hint"
     :persistent-hint="persistentHint"
     :error-messages="errorMessages"

@@ -36,7 +36,7 @@ class FileController extends AbstractFastifyController<IFile, IFileBase, IFileBa
 
     async postDelete(request: CustomRequest, item:IFile){
         try {
-            await StoreManager.deleteFilepath(item.absolutePath)
+            await StoreManager.deleteFilepath(item.relativePath)
         } catch (error) {
             console.error(error)
         }

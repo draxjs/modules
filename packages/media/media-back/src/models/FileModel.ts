@@ -26,7 +26,7 @@ const FileSchema = new mongoose.Schema<IFile>({
         username: {type: String, required: false, index: false, unique: false}
     },
     createdFor: {type: String, required: false, index: false, unique: false},
-    ttlSeconds: {type: Number, required: false, index: false, unique: false},
+    ttlSeconds: {type: Number, required: false  , index: false, unique: false},
     expiresAt: {type: Date, required: false, index: false, unique: false},
     isPublic: {type: Boolean, required: false, index: false, unique: false},
     hits: {type: Number, required: false, index: false, unique: false},

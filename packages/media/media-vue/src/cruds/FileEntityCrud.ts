@@ -14,20 +14,20 @@ import {FileSystemFactory} from "@drax/media-front";
 //Import EntityCrud Refs
 
 
-class FileCrud extends EntityCrud implements IEntityCrud {
+class FileEntityCrud extends EntityCrud implements IEntityCrud {
 
-    static singleton: FileCrud
+    static singleton: FileEntityCrud
 
     constructor() {
         super();
         this.name = 'File'
     }
 
-    static get instance(): FileCrud {
-        if (!FileCrud.singleton) {
-            FileCrud.singleton = new FileCrud()
+    static get instance(): FileEntityCrud {
+        if (!FileEntityCrud.singleton) {
+            FileEntityCrud.singleton = new FileEntityCrud()
         }
-        return FileCrud.singleton
+        return FileEntityCrud.singleton
     }
 
     get permissions(): IEntityCrudPermissions {
@@ -48,15 +48,20 @@ class FileCrud extends EntityCrud implements IEntityCrud {
             {title: 'extension', key: 'extension', align: 'start'},
             {title: 'size', key: 'size', align: 'start'},
             {title: 'type', key: 'type', align: 'start'},
-            {title: 'lastAccess', key: 'lastAccess', align: 'start'},
             {title: 'createdAt', key: 'createdAt', align: 'start'},
-            {title: 'isPublic', key: 'isPublic', align: 'start'},
-            {title: 'hits', key: 'hits', align: 'start'}
+            {title: 'createdBy', key: 'createdBy.username', align: 'start'},
+            {title: 'lastAccess', key: 'lastAccess', align: 'start'},
+            {title: 'ttlSeconds', key: 'ttlSeconds', align: 'start'},
+            {title: 'expiresAt', key: 'expiresAt', align: 'start'},
+            // {title: 'isPublic', key: 'isPublic', align: 'start'},
+            {title: 'hits', key: 'hits', align: 'start'},
+            {title: 'updatedAt', key: 'updatedAt', align: 'start'},
+            {title: 'updatedBy', key: 'updatedBy.username', align: 'start'},
         ]
     }
 
     get selectedHeaders(): string[] {
-        return this.headers.map(header => header.key)
+        return ['filename', 'mimetype', 'extension', 'size', 'createdAt','createdBy.username','lastAccess','hits'];
     }
 
     get actionHeaders(): IEntityCrudHeader[] {
@@ -87,13 +92,9 @@ class FileCrud extends EntityCrud implements IEntityCrud {
 
     get fields(): IEntityCrudField[] {
         return [
-            {name: 'description', type: 'longString', label: 'description', default: ''},
-            {name: 'tags', type: 'array.string', label: 'tags', default: []},
-            {name: 'createdFor', type: 'string', label: 'createdFor', default: ''},
-            {name: 'isPublic', type: 'boolean', label: 'isPublic', default: true},
 
-            {name: 'ttlSeconds', type: 'number', label: 'ttlSeconds', default: null},
-            {name: 'expiresAt', type: 'date', label: 'expiresAt', default: null},
+
+
 
             {name: 'filename', type: 'string', label: 'filename', default: '', readonly: true},
             {name: 'url', type: 'string', label: 'url', default: '', readonly: true},
@@ -102,6 +103,15 @@ class FileCrud extends EntityCrud implements IEntityCrud {
             {name: 'extension', type: 'string', label: 'extension', default: '', readonly: true},
             {name: 'size', type: 'number', label: 'size', default: null, readonly: true},
             {name: 'type', type: 'string', label: 'type', default: '', readonly: true},
+
+            {name: 'description', type: 'longString', label: 'description', default: ''},
+            {name: 'tags', type: 'array.string', label: 'tags', default: []},
+            {name: 'createdFor', type: 'string', label: 'createdFor', default: ''},
+            {name: 'isPublic', type: 'boolean', label: 'isPublic', default: true},
+
+            {name: 'ttlSeconds', type: 'number', label: 'ttlSeconds', default: null},
+            {name: 'expiresAt', type: 'date', label: 'expiresAt', default: null},
+
             {name: 'lastAccess', type: 'date', label: 'lastAccess', default: null, readonly: true},
             {name: 'createdAt', type: 'date', label: 'createdAt', default: null, readonly: true},
             {name: 'updatedAt', type: 'date', label: 'updatedAt', default: null, readonly: true},
@@ -143,11 +153,11 @@ class FileCrud extends EntityCrud implements IEntityCrud {
     }
 
     get isEditable() {
-        return true
+        return false
     }
 
     get isCreatable() {
-        return true
+        return false
     }
 
     get isDeletable() {
@@ -163,7 +173,7 @@ class FileCrud extends EntityCrud implements IEntityCrud {
     }
 
     get exportHeaders() {
-        return ['_id']
+        return ['filename', 'mimetype', 'extension', 'size', 'createdAt','createdBy.username','lastAccess','hits']
     }
 
     get isImportable() {
@@ -206,8 +216,12 @@ class FileCrud extends EntityCrud implements IEntityCrud {
         return true
     }
 
+    get containerFluid(){
+        return true
+    }
+
 
 }
 
-export default FileCrud
+export default FileEntityCrud
 

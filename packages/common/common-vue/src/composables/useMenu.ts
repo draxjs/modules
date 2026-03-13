@@ -2,15 +2,17 @@ import {useRoute} from 'vue-router'
 import {useAuth} from "@drax/identity-vue";
 import type {IMenuItem} from "@drax/common-share";
 import {computed} from "vue";
+import {useI18n} from "vue-i18n"
 
 export function useMenu() {
 
+  const {t, te} = useI18n()
   const route = useRoute()
   const auth = useAuth()
 
 
   const itemText = computed(() => {
-    return (item: IMenuItem) => item.text
+    return (item: IMenuItem) => te(item.text) ? t(item.text) : item.text
   })
 
 

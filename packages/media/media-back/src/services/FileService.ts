@@ -9,17 +9,17 @@ class FileService extends AbstractService<IFile, IFileBase, IFileBase> {
 
     constructor(FileRepository: IFileRepository, baseSchema?: ZodObject<ZodRawShape>, fullSchema?: ZodObject<ZodRawShape>) {
         super(FileRepository, baseSchema, fullSchema);
-        
+
         this._validateOutput = true
-        
+
     }
 
     async registerUploadedFile(data: IFileBase): Promise<IFile> {
         return await this.create(data);
     }
 
-    async registerDownloadHit(absolutePath: string): Promise<IFile | null> {
-        const file = await this.findOneBy('absolutePath', absolutePath);
+    async registerDownloadHit(relativePath: string): Promise<IFile | null> {
+        const file = await this.findOneBy('relativePath', relativePath);
         if (!file) {
             return null;
         }

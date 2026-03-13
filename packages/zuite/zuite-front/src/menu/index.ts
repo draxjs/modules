@@ -102,21 +102,21 @@ const menu: MenuItem[] = [
       },
       {
         icon: 'mdi-view-dashboard-edit',
-        text:'DashboardCrudPage',
+        text:'dashboard.menu',
         link: { name: "DashboardCrudPage" },
         gallery: true,
         permission: 'dashboard:manage'
       },
       {
         icon: 'mdi-police-badge',
-        text:'AuditCrudPage',
+        text:'audit.menu',
         link: { name: "AuditCrudPage" },
         gallery: true,
         permission: 'audit:manage'
       },
       {
         icon: 'mdi-file',
-        text:'FileCrudPage',
+        text:'file.menu',
         link: { name: "FileCrudPage" },
         gallery: true,
         permission: 'file:manage'

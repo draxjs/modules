@@ -7,7 +7,7 @@ import {
 import {join} from "path";
 import {MediaPermissions} from "../permissions/MediaPermissions.js";
 import {FileServiceFactory} from "../factory/services/FileServiceFactory.js";
-
+import path from 'node:path';
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(CommonConfig.BaseUrl).replace(/\/$/, '') : ''
 
@@ -54,18 +54,19 @@ class MediaController extends CommonController {
 
             const storedFile = await StoreManager.saveFile(file, destinationPath)
             const urlFile = `${BASE_URL}/api/file/${dir}/${year}/${month}/${storedFile.filename}`
-            const relativePath = join(dir, year, month, storedFile.filename)
+            const relativePath = storedFile.path
+            const absolutePath = path.resolve(process.cwd(), relativePath);
             const extension = StoreManager.getExtension(storedFile.filename)
             const fileService = FileServiceFactory.instance
 
 
-            const FILE_METADATA = process.env.DRAX_FILE_METADATA ? (/true|yes|enable/i).test(process.env.DRAX_FILE_METADATA) : false
+            const FILE_METADATA = process.env.DRAX_FILE_METADATA ? (/true|yes|enable/i).test(process.env.DRAX_FILE_METADATA) : true
             if (FILE_METADATA === true) {
                 try {
                     await fileService.registerUploadedFile({
                         filename: storedFile.filename,
                         relativePath: relativePath,
-                        absolutePath: storedFile.path,
+                        absolutePath: absolutePath,
                         size: storedFile.size,
                         mimetype: storedFile.mimetype || data.mimetype,
                         encoding: storedFile.encoding || data.encoding || '',
@@ -130,7 +131,7 @@ class MediaController extends CommonController {
             //console.log("FILE_DIR: ", fileDir, " FILENAME:", filename)
 
             //Agregar hit al archivo
-            const FILE_METADATA = process.env.DRAX_FILE_METADATA ? (/true|yes|enable/i).test(process.env.DRAX_FILE_METADATA) : false
+            const FILE_METADATA = process.env.DRAX_FILE_METADATA ? (/true|yes|enable/i).test(process.env.DRAX_FILE_METADATA) : true
             if (FILE_METADATA === true) {
                 const fileService = FileServiceFactory.instance
                 await fileService.registerDownloadHit(join(fileDir, filename))
