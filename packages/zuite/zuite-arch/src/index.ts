@@ -1,7 +1,8 @@
-import {ArchGenerator} from '@drax/arch';
+import { ArchGenerator } from '@drax/arch';
 import PersonSchema from './schemas/people/PersonSchema';
 import CountrySchema from './schemas/people/CountrySchema';
 import LanguageSchema from './schemas/people/LanguageSchema';
+import FileSchema from './schemas/media/FileSchema';
 // import UserSessionSchema from './schemas/identity/UserSessionSchema';
 // import UserLoginFailSchema from './schemas/identity/UserLoginFailSchema';
 // import DashboardSchema from './schemas/dashboard/DashboardSchema';
@@ -12,7 +13,8 @@ import LanguageSchema from './schemas/people/LanguageSchema';
 const schemas = [
     PersonSchema,
     CountrySchema,
-    LanguageSchema
+    LanguageSchema,
+    FileSchema
 ];
 
 const generator = new ArchGenerator(schemas);

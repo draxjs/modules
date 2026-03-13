@@ -9,8 +9,13 @@ import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {VDateInput} from 'vuetify/labs/VDateInput'
 import type {IEntityCrud, IEntityCrudField, IEntityCrudFilter} from "@drax/crud-share";
-import {MediaField, MediaFullField} from "@drax/media-vue";
 import {useAuth} from "@drax/identity-vue";
+
+//TODO: Ver si esto no puede traer problemas...
+import MediaField from "@drax/media-vue/src/components/MediaField.vue";
+import MediaFullField from "@drax/media-vue/src/components/MediaFullField.vue";
+
+
 
 const {t, te} = useI18n()
 

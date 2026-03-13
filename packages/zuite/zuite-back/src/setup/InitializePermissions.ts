@@ -7,7 +7,7 @@ import {
     UserSessionPermissions,
     UserLoginFailPermissions
 } from "@drax/identity-back";
-import {MediaPermissions} from "@drax/media-back";
+import {MediaPermissions, FilePermissions} from "@drax/media-back";
 import {DynamicFormPermissions} from "@drax/dynamic-back";
 import {DashboardPermissions} from "@drax/dashboard-back";
 import {AuditPermissions} from "@drax/audit-back";
@@ -29,6 +29,7 @@ function InitializePermissions() {
         ...Object.values(UserSessionPermissions),
         ...Object.values(UserLoginFailPermissions),
         ...Object.values(MediaPermissions),
+        ...Object.values(FilePermissions),
         ...Object.values(SettingPermissions),
         ...Object.values(PersonPermissions),
         ...Object.values(CountryPermissions),

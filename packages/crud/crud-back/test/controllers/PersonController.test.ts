@@ -1,10 +1,20 @@
 import { describe, it, beforeAll, afterAll, expect } from "vitest"
 import { PersonFastifyRoutes } from '../people/routes/PersonRoutes'
 import { PersonPermissions } from '../people/permissions/PersonPermissions'
-import TestSetup from "../setup/TestSetup"
+
 import type { IPersonBase } from '../people/interfaces/IPerson'
 
+import {LanguageModel, LanguageSchema} from "../people/models/LanguageModel.js"
+import {CountryModel, CountrySchema} from "../people/models/CountryModel.js"
+import {PersonModel, PersonSchema} from "../people/models/PersonModel.js"
+
+import TestSetup from "../setup/TestSetup"
+
 describe("Person Controller Test", function () {
+
+    console.log(LanguageSchema)
+    console.log(CountrySchema)
+    console.log(PersonSchema)
 
     let testSetup = new TestSetup({
         routes: [PersonFastifyRoutes],

@@ -13,9 +13,7 @@ import {
     LoadPermissions
 } from "@drax/identity-back";
 
-import {LanguageModel, LanguageSchema} from "../people/models/LanguageModel.js"
-import {CountryModel, CountrySchema} from "../people/models/CountryModel.js"
-import {PersonModel, PersonSchema} from "../people/models/PersonModel.js"
+
 
 
 

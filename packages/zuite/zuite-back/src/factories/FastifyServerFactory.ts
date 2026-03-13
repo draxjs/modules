@@ -9,7 +9,7 @@ import {
     UserApiKeyRoutes,
     UserLoginFailRoutes, UserSessionRoutes
 } from "@drax/identity-back"
-import {MediaRoutes} from "@drax/media-back"
+import {MediaRoutes, FileRoutes} from "@drax/media-back"
 import {PersonFastifyRoutes} from "../modules/people/routes/PersonRoutes.js"
 import {CountryFastifyRoutes} from "../modules/people/routes/CountryRoutes.js"
 import {LanguageFastifyRoutes} from "../modules/people/routes/LanguageRoutes.js"
@@ -35,6 +35,8 @@ function FastifyServerFactory(rootDir:string) {
     server.fastifyRegister(UserSessionRoutes)
 
     server.fastifyRegister(MediaRoutes)
+    server.fastifyRegister(FileRoutes)
+
     server.fastifyRegister(SettingRoutes)
 
     server.fastifyRegister(PersonFastifyRoutes)

@@ -59,6 +59,7 @@ import {WorkerHandler} from "./utils/WorkerHandler.js";
 import {createDirIfNotExist} from "./utils/CreateDirIfNotExist.js";
 import {isValidIsoDate} from "./utils/IsValidIsoDate.js";
 import {isValidObjectId} from "./utils/IsValidObjectId.js";
+import {setNestedValue} from "./utils/setNestedValue.js";
 
 //Store
 import {StoreManager} from "./store/StoreManager.js";
@@ -79,6 +80,7 @@ export {
     WorkerHandler,
     isValidObjectId,
     isValidIsoDate,
+    setNestedValue,
 
     //Controllers
     CommonController,

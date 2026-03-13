@@ -114,6 +114,13 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'audit:manage'
       },
+      {
+        icon: 'mdi-file',
+        text:'FileCrudPage',
+        link: { name: "FileCrudPage" },
+        gallery: true,
+        permission: 'file:manage'
+      },
     ]
   }
 

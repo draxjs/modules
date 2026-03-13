@@ -1,5 +1,5 @@
 import type {IMediaProvider} from "../interfaces/IMediaProvider";
-import type {IMediaFile} from "../interfaces/IMediaFile";
+import type {IMediaFile} from "@drax/media-share";
 
 class MediaSystem implements IMediaProvider {
 

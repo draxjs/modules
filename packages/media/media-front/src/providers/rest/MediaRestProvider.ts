@@ -1,7 +1,6 @@
-
 import type {IHttpClient} from '@drax/common-front'
 import type {IMediaProvider} from "../../interfaces/IMediaProvider";
-import type {IMediaFile} from "../../interfaces/IMediaFile";
+import type {IMediaFile} from "@drax/media-share";
 
 
 class MediaRestProvider implements IMediaProvider {

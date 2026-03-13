@@ -24,7 +24,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/media-front": "^2.0.0"
+    "@drax/media-front": "^2.0.0",
+    "@drax/crud-share": "^2.11.0",
+    "@drax/crud-vue": "^2.11.0"
   },
   "peerDependencies": {
     "vue": "^3.5.28",

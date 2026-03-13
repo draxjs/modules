@@ -1,6 +1,6 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {IMediaProvider} from "../../interfaces/IMediaProvider.ts";
-import type {IMediaFile} from "../../interfaces/IMediaFile";
+import type {IMediaFile} from "@drax/media-share";
 
 class MediaGqlProvider implements IMediaProvider {
 

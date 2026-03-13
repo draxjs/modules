@@ -1,11 +1,11 @@
-import merge from 'deepmerge'
 
-import mediaPermissionI18n from "./media-permissions-i18n.js";
+import merge from "deepmerge";
+import FileMessages from "./File-i18n"
+import MediaPermissionsMessages from "./media-permissions-i18n"
 
-
-const MediaI18nMessages = merge.all([
-    mediaPermissionI18n
+const messages = merge.all([
+    FileMessages,
+    MediaPermissionsMessages
 ])
 
-export default MediaI18nMessages
-export {MediaI18nMessages}
+export default messages

@@ -19,6 +19,7 @@
     "tsc": "vue-tsc"
   },
   "dependencies": {
+    "@drax/media-share": "^2.8.0",
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {

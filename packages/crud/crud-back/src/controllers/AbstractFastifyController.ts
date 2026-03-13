@@ -5,7 +5,7 @@ import {
     LimitError,
     NotFoundError,
     BadRequestError,
-    CommonController
+    CommonController, setNestedValue
 } from "@drax/common-back";
 import {IRbac} from "@drax/identity-share";
 import type {FastifyReply, FastifyRequest} from "fastify";
@@ -167,8 +167,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     protected assertUser(item: T, rbac: IRbac) {
 
         if (this.userAssert) {
-            const itemUserId = item[this.userField]?._id ? item[this.userField]._id.toString() : null
-            rbac.assertUserId(itemUserId)
+            if(item[this.userField]?._id){
+                rbac.assertUserId(item[this.userField]._id.toString())
+            }else if(item[this.userField]){
+                rbac.assertUserId(item[this.userField].toString())
+            }
         }
     }
 
@@ -178,12 +181,13 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     }
 
     protected applyUserAndTenantSetters(payload: any, rbac: any) {
+
         if (this.tenantSetter && rbac.tenantId) {
-            payload[this.tenantField] = rbac.tenantId
+            setNestedValue(payload, this.tenantField, rbac.tenantId)
         }
 
         if (this.userSetter && rbac.userId) {
-            payload[this.userField] = rbac.userId
+            setNestedValue(payload, this.userField, rbac.userId)
         }
     }
 
