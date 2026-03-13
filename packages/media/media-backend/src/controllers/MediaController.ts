@@ -58,25 +58,29 @@ class MediaController extends CommonController {
             const extension = StoreManager.getExtension(storedFile.filename)
             const fileService = FileServiceFactory.instance
 
-            try {
-                await fileService.registerUploadedFile({
-                    filename: storedFile.filename,
-                    relativePath,
-                    absolutePath: storedFile.path,
-                    size: storedFile.size,
-                    mimetype: storedFile.mimetype || data.mimetype,
-                    encoding: storedFile.encoding || data.encoding || '',
-                    extension,
-                    type: storedFile.mimetype?.split('/')[0] || '',
-                    lastAccess: new Date(),
-                    ttlSeconds: 0,
-                    hits: 0,
-                    url: urlFile,
-                    createdBy,
-                })
-            } catch (e) {
-                await StoreManager.deleteFile(destinationPath, storedFile.filename).catch(() => undefined)
-                throw e
+
+            const FILE_METADATA = process.env.DRAX_FILE_METADATA ? (/true|yes|enable/i).test(process.env.DRAX_FILE_METADATA) : false
+            if (FILE_METADATA === true) {
+                try {
+                    await fileService.registerUploadedFile({
+                        filename: storedFile.filename,
+                        relativePath: relativePath,
+                        absolutePath: storedFile.path,
+                        size: storedFile.size,
+                        mimetype: storedFile.mimetype || data.mimetype,
+                        encoding: storedFile.encoding || data.encoding || '',
+                        extension,
+                        type: storedFile.mimetype?.split('/')[0] || '',
+                        lastAccess: new Date(),
+                        ttlSeconds: 0,
+                        hits: 0,
+                        url: urlFile,
+                        createdBy,
+                    })
+                } catch (e) {
+                    await StoreManager.deleteFile(destinationPath, storedFile.filename).catch(() => undefined)
+                    throw e
+                }
             }
 
             let theFile = {
@@ -126,9 +130,11 @@ class MediaController extends CommonController {
             //console.log("FILE_DIR: ", fileDir, " FILENAME:", filename)
 
             //Agregar hit al archivo
-            const fileService = FileServiceFactory.instance
-            await fileService.registerDownloadHit(join(fileDir, filename))
-
+            const FILE_METADATA = process.env.DRAX_FILE_METADATA ? (/true|yes|enable/i).test(process.env.DRAX_FILE_METADATA) : false
+            if (FILE_METADATA === true) {
+                const fileService = FileServiceFactory.instance
+                await fileService.registerDownloadHit(join(fileDir, filename))
+            }
 
             return reply.sendFile(filename, fileDir)
         } catch (e) {

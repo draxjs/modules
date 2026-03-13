@@ -31,7 +31,10 @@ const FileBaseSchema = z.object({
 });
 
 const FileSchema = FileBaseSchema
-    .omit({ relativePath: true, absolutePath: true })
+    // .omit({
+    //     relativePath: true,
+    //      absolutePath: true
+    // })
     .extend({
         _id: z.coerce.string(),
         createdAt: z.coerce.date(),

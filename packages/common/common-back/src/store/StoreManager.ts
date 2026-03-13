@@ -1,6 +1,6 @@
 import type {IUploadFile, IUploadFileResult, IUploadFileOptions} from "../interfaces/IUploadFile";
 import {join} from "path";
-import {unlink} from "node:fs"
+import {unlink} from "node:fs/promises"
 import crypto from "crypto";
 import UploadFileError from "../errors/UploadFileError.js";
 import createDirIfNotExist from "../utils/CreateDirIfNotExist.js";
@@ -9,6 +9,10 @@ import {Readable} from "stream";
 import DraxConfig from "../config/DraxConfig.js";
 
 class StoreManager {
+
+    static isFileNotFoundError(error: unknown): boolean {
+        return typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT";
+    }
 
 
     static getExtension(filename: string): string {
@@ -68,14 +72,35 @@ class StoreManager {
         const filePath = join(dirPath, filename);
     }
 
+    static async readFilepath(filePath: string): Promise<void> {
+    }
+
 
     static async deleteFile(dirPath: string, filename: string): Promise<void> {
         const filePath = join(dirPath, filename);
-        unlink(filePath, (err) => {
-            if (err) throw err;
-            console.log('path/ file. txt was deleted');
-        });
+        try {
+            await unlink(filePath);
+            console.log(`File: ${filePath} deleted`);
+        } catch (error) {
+            if (this.isFileNotFoundError(error)) {
+                return;
+            }
+            throw error;
+        }
     }
+
+    static async deleteFilepath(filePath: string): Promise<void> {
+        try {
+            await unlink(filePath);
+            console.log(`File: ${filePath} deleted`);
+        } catch (error) {
+            if (this.isFileNotFoundError(error)) {
+                return;
+            }
+            throw error;
+        }
+    }
+
 }
 
 export {StoreManager}
