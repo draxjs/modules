@@ -1,9 +1,8 @@
 
 <script setup lang="ts">
-import FileEntityCrud from '../cruds/FileEntityCrud.ts'
+import FileEntityCrud from '../cruds/FileEntityCrud'
 import {CrudAutocomplete} from "@drax/crud-vue";
-import {IEntityCrudField} from "@drax/crud-share";
-import {defineProps} from "vue";
+import type {IEntityCrudField} from "@drax/crud-share";
 import type {PropType} from "vue";
 
 

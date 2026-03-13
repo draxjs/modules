@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import FileEntityCrud from '../../cruds/FileEntityCrud.ts'
+import FileEntityCrud from '../../cruds/FileEntityCrud'
 import {Crud, useCrudStore} from "@drax/crud-vue";
 import {formatDateTime} from "@drax/common-front"
 import MediaFieldView from "../MediaFieldView.vue";

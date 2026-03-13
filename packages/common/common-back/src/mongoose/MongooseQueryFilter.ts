@@ -48,12 +48,12 @@ class MongooseQueryFilter{
                 throw new BadRequestError('Invalid ObjectId','error.invalidId')
             }
 
-            if(isObjectId && !isValidObjectId(filter.value)){
+            if(isObjectId && !isValidObjectId(filter.value)  && !['in', 'nin','empty'].includes(filter.operator)){
                 throw new BadRequestError('Invalid ObjectId','error.invalidId')
             }
 
 
-            if(isValidObjectId(filter.value) && !['in', 'nin'].includes(filter.operator) && filter.operator !== 'empty'){
+            if(isValidObjectId(filter.value) && !['in', 'nin','empty'].includes(filter.operator)){
                 filter.value = ObjectId.createFromHexString(filter.value)
             }
 

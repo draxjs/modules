@@ -5,14 +5,13 @@ import {useEntityStore} from "@drax/crud-vue";
 import type {
   IDraxFieldFilter,
   IEntityCrud,
-  IEntityCrudFieldTypes,
   IEntityCrudFilter,
   IEntityCrudFilterOperators
 } from "@drax/crud-share";
 import {useI18n} from "vue-i18n"
 import CrudFormField from "@drax/crud-vue/src/components/CrudFormField.vue";
 import {useFilterIcon} from "@drax/crud-vue";
-import {useDynamicFilters} from "@drax/crud-vue/src/composables/UseDynamicFilters.ts";
+import {useDynamicFilters} from "@drax/crud-vue/src/composables/UseDynamicFilters";
 
 const props = defineProps({
   modelValue: {type: Object as PropType<IDashboardCard>, required: true}

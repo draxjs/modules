@@ -7,9 +7,9 @@ import {useAuth} from "@drax/identity-vue";
 import {useFilterIcon} from "../composables/UseFilterIcon";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useEntityStore} from "../stores/UseEntityStore";
-import {useDynamicFilters} from "../composables/UseDynamicFilters.ts";
+import {useDynamicFilters} from "../composables/UseDynamicFilters";
 
-const {t, te} = useI18n()
+const {t} = useI18n()
 const valueModel = defineModel({type: [Object]})
 const {hasPermission} = useAuth()
 const {filterIcon} = useFilterIcon()
@@ -65,6 +65,30 @@ function onUpdateValue() {
   }
 }
 
+function numericIndex(index: string | number) {
+  return typeof index === 'number' ? index : Number(index)
+}
+
+function getDynamicFilter(index: string | number) {
+  return dynamicFilter.value(numericIndex(index))
+}
+
+function updateDynamicField(index: string | number, resetOperator = false) {
+  onUpdateField(numericIndex(index), resetOperator)
+}
+
+function getDynamicOperations(index: string | number) {
+  return getOperations.value(numericIndex(index))
+}
+
+function dynamicValueRequired(index: string | number) {
+  return isValueRequired.value(numericIndex(index))
+}
+
+function deleteFilter(index: string | number) {
+  removeFilter(numericIndex(index))
+}
+
 
 
 const emit = defineEmits(['applyFilter', 'clearFilter'])
@@ -81,31 +105,31 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
         <v-col cols="12" sm="4">
           <v-select
               :items="selectableFields"
-              v-model="dynamicFilter(index)!.name"
+              v-model="getDynamicFilter(index)!.name"
               :label="t('crud.field')"
               density="compact"
               variant="outlined"
               hide-details
-              @update:modelValue="(v:string) => onUpdateField(index, true)"
+              @update:modelValue="(_v:string) => updateDynamicField(index, true)"
           />
         </v-col>
         <v-col cols="12" sm="3">
           <v-select
-              :items="getOperations(index)"
-              v-model="dynamicFilter(index)!.operator"
+              :items="getDynamicOperations(index)"
+              v-model="getDynamicFilter(index)!.operator"
               :label="t('crud.operator')"
               density="compact"
               variant="outlined"
               hide-details
-              @update:modelValue="(v:string) => onUpdateField(index)"
+              @update:modelValue="(_v:string) => updateDynamicField(index)"
           />
         </v-col>
         <v-col cols="10" sm="4">
           <crud-form-field
-              v-if="isValueRequired(index)"
+              v-if="dynamicValueRequired(index)"
               :field="filter"
               :entity="entity"
-              v-model="dynamicFilter(index)!.value"
+              v-model="getDynamicFilter(index)!.value"
               :clearable="true"
               density="compact"
               variant="outlined"
@@ -115,7 +139,7 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
           />
         </v-col>
         <v-col cols="2" sm="1">
-          <v-btn @click="removeFilter(index)"
+          <v-btn @click="deleteFilter(index)"
                  icon="mdi-delete"
                  class="mr-1"
                  variant="text"
