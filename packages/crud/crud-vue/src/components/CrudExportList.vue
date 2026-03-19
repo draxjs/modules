@@ -28,21 +28,26 @@ const {
       <v-alert v-if="exportError" type="error">
         {{ t('error.crud.export') }}
       </v-alert>
-      <v-table density="compact" v-else>
-        <thead>
-        <tr>
-          <th>Link</th><th>Rows</th><th>Time</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="exportFile in exportFiles">
-          <td><a :href="exportFile.url" target="_blank">{{ exportFile.url }}</a></td>
-          <td>{{ exportFile.rowCount }}</td>
-          <td>{{ exportFile.time }}</td>
-        </tr>
-        </tbody>
-      </v-table>
-
+      <template v-else>
+        <slot name="export-table" :exportFiles="exportFiles">
+          <v-table density="compact">
+            <thead>
+              <tr>
+                <th>Link</th>
+                <th>Rows</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="exportFile in exportFiles">
+                <td><a :href="exportFile.url" target="_blank">{{ exportFile.url }}</a></td>
+                <td>{{ exportFile.rowCount }}</td>
+                <td>{{ exportFile.time }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+        </slot>
+      </template>
     </v-card-text>
 
     <v-card-actions>

@@ -96,6 +96,11 @@ const {xs} = useDisplay()
           </slot>
         </template>
 
+        <template v-slot:export-table="{ exportFiles }">
+          <slot name="export-table" :exportFiles="exportFiles">
+          </slot>
+        </template>
+
       </component>
     </v-card>
 
