@@ -3,7 +3,7 @@ import {useI18n} from "vue-i18n";
 import {computed} from "vue";
 import type {PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share";
-import {useCrudStore} from "../../stores/UseCrudStore.ts";
+import {useCrudStore} from "../../stores/UseCrudStore";
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
