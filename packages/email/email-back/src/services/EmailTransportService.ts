@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer';
 
 import type {Transporter, SendMailOptions} from "nodemailer";
+import type SMTPPool from "nodemailer/lib/smtp-pool";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import type {TransportGmailConfig, TransportSmtpConfig} from "../interfaces/ITransportConfig";
 
 
@@ -36,17 +38,29 @@ class EmailTransportService {
 
 
     prepareTransportSmtp(config: TransportSmtpConfig): any {
-        this.transporter = nodemailer.createTransport({
+        const transportConfig: SMTPTransport.Options | SMTPPool.Options = {
             host: config.host,
             port: config.port,
             secure: config.secure,
             ignoreTLS: config.ignoreTLS,
-            auth: (config.auth.user && config.auth.pass) ? {
+            auth: (config.auth?.user && config.auth?.pass) ? {
                 type: config.auth.type ? config.auth.type : 'login',
                 user: config.auth.user,
                 pass: config.auth.pass
-            } : null
-        });
+            } : undefined
+        };
+
+        if (config.rateDelta !== undefined || config.rateLimit !== undefined) {
+            this.transporter = nodemailer.createTransport({
+                ...transportConfig,
+                pool: true,
+                rateDelta: config.rateDelta,
+                rateLimit: config.rateLimit
+            });
+            return;
+        }
+
+        this.transporter = nodemailer.createTransport(transportConfig);
     }
 
 

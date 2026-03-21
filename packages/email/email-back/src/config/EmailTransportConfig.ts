@@ -8,6 +8,8 @@ enum EmailTransportConfig {
     authPassword = "EMAIL_AUTH_PASSWORD",
     secure = "EMAIL_SECURE",
     ignoreTLS = "EMAIL_IGNORE_TLS",
+    rateDelta="EMAIL_RATE_DELTA",
+    rateLimit="EMAIL_RATE_LIMIT"
 }
 
 export default EmailTransportConfig;

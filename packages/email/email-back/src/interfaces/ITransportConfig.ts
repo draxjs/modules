@@ -3,6 +3,8 @@ interface TransportSmtpConfig {
     port: number;
     secure: boolean;
     ignoreTLS: boolean;
+    rateDelta?: number;
+    rateLimit?: number;
     auth: {
         type: 'login' | 'oauth2';
         user: string;
@@ -15,6 +17,8 @@ interface TransportGmailConfig {
         user: string;
         pass: string;
     };
+    rateDelta?: number;
+    rateLimit?: number;
 }
 
 
