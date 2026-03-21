@@ -4,6 +4,8 @@ import CrudForm from "./components/CrudForm.vue";
 import CrudFormField from "./components/CrudFormField.vue";
 import CrudFormList from "./components/CrudFormList.vue";
 import CrudList from "./components/CrudList.vue";
+import CrudListTable from "./components/CrudListTable.vue";
+import CrudListGallery from "./components/CrudListGallery.vue";
 import CrudFilters from "./components/CrudFilters.vue";
 import CrudNotify from "./components/CrudNotify.vue";
 import CrudSearch from "./components/CrudSearch.vue";
@@ -25,6 +27,8 @@ export {
     CrudFormField,
     CrudFormList,
     CrudList,
+    CrudListTable,
+    CrudListGallery,
     CrudNotify,
     CrudSearch,
     CrudAutocomplete,

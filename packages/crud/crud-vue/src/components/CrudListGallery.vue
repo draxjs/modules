@@ -19,6 +19,7 @@ import CrudFilters from "./CrudFilters.vue";
 import {useCrudColumns} from "../composables/UseCrudColumns";
 import CrudFiltersDynamic from "./CrudFiltersDynamic.vue";
 import CrudFiltersAction from "./CrudFiltersAction.vue";
+import CrudFilterButton from "./buttons/CrudFilterButton.vue";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -29,7 +30,8 @@ const {entity} = defineProps({
 
 const {
   loading, itemsPerPage, page, search, totalItems, items,
-  doPaginate, filters, applyFilters, clearFilters, paginationError
+  doPaginate, filters, applyFilters, clearFilters, paginationError,
+    isDynamicFiltersEnable
 } = useCrud(entity)
 
 // Usar el composable de columnas
@@ -51,40 +53,50 @@ onMounted(() => {
 <template>
   <div v-if="hasPermission(entity.permissions.view)" class="d-flex flex-column h-100 pb-4">
     <!-- Toolbar -->
-    <v-toolbar :class="entity.toolbarClass" :density="entity.toolbarDensity">
+    <v-toolbar :class="entity.toolbarClass" :density="entity.toolbarDensity" extended>
       <v-toolbar-title>
         {{ te(`${entity.name.toLowerCase()}.crud`) ? t(`${entity.name.toLowerCase()}.crud`) : entity.name }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <template v-slot:extension>
 
-      <slot name="toolbar">
-      </slot>
+        <v-row justify="end" class="px-2 border-t-sm" >
+          <slot name="toolbar">
+          </slot>
 
-      <crud-import-button
-          :entity="entity"
-          @import="(v:any) => $emit('import', v)"
-      />
+          <crud-import-button
+              :entity="entity"
+              @import="(v:any) => $emit('import', v)"
+          />
 
-      <crud-export-button
-          :entity="entity"
-          @export="(v:any) => $emit('export',v)"
-      />
+          <crud-export-button
+              :entity="entity"
+              @export="(v:any) => $emit('export',v)"
+          />
 
-      <crud-group-by-button
-          v-if="entity.isGroupable"
-          :entity="entity"
-      />
+          <crud-group-by-button
+              v-if="entity.isGroupable"
+              :entity="entity"
+          />
 
-      <crud-columns-button
-          v-if="entity.isColumnSelectable"
-          :entity="entity"
-      />
+          <crud-filter-button
+              :entity="entity" />
 
-      <crud-create-button
-          v-if="entity.isCreatable"
-          :entity="entity"
-          @click="$emit('create')"
-      />
+          <crud-columns-button
+              v-if="entity.isColumnSelectable"
+              :entity="entity"
+          />
+
+          <crud-create-button
+              v-if="entity.isCreatable"
+              :entity="entity"
+              @click="$emit('create')"
+          />
+        </v-row>
+
+      </template>
+
+
     </v-toolbar>
 
     <crud-export-list
@@ -124,7 +136,7 @@ onMounted(() => {
           </crud-filters>
 
           <crud-filters-dynamic
-              v-if="entity.dynamicFiltersEnable"
+              v-if="isDynamicFiltersEnable"
               :entity="entity"
               v-model="filters"
               :auto-filter="!entity.filterButtons"

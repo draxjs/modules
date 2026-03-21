@@ -11,6 +11,7 @@ import CrudDeleteButton from "./buttons/CrudDeleteButton.vue";
 import CrudViewButton from "./buttons/CrudViewButton.vue";
 import CrudGroupByButton from "./buttons/CrudGroupByButton.vue";
 import CrudColumnsButton from "./buttons/CrudColumnsButton.vue";
+import CrudFilterButton from "./buttons/CrudFilterButton.vue";
 import CrudExportList from "./CrudExportList.vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
@@ -18,6 +19,7 @@ import CrudFilters from "./CrudFilters.vue";
 import { useCrudColumns } from "../composables/UseCrudColumns";
 import CrudFiltersDynamic from "./CrudFiltersDynamic.vue";
 import CrudFiltersAction from "./CrudFiltersAction.vue";
+
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -90,7 +92,6 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
         <v-spacer></v-spacer>
 
         <slot name="toolbar">
-
         </slot>
 
         <crud-import-button
@@ -107,6 +108,10 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             v-if="entity.isGroupable"
             :entity="entity"
         />
+
+
+        <crud-filter-button
+            :entity="entity" />
 
         <crud-columns-button
             v-if="entity.isColumnSelectable"

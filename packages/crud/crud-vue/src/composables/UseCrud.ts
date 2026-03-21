@@ -19,6 +19,10 @@ export function useCrud(entity: IEntityCrud) {
 
     const {t: $t, te: $te} = useI18n()
 
+    const isDynamicFiltersEnable = computed(() => {
+        return entity.dynamicFiltersEnable && store.dynamicFiltersEnable
+    })
+
     const exportError = computed({
         get() {
             return store.exportError
@@ -477,7 +481,8 @@ export function useCrud(entity: IEntityCrud) {
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
         prepareFilters, filters, clearFilters, applyFilters,
         exportFiles, exportLoading, exportListVisible, exportError,
-        cloneItem, cast, prepareEdit
+        cloneItem, cast, prepareEdit,
+        isDynamicFiltersEnable
     }
 
 }

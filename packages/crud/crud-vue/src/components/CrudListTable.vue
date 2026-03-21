@@ -18,6 +18,7 @@ import CrudFilters from "./CrudFilters.vue";
 import { useCrudColumns } from "../composables/UseCrudColumns";
 import CrudFiltersDynamic from "./CrudFiltersDynamic.vue";
 import CrudFiltersAction from "./CrudFiltersAction.vue";
+import CrudFilterButton from "./buttons/CrudFilterButton.vue";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -28,7 +29,8 @@ const {entity} = defineProps({
 
 const {
   loading, itemsPerPage, page, sortBy, search, totalItems, items,
-  doPaginate, filters, applyFilters, clearFilters, paginationError
+  doPaginate, filters, applyFilters, clearFilters, paginationError,
+  isDynamicFiltersEnable
 } = useCrud(entity)
 
 // Usar el composable de columnas
@@ -108,6 +110,9 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             :entity="entity"
         />
 
+        <crud-filter-button
+            :entity="entity" />
+
         <crud-columns-button
             v-if="entity.isColumnSelectable"
             :entity="entity"
@@ -158,7 +163,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             </crud-filters>
 
             <crud-filters-dynamic
-                v-if="entity.dynamicFiltersEnable"
+                v-if="isDynamicFiltersEnable"
                 :entity="entity"
                 v-model="filters"
                 :auto-filter="!entity.filterButtons"

@@ -153,6 +153,10 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
+  get listMode(){
+    return 'gallery'
+  }
+
 }
 
 export default LanguageCrud

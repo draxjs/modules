@@ -209,6 +209,10 @@ class EntityCrud implements IEntityCrud {
     return false
   }
 
+  get isFilterable(){
+    return true
+  }
+
   get dialogFullscreen() {
     return false
   }

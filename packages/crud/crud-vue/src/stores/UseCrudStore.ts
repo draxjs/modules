@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import type {IEntityCrudOperation, IDraxFieldFilter} from "@drax/crud-share";
+import type {IEntityCrudOperation, IDraxFieldFilter, IEntityCrudFilter} from "@drax/crud-share";
 
 export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+id, {
     state: () => (
@@ -13,7 +13,16 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
             error: '' as string,
             paginationError: '' as string,
             filters: [] as IDraxFieldFilter[],
-            dynamicFilters: [] as IDraxFieldFilter[],
+            dynamicFilters: [{
+                default: undefined,
+                label: "",
+                name: "",
+                operator: "eq",
+                type: "string",
+                permission: "",
+                value: ""
+            }] as IEntityCrudFilter[],
+            dynamicFiltersEnable: false as boolean,
             items: [] as any[],
             totalItems: 0 as number,
             itemsPerPage: 10 as number,
@@ -149,6 +158,9 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
             if (index >= 0) {
                 this.dynamicFilters[index].value = value
             }
+        },
+        setDynamicFiltersEnable(enable: boolean) {
+            this.dynamicFiltersEnable = enable
         },
         setVisibleColumns(columns: string[]) {
             this.visibleColumns = columns
