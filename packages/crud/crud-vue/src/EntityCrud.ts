@@ -1,7 +1,8 @@
 import type {
   IEntityCrud, IEntityCrudForm, IEntityCrudHeader, IEntityCrudRefs,
   IEntityCrudRules, IEntityCrudField, IEntityCrudPermissions,
-  IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFieldVariant, IDraxFieldFilter
+  IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFieldVariant, IDraxFieldFilter,
+  IEntityCrudOnInput
 } from "@drax/crud-share";
 
 
@@ -149,8 +150,18 @@ class EntityCrud implements IEntityCrud {
     return {}
   }
 
+
+
   getRule(field: string | undefined): Array<Function> | undefined {
     return field && this.rules[field] && this.rules[field].length > 0 ? this.rules[field] : undefined
+  }
+
+  get onInputs(): IEntityCrudOnInput {
+    return {}
+  }
+
+  getOnInput(field: string | undefined): Function | undefined {
+    return (field && this.onInputs[field] && typeof this.onInputs[field] === 'function')  ? this.onInputs[field] : undefined
   }
 
   get isViewable() {

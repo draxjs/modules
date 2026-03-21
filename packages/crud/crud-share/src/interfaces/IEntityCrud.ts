@@ -4,6 +4,7 @@ import type {IEntityCrudField} from "./IEntityCrudField";
 import type {IEntityCrudFilter} from "./IEntityCrudFilter";
 import type {IEntityCrudForm} from "./IEntityCrudForm";
 import type {IEntityCrudRules} from "./IEntityCrudRules";
+import type {IEntityCrudOnInput} from "./IEntityCrudOnInput";
 import type {IEntityCrudRefs} from "./IEntityCrudRefs";
 import type {IDraxCrudProvider} from "./IDraxCrudProvider";
 import type {IDraxFieldFilter} from "./IDraxFieldFilter";
@@ -82,6 +83,9 @@ interface IEntityCrud {
 
   rules: IEntityCrudRules
   getRule(field: string | undefined): Array<Function> | undefined
+
+  onInputs: IEntityCrudOnInput
+  getOnInput(field: string | undefined): Function | undefined
 
   provider: IDraxCrudProvider<any, any, any>
 

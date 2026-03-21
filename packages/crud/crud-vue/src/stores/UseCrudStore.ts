@@ -39,6 +39,14 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
         }
     ),
     getters: {
+        getFieldValue(state: any) {
+            return (fieldName: string) => {
+                if (fieldName && state.form[fieldName]) {
+                    return state.form[fieldName]
+                }
+                return undefined
+            }
+        },
         getFieldInputErrors(state: any) {
             return (fieldName: string) => {
                 if (state.inputErrors && state.inputErrors[fieldName]) {

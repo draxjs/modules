@@ -1,26 +1,28 @@
-import {EntityCrud} from "@drax/crud-vue";
+import {EntityCrud, useCrudStore} from "@drax/crud-vue";
 import type {
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader,
+  IEntityCrudHeader, IEntityCrudOnInput,
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
 } from "@drax/crud-share";
 import LanguageProvider from "../providers/LanguageProvider";
-
 //Import EntityCrud Refs
 
 
 class LanguageCrud extends EntityCrud implements IEntityCrud {
 
   static singleton: LanguageCrud
+  private store
+
 
   constructor() {
     super();
     this.name = 'Language'
+    this.store = useCrudStore(this.name)
   }
 
   static get instance(): LanguageCrud {
@@ -76,6 +78,15 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     return {
       name: [(v: any) => !!v || 'validation.required'],
       icon: []
+    }
+  }
+
+  get onInputs(): IEntityCrudOnInput {
+    return {
+      name: (event: any, value: any) => {
+        const val = this.store.getFieldValue('name').toUpperCase()
+        this.store.setFormFieldValue('name', val)
+      }
     }
   }
 

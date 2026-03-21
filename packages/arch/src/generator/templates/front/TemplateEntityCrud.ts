@@ -218,7 +218,7 @@ const generateMenus = (entity: IEntitySchema) => {
 
 
 export const TemplateEntityCrud = (entity: IEntitySchema) => `
-import {EntityCrud} from "@drax/crud-vue";
+import {EntityCrud, useCrudStore} from "@drax/crud-vue";
 import type{
   IDraxCrudProvider,
   IEntityCrud,
@@ -237,10 +237,12 @@ ${generateImportRefs(entity.schema)}
 class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
 
   static singleton: ${entity.name}Crud
+  private store
 
   constructor() {
     super();
     this.name = '${entity.name}'
+    this.store = useCrudStore(this.name)
   }
   
   static get instance(): ${entity.name}Crud {

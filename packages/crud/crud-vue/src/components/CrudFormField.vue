@@ -23,7 +23,7 @@ const {hasPermission} = useAuth()
 
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
-const {index, entity, field, parentField, errorMessages, rules, readonly, hideDetails} = defineProps({
+const {index, entity, field, parentField, errorMessages, rules, onInput, readonly, hideDetails} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField | IEntityCrudFilter | undefined>, required: true},
   prependIcon: {type: String, default: ''},
@@ -43,6 +43,7 @@ const {index, entity, field, parentField, errorMessages, rules, readonly, hideDe
   previewHeight: {type: String, default: '100px'},
   parentField: {type: String, default: null, required: false},
   errorMessages: {type: Array as PropType<string[]>, default: null, required: false},
+  onInput: {type: Function as PropType<Function>, required: false},
   rules: {type: Array as PropType<ValidationRule[]>, required: false},
   index: {type: Number, default: null, required: false},
   density: {type: String as PropType<'comfortable' | 'compact' | 'default'>, default: 'default'},
@@ -120,6 +121,7 @@ const hasHideDetails = computed(()=>{
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        @input="onInput"
         @update:modelValue="$emit('updateValue')"
     />
 
@@ -146,6 +148,7 @@ const hasHideDetails = computed(()=>{
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        @input="onInput"
         @update:modelValue="$emit('updateValue')"
     />
 
@@ -169,10 +172,11 @@ const hasHideDetails = computed(()=>{
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
-        @update:modelValue="$emit('updateValue')"
         :type="show ? 'text' : 'password'"
         :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
         @click:append-inner="show = !show"
+        @input="onInput"
+        @update:modelValue="$emit('updateValue')"
     />
 
 

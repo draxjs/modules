@@ -132,6 +132,12 @@ const rules = computed(() => {
   }
 })
 
+const onInput = computed(() => {
+  return (fieldName: string) => {
+    return entity?.getOnInput(fieldName) as Function || undefined
+  }
+})
+
 const onlyView = computed(()=> {
   return ['delete','view'].includes(operation?.value)
 })
@@ -177,6 +183,7 @@ const onlyView = computed(()=> {
                   :preview="field?.preview"
                   :previewHeight="field?.previewHeight"
                   :rules="rules(field.name)"
+                  :on-input="onInput(field.name)"
                   :hint="field.hint"
                   :persistent-hint="field.persistentHint"
                   :placeholder="field.placeholder"
@@ -226,6 +233,7 @@ const onlyView = computed(()=> {
                           :append-icon="field?.appendIcon"
                           :append-inner-icon="field?.appendInnerIcon"
                           :rules="rules(field.name)"
+                          :on-input="onInput(field.name)"
                           :hint="field.hint"
                           :persistent-hint="field.persistentHint"
                           :placeholder="field.placeholder"
@@ -284,6 +292,7 @@ const onlyView = computed(()=> {
                           :append-icon="field?.appendIcon"
                           :append-inner-icon="field?.appendInnerIcon"
                           :rules="rules(field.name)"
+                          :on-input="onInput(field.name)"
                           :hint="field.hint"
                           :persistent-hint="field.persistentHint"
                           :placeholder="field.placeholder"
