@@ -1,10 +1,10 @@
-import {EntityCrud} from "@drax/crud-vue";
+import {EntityCrud, useCrudStore} from "@drax/crud-vue";
 import type {
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader,
+  IEntityCrudHeader, IEntityCrudOnInput,
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
@@ -20,10 +20,12 @@ import {UserCrud} from "@drax/identity-vue"
 class PersonCrud extends EntityCrud implements IEntityCrud {
 
   static singleton: PersonCrud
+  private store
 
   constructor() {
     super();
     this.name = 'Person'
+    this.store = useCrudStore(this.name)
   }
 
   static get instance(): PersonCrud {
@@ -109,6 +111,36 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     }
   }
 
+  get onInputs(): IEntityCrudOnInput {
+    return {
+      fullname: (event: any) => {
+        const val = this.store.getFieldValue('fullname').toUpperCase()
+        this.store.setFormFieldValue('fullname', val)
+      },
+      live: (event: any) => {
+        console.log("live",event)
+      },
+      birthdate: (event: any) => {
+        console.log("birthdate",event)
+      },
+      nationality: (event: any) => {
+        console.log("nationality",event)
+      },
+      interests: (event: any) => {
+        console.log("interests",event)
+      },
+      hobbies: (event: any) => {
+        console.log("hobbies",event)
+      },
+      race: (event: any) => {
+        console.log("race",event)
+      },
+      languages: (event: any) => {
+        console.log("languages",event)
+      },
+    }
+  }
+
   get fields(): IEntityCrudField[] {
     return [
       {name: 'fullname', type: 'string', label: 'fullname', default: '', groupTab: 'BASIC',
@@ -127,7 +159,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         refDisplay: 'name'
       },
       {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
-      {name: 'fullfile', type: 'fullFile', label: 'fullfile', default: '', groupTab: 'BASIC'},
+      {name: 'fullfile', type: 'fullFile', label: 'fullfile', default: {}, groupTab: 'BASIC'},
       {name: 'race', type: 'enum', label: 'race', default: null, groupTab: 'BASIC', enum: ['human', 'elf', 'orc']},
       {
         name: 'interests',

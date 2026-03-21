@@ -27,6 +27,7 @@ const {entity, multiple} = defineProps({
   hint: {type: String},
   persistentHint: {type: Boolean, default: false},
   rules: {type: Array as PropType<any>, default: () => []},
+  onInput: {type: Function as PropType<Function>, required: false},
   errorMessages: {type: Array as PropType<string[]>, default: () => []},
   hideDetails: {type: Boolean, default: false},
   singleLine: {type: Boolean, default: false},
@@ -128,11 +129,17 @@ defineEmits(['updateValue'])
       :single-line="singleLine"
       :clearable="clearable"
       :error-messages="errorMessages"
-      @update:modelValue="$emit('updateValue')"
+      @update:modelValue="v => {
+        if(onInput && typeof onInput === 'function'){
+            onInput(v)
+        }
+        $emit('updateValue')
+      }"
       :prepend-icon="prependIcon"
       :append-icon="appendIcon"
       :prepend-inner-icon="prependInnerIcon"
       :append-inner-icon="appendInnerIcon"
+      @input="onInput"
   >
 
     <template v-if="addOnTheFly" v-slot:append>
@@ -185,11 +192,17 @@ defineEmits(['updateValue'])
       :clearable="clearable"
       :error-messages="errorMessages"
       @update:search="debouncedSearch"
-      @update:modelValue="$emit('updateValue')"
+      @update:modelValue="v => {
+        if(onInput && typeof onInput === 'function'){
+            onInput(v)
+        }
+        $emit('updateValue')
+      }"
       :prepend-icon="prependIcon"
       :append-icon="appendIcon"
       :prepend-inner-icon="prependInnerIcon"
       :append-inner-icon="appendInnerIcon"
+      @input="onInput"
   >
 
     <template v-if="addOnTheFly" v-slot:append>

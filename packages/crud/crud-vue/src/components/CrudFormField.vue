@@ -16,7 +16,6 @@ import MediaField from "@drax/media-vue/src/components/MediaField.vue";
 import MediaFullField from "@drax/media-vue/src/components/MediaFullField.vue";
 
 
-
 const {t, te} = useI18n()
 
 const {hasPermission} = useAuth()
@@ -70,11 +69,10 @@ const label = computed(() => {
 })
 
 
-
 const storeErrorMessages = computed(() => {
       let sIndex = (index != null && index >= 0) ? `${index}.` : ''
       let name = parentField ? `${parentField}.${sIndex}${field.name}` : field.name
-      return store.getFieldInputErrors(name).map((error: string) =>te(error) ? t(error) : error)
+      return store.getFieldInputErrors(name).map((error: string) => te(error) ? t(error) : error)
     }
 )
 
@@ -85,10 +83,10 @@ const inputErrors = computed(() => {
 defineEmits(['updateValue'])
 
 
-const hasHideDetails = computed(()=>{
-  if(readonly){
+const hasHideDetails = computed(() => {
+  if (readonly) {
     return true
-  }else{
+  } else {
     return hideDetails ?? field.hideDetails
   }
 
@@ -148,8 +146,8 @@ const hasHideDetails = computed(()=>{
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
-        @input="onInput"
         @update:modelValue="$emit('updateValue')"
+        @input="onInput"
     />
 
     <v-text-field
@@ -175,8 +173,8 @@ const hasHideDetails = computed(()=>{
         :type="show ? 'text' : 'password'"
         :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
         @click:append-inner="show = !show"
-        @input="onInput"
         @update:modelValue="$emit('updateValue')"
+        @input="onInput"
     />
 
 
@@ -198,12 +196,17 @@ const hasHideDetails = computed(()=>{
         :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
-        @update:modelValue="$emit('updateValue')"
+        @update:modelValue="v => {
+          if(onInput && typeof onInput === 'function'){
+              onInput(v)
+          }
+          $emit('updateValue')
+        }"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
-
+        @input="onInput"
     >
     </v-combobox>
 
@@ -227,12 +230,17 @@ const hasHideDetails = computed(()=>{
         :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
-        @update:modelValue="$emit('updateValue')"
+        @update:modelValue="v => {
+          if(onInput && typeof onInput === 'function'){
+              onInput(v)
+          }
+          $emit('updateValue')
+        }"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
-
+        @input="onInput"
     >
       <template v-slot:item="{ props: itemProps, item }">
         <v-list-item
@@ -246,7 +254,10 @@ const hasHideDetails = computed(()=>{
       </template>
 
       <template v-slot:selection="{item}">
-        <v-chip tile density="compact" :color="item.raw.color" :prepend-icon="item.raw.icon">{{ item.raw.title }}</v-chip>
+        <v-chip tile density="compact" :color="item.raw.color" :prepend-icon="item.raw.icon">{{
+            item.raw.title
+          }}
+        </v-chip>
       </template>
     </v-select>
 
@@ -274,9 +285,9 @@ const hasHideDetails = computed(()=>{
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        @input="onInput"
     >
     </v-select>
-
 
 
     <v-text-field
@@ -302,6 +313,7 @@ const hasHideDetails = computed(()=>{
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        @input="onInput"
     />
 
     <media-field
@@ -371,6 +383,7 @@ const hasHideDetails = computed(()=>{
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
         color="primary"
+        @input="onInput"
     />
 
 
@@ -379,7 +392,8 @@ const hasHideDetails = computed(()=>{
         :name="name"
         :label="label"
         :hint="hint ?? field.hint"
-        :persistent-hint="persistentHint ?? field.persistentHint" :placeholder="placeholder ?? field.placeholder" :persistent-placeholder="persistentPlaceholder ?? field.persistentPlaceholder"
+        :persistent-hint="persistentHint ?? field.persistentHint" :placeholder="placeholder ?? field.placeholder"
+        :persistent-placeholder="persistentPlaceholder ?? field.persistentPlaceholder"
         v-model="valueModel"
         :readonly="readonly"
         :error-messages="inputErrors"
@@ -395,6 +409,9 @@ const hasHideDetails = computed(()=>{
             date.setHours(23, 59, 59, 0)
             valueModel = date
           }
+          if(onInput && typeof onInput === 'function'){
+            onInput(v)
+          }
           $emit('updateValue')
         }"
         @click:clear="() => {valueModel = null;  $emit('updateValue');} "
@@ -403,6 +420,7 @@ const hasHideDetails = computed(()=>{
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
         :max="field.max"
+        @input="onInput"
     >
       <template v-if="field.endOfDay && field.showEndOfDayChip !== false" v-slot:append-inner>
         <v-chip size="small">23:59</v-chip>
@@ -435,6 +453,7 @@ const hasHideDetails = computed(()=>{
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
         :add-on-the-fly="field?.addOnTheFly"
+        :on-input="onInput"
     />
 
     <v-card v-if="field.type === 'object'" class="mt-3" variant="flat" border>
@@ -443,7 +462,7 @@ const hasHideDetails = computed(()=>{
       <v-card-text>
 
         <v-row dense>
-          <v-col cols="12"  v-for="oField in field.objectFields">
+          <v-col cols="12" v-for="oField in field.objectFields">
             <crud-form-field
 
                 :entity="entity"
@@ -491,11 +510,17 @@ const hasHideDetails = computed(()=>{
         :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
-        @update:modelValue="$emit('updateValue')"
+        @update:modelValue="v => {
+          if(onInput && typeof onInput === 'function'){
+              onInput(v)
+          }
+          $emit('updateValue')
+        }"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        @input="onInput"
     >
     </v-combobox>
 
@@ -521,11 +546,17 @@ const hasHideDetails = computed(()=>{
         :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
-        @update:modelValue="$emit('updateValue')"
+        @update:modelValue="v => {
+          if(onInput && typeof onInput === 'function'){
+              onInput(v)
+          }
+          $emit('updateValue')
+        }"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        @input="onInput"
     >
     </v-combobox>
 
@@ -557,6 +588,7 @@ const hasHideDetails = computed(()=>{
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
         :add-on-the-fly="field?.addOnTheFly"
+        :on-input="onInput"
     />
 
 
@@ -569,7 +601,7 @@ const hasHideDetails = computed(()=>{
         :persistent-hint="persistentHint ?? field.persistentHint"
         :placeholder="placeholder ?? field.placeholder"
         :persistent-placeholder="persistentPlaceholder ?? field.persistentPlaceholder"
-        v-model   ="valueModel"
+        v-model="valueModel"
         :multiple="true"
         :chips="true"
         :readonly="readonly"
@@ -580,11 +612,17 @@ const hasHideDetails = computed(()=>{
         :hide-details="hasHideDetails"
         :single-line="singleLine"
         :rules="rules"
-        @update:modelValue="$emit('updateValue')"
+        @update:modelValue="v => {
+          if(onInput && typeof onInput === 'function'){
+              onInput(v)
+          }
+          $emit('updateValue')
+        }"
         :prepend-icon="prependIcon"
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
+        @input="onInput"
     >
     </v-combobox>
 
