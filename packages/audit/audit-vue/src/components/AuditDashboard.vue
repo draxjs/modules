@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {DashboardView} from "@drax/dashboard-vue"
-import {auditDashboard} from "../dashboards/AuditDashboard"
+import {createAuditDashboard} from "../dashboards/AuditDashboard"
 import {ref} from "vue"
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import type {IDashboardBase, IDashboardCard} from "@drax/dashboard-share";
@@ -14,7 +14,7 @@ const filters = ref([
     ]
 )
 
-const ad = ref<IDashboardBase>(auditDashboard)
+const ad = ref<IDashboardBase>(createAuditDashboard())
 
 ad.value.cards?.forEach((card:IDashboardCard) => {
   card.filters = filters.value
