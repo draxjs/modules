@@ -17,7 +17,7 @@ import {useCrud} from "./composables/UseCrud";
 import {useFilterIcon} from "./composables/UseFilterIcon";
 import {useFormUtils} from "./composables/UseFormUtils";
 import {useInputErrorI18n} from "./composables/UseInputErrorI18n";
-import {EntityCrud} from "./EntityCrud";
+import {EntityCrud} from "./cruds/EntityCrud";
 
 
 export {
