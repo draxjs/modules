@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Drax Docs',
   description: 'Documentación de Drax',
+  base: '/modules/',
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
