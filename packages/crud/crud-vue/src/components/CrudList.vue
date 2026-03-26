@@ -126,9 +126,11 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
       </v-toolbar>
 
-      <crud-export-list
-          :entity="entity"
-      />
+      <crud-export-list :entity="entity">
+        <template #export-table="{ exportFiles }">
+          <slot name="export-table" :exportFiles="exportFiles" />
+        </template>
+      </crud-export-list>
 
       <v-card variant="flat">
         <v-card-text v-if="entity.searchEnable">
