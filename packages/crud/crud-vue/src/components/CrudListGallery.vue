@@ -61,6 +61,7 @@ onMounted(() => {
       <template v-slot:extension>
 
         <v-row justify="end" class="px-2 border-t-sm" >
+
           <slot name="toolbar">
           </slot>
 
@@ -92,6 +93,10 @@ onMounted(() => {
               :entity="entity"
               @click="$emit('create')"
           />
+
+          <slot name="toolbar-right">
+
+          </slot>
         </v-row>
 
       </template>
@@ -101,7 +106,11 @@ onMounted(() => {
 
     <crud-export-list
         :entity="entity"
-    />
+    >
+      <template #export-table="{ exportFiles }">
+        <slot name="export-table" :exportFiles="exportFiles" />
+      </template>
+    </crud-export-list>
 
     <v-card variant="flat">
       <v-card-text v-if="entity.searchEnable">

@@ -17,6 +17,15 @@ import {formatDate} from "@drax/common-front"
     <template v-slot:item.tenant="{value}">{{value?.name}}</template>
     <template v-slot:item.user="{value}">{{value?.username}}</template>
     <template v-slot:item.address="{value}">{{value?.street}},{{value?.country}}</template>
+
+    <template v-slot:toolbar-right>
+      <v-btn icon="mdi-playlist-plus"></v-btn>
+    </template>
+
+    <template v-slot:export-table="{exportFiles}">
+      {{exportFiles}}
+    </template>
+
   </crud>
 </template>
 

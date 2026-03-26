@@ -64,6 +64,12 @@ const {xs} = useDisplay()
           </slot>
         </template>
 
+
+        <template v-slot:toolbar-right>
+          <slot name="toolbar-right">
+          </slot>
+        </template>
+
         <template v-slot:filters="{filters}" v-if="$slots.filters">
           <slot name="filters" v-bind="{filters}">
           </slot>
