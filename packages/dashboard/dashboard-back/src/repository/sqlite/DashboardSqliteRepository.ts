@@ -13,6 +13,7 @@ class DashboardSqliteRepository extends AbstractSqliteRepository<IDashboard,IDas
     protected dataBaseFile: string;
     protected searchFields: string[] = [];
     protected booleanFields: string[] = [];
+    protected jsonFields: string[] = ["cards"];
     protected identifier: string = '_id';
     protected populateFields = []
     protected tableFields: SqliteTableField[] = [
@@ -32,17 +33,6 @@ class DashboardSqliteRepository extends AbstractSqliteRepository<IDashboard,IDas
 
         if (data && data.cards) {
             data.cards = JSON.stringify(data.cards)
-        }
-    }
-
-    async prepareItem(item: any) {
-
-        if (!item) {
-            return
-        }
-
-        if (item && item.cards) {
-            item.cards = JSON.parse(item.cards)
         }
     }
 

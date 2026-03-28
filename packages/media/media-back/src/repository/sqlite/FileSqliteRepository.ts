@@ -9,11 +9,12 @@ class FileSqliteRepository extends AbstractSqliteRepository<IFile, IFileBase, IF
     protected db: any;
     protected tableName: string = 'File';
     protected dataBaseFile: string;
-    protected searchFields: string[] = ['filename', 'relativePath', 'absolutePath', 'url', 'description', 'tags', 'mimetype', 'extension', 'type'];
+    protected searchFields: string[] = ['filename', 'relativePath','url', 'description', 'tags', 'mimetype', 'extension', 'type'];
     protected booleanFields: string[] = ['isPublic'];
+    protected jsonFields: string[] = ['tags', 'createdBy', 'updatedBy'];
     protected identifier: string = '_id';
     protected populateFields = [
-        
+
     ]
     protected verbose: boolean = false;
     protected tableFields: SqliteTableField[] = [
@@ -39,7 +40,7 @@ class FileSqliteRepository extends AbstractSqliteRepository<IFile, IFileBase, IF
         {name: "isPublic", type: "TEXT", unique: undefined, primary: false},
         {name: "hits", type: "REAL", unique: undefined, primary: false}
     ]
-  
+
 }
 
 export default FileSqliteRepository

@@ -13,7 +13,9 @@ class UserSessionSqliteRepository extends AbstractSqliteRepository<IUserSession,
     protected searchFields: string[] = [];
     protected booleanFields: string[] = [];
     protected identifier: string = '_id';
-    protected populateFields = [{field: 'user', table: 'users', identifier: '_id'}]
+    protected populateFields = [
+        {field: 'user', table: 'users', identifier: '_id'}
+    ]
     protected tableFields: SqliteTableField[] = [
         {name: "uuid", type: "TEXT", unique: false, primary: false},
         {name: "user", type: "TEXT", unique: false, primary: false},

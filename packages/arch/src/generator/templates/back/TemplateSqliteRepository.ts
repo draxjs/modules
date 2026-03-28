@@ -30,6 +30,16 @@ function generateBooleanFields(schema: ISchema) {
     return fields.join(', ');
 }
 
+function generateJsonFields(schema: ISchema) {
+    let fields = [];
+    for(const field in schema){
+        if(['object', 'record', 'array.string', 'array.number', 'array.object', 'array.record', 'array.enum', 'array.file', 'array.fullFile'].includes(schema[field].type)){
+            fields.push(`'${field}'`);
+        }
+    }
+    return fields.join(', ');
+}
+
 function generateFields(schema: ISchema) {
     let fields = [];
     for(const field in schema){
@@ -58,6 +68,7 @@ class ${entity.name}SqliteRepository extends AbstractSqliteRepository<I${entity.
     protected dataBaseFile: string;
     protected searchFields: string[] = [${generateSearchFields(entity.schema)}];
     protected booleanFields: string[] = [${generateBooleanFields(entity.schema)}];
+    protected jsonFields: string[] = [${generateJsonFields(entity.schema)}];
     protected identifier: string = '${entity.identifier || '_id'}';
     protected populateFields = [
         ${generatePopulateFields(entity.schema)}
@@ -73,4 +84,3 @@ export default ${entity.name}SqliteRepository
 export {${entity.name}SqliteRepository}
 
 `
-

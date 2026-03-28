@@ -13,6 +13,7 @@ class SettingSqliteRepository extends AbstractSqliteRepository<ISetting,ISetting
     protected dataBaseFile: string;
     protected searchFields: string[] = [];
     protected booleanFields: string[] = ['public'];
+    protected jsonFields: string[] = ['options'];
     protected identifier: string = '_id';
     protected populateFields = []
     protected tableFields: SqliteTableField[] = [
@@ -75,9 +76,6 @@ class SettingSqliteRepository extends AbstractSqliteRepository<ISetting,ISetting
             return
         }
 
-        if(item && item.options){
-           item.options = JSON.parse(item.options)
-        }
         if(item.type === 'boolean'){
             item.value = item.value === 1 || item.value === '1' || item.value === '1.0'
         }

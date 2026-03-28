@@ -13,6 +13,7 @@ class AuditSqliteRepository extends AbstractSqliteRepository<IAudit, IAuditBase,
     protected dataBaseFile: string;
     protected searchFields: string[] = [];
     protected booleanFields: string[] = [];
+    protected jsonFields: string[] = ["changes", "user", "tenant", "apiKey"];
     protected identifier: string = '_id';
     protected populateFields = []
     protected verbose: boolean = false;
@@ -59,33 +60,6 @@ class AuditSqliteRepository extends AbstractSqliteRepository<IAudit, IAuditBase,
 
 
 
-    }
-
-    async prepareItem(item: any) {
-
-        if (!item) {
-            return
-        }
-
-        if (item && item.changes) {
-            item.changes = JSON.parse(item.changes)
-        }
-
-
-        if (item && item.user) {
-            item.user = JSON.parse(item.user)
-        }
-
-        if (item && item.tenant) {
-            item.tenant = JSON.parse(item.tenant)
-        }
-
-        if (item && item.apiKey) {
-            item.apiKey = JSON.parse(item.apiKey)
-        }
-
-
-        return item;
     }
 
 }

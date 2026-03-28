@@ -18,8 +18,12 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
     protected dataBaseFile: string;
     protected searchFields: string[] = [];
     protected booleanFields: string[] = ['active'];
+    protected jsonFields: string[] = [];
     protected identifier: string = '_id';
-    protected populateFields = []
+    protected populateFields = [
+        {field: 'tenant', table: 'tenants', identifier: '_id'},
+        // {field: 'role', table: 'roles', identifier: '_id'}
+    ]
     protected tableFields: SqliteTableField[] = [
         {name: "name", type: "TEXT", unique: false, primary: false},
         {name: "username", type: "TEXT", unique: true, primary: false},
@@ -52,6 +56,15 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
         if (userData.groups && Array.isArray(userData.groups)) {
             userData.groups = userData.groups.join(",")
         }
+
+        if (userData.role && typeof userData.role === 'object' && userData.role._id) {
+            userData.role = userData.role._id
+        }
+
+        if (userData.tenant && typeof userData.tenant === 'object' && userData.tenant._id) {
+            userData.tenant = userData.tenant._id
+        }
+
         userData.active = userData.active ? 1 : 0
 
         if (!await this.findRoleById(userData.role)) {
@@ -60,12 +73,16 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
     }
 
     async prepareItem(user: any) {
-        if (user && user.role) {
+        if (user && user.role && typeof user.role === 'string') {
             user.role = await this.findRoleById(user.role)
         }
 
-        if (user && user.tenant) {
+        if (user && user.tenant && typeof user.tenant === 'string') {
             user.tenant = await this.findTenantById(user.tenant)
+        }
+
+        if (user && user.hasOwnProperty('groups')) {
+            user.groups = user.groups ? user.groups.split(",") : []
         }
     }
 
@@ -94,7 +111,7 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
     }
 
     async findByIdWithPassword(id: string): Promise<IUser | null> {
-        const user = this.db.prepare('SELECT * FROM users WHERE ${this.identifier} = ?').get(id);
+        const user = this.db.prepare(`SELECT * FROM users WHERE ${this.identifier} = ?`).get(id);
         if (!user) {
             return null
         }

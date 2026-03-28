@@ -11,6 +11,7 @@ class LanguageSqliteRepository extends AbstractSqliteRepository<ILanguage, ILang
     protected dataBaseFile: string;
     protected searchFields: string[] = ['name'];
     protected booleanFields: string[] = [];
+    protected jsonFields: string[] = ['icon'];
     protected identifier: string = '_id';
     protected populateFields = [
 
@@ -25,13 +26,7 @@ class LanguageSqliteRepository extends AbstractSqliteRepository<ILanguage, ILang
     async prepareData(data: any): Promise<any> {
         data.icon = JSON.stringify(data.icon)
     }
-
-    async prepareItem(item: any): Promise<any> {
-        item.icon = JSON.parse(item.icon)
-    }
-
 }
 
 export default LanguageSqliteRepository
 export {LanguageSqliteRepository}
-

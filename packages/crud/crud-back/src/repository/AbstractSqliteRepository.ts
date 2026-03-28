@@ -23,6 +23,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
     protected tableName: string = '';
     protected searchFields: string[] = [];
     protected booleanFields: string[] = [];
+    protected jsonFields: string[] = [];
     protected identifier: string = '_id';
     protected populateFields: { field: string, table: string, identifier: string }[]
     protected tableFields: SqliteTableField[];
@@ -59,6 +60,84 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return item
     }
 
+    protected parseJsonValue(value: any): any {
+        if (typeof value !== 'string') {
+            return value
+        }
+
+        try {
+            return JSON.parse(value)
+        } catch {
+            return value
+        }
+    }
+
+    protected normalizeSqliteValue(value: any): any {
+        if (value === undefined) {
+            return null
+        }
+
+        if (value === null) {
+            return null
+        }
+
+        if (typeof value === 'boolean') {
+            return value ? 1 : 0
+        }
+
+        if (typeof value === 'number' || typeof value === 'string' || typeof value === 'bigint') {
+            return value
+        }
+
+        if (Buffer.isBuffer(value)) {
+            return value
+        }
+
+        if (value instanceof Date) {
+            return value.toISOString()
+        }
+
+        if (value instanceof ArrayBuffer) {
+            return Buffer.from(value)
+        }
+
+        if (ArrayBuffer.isView(value)) {
+            return Buffer.from(value.buffer, value.byteOffset, value.byteLength)
+        }
+
+        if (typeof value === 'object') {
+            return JSON.stringify(value)
+        }
+
+        return String(value)
+    }
+
+    protected normalizeSqliteData(data: any): any {
+        if (!data || typeof data !== 'object') {
+            return data
+        }
+
+        for (const key of Object.keys(data)) {
+            data[key] = this.normalizeSqliteValue(data[key])
+        }
+
+        return data
+    }
+
+    protected deserializeSqliteData(item: any): any {
+        if (!item || typeof item !== 'object') {
+            return item
+        }
+
+        for (const field of this.jsonFields) {
+            if (Object.prototype.hasOwnProperty.call(item, field)) {
+                item[field] = this.parseJsonValue(item[field])
+            }
+        }
+
+        return item
+    }
+
     async execPopulate(item: any) {
         for (const field of this.populateFields) {
             if (item[field.field]) {
@@ -81,21 +160,18 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
     async decorate(item: any) {
         await this.execPopulate(item)
+        this.deserializeSqliteData(item)
         this.castToBoolean(item)
         await this.prepareItem(item)
     }
+
+
 
     async create(data: any): Promise<T> {
         try {
 
             if (!data[this.identifier]) {
                 data[this.identifier] = randomUUID()
-            }
-
-            for (const key in data) {
-                if (typeof data[key] === 'boolean') {
-                    data[key] = data[key] ? 1 : 0
-                }
             }
 
             if (this.hasCreatedAt()) {
@@ -106,7 +182,10 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
                 data.updatedAt = (new Date().toISOString())
             }
 
+
+
             await this.prepareData(data)
+            this.normalizeSqliteData(data)
 
             const fields = Object.keys(data)
                 .map(field => `${field}`)
@@ -124,7 +203,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
             return item
 
         } catch (e) {
-            console.error(e)
+            console.error("sqlite create",e)
             throw SqliteErrorToValidationError(e, data)
         }
     }
@@ -137,17 +216,12 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
     async update(id: string, data: any): Promise<T> {
         try {
 
-            for (const key in data) {
-                if (typeof data[key] === 'boolean') {
-                    data[key] = data[key] ? 1 : 0
-                }
-            }
-
             if (this.hasUpdatedAt()) {
                 data.updatedAt = (new Date().toISOString())
             }
 
             await this.prepareData(data)
+            this.normalizeSqliteData(data)
 
             const setClauses = Object.keys(data)
                 .map(field => `${field} = @${field}`)
@@ -237,12 +311,14 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
             await this.decorate(item)
         }
 
-        return {
+        const pagination = {
             page,
             limit,
             total: rCount.count,
             items
         }
+        console.log('Pagination result:', JSON.stringify(pagination,null,4))
+        return pagination
     }
 
     async find({
@@ -327,6 +403,10 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
     }
 
     async findById(id: string): Promise<T | null> {
+        if (id === undefined || id === null) {
+            return null
+        }
+
         const item = this.db.prepare(`SELECT *
                                       FROM ${this.tableName}
                                       WHERE ${this.identifier} = ?`).get(id);
