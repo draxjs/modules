@@ -37,7 +37,7 @@ describe("Person Controller Test", function () {
         vi.restoreAllMocks()
     })
 
-    // Test users are logged in and get their details
+    // Test users are logged in and get their details +
     it("Me Admin Root", async () => {
         const { accessToken } = await testSetup.rootUserLogin()
         expect(accessToken).toBeTruthy()
