@@ -14,7 +14,8 @@ import {
     IDraxPermission,
     IDraxFieldFilter,
     IDraxExportResponse,
-    IDraxCrudEvent
+    IDraxCrudEvent,
+    IDraxPaginateResult
 } from "@drax/crud-share";
 import {join} from "path";
 import QueryFilterRegex from "../regexs/QueryFilterRegex.js";
@@ -98,7 +99,6 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     }
 
 
-
     protected parseFilters(stringFilters: string): IDraxFieldFilter[] {
         try {
             if (!stringFilters) {
@@ -114,7 +114,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             filterArray.forEach((filter) => {
                 const [field, operator, value] = filter.split(";")
 
-                if(field && operator && ( operator === 'empty' || (value !== undefined && value !== '')) ) {
+                if (field && operator && (operator === 'empty' || (value !== undefined && value !== ''))) {
                     filters.push({field, operator, value})
                 }
 
@@ -133,11 +133,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     protected applyUserFilter(filters: IDraxFieldFilter[], rbac: IRbac) {
 
-        if(rbac.hasSomePermission([this.permission.All, this.permission.ViewAll])) {
+        if (rbac.hasSomePermission([this.permission.All, this.permission.ViewAll])) {
             return
         }
 
-        if(this.userFilter && rbac.userId) {
+        if (this.userFilter && rbac.userId) {
             filters.push({field: this.userField, operator: 'eq', value: rbac.userId})
         }
 
@@ -155,10 +155,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         if (this.tenantAssert && rbac.hasTenant) {
 
             //Si esta populado
-            if(item[this.tenantField]?._id){
+            if (item[this.tenantField]?._id) {
                 rbac.assertTenantId(item[this.tenantField]._id.toString())//
-            //Si esta crudo
-            }else if(item[this.tenantField]){
+                //Si esta crudo
+            } else if (item[this.tenantField]) {
                 rbac.assertTenantId(item[this.tenantField].toString())
             }
         }
@@ -167,9 +167,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     protected assertUser(item: T, rbac: IRbac) {
 
         if (this.userAssert) {
-            if(item[this.userField]?._id){
+            if (item[this.userField]?._id) {
                 rbac.assertUserId(item[this.userField]._id.toString())
-            }else if(item[this.userField]){
+            } else if (item[this.userField]) {
                 rbac.assertUserId(item[this.userField].toString())
             }
         }
@@ -193,10 +193,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     protected extractRequestData(request: FastifyRequest) {
         return {
-            user:  {
+            user: {
                 id: request?.rbac?.userId,
                 username: request?.rbac?.username,
-                role:{
+                role: {
                     id: request?.rbac?.roleId,
                     name: request?.rbac?.roleName,
                 },
@@ -217,11 +217,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     }
 
 
-
-    async onCreated(request: CustomRequest, item:T){
+    async onCreated(request: CustomRequest, item: T) {
         const requestData = this.extractRequestData(request)
         const detail = `User ${requestData.user.username} created ${this.entityName}.`
-        const eventData : IDraxCrudEvent = {
+        const eventData: IDraxCrudEvent = {
             action: 'created',
             entity: this.entityName,
             postItem: item,
@@ -233,10 +232,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         this.eventEmitter.emitCrudEvent(eventData)
     }
 
-    async onUpdated(request: CustomRequest, preItem: T, postItem:T){
+    async onUpdated(request: CustomRequest, preItem: T, postItem: T) {
         const requestData = this.extractRequestData(request)
         const detail = `User ${requestData.user.username} updated ${this.entityName}.`
-        const eventData : IDraxCrudEvent = {
+        const eventData: IDraxCrudEvent = {
             action: 'updated',
             entity: this.entityName,
             postItem: postItem,
@@ -251,7 +250,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     async onDeleted(request: CustomRequest, item: T) {
         const requestData = this.extractRequestData(request)
         const detail = `User ${requestData.user.username} deleted ${this.entityName}.`
-        const eventData : IDraxCrudEvent = {
+        const eventData: IDraxCrudEvent = {
             action: 'deleted',
             entity: this.entityName,
             postItem: null,
@@ -266,7 +265,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
     async onExported(request: CustomRequest, response: IDraxExportResponse) {
         const requestData = this.extractRequestData(request)
         const detail = `User ${requestData.user.username} exported ${this.entityName}.`
-        const eventData : IDraxCrudEvent = {
+        const eventData: IDraxCrudEvent = {
             action: 'exported',
             entity: this.entityName,
             postItem: null,
@@ -278,11 +277,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         this.eventEmitter.emitCrudEvent(eventData)
     }
 
-    async preCreate(request: CustomRequest, payload:any){
+    async preCreate(request: CustomRequest, payload: any) {
         return payload
     }
 
-    async postCreate(request: CustomRequest, item:T){
+    async postCreate(request: CustomRequest, item: T) {
         return item
     }
 
@@ -301,11 +300,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
-    async preUpdate(request: CustomRequest, payload:any):Promise<C>{
+    async preUpdate(request: CustomRequest, payload: any): Promise<C> {
         return payload
     }
 
-    async postUpdate(request: CustomRequest, item:T){
+    async postUpdate(request: CustomRequest, item: T) {
         return item
     }
 
@@ -334,12 +333,12 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             this.assertTenant(preItem, request.rbac)
 
             //Definido el tenant en create no debe modificarse en un update
-            if(this.tenantSetter) {
+            if (this.tenantSetter) {
                 delete payload[this.tenantField]
             }
 
             //Definido el user en create no debe modificarse en un update
-            if(this.userSetter){
+            if (this.userSetter) {
                 delete payload[this.userField]
             }
 
@@ -360,13 +359,44 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
-    async preUpdatePartial(request: CustomRequest, payload:any):Promise<C>{
+    async preUpdatePartial(request: CustomRequest, payload: any): Promise<C> {
         return payload
     }
 
-    async postUpdatePartial(request: CustomRequest, item:T){
+    async postUpdatePartial(request: CustomRequest, item: T) {
         return item
     }
+
+    //Sobrescribir este metodo para manipular items a devolver en operaciones de lectura
+    async postRead(request: CustomRequest, item: T) {
+        return item
+    }
+
+    protected isPaginateResult(result: unknown): result is IDraxPaginateResult<T> {
+        return typeof result === 'object' && result !== null && 'items' in result && Array.isArray(result.items)
+    }
+
+    async postReadItem(request: CustomRequest, item: T): Promise<T> {
+        return this.postRead(request, item)
+    }
+
+    async postReadItems(request: CustomRequest, items: T[]): Promise<T[]> {
+        if (Array.isArray(items)) {
+            return Promise.all(items.map(item => this.postRead(request, item)))
+        }
+        return items
+    }
+
+    async postReadPaginate(
+        request: CustomRequest,
+        pagination: IDraxPaginateResult<T>
+    ): Promise<IDraxPaginateResult<T>> {
+        if (this.isPaginateResult(pagination)) {
+            pagination.items = await Promise.all(pagination.items.map(item => this.postRead(request, item)))
+        }
+        return pagination
+    }
+
 
     async updatePartial(request: CustomRequest, reply: FastifyReply) {
         try {
@@ -394,12 +424,12 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             this.assertTenant(preItem, request.rbac)
 
             //Definido el tenant en el create no debe modificarse en un update
-            if(this.tenantSetter) {
+            if (this.tenantSetter) {
                 delete payload[this.tenantField]
             }
 
             //Definido el user en el create no debe modificarse en un update
-            if(this.userSetter){
+            if (this.userSetter) {
                 delete payload[this.userField]
             }
 
@@ -419,11 +449,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         }
     }
 
-    async preDelete(request: CustomRequest, item:T){
+    async preDelete(request: CustomRequest, item: T) {
         return item
     }
 
-    async postDelete(request: CustomRequest, item:T){
+    async postDelete(request: CustomRequest, item: T) {
         return item
     }
 
@@ -491,6 +521,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             this.assertTenant(item, request.rbac)
 
+            item = await this.postReadItem(request, item)
+
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -510,6 +542,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             if (!items || items.length === 0) {
                 throw new NotFoundError()
             }
+
+            items = await this.postReadItems(request, items)
 
             return items
         } catch (e) {
@@ -535,6 +569,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let items = await this.service.find({search, filters, order, orderBy, limit})
 
+            items = await this.postReadItems(request, items)
 
             return items
         } catch (e) {
@@ -553,6 +588,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let item = await this.service.findOne({search, filters})
 
+            item = await this.postReadItem(request, item)
 
             return item
         } catch (e) {
@@ -577,9 +613,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let items = await this.service.findBy(field, value, limit, filters)
 
-            // for (let item of items) {
-            //     this.assertUserAndTenant(item, request.rbac)
-            // }
+
+            items = await this.postReadItems(request, items)
 
             return items
         } catch (e) {
@@ -603,7 +638,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let item = await this.service.findOneBy(field, value, filters)
 
-            // this.assertUserAndTenant(item, request.rbac);
+
+            item = await this.postReadItem(request, item)
 
             return item
         } catch (e) {
@@ -621,8 +657,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             this.applyUserAndTenantFilters(filters, request.rbac);
 
-            let item = await this.service.search(search, limit, filters)
-            return item
+            let items = await this.service.search(search, limit, filters)
+            items = await this.postReadItems(request, items)
+            return items
         } catch (e) {
             this.handleError(e, reply)
         }
@@ -645,16 +682,14 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac);
 
-            // console.log("paginate filters",filters)
 
             let paginateResult = await this.service.paginate({page, limit, orderBy, order, search, filters})
+            paginateResult = await this.postReadPaginate(request, paginateResult)
             return paginateResult
         } catch (e) {
             this.handleError(e, reply)
         }
     }
-
-
 
 
     async export(request: CustomRequest, reply: FastifyReply) {
@@ -695,7 +730,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             const url = `${this.baseURL}/api/file/${exportPath}/${year}/${month}/${result.fileName}`
 
-            const response : IDraxExportResponse = {
+            const response: IDraxExportResponse = {
                 url: url,
                 rowCount: result.rowCount,
                 time: result.time,

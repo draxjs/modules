@@ -1,6 +1,7 @@
-import { describe, it, beforeAll, afterAll, expect } from "vitest"
+import { describe, it, beforeAll, afterAll, afterEach, expect, vi } from "vitest"
 import { PersonFastifyRoutes } from '../people/routes/PersonRoutes'
 import { PersonPermissions } from '../people/permissions/PersonPermissions'
+import { PersonController } from '../people/controllers/PersonController.js'
 
 import type { IPersonBase } from '../people/interfaces/IPerson'
 
@@ -30,6 +31,10 @@ describe("Person Controller Test", function () {
     afterAll(async () => {
         await testSetup.dropAndClose()
         return
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
     })
 
     // Test users are logged in and get their details
@@ -105,6 +110,34 @@ describe("Person Controller Test", function () {
         expect(getEntity.fullname).toBe("Test Person")
     })
 
+    it("should run postCreate interceptor after creating a person", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const postCreateSpy = vi
+            .spyOn(PersonController.prototype, 'postCreate')
+            .mockImplementation(async (_request, item) => ({
+                ...item,
+                fullname: `${item.fullname} [postCreate]`
+            }))
+
+        const resp = await testSetup.fastifyInstance.inject({
+            method: 'POST',
+            url: '/api/person',
+            payload: {
+                fullname: "Create Hook",
+                money: 100,
+                address: defaultAddress
+            },
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const person = await resp.json()
+        expect(resp.statusCode).toBe(200)
+        expect(postCreateSpy).toHaveBeenCalledTimes(1)
+        expect(person.fullname).toBe("Create Hook [postCreate]")
+    })
+
     // 2. Create and Update (Full Update - PUT)
     it("should create and update a person and finally find by id", async () => {
         const { accessToken } = await testSetup.rootUserLogin()
@@ -152,6 +185,47 @@ describe("Person Controller Test", function () {
         expect(verifiedEntity.money).toBe(150)
     })
 
+    it("should run postUpdate interceptor after updating a person", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const createResp = await testSetup.fastifyInstance.inject({
+            method: 'POST',
+            url: '/api/person',
+            payload: {
+                fullname: "Update Hook",
+                money: 100,
+                address: defaultAddress
+            },
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const createdEntity = await createResp.json()
+
+        const postUpdateSpy = vi
+            .spyOn(PersonController.prototype, 'postUpdate')
+            .mockImplementation(async (_request, item) => ({
+                ...item,
+                fullname: `${item.fullname} [postUpdate]`
+            }))
+
+        const updateResp = await testSetup.fastifyInstance.inject({
+            method: 'PUT',
+            url: `/api/person/${createdEntity._id}`,
+            payload: {
+                fullname: "Updated Hook",
+                money: 250,
+                address: defaultAddress
+            },
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const updatedEntity = await updateResp.json()
+        expect(updateResp.statusCode).toBe(200)
+        expect(postUpdateSpy).toHaveBeenCalledTimes(1)
+        expect(updatedEntity.fullname).toBe("Updated Hook [postUpdate]")
+    })
+
     // 3. Create and Partial Update (PATCH)
     it("should create and update partial a person and finally find by id", async () => {
         const { accessToken } = await testSetup.rootUserLogin()
@@ -190,6 +264,79 @@ describe("Person Controller Test", function () {
         const verifiedEntity = await verifyResp.json()
         expect(verifiedEntity.fullname).toBe("Patched Person")
         expect(verifiedEntity.money).toBe(120)
+    })
+
+    it("should run postUpdatePartial interceptor after patching a person", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const createResp = await testSetup.fastifyInstance.inject({
+            method: 'POST',
+            url: '/api/person',
+            payload: {
+                fullname: "Patch Hook",
+                money: 120,
+                address: defaultAddress
+            },
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const createdEntity = await createResp.json()
+
+        const postUpdatePartialSpy = vi
+            .spyOn(PersonController.prototype, 'postUpdatePartial')
+            .mockImplementation(async (_request, item) => ({
+                ...item,
+                fullname: `${item.fullname} [postUpdatePartial]`
+            }))
+
+        const patchResp = await testSetup.fastifyInstance.inject({
+            method: 'PATCH',
+            url: `/api/person/${createdEntity._id}`,
+            payload: { fullname: "Patched Hook" },
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const patchedEntity = await patchResp.json()
+        expect(patchResp.statusCode).toBe(200)
+        expect(postUpdatePartialSpy).toHaveBeenCalledTimes(1)
+        expect(patchedEntity.fullname).toBe("Patched Hook [postUpdatePartial]")
+    })
+
+    it("should run postRead interceptor when reading a person", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const createResp = await testSetup.fastifyInstance.inject({
+            method: 'POST',
+            url: '/api/person',
+            payload: {
+                fullname: "Read Hook",
+                money: 80,
+                address: defaultAddress
+            },
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const createdEntity = await createResp.json()
+
+        const postReadSpy = vi
+            .spyOn(PersonController.prototype, 'postRead')
+            .mockImplementation(async (_request, item) => ({
+                ...item,
+                fullname: `${item.fullname} [postRead]`
+            }))
+
+        const getResp = await testSetup.fastifyInstance.inject({
+            method: 'GET',
+            url: `/api/person/${createdEntity._id}`,
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const person = await getResp.json()
+        expect(getResp.statusCode).toBe(200)
+        expect(postReadSpy).toHaveBeenCalledTimes(1)
+        expect(person.fullname).toBe("Read Hook [postRead]")
     })
 
     // 4. Create and Delete

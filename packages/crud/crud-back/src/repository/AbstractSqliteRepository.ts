@@ -317,7 +317,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
             total: rCount.count,
             items
         }
-        console.log('Pagination result:', JSON.stringify(pagination,null,4))
+        // console.log('Pagination result:', JSON.stringify(pagination,null,4))
         return pagination
     }
 
