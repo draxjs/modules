@@ -294,7 +294,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             await this.preCreate(request, payload as C)
             let item = await this.service.create(payload as C)
             this.onCreated(request, item)
-            await this.postCreate(request, item as T)
+            item = await this.postCreate(request, item as T)
             return item
         } catch (e) {
             this.handleError(e, reply)
@@ -352,7 +352,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             this.onUpdated(request, preItem, item)
 
-            await this.postUpdate(request, item as T)
+            item = await this.postUpdate(request, item as T)
 
             return item
         } catch (e) {
@@ -411,7 +411,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             this.onUpdated(request, preItem, item)
 
-            await this.postUpdatePartial(request, item as T)
+            item = await this.postUpdatePartial(request, item as T)
 
             return item
         } catch (e) {
