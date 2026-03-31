@@ -91,7 +91,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
         </v-toolbar-title>
         <v-spacer></v-spacer>
 
-        <slot name="toolbar">
+        <slot name="toolbar-left">
 
         </slot>
 
@@ -117,6 +117,10 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             v-if="entity.isColumnSelectable"
             :entity="entity"
         />
+
+        <slot name="toolbar">
+
+        </slot>
 
         <crud-create-button
             v-if="entity.isCreatable"

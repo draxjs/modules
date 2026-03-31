@@ -62,7 +62,7 @@ onMounted(() => {
 
         <v-row justify="end" class="px-2 border-t-sm" >
 
-          <slot name="toolbar">
+          <slot name="toolbar-left">
           </slot>
 
           <crud-import-button
@@ -87,6 +87,9 @@ onMounted(() => {
               v-if="entity.isColumnSelectable"
               :entity="entity"
           />
+
+          <slot name="toolbar">
+          </slot>
 
           <crud-create-button
               v-if="entity.isCreatable"

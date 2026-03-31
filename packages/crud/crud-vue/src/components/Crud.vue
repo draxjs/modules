@@ -59,6 +59,11 @@ const {xs} = useDisplay()
           @view="onView"
       >
 
+        <template v-slot:toolbar-left>
+          <slot name="toolbar-left">
+          </slot>
+        </template>
+
         <template v-slot:toolbar>
           <slot name="toolbar">
           </slot>
