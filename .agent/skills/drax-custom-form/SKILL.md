@@ -65,6 +65,123 @@ const datosPersonales: IEntityCrudField[] = [
 ]
 ```
 
+Cuando definas `IEntityCrudField[]` en un formulario a medida, usa exactamente los mismos tipos y reglas de consistencia que usa Drax en los CRUDs estándar. `<crud-form-field>` interpreta la configuración del field y decide qué componente renderizar.
+
+Tipos disponibles en `IEntityCrudField.type`:
+
+- Escalares: `id`, `string`, `longString`, `number`, `boolean`, `date`, `password`, `file`, `fullFile`.
+- Estructurados: `object`, `record`.
+- Relaciones y opciones: `ref`, `enum`, `select`.
+- Arrays: `array.string`, `array.number`, `array.object`, `array.record`, `array.ref`, `array.enum`, `array.fullFile`.
+
+Reglas importantes por tipo:
+
+- `string`, `longString`, `password`, `id`: normalmente usa `default: ''`.
+- `number`: usa un número (`0`, `1`, etc.) o `null` si el valor inicia vacío.
+- `boolean`: usa `default: false` o `true`.
+- `date`: normalmente usa `default: null`. Puedes complementar con `endOfDay`, `showEndOfDayChip` y `max`.
+- `file`, `fullFile`: normalmente usa `default: null`. Puedes complementar con `preview` y `previewHeight`.
+- `enum`: requiere `enum: string[]`.
+- `select`: requiere `items`.
+- `ref`: requiere `ref` y `refDisplay`. Además, la entidad pasada en `:entity` debe resolver ese `ref` dentro de `refs`.
+- `object`: requiere `objectFields` y como mínimo `default: {}`.
+- `record`: como mínimo `default: {}`.
+- `array.string`, `array.number`, `array.record`, `array.fullFile`: como mínimo `default: []`.
+- `array.enum`: requiere `enum: string[]` y como mínimo `default: []`.
+- `array.ref`: requiere `ref` y `refDisplay`, y como mínimo `default: []`.
+- `array.object`: requiere `objectFields` y como mínimo `default: []`.
+
+Reglas de consistencia para `default`:
+
+- Si el tipo empieza con `array.`, el `default` debe ser un array. Valor mínimo seguro: `[]`.
+- Si el tipo es `object` o `record`, el `default` debe ser un objeto. Valor mínimo seguro: `{}`.
+- Si el tipo es escalar, el `default` debería respetar el shape esperado del input.
+- Evita mezclar shapes incompatibles, por ejemplo `type: 'array.string'` con `default: null` o `type: 'object'` con `default: []`.
+
+Propiedades extra útiles de `IEntityCrudField`:
+
+- Elección o relación: `ref`, `refDisplay`, `enum`, `items`, `addOnTheFly`.
+- Objetos y arrays complejos: `objectFields`, `arrayObjectUI`, `arrayObjectShowField`, `menuMaxHeight`.
+- UX del input: `label`, `hint`, `persistentHint`, `placeholder`, `persistentPlaceholder`, `hideDetails`, `readonly`.
+- Íconos y archivos: `prependIcon`, `prependInnerIcon`, `appendIcon`, `appendInnerIcon`, `preview`, `previewHeight`.
+- Layout: `rows`, `cols`, `sm`, `md`, `lg`, `xl`.
+- Comportamiento adicional: `permission`, `noFilter`, `endOfDay`, `showEndOfDayChip`, `max`, `groupTab`, `groupMenu`.
+
+Ejemplo ampliado de fields para formularios a medida:
+
+```typescript
+const datosPersonales: IEntityCrudField[] = [
+  { name: 'nombres', type: 'string', label: 'nombres', default: '', md: 6 },
+  { name: 'apellidos', type: 'string', label: 'apellidos', default: '', md: 6 },
+  { name: 'fechaNacimiento', type: 'date', label: 'fechaNacimiento', default: null, md: 6 },
+  { name: 'genero', type: 'enum', label: 'genero', default: null, enum: ['m', 'f', 'x'], md: 6 },
+  { name: 'activo', type: 'boolean', label: 'activo', default: false, md: 4 },
+  { name: 'password', type: 'password', label: 'password', default: '', md: 4 },
+  { name: 'observaciones', type: 'longString', label: 'observaciones', default: '', rows: 4, cols: 12 },
+]
+
+const datosRelacionados: IEntityCrudField[] = [
+  {
+    name: 'tenant',
+    type: 'ref',
+    label: 'tenant',
+    default: null,
+    ref: 'Tenant',
+    refDisplay: 'name',
+    md: 6
+  },
+  {
+    name: 'nivel',
+    type: 'select',
+    label: 'nivel',
+    default: null,
+    items: [
+      { title: 'Basico', value: 'basic' },
+      { title: 'Intermedio', value: 'intermediate' },
+      { title: 'Avanzado', value: 'advanced' }
+    ],
+    md: 6
+  }
+]
+
+const datosAnidados: IEntityCrudField[] = [
+  {
+    name: 'direccion',
+    type: 'object',
+    label: 'direccion',
+    default: {},
+    objectFields: [
+      { name: 'calle', type: 'string', label: 'calle', default: '', md: 8 },
+      { name: 'numero', type: 'string', label: 'numero', default: '', md: 4 }
+    ]
+  },
+  {
+    name: 'telefonos',
+    type: 'array.string',
+    label: 'telefonos',
+    default: []
+  },
+  {
+    name: 'familiares',
+    type: 'array.object',
+    label: 'familiares',
+    default: [],
+    arrayObjectUI: 'accordion',
+    arrayObjectShowField: 'nombres',
+    objectFields: [
+      { name: 'nombres', type: 'string', label: 'nombres', default: '' },
+      { name: 'parentesco', type: 'enum', label: 'parentesco', default: null, enum: ['madre', 'padre', 'tutor'] }
+    ]
+  }
+]
+```
+
+Recomendaciones prácticas:
+
+- Si el formulario a medida reutiliza refs del CRUD, sigue usando la misma `Crud.instance` como `entity` para que `<crud-form-field>` pueda resolver `ref` y `refDisplay`.
+- Si defines fields localmente, mantén nombres, tipos y defaults compatibles con la interfaz y con el payload esperado por el backend.
+- Si el formulario mezcla bloques visuales distintos, puedes separar los arrays de fields por sección, pero manteniendo una sola fuente reactiva `form`.
+
 ### Carga de Datos desde el Backend
 En caso de que estemos editando un registro, busca la información a través del `Provider` de la entidad y clona la información de forma segura en el objeto `form` reactivo usando las funciones utilitarias de Drax.
 

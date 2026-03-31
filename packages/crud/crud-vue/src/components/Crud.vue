@@ -129,8 +129,8 @@ const {xs} = useDisplay()
             @canceled="emit('canceled')"
         >
 
-          <template v-for="ifield in entity.fields" :key="ifield.name" v-slot:[`field.${ifield.name}`]="{field}">
-            <slot :name="`field.${ifield.name}`" v-bind="{field}">
+          <template v-for="ifield in entity.fields" :key="ifield.name" v-slot:[`field.${ifield.name}`]="{field, form, modelValue, setValue}">
+            <slot :name="`field.${ifield.name}`" v-bind="{field, form, modelValue, setValue}">
             </slot>
           </template>
 

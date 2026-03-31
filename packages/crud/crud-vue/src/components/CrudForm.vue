@@ -63,6 +63,14 @@ const menuMaxHeight = computed(() => {
   return entity.menuMaxHeight || '300px'
 })
 
+function getFieldModelValue(fieldName: string) {
+  return form.value[fieldName]
+}
+
+function setFieldModelValue(fieldName: string, value: any) {
+  form.value[fieldName] = value
+}
+
 async function submit() {
   store.resetErrors()
 
@@ -167,7 +175,15 @@ const onlyView = computed(()=> {
               :lg="field.lg ? field.lg : undefined"
               :xl="field.xl ? field.xl : undefined"
           >
-            <slot :name="`field.${field.name}`" v-bind="{field}">
+            <slot
+                :name="`field.${field.name}`"
+                v-bind="{
+                  field,
+                  form,
+                  modelValue: getFieldModelValue(field.name),
+                  setValue: (value: any) => setFieldModelValue(field.name, value)
+                }"
+            >
 
               <crud-form-field
                   :field="field"
@@ -217,7 +233,15 @@ const onlyView = computed(()=> {
                       :lg="field.lg ? field.lg : undefined"
                       :xl="field.xl ? field.xl : undefined"
                   >
-                    <slot :name="`field.${field.name}`" v-bind="{field}">
+                    <slot
+                        :name="`field.${field.name}`"
+                        v-bind="{
+                          field,
+                          form,
+                          modelValue: getFieldModelValue(field.name),
+                          setValue: (value: any) => setFieldModelValue(field.name, value)
+                        }"
+                    >
 
 
 
@@ -279,7 +303,15 @@ const onlyView = computed(()=> {
                       :lg="field.lg ? field.lg : undefined"
                       :xl="field.xl ? field.xl : undefined"
                   >
-                    <slot :name="`field.${field.name}`" v-bind="{field}">
+                    <slot
+                        :name="`field.${field.name}`"
+                        v-bind="{
+                          field,
+                          form,
+                          modelValue: getFieldModelValue(field.name),
+                          setValue: (value: any) => setFieldModelValue(field.name, value)
+                        }"
+                    >
                       <crud-form-field
                           :field="field"
                           :entity="entity"
