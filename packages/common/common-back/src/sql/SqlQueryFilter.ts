@@ -15,88 +15,119 @@ class SqlQueryFilter {
         this.assertFiltersSchema(filters)
 
         let params: any[] = []
-        let whereFilters: string[] = []
+        let andConditions: string[] = []
+        const orGroups = new Map<string, { sql: string, params: any[] }[]>()
 
         for (const filter of filters) {
+            const condition = this.buildCondition(filter)
 
-            if ((filter.value === undefined || filter.value === null) && filter.operator !== 'empty') {
+            if (!condition) {
                 continue
             }
 
-            switch (filter.operator) {
+            if (filter.orGroup) {
+                const group = orGroups.get(filter.orGroup) || []
+                group.push(condition)
+                orGroups.set(filter.orGroup, group)
+                continue
+            }
 
-                case 'like':
-                    whereFilters.push(`${filter.field} LIKE ?`)
-                    params.push(`%${filter.value}%`)
-                    break
+            andConditions.push(condition.sql)
+            params.push(...condition.params)
+        }
 
-                case 'eq':
-                    whereFilters.push(`${filter.field} = ?`)
-                    params.push(filter.value)
-                    break
+        for (const groupConditions of orGroups.values()) {
+            const sql = groupConditions.map(condition => condition.sql).join(" OR ")
+            andConditions.push(`(${sql})`)
 
-                case 'ne':
-                    whereFilters.push(`${filter.field} != ?`)
-                    params.push(filter.value)
-                    break
-
-                case 'empty':
-                    whereFilters.push(`(${filter.field} IS NULL OR ${filter.field} = '')`)
-                    break
-
-                case 'in':
-                    if (!Array.isArray(filter.value)) {
-                        filter.value = filter.value.split(',').map((v: string) => v.trim())
-                    }
-
-                    const inPlaceholders = filter.value.map(() => '?').join(',')
-                    whereFilters.push(`${filter.field} IN (${inPlaceholders})`)
-                    params.push(...filter.value)
-                    break
-
-                case 'nin':
-                    if (!Array.isArray(filter.value)) {
-                        filter.value = filter.value.split(',').map((v: string) => v.trim())
-                    }
-
-                    const ninPlaceholders = filter.value.map(() => '?').join(',')
-                    whereFilters.push(`${filter.field} NOT IN (${ninPlaceholders})`)
-                    params.push(...filter.value)
-                    break
-
-                case 'gt':
-                    whereFilters.push(`${filter.field} > ?`)
-                    params.push(filter.value)
-                    break
-
-                case 'gte':
-                    whereFilters.push(`${filter.field} >= ?`)
-                    params.push(filter.value)
-                    break
-
-                case 'lt':
-                    whereFilters.push(`${filter.field} < ?`)
-                    params.push(filter.value)
-                    break
-
-                case 'lte':
-                    whereFilters.push(`${filter.field} <= ?`)
-                    params.push(filter.value)
-                    break
-
-                default:
-                    throw new Error(`Unsupported operator ${filter.operator}`)
+            for (const condition of groupConditions) {
+                params.push(...condition.params)
             }
         }
 
-        if (whereFilters.length === 0) {
+        if (andConditions.length === 0) {
             return { where, params }
         }
 
         where += where ? ` AND ` : ` WHERE `
-        where += whereFilters.join(" AND ")
+        where += andConditions.join(" AND ")
 
         return { where, params }
+    }
+
+    static buildCondition(filter: IQueryFilter): { sql: string, params: any[] } | null {
+        if ((filter.value === undefined || filter.value === null) && filter.operator !== 'empty') {
+            return null
+        }
+
+        switch (filter.operator) {
+            case 'like':
+                return {
+                    sql: `${filter.field} LIKE ?`,
+                    params: [`%${filter.value}%`]
+                }
+            case 'eq':
+                return {
+                    sql: `${filter.field} = ?`,
+                    params: [filter.value]
+                }
+            case 'ne':
+                return {
+                    sql: `${filter.field} != ?`,
+                    params: [filter.value]
+                }
+            case 'empty':
+                return {
+                    sql: `(${filter.field} IS NULL OR ${filter.field} = '')`,
+                    params: []
+                }
+            case 'in': {
+                const values = this.normalizeArrayValue(filter.value)
+                const placeholders = values.map(() => '?').join(',')
+
+                return {
+                    sql: `${filter.field} IN (${placeholders})`,
+                    params: values
+                }
+            }
+            case 'nin': {
+                const values = this.normalizeArrayValue(filter.value)
+                const placeholders = values.map(() => '?').join(',')
+
+                return {
+                    sql: `${filter.field} NOT IN (${placeholders})`,
+                    params: values
+                }
+            }
+            case 'gt':
+                return {
+                    sql: `${filter.field} > ?`,
+                    params: [filter.value]
+                }
+            case 'gte':
+                return {
+                    sql: `${filter.field} >= ?`,
+                    params: [filter.value]
+                }
+            case 'lt':
+                return {
+                    sql: `${filter.field} < ?`,
+                    params: [filter.value]
+                }
+            case 'lte':
+                return {
+                    sql: `${filter.field} <= ?`,
+                    params: [filter.value]
+                }
+            default:
+                throw new Error(`Unsupported operator ${filter.operator}`)
+        }
+    }
+
+    static normalizeArrayValue(value: any): any[] {
+        return Array.isArray(value)
+            ? value
+            : value.split(',').map((item: string) => item.trim())
     }
 
     static assertFiltersSchema(filters: IQueryFilter[]) {
@@ -107,7 +138,8 @@ class SqlQueryFilter {
         return z.object({
             field: z.string(),
             operator: z.enum(['eq', 'like', 'ne', 'in', 'nin', 'gt', 'gte', 'lt', 'lte', 'empty']),
-            value: z.any()
+            value: z.any(),
+            orGroup: z.string().optional()
         })
     }
 

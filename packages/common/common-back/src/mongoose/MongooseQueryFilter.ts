@@ -7,6 +7,8 @@ import {isValidObjectId} from '../utils/IsValidObjectId.js'
 import {BadRequestError} from "../errors/BadRequestError.js";
 import { Model } from "mongoose"
 
+type MongooseQuery = Record<string, any>
+
 class MongooseQueryFilter{
 
     static applyFilters<T>(query: object, filters: IQueryFilter[], model?: Model<T>){
@@ -29,100 +31,133 @@ class MongooseQueryFilter{
             }
         }
 
-        console.log("filters", filters)
+        const mutableQuery = query as MongooseQuery
+        const existingCondition = Object.keys(mutableQuery).length > 0 ? {...mutableQuery} : null
+
+        for(const key of Object.keys(mutableQuery)){
+            delete mutableQuery[key]
+        }
+
+        const andConditions: MongooseQuery[] = []
+        const orGroups = new Map<string, MongooseQuery[]>()
 
         for(const filter of filters){
+            const condition = this.buildCondition(filter, isSchemaTypeObjectId)
 
-
-            //Valid date
-            if(isValidIsoDate(filter.value)){
-                filter.value = new Date(filter.value)
+            if(!condition){
+                continue
             }
 
-           const isObjectId = isSchemaTypeObjectId(filter.field)
-
-
-            //Valid ObjectId
-
-            if(filter.field === '_id' && !isValidObjectId(filter.value)){
-                throw new BadRequestError('Invalid ObjectId','error.invalidId')
+            if(filter.orGroup){
+                const group = orGroups.get(filter.orGroup) || []
+                group.push(condition)
+                orGroups.set(filter.orGroup, group)
+                continue
             }
 
-            if(isObjectId && !isValidObjectId(filter.value)  && !['in', 'nin','empty'].includes(filter.operator)){
-                throw new BadRequestError('Invalid ObjectId','error.invalidId')
-            }
+            andConditions.push(condition)
+        }
 
+        const finalConditions: MongooseQuery[] = []
 
-            if(isValidObjectId(filter.value) && !['in', 'nin','empty'].includes(filter.operator)){
-                filter.value = ObjectId.createFromHexString(filter.value)
-            }
+        if(existingCondition){
+            finalConditions.push(existingCondition)
+        }
 
-            if((filter.value === undefined || filter.value === null) && filter.operator !== 'empty') return
+        finalConditions.push(...andConditions)
 
-            if(filter.value === 'true'){
-                filter.value = true
-            }
-            if(filter.value === 'false'){
-                filter.value = false
-            }
-
-            switch (filter.operator) {
-                case 'empty':
-                    if(isObjectId){
-                        query[filter.field] = null
-                    }else{
-                        query[filter.field] = { $in: [null, ""] }
-                    }
-
-                    break;
-                case 'like':
-                    query[filter.field] = {...query[filter.field], ... {$regex: filter.value, $options: 'i'} }
-                    break;
-                case 'eq':
-                    query[filter.field] = {...query[filter.field], ...{$eq:filter.value} }
-                    break;
-                case 'ne':
-                    query[filter.field] = {...query[filter.field], ...{$ne: filter.value} }
-                    break;
-                case 'in':
-                    if(!Array.isArray(filter.value)){
-                        filter.value = filter.value.split(',').map(v => v.trim())
-                        filter.value = filter.value.map(
-                            (value:string) =>
-                                isValidObjectId(value) ? ObjectId.createFromHexString(value): value
-                        )
-                    }
-                    query[filter.field] = {...query[filter.field],...{$in: filter.value} }
-                    break;
-                case 'nin':
-                    if(!Array.isArray(filter.value)){
-                        filter.value = filter.value.split(',').map(v => v.trim())
-                        filter.value = filter.value.map(
-                            (value:string) =>
-                                isValidObjectId(value) ? ObjectId.createFromHexString(value): value
-                        )
-                    }
-                    query[filter.field] = {...query[filter.field],...{$nin: filter.value} }
-                    break;
-                case 'gt':
-                    query[filter.field] = {...query[filter.field],...{$gt: filter.value} }
-                    break;
-                case 'gte':
-                    query[filter.field] = {...query[filter.field],...{$gte: filter.value} }
-                    break;
-                case 'lt':
-                    query[filter.field] = {...query[filter.field],...{$lt: filter.value} }
-                    break;
-                case 'lte':
-                    query[filter.field] = {...query[filter.field],...{$lte: filter.value} }
-                    break;
-                default:
-                    throw new Error(`Unsupported operator ${filter.operator}`)
+        for(const groupConditions of orGroups.values()){
+            if(groupConditions.length === 1){
+                finalConditions.push(groupConditions[0])
+            }else if(groupConditions.length > 1){
+                finalConditions.push({$or: groupConditions})
             }
         }
 
-         console.log("query", query);
+        if(finalConditions.length === 1){
+            Object.assign(mutableQuery, finalConditions[0])
+            return query
+        }
+
+        if(finalConditions.length > 1){
+            mutableQuery.$and = finalConditions
+        }
+
         return query
+    }
+
+    static buildCondition(
+        filter: IQueryFilter,
+        isSchemaTypeObjectId: (fieldName: string) => boolean
+    ): MongooseQuery | null {
+        let value = filter.value
+
+        if(isValidIsoDate(value)){
+            value = new Date(value)
+        }
+
+        const isObjectId = isSchemaTypeObjectId(filter.field)
+
+        if(filter.field === '_id' && !isValidObjectId(value)){
+            throw new BadRequestError('Invalid ObjectId','error.invalidId')
+        }
+
+        if(isObjectId && !isValidObjectId(value)  && !['in', 'nin','empty'].includes(filter.operator)){
+            throw new BadRequestError('Invalid ObjectId','error.invalidId')
+        }
+
+        if(isValidObjectId(value) && !['in', 'nin','empty'].includes(filter.operator)){
+            value = ObjectId.createFromHexString(value)
+        }
+
+        if((value === undefined || value === null) && filter.operator !== 'empty'){
+            return null
+        }
+
+        if(value === 'true'){
+            value = true
+        }
+
+        if(value === 'false'){
+            value = false
+        }
+
+        switch (filter.operator) {
+            case 'empty':
+                return isObjectId
+                    ? {[filter.field]: null}
+                    : {[filter.field]: {$in: [null, ""]}}
+            case 'like':
+                return {[filter.field]: {$regex: value, $options: 'i'}}
+            case 'eq':
+                return {[filter.field]: {$eq: value}}
+            case 'ne':
+                return {[filter.field]: {$ne: value}}
+            case 'in':
+                return {[filter.field]: {$in: this.normalizeArrayValue(value)}}
+            case 'nin':
+                return {[filter.field]: {$nin: this.normalizeArrayValue(value)}}
+            case 'gt':
+                return {[filter.field]: {$gt: value}}
+            case 'gte':
+                return {[filter.field]: {$gte: value}}
+            case 'lt':
+                return {[filter.field]: {$lt: value}}
+            case 'lte':
+                return {[filter.field]: {$lte: value}}
+            default:
+                throw new Error(`Unsupported operator ${filter.operator}`)
+        }
+    }
+
+    static normalizeArrayValue(value: any): any[] {
+        const values = Array.isArray(value)
+            ? value
+            : value.split(',').map((item: string) => item.trim())
+
+        return values.map((item: string) =>
+            isValidObjectId(item) ? ObjectId.createFromHexString(item) : item
+        )
     }
 
     static assertQuerySchema(query : object){
@@ -137,7 +172,8 @@ class MongooseQueryFilter{
         return z.object({
             field: z.string(),
             operator: z.enum(['eq','like','ne', 'in', 'nin','gt', 'gte', 'lt', 'lte','empty']),
-            value: z.any()
+            value: z.any(),
+            orGroup: z.string().optional()
         })
     }
 

@@ -466,6 +466,70 @@ describe("Person Controller Test", function () {
         expect(findByResult[0].fullname).toBe("Active Person")
     })
 
+    it("should create and find people with filters grouped by orGroup", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const entityData = [
+            { fullname: "Hero Person", race: "human", live: true, address: defaultAddress },
+            { fullname: "Mage Person", race: "elf", live: true, address: defaultAddress },
+            { fullname: "Hidden Hero", race: "orc", live: false, address: defaultAddress },
+            { fullname: "Hidden Rogue", race: "human", live: false, address: defaultAddress }
+        ]
+
+        for (const data of entityData) {
+            await testSetup.fastifyInstance.inject({
+                method: 'POST',
+                url: '/api/person',
+                payload: data,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+        }
+
+        const findByResp = await testSetup.fastifyInstance.inject({
+            method: 'GET',
+            url: '/api/person/find?filters=fullname;like;Hero;group1|race;eq;elf;group1|live;eq;true',
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const findByResult = await findByResp.json()
+        expect(findByResp.statusCode).toBe(200)
+        expect(findByResult.length).toBe(2)
+        expect(findByResult.map((item: any) => item.fullname).sort()).toEqual(["Hero Person", "Mage Person"])
+    })
+
+    it("should combine search with orGroup filters without overriding either condition", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const entityData = [
+            { fullname: "Searchable Hero", race: "human", live: true, address: defaultAddress },
+            { fullname: "Searchable Elf", race: "elf", live: true, address: defaultAddress },
+            { fullname: "Hidden Elf", race: "elf", live: true, address: defaultAddress },
+            { fullname: "Searchable Rogue", race: "human", live: false, address: defaultAddress }
+        ]
+
+        for (const data of entityData) {
+            await testSetup.fastifyInstance.inject({
+                method: 'POST',
+                url: '/api/person',
+                payload: data,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+        }
+
+        const paginateResp = await testSetup.fastifyInstance.inject({
+            method: 'GET',
+            url: '/api/person?search=Searchable&filters=fullname;like;Hero;group1|race;eq;elf;group1|live;eq;true',
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const paginateResult = await paginateResp.json()
+        expect(paginateResp.statusCode).toBe(200)
+        expect(paginateResult.total).toBe(2)
+        expect(paginateResult.items.map((item: any) => item.fullname).sort()).toEqual(["Searchable Elf", "Searchable Hero"])
+    })
+
     // 8. Create and Group By
     it("should create and groupBy for people", async () => {
         const { accessToken } = await testSetup.rootUserLogin()
