@@ -367,6 +367,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         return item
     }
 
+    //Sobrescribir este metodo para manipular filtros en operaciones de lectura
     async preRead(request: CustomRequest, filters: IDraxFieldFilter[]):Promise<IDraxFieldFilter[]> {
         return filters
     }
