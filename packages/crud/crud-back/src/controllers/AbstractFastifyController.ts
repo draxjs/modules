@@ -367,6 +367,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         return item
     }
 
+    async preRead(request: CustomRequest, filters: IDraxFieldFilter[]):Promise<IDraxFieldFilter[]> {
+        return filters
+    }
+
     //Sobrescribir este metodo para manipular items a devolver en operaciones de lectura
     async postRead(request: CustomRequest, item: T) {
         return item
@@ -562,10 +566,10 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const orderBy = request.query.orderBy
             const order = request.query.order
             const search = request.query.search ??= undefined
-            const filters = this.parseFilters(request.query.filters)
-
-
+            let filters = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac);
+
+            filters = await this.preRead(request, filters)
 
             let items = await this.service.find({search, filters, order, orderBy, limit})
 
@@ -582,7 +586,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             request.rbac.assertPermission(this.permission.View)
 
             const search = request.query.search ??= undefined
-            const filters = this.parseFilters(request.query.filters)
+            let filters = this.parseFilters(request.query.filters)
+            filters = await this.preRead(request, filters)
 
             this.applyUserAndTenantFilters(filters, request.rbac);
 
@@ -610,6 +615,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let filters = []
             this.applyUserAndTenantFilters(filters, request.rbac);
+            filters = await this.preRead(request, filters)
 
             let items = await this.service.findBy(field, value, limit, filters)
 
@@ -635,6 +641,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             let filters = []
             this.applyUserAndTenantFilters(filters, request.rbac);
+            filters = await this.preRead(request, filters)
 
             let item = await this.service.findOneBy(field, value, filters)
 
@@ -652,10 +659,11 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         try {
             request.rbac.assertPermission(this.permission.View)
             const search = request.query.search
-            const filters = []
+            let filters = []
             const limit = this.defaultLimit
 
             this.applyUserAndTenantFilters(filters, request.rbac);
+            filters = await this.preRead(request, filters)
 
             let items = await this.service.search(search, limit, filters)
             items = await this.postReadItems(request, items)
@@ -679,9 +687,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const orderBy = request.query.orderBy
             const order = request.query.order
             const search = request.query.search
-            const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
+            let filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac);
-
+            filters = await this.preRead(request, filters)
 
             let paginateResult = await this.service.paginate({page, limit, orderBy, order, search, filters})
             paginateResult = await this.postReadPaginate(request, paginateResult)
@@ -705,9 +713,12 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const orderBy = request.query.orderBy
             const order = request.query.order
             const search = request.query.search
-            const filters = this.parseFilters(request.query.filters)
+            let filters = this.parseFilters(request.query.filters)
 
             this.applyUserAndTenantFilters(filters, request.rbac);
+            filters = await this.preRead(request, filters)
+
+
 
             const year = (new Date().getFullYear()).toString()
             const month = (new Date().getMonth() + 1).toString().padStart(2, '0')
@@ -760,9 +771,9 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 throw new BadRequestError('At least one field is required for grouping')
             }
 
-            const filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
+            let filters: IDraxFieldFilter[] = this.parseFilters(request.query.filters)
             this.applyUserAndTenantFilters(filters, request.rbac)
-
+            filters = await this.preRead(request, filters)
 
             const result = await this.service.groupBy({fields, filters, dateFormat})
 
