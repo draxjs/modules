@@ -14,6 +14,9 @@ import type {IDraxPermission} from "./interfaces/IDraxPermission";
 import type {IDraxExportOptions} from "./interfaces/IDraxExportOptions";
 import type {IDraxExportResult} from "./interfaces/IDraxExportResult";
 import type {IDraxExportResponse} from "./interfaces/IDraxExportResponse";
+import type {IDraxImportOptions} from "./interfaces/IDraxImportOptions";
+import type {IDraxImportResult} from "./interfaces/IDraxImportResult";
+import type {IDraxImportResponse} from "./interfaces/IDraxImportResponse";
 
 import type {IEntityCrud} from "./interfaces/IEntityCrud";
 import type {IEntityCrudOperation} from "./interfaces/IEntityCrudOperation";
@@ -51,6 +54,9 @@ export type {
     IDraxExportOptions,
     IDraxExportResult,
     IDraxExportResponse,
+    IDraxImportOptions,
+    IDraxImportResult,
+    IDraxImportResponse,
     IDraxPermission,
 
     IEntityCrud,

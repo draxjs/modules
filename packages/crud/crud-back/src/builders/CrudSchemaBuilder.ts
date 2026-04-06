@@ -472,6 +472,10 @@ export class CrudSchemaBuilder<
         fastify.get(`${basePath}/export`, (req, rep) => controller.export(req, rep));
       }
 
+      if (options.create !== false) {
+        fastify.post(`${basePath}/import`, (req, rep) => controller.import(req, rep));
+      }
+
       // Search entities
       if (options.search !== false) {
         fastify.get(`${basePath}/search`, (req, rep) => controller.search(req, rep));

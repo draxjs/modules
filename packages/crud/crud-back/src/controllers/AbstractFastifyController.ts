@@ -15,11 +15,14 @@ import {
     IDraxFieldFilter,
     IDraxExportResponse,
     IDraxCrudEvent,
-    IDraxPaginateResult
+    IDraxPaginateResult,
+    IDraxImportResponse
 } from "@drax/crud-share";
 import {join} from "path";
 import QueryFilterRegex from "../regexs/QueryFilterRegex.js";
 import CrudEventEmitter from "../events/CrudEventEmitter.js";
+import ImportCsv from "../imports/ImportCsv.js";
+import ImportCsvReport from "../imports/ImportCsvReport.js";
 
 declare module 'fastify' {
     interface FastifyRequest {
@@ -285,12 +288,22 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         return item
     }
 
+    protected async prepareCreatePayload(request: CustomRequest, payload: any): Promise<C> {
+        this.applyUserAndTenantSetters(payload, request.rbac)
+        return await this.preCreate(request, payload as C)
+    }
+
+    protected getErrorMessage(error: any): string {
+        if (error?.message) {
+            return error.message
+        }
+        return 'Unknown import error'
+    }
+
     async create(request: CustomRequest, reply: FastifyReply) {
         try {
             request.rbac.assertPermission(this.permission.Create)
-            const payload = request.body
-            this.applyUserAndTenantSetters(payload, request.rbac)
-            await this.preCreate(request, payload as C)
+            const payload = await this.prepareCreatePayload(request, request.body)
             let item = await this.service.create(payload as C)
             this.onCreated(request, item)
             item = await this.postCreate(request, item as T)
@@ -753,6 +766,112 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
             return response
 
+        } catch (e) {
+            this.handleError(e, reply)
+        }
+    }
+
+    async import(request: CustomRequest, reply: FastifyReply) {
+        try {
+            request.rbac.assertPermission(this.permission.Create)
+
+            const data = await (request as any).file()
+            if (!data) {
+                throw new BadRequestError('Import file is required')
+            }
+
+            const format = ((request.query.format || data.filename.split('.').pop() || 'json') as string).toUpperCase() as 'CSV' | 'JSON'
+            if (!['CSV', 'JSON'].includes(format)) {
+                throw new BadRequestError(`Unsupported import format: ${format}`)
+            }
+            const separator = request.query.separator || ';'
+            data.file.setEncoding('utf8')
+
+            let rawContent = ''
+            for await (const chunk of data.file) {
+                rawContent += chunk
+            }
+
+            const start = Date.now()
+            let rowCount = 0
+            let successCount = 0
+            let errorCount = 0
+            let reportFileName: string | undefined = undefined
+            let reportUrl: string | undefined = undefined
+
+            if (format === 'CSV') {
+                const importer = new ImportCsv({content: rawContent, separator})
+                const parsedImport = importer.processDetailed()
+                rowCount = parsedImport.rows.length
+
+                const reportRows: Array<{rawValues: string[], status: 'success' | 'error', error?: string}> = []
+
+                for (const row of parsedImport.rows) {
+                    try {
+                        const payload = await this.prepareCreatePayload(request, row.item)
+                        let item = await this.service.create(payload as C)
+                        this.onCreated(request, item)
+                        await this.postCreate(request, item as T)
+                        successCount++
+                        reportRows.push({rawValues: row.rawValues, status: 'success', error: ''})
+                    } catch (e) {
+                        errorCount++
+                        reportRows.push({
+                            rawValues: row.rawValues,
+                            status: 'error',
+                            error: this.getErrorMessage(e)
+                        })
+                    }
+                }
+
+                const year = (new Date().getFullYear()).toString()
+                const month = (new Date().getMonth() + 1).toString().padStart(2, '0')
+                const importPath = 'imports'
+                const destinationPath = join(this.baseFileDir, importPath, year, month)
+
+                const report = await new ImportCsvReport({
+                    destinationPath,
+                    fileName: `${this.entityName.toLowerCase()}_import_report`,
+                    headers: parsedImport.headers,
+                    separator,
+                    rows: reportRows,
+                }).process()
+
+                reportFileName = report.fileName
+                reportUrl = `${this.baseURL}/api/file/${importPath}/${year}/${month}/${report.fileName}`
+            } else {
+                const items = this.service.parseImport({
+                    format,
+                    content: rawContent,
+                    separator,
+                })
+
+                rowCount = items.length
+
+                for (const rawItem of items) {
+                    try {
+                        const payload = await this.prepareCreatePayload(request, rawItem)
+                        let item = await this.service.create(payload as C)
+                        this.onCreated(request, item)
+                        await this.postCreate(request, item as T)
+                        successCount++
+                    } catch (e) {
+                        errorCount++
+                    }
+                }
+            }
+
+            const response: IDraxImportResponse = {
+                rowCount,
+                successCount,
+                errorCount,
+                time: Date.now() - start,
+                message: errorCount > 0 ? 'Import completed with errors' : 'Import successful',
+                fileName: reportFileName,
+                url: reportUrl,
+            }
+
+            return response
         } catch (e) {
             this.handleError(e, reply)
         }

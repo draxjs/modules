@@ -1,7 +1,7 @@
 import type {
     IDraxCrudProvider, IDraxCrudProviderExportResult,
     IDraxPaginateResult, IDraxPaginateOptions,
-    IDraxExportOptions, IDraxFindOptions, IDraxFindOneOptions, IDraxGroupByOptions
+    IDraxExportOptions, IDraxFindOptions, IDraxFindOneOptions, IDraxGroupByOptions, IDraxImportResponse
 } from "@drax/crud-share";
 import AbstractBaseRestProvider from "./AbstractBaseRestProvider.js";
 
@@ -119,6 +119,16 @@ class AbstractCrudRestProvider<T, C, U> extends AbstractBaseRestProvider impleme
         }
         return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
 
+    }
+
+    async import(file: File, format: 'CSV' | 'JSON'): Promise<IDraxImportResponse> {
+        const url = this.basePath + '/import?format=' + format
+        const data = new FormData()
+        data.append('file', file)
+
+        return await this.httpClient.post(url, data, {
+            removeHeaders: ['content-type']
+        }) as IDraxImportResponse
     }
 
 

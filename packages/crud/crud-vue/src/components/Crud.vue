@@ -15,7 +15,7 @@ const {entity} = defineProps({
 
 const {
   onView, onCreate, onEdit, onDelete, resetCrudStore,
-  operation, dialog, notify, message, doExport,
+  operation, dialog, notify, message, doExport, doImport,
   prepareFilters
 } = useCrud(entity);
 
@@ -56,6 +56,7 @@ const {xs} = useDisplay()
           @edit="onEdit"
           @delete="onDelete"
           @export="doExport"
+          @import="doImport"
           @view="onView"
       >
 
@@ -109,6 +110,11 @@ const {xs} = useDisplay()
 
         <template v-slot:export-table="{ exportFiles }">
           <slot name="export-table" :exportFiles="exportFiles">
+          </slot>
+        </template>
+
+        <template v-slot:import-table="{ importFiles }">
+          <slot name="import-table" :importFiles="importFiles">
           </slot>
         </template>
 

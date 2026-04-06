@@ -32,9 +32,13 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
             loading: false,
             inputErrors: null,
             exportLoading: false,
+            importLoading: false,
             exportFiles: [] as string[],
+            importFiles: [] as any[],
             exportListVisible: false,
+            importListVisible: false,
             exportError: false,
+            importError: false,
             visibleColumns: []
         }
     ),
@@ -134,14 +138,29 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
         addExportFile(exportFile: string) {
             this.exportFiles.push(exportFile)
         },
+        setImportFiles(importFiles: any[]) {
+            this.importFiles = importFiles
+        },
+        addImportFile(importFile: any) {
+            this.importFiles.push(importFile)
+        },
         setExportLoading(exportLoading: boolean) {
             this.exportLoading = exportLoading
+        },
+        setImportLoading(importLoading: boolean) {
+            this.importLoading = importLoading
         },
         setExportListVisible(exportListVisible: boolean) {
             this.exportListVisible = exportListVisible
         },
+        setImportListVisible(importListVisible: boolean) {
+            this.importListVisible = importListVisible
+        },
         setExportError(error: boolean){
             this.exportError = error
+        },
+        setImportError(error: boolean){
+            this.importError = error
         },
         setFilters(filters: IDraxFieldFilter[]) {
             this.filters = filters

@@ -13,6 +13,7 @@ import CrudGroupByButton from "./buttons/CrudGroupByButton.vue";
 import CrudColumnsButton from "./buttons/CrudColumnsButton.vue";
 import CrudFilterButton from "./buttons/CrudFilterButton.vue";
 import CrudExportList from "./CrudExportList.vue";
+import CrudImportList from "./CrudImportList.vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import CrudFilters from "./CrudFilters.vue";
@@ -96,7 +97,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
         <crud-import-button
             :entity="entity"
-            @import="(v:any) => $emit('import', v)"
+            @import="(file:any, format:any) => $emit('import', file, format)"
         />
 
         <crud-export-button
@@ -131,6 +132,12 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
           <slot name="export-table" :exportFiles="exportFiles" />
         </template>
       </crud-export-list>
+
+      <crud-import-list :entity="entity">
+        <template #import-table="{ importFiles }">
+          <slot name="import-table" :importFiles="importFiles" />
+        </template>
+      </crud-import-list>
 
       <v-card variant="flat">
         <v-card-text v-if="entity.searchEnable">

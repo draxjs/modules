@@ -6,13 +6,15 @@ import type {
     IDraxPaginateResult,
     IDraxFindOptions,
     IDraxExportOptions,
-    IDraxCrudRepository, IDraxFieldFilter, IDraxGroupByOptions
+    IDraxCrudRepository, IDraxFieldFilter, IDraxGroupByOptions, IDraxImportOptions, IDraxImportResult
 } from "@drax/crud-share";
 import {IDraxCrudService} from "@drax/crud-share";
 import ExportCsv from "../exports/ExportCsv.js";
 import ExportJson from "../exports/ExportJson.js";
 import {IDraxExportResult} from "@drax/crud-share";
 import {IDraxFindOneOptions} from "@drax/crud-share/types/interfaces/IDraxFindOneOptions";
+import ImportCsv from "../imports/ImportCsv.js";
+import ImportJson from "../imports/ImportJson.js";
 
 abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
@@ -474,6 +476,56 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
             throw e;
         }
 
+    }
+
+    parseImport({
+                    format = 'JSON',
+                    content,
+                    separator = ';'
+                }: IDraxImportOptions): C[] {
+        let importer: ImportCsv | ImportJson;
+
+        switch (format) {
+            case 'JSON':
+                importer = new ImportJson({content, separator});
+                break;
+            case 'CSV':
+                importer = new ImportCsv({content, separator});
+                break;
+            default:
+                throw new Error(`Unsupported import format: ${format}`);
+        }
+
+        return importer.process() as C[];
+    }
+
+    async import({
+                     format = 'JSON',
+                     content,
+                     separator = ';'
+                 }: IDraxImportOptions): Promise<IDraxImportResult> {
+        try {
+            const start = Date.now();
+            const items = this.parseImport({format, content, separator});
+
+            for (const item of items) {
+                await this.create(item as C);
+            }
+
+            return {
+                status: 'success',
+                rowCount: items.length,
+                time: Date.now() - start,
+                message: 'Import successful',
+            };
+        } catch (e) {
+            console.error("Error import", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
+            throw e;
+        }
     }
 
 }

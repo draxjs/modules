@@ -20,6 +20,10 @@ async function CountryFastifyRoutes(fastify, options) {
     
     fastify.get('/api/countries/group-by', {schema: schemas.groupBySchema}, (req,rep) => controller.groupBy(req,rep))
 
+    fastify.get('/api/countries/export',  (req,rep) => controller.export(req,rep))
+
+    fastify.post('/api/countries/import', (req,rep) => controller.import(req,rep))
+
     fastify.post('/api/countries', {schema: schemas.createSchema}, (req,rep) =>controller.create(req,rep))
 
     fastify.put('/api/countries/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.update(req,rep))

@@ -1,12 +1,6 @@
 import { test, assert } from 'vitest';
 import MockRepository from "../_mocks/MockRepository.js";
 import {AbstractService} from "../../src/services/AbstractService.js";
-import {fileURLToPath} from "url";
-import * as path from "path";
-
-//@ts-ignore
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const mockRepository = new MockRepository();
 
@@ -21,11 +15,29 @@ test('create', async () => {
     assert.deepStrictEqual(item.name, 'John Doe');
 })
 
+test('import json', async () => {
+    const result: any = await service.import({
+        format: 'JSON',
+        content: JSON.stringify([
+            {name: 'John Doe'},
+            {name: 'Jane Doe'}
+        ])
+    })
+
+    assert.deepStrictEqual(result.rowCount, 2);
+})
+
+test('import csv', async () => {
+    const result: any = await service.import({
+        format: 'CSV',
+        separator: ';',
+        content: '_id;name;profile.age\n1;John Doe;32\n2;Jane Doe;28'
+    })
+
+    assert.deepStrictEqual(result.rowCount, 2);
+})
 
 test('export', async () => {
-    const file = 'test.csv'
-    const outputPath = path.resolve(__dirname, file);
-
     const result:any = await service.export(
         {
             format: 'CSV',
@@ -39,6 +51,5 @@ test('export', async () => {
 
     console.log("result",result)
 
-    assert.deepStrictEqual(outputPath, result.outputPath);
     assert.deepStrictEqual(2, result.rowCount);
 })

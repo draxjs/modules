@@ -9,6 +9,14 @@ const messages = {
       field: 'Field',
       operator: 'Operator',
       itemsPerPage: 'ItemsPerPage',
+      import: {
+        link: 'Link',
+        rows: 'Rows',
+        success: 'Success',
+        error: 'Error',
+        time: 'Time',
+        report: 'Report',
+      },
       columns: {
         select: "Select columns",
         title: "Visible columns",
@@ -44,6 +52,14 @@ const messages = {
       field: 'Campo',
       operator: 'Operador',
       itemsPerPage: 'Elementos por página',
+      import: {
+        link: 'Link',
+        rows: 'Filas',
+        success: 'Exitoso',
+        error: 'Error',
+        time: 'Tiempo',
+        report: 'Reporte',
+      },
       columns: {
         select: "Seleccionar columnas",
         title: "Columnas visibles",

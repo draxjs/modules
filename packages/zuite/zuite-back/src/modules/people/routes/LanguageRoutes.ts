@@ -20,6 +20,10 @@ async function LanguageFastifyRoutes(fastify, options) {
     
     fastify.get('/api/language/group-by', {schema: schemas.groupBySchema}, (req,rep) => controller.groupBy(req,rep))
 
+    fastify.get('/api/language/export',  (req,rep) => controller.export(req,rep))
+
+    fastify.post('/api/language/import', (req,rep) => controller.import(req,rep))
+
     fastify.post('/api/language', {schema: schemas.createSchema}, (req,rep) =>controller.create(req,rep))
 
     fastify.put('/api/language/:id', {schema: schemas.updateSchema}, (req,rep) =>controller.update(req,rep))

@@ -159,6 +159,14 @@ export function useCrud(entity: IEntityCrud) {
         }
     })
 
+    const importFiles = computed({
+        get() {
+            return store.importFiles
+        }, set(value) {
+            store.setImportFiles(value)
+        }
+    })
+
     const exportLoading = computed({
         get() {
             return store.exportLoading
@@ -167,11 +175,35 @@ export function useCrud(entity: IEntityCrud) {
         }
     })
 
+    const importLoading = computed({
+        get() {
+            return store.importLoading
+        }, set(value) {
+            store.setImportLoading(value)
+        }
+    })
+
     const exportListVisible = computed({
         get() {
             return store.exportListVisible
         }, set(value) {
             store.setExportListVisible(value)
+        }
+    })
+
+    const importListVisible = computed({
+        get() {
+            return store.importListVisible
+        }, set(value) {
+            store.setImportListVisible(value)
+        }
+    })
+
+    const importError = computed({
+        get() {
+            return store.importError
+        }, set(value) {
+            store.setImportError(value)
         }
     })
 
@@ -267,6 +299,30 @@ export function useCrud(entity: IEntityCrud) {
             console.error("Error exporting csv", e)
         } finally {
             store.setExportLoading(false)
+        }
+    }
+
+    async function doImport(file: File, format: 'CSV' | 'JSON') {
+        store.setImportLoading(true)
+        store.setImportListVisible(true)
+        store.setImportError(false)
+        try {
+            if (!entity?.provider.import) {
+                throw new Error("provider.import not implemented")
+            }
+
+            const result = await entity.provider.import(file, format)
+            store.addImportFile(result)
+            await doPaginate()
+            store.showMessage(result?.message || "Import successful")
+            return result
+        } catch (e: any) {
+            store.setImportError(true)
+            store.setError(e.message || "An error occurred while importing")
+            console.error("Error importing", e)
+            return {status: 'error'}
+        } finally {
+            store.setImportLoading(false)
         }
     }
 
@@ -475,12 +531,12 @@ export function useCrud(entity: IEntityCrud) {
 
 
     return {
-        doPaginate, doExport, doUpdate, doCreate, doDelete,
+        doPaginate, doExport, doImport, doUpdate, doCreate, doDelete,
         onView, onCreate, onEdit, onDelete, onCancel, onSubmit, resetCrudStore,
         operation, dialog, form, notify, error, paginationError, message, formValid,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
         prepareFilters, filters, clearFilters, applyFilters,
-        exportFiles, exportLoading, exportListVisible, exportError,
+        exportFiles, importFiles, exportLoading, importLoading, exportListVisible, importListVisible, exportError, importError,
         cloneItem, cast, prepareEdit,
         isDynamicFiltersEnable
     }
