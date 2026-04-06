@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-arch",
-  "version": "3.10.0",
+  "version": "3.11.0",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -15,8 +15,8 @@
   "devDependencies": {
     "@drax/arch": "^3.4.1",
     "@drax/common-back": "^3.10.0",
-    "@drax/crud-front": "^3.0.0",
-    "@drax/crud-vue": "^3.10.0",
+    "@drax/crud-front": "^3.11.0",
+    "@drax/crud-vue": "^3.11.0",
     "@tsconfig/recommended": "^1.0.2",
     "@types/node": "^25.2.3",
     "ts-node": "^10.9.2",
