@@ -49,6 +49,8 @@ async function ${entity.name}FastifyRoutes(fastify, options) {
     
     fastify.get('${getApiBasePath(entity)}/export', (req,rep) =>controller.export(req,rep))
     
+    fastify.post('${getApiBasePath(entity)}/import', (req,rep) => controller.import(req,rep))
+    
 }
 
 export default ${entity.name}FastifyRoutes;
