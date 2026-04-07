@@ -7,15 +7,28 @@ import FileModel from "./models/FileModel.js";
 import FileMongoRepository from "./repository/mongo/FileMongoRepository.js";
 import FileSqliteRepository from "./repository/sqlite/FileSqliteRepository.js";
 import FileService from "./services/FileService.js";
+import MediaService from "./services/MediaService.js";
 import FileServiceFactory from "./factory/services/FileServiceFactory.js";
 import FileController from "./controllers/FileController.js";
 import type { IFile, IFileBase } from "./interfaces/IFile";
 import type { IFileRepository } from "./interfaces/IFileRepository";
+import type {
+    IMediaCreatedBy,
+    IMediaSaveFileParams,
+    IMediaSaveFileResult,
+    IMediaGetFileParams,
+    IMediaGetFileResult,
+} from "./services/MediaService.js";
 
 export type {
     IFile,
     IFileBase,
-    IFileRepository
+    IFileRepository,
+    IMediaCreatedBy,
+    IMediaSaveFileParams,
+    IMediaSaveFileResult,
+    IMediaGetFileParams,
+    IMediaGetFileResult,
 }
 
 export {
@@ -33,6 +46,7 @@ export {
     FileMongoRepository,
     FileSqliteRepository,
     FileService,
+    MediaService,
     FileServiceFactory,
     FileController
 }

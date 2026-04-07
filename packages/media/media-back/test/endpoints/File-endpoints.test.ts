@@ -1,8 +1,8 @@
 import { describe, it, beforeAll, afterAll, expect } from "vitest"
-import FileRoutes from "../../../../src/routes/FileRoutes.js"
-import FilePermissions from "../../../../src/permissions/FilePermissions.js"
-import TestSetup from "../../../setup/TestSetup.js"
-import type { IFileBase } from "../../../../src/interfaces/IFile.js"
+import FileRoutes from "../../src/routes/FileRoutes.js"
+import FilePermissions from "../../src/permissions/FilePermissions.js"
+import TestSetup from "../setup/TestSetup.js"
+import type { IFileBase } from "../../src/interfaces/IFile.js"
 
 describe("File Endpoints Test", function () {
 

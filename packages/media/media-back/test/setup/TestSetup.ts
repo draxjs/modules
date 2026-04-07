@@ -1,5 +1,8 @@
 import Fastify, { FastifyInstance, FastifyPluginAsync } from "fastify";
 import { LoadCommonConfigFromEnv } from "@drax/common-back";
+import fastifyMultipart from "@fastify/multipart";
+import fastifyStatic from "@fastify/static";
+import path from "node:path";
 import {
     LoadIdentityConfigFromEnv,
     CreateTenantIfNotExist,
@@ -72,6 +75,9 @@ class TestSetup {
         // Define environment variables
         process.env.DRAX_DB_ENGINE = "mongo";
         process.env.DRAX_JWT_SECRET = "xxx";
+        process.env.DRAX_FILE_DIR = "packages/media/media-back/test/store";
+        process.env.DRAX_BASE_URL = "http://localhost";
+        process.env.DRAX_MAX_UPLOAD_SIZE = "1000000";
     }
 
     setupConfig() {
@@ -108,6 +114,11 @@ class TestSetup {
             reply.status(500).send({ statusCode: 500, error: "InternalServerError", message: error?.message });
         });
         this._fastifyInstance.setValidatorCompiler(() => () => true)
+        this._fastifyInstance.register(fastifyMultipart as any)
+        this._fastifyInstance.register(fastifyStatic as any, {
+            root: path.resolve(process.cwd(), process.env.DRAX_FILE_DIR || "packages/media/media-back/test/store"),
+            prefix: "/",
+        })
         this._fastifyInstance.addHook('onRequest', jwtMiddleware)
         this._fastifyInstance.addHook('onRequest', rbacMiddleware)
         this._fastifyInstance.addHook('onRequest', apiKeyMiddleware)
