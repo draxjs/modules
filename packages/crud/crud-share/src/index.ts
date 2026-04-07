@@ -72,7 +72,6 @@ export type {
     IEntityCrudOnInput,
     IEntityCrudRefs,
 
-
     IDynamicForm,
     IDynamicFormBase
 }

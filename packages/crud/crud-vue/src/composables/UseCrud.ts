@@ -3,13 +3,14 @@ import type {
     IDraxPaginateResult,
     IEntityCrud,
     IEntityCrudFilter,
+    IEntityCrudOperation
 } from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {computed, nextTick, toRaw} from "vue";
 import getItemId from "../helpers/getItemId";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
-import type {IEntityCrudFilterDynamic} from "@drax/crud-share/types/interfaces/IEntityCrudFilterDynamic";
+
 
 export function useCrud(entity: IEntityCrud) {
 
@@ -55,6 +56,14 @@ export function useCrud(entity: IEntityCrud) {
         }
     })
 
+    const getOperation = computed(() => {
+        return store.operation
+    })
+
+    const setOperation = (operation: IEntityCrudOperation) => {
+        store.setOperation(operation)
+    }
+
     const form = computed({
         get() {
             return store.form
@@ -62,6 +71,14 @@ export function useCrud(entity: IEntityCrud) {
             store.setForm(value)
         }
     })
+
+    const getForm = computed(() => {
+        return store.form
+    })
+
+    const setForm = (form: any) => {
+        store.setForm(form)
+    }
 
     const formValid = computed({
         get() {
@@ -216,7 +233,7 @@ export function useCrud(entity: IEntityCrud) {
     })
 
     const prepareDynamicFilters = computed(() => {
-        return store.dynamicFilters.map((filter: IEntityCrudFilterDynamic) => {
+        return store.dynamicFilters.map((filter: IEntityCrudFilter) => {
             return {
                 field: filter.name,
                 operator: filter.operator,
@@ -533,7 +550,9 @@ export function useCrud(entity: IEntityCrud) {
     return {
         doPaginate, doExport, doImport, doUpdate, doCreate, doDelete,
         onView, onCreate, onEdit, onDelete, onCancel, onSubmit, resetCrudStore,
-        operation, dialog, form, notify, error, paginationError, message, formValid,
+        dialog,  notify, error, paginationError, message, formValid,
+        form, getForm, setForm,
+        operation, getOperation, setOperation,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
         prepareFilters, filters, clearFilters, applyFilters,
         exportFiles, importFiles, exportLoading, importLoading, exportListVisible, importListVisible, exportError, importError,

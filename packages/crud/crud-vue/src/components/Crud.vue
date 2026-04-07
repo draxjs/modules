@@ -16,7 +16,7 @@ const {entity} = defineProps({
 const {
   onView, onCreate, onEdit, onDelete, resetCrudStore,
   operation, dialog, notify, message, doExport, doImport,
-  prepareFilters
+  prepareFilters, form
 } = useCrud(entity);
 
 onBeforeMount(() => {
@@ -130,7 +130,8 @@ const {xs} = useDisplay()
 
       </slot>
 
-      <slot name="form">
+      <slot name="form" v-bind="{form, operation}">
+
         <crud-form
             :entity="entity"
             @created="item => emit('created', item)"

@@ -23,6 +23,10 @@ import {Crud} from "@drax/crud-vue";
     </template>
 
 
+<!--    <template v-slot:form="{form, operation}">-->
+<!--    THE FORM {{form}} {{operation}}-->
+<!--    </template>-->
+
   </crud>
 </template>
 
