@@ -1,6 +1,7 @@
 import type {IAuthProvider} from "../interfaces/IAuthProvider";
 import type {IAuthFullUser} from "../interfaces/IAuthFullUser";
 import type {ILoginResponse} from "../interfaces/ILoginResponse";
+import type {IPasswordPolicy} from "../interfaces/IPasswordPolicy";
 import type {IUserRegistration} from "../interfaces/IUserRegistration";
 
 class AuthSystem implements IAuthProvider {
@@ -29,6 +30,11 @@ class AuthSystem implements IAuthProvider {
     async me():Promise<IAuthFullUser> {
         const authUser: IAuthFullUser = await this._provider.me()
         return authUser
+    }
+
+    async passwordPolicy():Promise<IPasswordPolicy> {
+        const result: IPasswordPolicy = await this._provider.passwordPolicy()
+        return result
     }
 
     async changeOwnPassword(currentPassword:string, newPassword:string):Promise<boolean> {

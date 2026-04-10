@@ -20,6 +20,7 @@ import basicUserData from "./data/basic-user";
 
 import {IUser, IRole} from "@drax/identity-share";
 import MongoInMemory from "./MongoInMemory";
+import {randomUUID} from "crypto";
 
 class TestSetup {
 
@@ -29,8 +30,12 @@ class TestSetup {
     private _basicUser: IUser;
     private _adminRole: IRole;
     private _restrictedRole: IRole;
+    private readonly dbEngine: "mongo" | "sqlite";
+    private readonly sqliteFile: string;
 
-    constructor() {
+    constructor(dbEngine: "mongo" | "sqlite" = "mongo", sqliteFile?: string) {
+        this.dbEngine = dbEngine
+        this.sqliteFile = sqliteFile || `/tmp/drax-identity-back-${randomUUID()}.sqlite`
     }
 
     async setup() {
@@ -45,8 +50,11 @@ class TestSetup {
 
     setupEnvironmentVariables() {
         // Define environment variables
-        process.env.DRAX_DB_ENGINE = "mongo";
+        process.env.DRAX_DB_ENGINE = this.dbEngine;
         process.env.DRAX_JWT_SECRET = "xxx";
+        if (this.dbEngine === "sqlite") {
+            process.env.DRAX_SQLITE_FILE = this.sqliteFile;
+        }
     }
 
     setupConfig() {
@@ -80,6 +88,9 @@ class TestSetup {
     }
 
     async setupMongoInMemoryAndConnect() {
+        if (this.dbEngine !== "mongo") {
+            return
+        }
         this._mongoInMemory = new MongoInMemory();
         await this._mongoInMemory.connect();
     }
@@ -95,11 +106,18 @@ class TestSetup {
     }
 
     async dropData() {
-        await this._mongoInMemory.dropData()
+        if (this._mongoInMemory) {
+            await this._mongoInMemory.dropData()
+        }
     }
 
     async dropAndClose() {
-        await this._mongoInMemory.dropAndClose()
+        if (this._fastifyInstance) {
+            await this._fastifyInstance.close()
+        }
+        if (this._mongoInMemory) {
+            await this._mongoInMemory.dropAndClose()
+        }
     }
 
     async login(username: string, password: string): Promise<{accessToken: string}> {

@@ -10,6 +10,7 @@ import {
 } from "../schemas/PasswordSchema.js";
 import {SwitchTenantBodyRequestSchema, SwitchTenantBodyResponseSchema} from "../schemas/SwitchTenantSchema.js";
 import zod from "zod"
+import {PasswordPolicySchema} from "../schemas/PasswordPolicySchema.js";
 
 async function UserRoutes(fastify, options) {
 
@@ -43,6 +44,16 @@ async function UserRoutes(fastify, options) {
             },
         },
         (req, rep) => controller.auth(req, rep))
+
+    fastify.get('/api/auth/password-policy', {
+        schema: {
+            tags: ['Auth'],
+            response: {
+                200: zod.toJSONSchema(PasswordPolicySchema),
+                500: schemas.jsonErrorBodyResponse,
+            },
+        },
+    }, (req, rep) => controller.passwordPolicy(req, rep))
 
     fastify.get('/api/auth/me', {
         schema: {

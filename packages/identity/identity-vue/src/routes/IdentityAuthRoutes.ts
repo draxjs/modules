@@ -1,6 +1,7 @@
 import LoginPage from '../pages/LoginPage.vue'
 import ProfilePage from '../pages/ProfilePage.vue'
 import PasswordPage from '../pages/PasswordChangePage.vue'
+import PasswordPolicyPage from '../pages/PasswordPolicyPage.vue'
 import RegistrationPage from '../pages/RegistrationPage.vue'
 import PasswordRecoveryRequestPage from '../pages/PasswordRecoveryRequestPage.vue'
 import PasswordRecoveryCompletePage from '../pages/PasswordRecoveryCompletePage.vue'
@@ -34,6 +35,14 @@ const routes = [
         name: 'Registration',
         path: '/registration',
         component: RegistrationPage,
+        meta: {
+            auth: false,
+        }
+    },
+    {
+        name: 'PasswordPolicy',
+        path: '/password-policy',
+        component: PasswordPolicyPage,
         meta: {
             auth: false,
         }

@@ -5,6 +5,8 @@ import TenantServiceFactory from "./factory/TenantServiceFactory.js";
 import UserApiKeyServiceFactory from "./factory/UserApiKeyServiceFactory.js";
 import UserLoginFailServiceFactory from "./factory/UserLoginFailServiceFactory.js";
 import UserSessionServiceFactory from "./factory/UserSessionServiceFactory.js";
+import PasswordPolicyServiceFactory from "./factory/PasswordPolicyServiceFactory.js";
+import UserPasswordHistoryServiceFactory from "./factory/UserPasswordHistoryServiceFactory.js";
 
 import RoleService from "./services/RoleService.js";
 import UserService from "./services/UserService.js";
@@ -13,6 +15,9 @@ import PermissionService from "./services/PermissionService.js";
 import UserApiKeyService from "./services/UserApiKeyService.js";
 import UserSessionService from "./services/UserSessionService.js";
 import UserLoginFailService from "./services/UserLoginFailService.js";
+import UserPasswordHistoryService from "./services/UserPasswordHistoryService.js";
+import PasswordPolicyService from "./services/PasswordPolicyService.js";
+import PasswordPolicyResolver from "./resolver/PasswordPolicyResolver.js";
 
 import Rbac from "./rbac/Rbac.js";
 
@@ -29,6 +34,7 @@ import {rbacMiddleware} from "./middleware/rbacMiddleware.js";
 import {apiKeyMiddleware} from "./middleware/apiKeyMiddleware.js";
 
 import IdentityConfig from "./config/IdentityConfig.js";
+import PasswordPolicyConfig from "./config/PasswordPolicyConfig.js";
 import BadCredentialsError from "./errors/BadCredentialsError.js";
 
 import CreateUserIfNotExist from "./setup/CreateUserIfNotExist.js";
@@ -37,6 +43,7 @@ import CreateOrUpdateRole from "./setup/CreateOrUpdateRole.js";
 import LoadPermissions from "./setup/LoadPermissions.js";
 import LoadIdentityConfigFromEnv from "./setup/LoadIdentityConfigFromEnv.js";
 import RecoveryUserPassword from "./setup/RecoveryUserPassword.js";
+import SetProjectPasswordPolicy from "./setup/SetProjectPasswordPolicy.js";
 
 import type {IRoleRepository} from "./interfaces/IRoleRepository";
 import type {ITenantRepository} from "./interfaces/ITenantRepository";
@@ -44,6 +51,7 @@ import type {IUserRepository} from "./interfaces/IUserRepository";
 import type {IUserApiKeyRepository} from "./interfaces/IUserApiKeyRepository";
 import type {IUserLoginFailRepository} from "./interfaces/IUserLoginFailRepository";
 import type {IUserSessionRepository} from "./interfaces/IUserSessionRepository";
+import type {IUserPasswordHistoryRepository} from "./interfaces/IUserPasswordHistoryRepository";
 
 import {RoleModel, RoleMongoSchema} from "./models/RoleModel.js";
 import {TenantModel, TenantMongoSchema} from "./models/TenantModel.js";
@@ -51,6 +59,7 @@ import {UserModel, UserMongoSchema} from "./models/UserModel.js";
 import {UserApiKeyModel, UserApiKeyMongoSchema} from "./models/UserApiKeyModel.js";
 import {UserSessionModel,UserSessionMongoSchema} from "./models/UserSessionModel.js";
 import {UserLoginFailModel,UserLoginFailMongoSchema} from "./models/UserLoginFailModel.js";
+import {UserPasswordHistoryModel, UserPasswordHistoryMongoSchema} from "./models/UserPasswordHistoryModel.js";
 
 
 import RoleMongoRepository from "./repository/mongo/RoleMongoRepository.js";
@@ -59,6 +68,7 @@ import UserMongoRepository from "./repository/mongo/UserMongoRepository.js";
 import UserApiKeyMongoRepository from "./repository/mongo/UserApiKeyMongoRepository.js";
 import UserSessionMongoRepository from "./repository/mongo/UserSessionMongoRepository.js";
 import UserLoginFailMongoRepository from "./repository/mongo/UserLoginFailMongoRepository.js";
+import UserPasswordHistoryMongoRepository from "./repository/mongo/UserPasswordHistoryMongoRepository.js";
 
 import RoleSqliteRepository from "./repository/sqlite/RoleSqliteRepository.js";
 import TenantSqliteRepository from "./repository/sqlite/TenantSqliteRepository.js";
@@ -66,6 +76,7 @@ import UserSqliteRepository from "./repository/sqlite/UserSqliteRepository.js";
 import UserApiKeySqliteRepository from "./repository/sqlite/UserApiKeySqliteRepository.js";
 import UserLoginFailSqliteRepository from "./repository/sqlite/UserLoginFailSqliteRepository.js";
 import UserSessionSqliteRepository from "./repository/sqlite/UserSessionSqliteRepository.js";
+import UserPasswordHistorySqliteRepository from "./repository/sqlite/UserPasswordHistorySqliteRepository.js";
 
 
 import {RolePermissions} from "./permissions/RolePermissions.js";
@@ -81,6 +92,8 @@ import {RoleSchema, RoleBaseSchema} from "./schemas/RoleSchema.js";
 import {UserApiKeySchema, UserApiKeyBaseSchema} from "./schemas/UserApiKeySchema.js";
 import {UserLoginFailBaseSchema, UserLoginFailSchema} from "./schemas/UserLoginFailSchema.js";
 import {UserSessionBaseSchema, UserSessionSchema} from "./schemas/UserSessionSchema.js";
+import {defaultPasswordPolicy} from "./policies/defaultPasswordPolicy.js";
+import {PasswordPolicySchema} from "./schemas/PasswordPolicySchema.js";
 
 
 const graphqlMergeResult = await GraphqlMerge()
@@ -95,6 +108,7 @@ export type {
     IUserApiKeyRepository,
     IUserLoginFailRepository,
     IUserSessionRepository,
+    IUserPasswordHistoryRepository,
 }
 
 export {
@@ -118,6 +132,9 @@ export {
     UserApiKeyService,
     UserSessionService,
     UserLoginFailService,
+    UserPasswordHistoryService,
+    PasswordPolicyService,
+    PasswordPolicyResolver,
     PermissionService,
     Rbac,
 
@@ -128,6 +145,8 @@ export {
     UserApiKeyServiceFactory,
     UserSessionServiceFactory,
     UserLoginFailServiceFactory,
+    UserPasswordHistoryServiceFactory,
+    PasswordPolicyServiceFactory,
 
     //GQL
     identityTypeDefs,
@@ -163,6 +182,7 @@ export {
     UserApiKeyMongoRepository,
     UserSessionMongoRepository,
     UserLoginFailMongoRepository,
+    UserPasswordHistoryMongoRepository,
 
     //Mongo Models
     RoleModel,
@@ -171,6 +191,7 @@ export {
     UserApiKeyModel,
     UserSessionModel,
     UserLoginFailModel,
+    UserPasswordHistoryModel,
 
     RoleMongoSchema,
     TenantMongoSchema,
@@ -178,6 +199,7 @@ export {
     UserApiKeyMongoSchema,
     UserSessionMongoSchema,
     UserLoginFailMongoSchema,
+    UserPasswordHistoryMongoSchema,
 
     //Sqlite Repositories
     RoleSqliteRepository,
@@ -186,12 +208,16 @@ export {
     UserApiKeySqliteRepository,
     UserLoginFailSqliteRepository,
     UserSessionSqliteRepository,
+    UserPasswordHistorySqliteRepository,
 
     //Config
     IdentityConfig,
+    PasswordPolicyConfig,
 
     //Errors
     BadCredentialsError,
+    defaultPasswordPolicy,
+    PasswordPolicySchema,
 
     //Setup
     LoadIdentityConfigFromEnv,
@@ -199,7 +225,6 @@ export {
     CreateOrUpdateRole,
     CreateUserIfNotExist,
     CreateTenantIfNotExist,
-    RecoveryUserPassword
+    RecoveryUserPassword,
+    SetProjectPasswordPolicy
 }
-
-

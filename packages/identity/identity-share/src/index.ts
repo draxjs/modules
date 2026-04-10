@@ -9,7 +9,7 @@ import type {IRole, IRoleBase, IRolePermissions} from "./interfaces/IRole";
 import type {ITenant, ITenantBase} from "./interfaces/ITenant";
 import type {IUserGroup, IUserGroupBase} from "./interfaces/IUserGroup";
 import type {IUserApiKey, IUserApiKeyBase, IUserApiKeySoftDelete} from "./interfaces/IUserApiKey";
-
+import type {IPasswordPolicy, IPasswordPolicyProject} from "./interfaces/IPasswordPolicy";
 
 
 export type {
@@ -21,5 +21,6 @@ export type {
     IUserGroup, IUserGroupBase,
     IRole, IRoleBase, IRolePermissions,
     ITenant, ITenantBase,
-    IUserApiKey, IUserApiKeyBase, IUserApiKeySoftDelete
+    IUserApiKey, IUserApiKeyBase, IUserApiKeySoftDelete,
+    IPasswordPolicy, IPasswordPolicyProject
 }

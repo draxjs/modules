@@ -6,7 +6,7 @@ const user = {
   groups: [],
   username:  "root",
   email: "root@example.com",
-  password: "123",
+  password: "Root1234",
   name: "root",
   phone: "123456789",
   avatar: "asd",

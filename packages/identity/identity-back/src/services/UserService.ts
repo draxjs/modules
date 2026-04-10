@@ -11,12 +11,20 @@ import {AbstractService} from "@drax/crud-back";
 import {randomUUID} from "crypto"
 import UserLoginFailServiceFactory from "../factory/UserLoginFailServiceFactory.js";
 import UserSessionServiceFactory from "../factory/UserSessionServiceFactory.js";
+import type PasswordPolicyService from "./PasswordPolicyService";
+import PasswordPolicyServiceFactory from "../factory/PasswordPolicyServiceFactory.js";
+import type UserPasswordHistoryService from "./UserPasswordHistoryService.js";
+import UserPasswordHistoryServiceFactory from "../factory/UserPasswordHistoryServiceFactory.js";
 
 class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
     _repository: IUserRepository
 
-    constructor(userRepository: IUserRepository) {
+    constructor(
+        userRepository: IUserRepository,
+        private readonly passwordPolicyService: PasswordPolicyService = PasswordPolicyServiceFactory(),
+        private readonly userPasswordHistoryService: UserPasswordHistoryService = UserPasswordHistoryServiceFactory()
+    ) {
         super(userRepository, UserBaseSchema);
         this._repository = userRepository;
     }
@@ -75,7 +83,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         user = await this.findByEmail(email)
 
         if (!user && createIfNotFound) {
-            userData.password = userData.password ? userData.password : randomUUID()
+            userData.password = userData.password ? userData.password : await this.passwordPolicyService.generateCompatiblePassword()
             userData.active = userData.active === undefined ? true : userData.active
             user = await this.create(userData)
         }
@@ -105,8 +113,14 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     async changeUserPassword(userId: string, newPassword: string):Promise<IUser> {
         const user = await this._repository.findByIdWithPassword(userId)
         if (user) {
-            newPassword = AuthUtils.hashPassword(newPassword)
-            await this._repository.changePassword(userId, newPassword)
+            await this.passwordPolicyService.validatePassword(newPassword,  {
+                field: 'newPassword',
+                userId,
+                currentPasswordHash: user.password
+            })
+            const newPasswordHash = AuthUtils.hashPassword(newPassword)
+            await this._repository.changePassword(userId, newPasswordHash)
+            await this.userPasswordHistoryService.create(userId, newPasswordHash)
             delete user.password
             return user
         } else {
@@ -124,8 +138,14 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             }
 
             if (AuthUtils.checkPassword(currentPassword, user.password)) {
-                newPassword = AuthUtils.hashPassword(newPassword)
-                await this._repository.changePassword(userId, newPassword)
+                await this.passwordPolicyService.validatePassword(newPassword,  {
+                    field: 'newPassword',
+                    userId,
+                    currentPasswordHash: user.password
+                })
+                const newPasswordHash = AuthUtils.hashPassword(newPassword)
+                await this._repository.changePassword(userId, newPasswordHash)
+                await this.userPasswordHistoryService.create(userId, newPasswordHash)
                 delete user.password
                 return user
             } else {
@@ -167,8 +187,14 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         try {
             const user = await this._repository.findByRecoveryCode(recoveryCode)
             if (user && user.active) {
-                newPassword = AuthUtils.hashPassword(newPassword)
-                await this._repository.changePassword(user._id, newPassword)
+                await this.passwordPolicyService.validatePassword(newPassword, {
+                    field: 'newPassword',
+                    userId: user._id.toString(),
+                    currentPasswordHash: user.password
+                })
+                const newPasswordHash = AuthUtils.hashPassword(newPassword)
+                await this._repository.changePassword(user._id, newPasswordHash)
+                await this.userPasswordHistoryService.create(user._id.toString(), newPasswordHash)
                 await this._repository.updatePartial(user._id, {recoveryCode: null})
                 return user
             } else {
@@ -237,10 +263,13 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             userData.tenant = userData.tenant === "" ? null : userData.tenant
 
             await UserCreateSchema.parseAsync(userData)
+            await this.passwordPolicyService.validatePassword(userData.password)
 
-            userData.password = AuthUtils.hashPassword(userData.password.trim())
+            const passwordHash = AuthUtils.hashPassword(userData.password.trim())
+            userData.password = passwordHash
 
             const user: IUser = await this._repository.create(userData)
+            await this.userPasswordHistoryService.create(user._id.toString(), passwordHash)
             return user
         } catch (e) {
             console.error("Error creating user", e)

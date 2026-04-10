@@ -2,7 +2,7 @@ import {IUserCreate} from "@drax/identity-share";
 
 const USER1: IUserCreate = {
     active: true,
-    password: "12345678",
+    password: "User1234",
     phone: "",
     role: "",
     name: "John Wick",
@@ -11,7 +11,7 @@ const USER1: IUserCreate = {
 }
 const USER2: IUserCreate = {
     active: true,
-    password: "12345678",
+    password: "User1234",
     phone: "",
     role: "",
     name: "John Rambo",
@@ -20,7 +20,7 @@ const USER2: IUserCreate = {
 }
 const USER3: IUserCreate = {
     active: true,
-    password: "12345678",
+    password: "User1234",
     phone: "",
     role: "",
     name: "John Depp",

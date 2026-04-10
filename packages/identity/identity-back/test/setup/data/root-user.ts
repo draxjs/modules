@@ -4,7 +4,7 @@ const rootUser = {
   groups: [],
   name: "Root",
   username:  "root",
-  password: "root.123",
+  password: "Root1234",
   email: "root@example.com",
   phone: "123456789",
   role: "Admin"

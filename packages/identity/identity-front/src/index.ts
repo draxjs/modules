@@ -50,6 +50,7 @@ import type {IUserApiKeyProvider} from "./interfaces/IUserApiKeyProvider"
 import type {IAuthFullUser} from "./interfaces/IAuthFullUser"
 import type {IUserPassword} from "./interfaces/IUserPassword"
 import type {ILoginResponse} from "./interfaces/ILoginResponse"
+import type {IPasswordPolicy} from "./interfaces/IPasswordPolicy"
 import type {IUserRegistration} from "./interfaces/IUserRegistration"
 
 export type {
@@ -61,6 +62,7 @@ export type {
     IAuthFullUser,
     IUserPassword,
     ILoginResponse,
+    IPasswordPolicy,
     IUserRegistration
 }
 
