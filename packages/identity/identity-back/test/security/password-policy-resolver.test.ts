@@ -24,13 +24,12 @@ describe("PasswordPolicyResolver", () => {
 
     it("project policy overrides default policy", async () => {
         const resolver = new PasswordPolicyResolver()
-        const policy = await resolver.resolve({
-            projectPolicy: {minLength: 12, requireSpecialChar: true}
-        })
+        resolver.setProjectPolicy({minLength: 12, requireUppercase: false, requireSpecialChar: true})
+        const policy = await resolver.resolve()
 
         expect(policy.minLength).toBe(12)
         expect(policy.requireSpecialChar).toBe(true)
-        expect(policy.requireUppercase).toBe(true)
+        expect(policy.requireUppercase).toBe(false)
     })
 
     it("env policy overrides project policy", async () => {
@@ -38,9 +37,7 @@ describe("PasswordPolicyResolver", () => {
         process.env.PASSWORD_POLICY_REQUIRE_SPECIAL_CHAR = "false"
 
         const resolver = new PasswordPolicyResolver()
-        const policy = await resolver.resolve({
-            projectPolicy: {minLength: 12, requireSpecialChar: true}
-        })
+        const policy = await resolver.resolve()
 
         expect(policy.minLength).toBe(16)
         expect(policy.requireSpecialChar).toBe(false)
@@ -50,9 +47,8 @@ describe("PasswordPolicyResolver", () => {
         process.env.PASSWORD_POLICY_MIN_LENGTH = ""
 
         const resolver = new PasswordPolicyResolver()
-        const policy = await resolver.resolve({
-            projectPolicy: {minLength: 14}
-        })
+        resolver.setProjectPolicy({minLength: 14})
+        const policy = await resolver.resolve()
 
         expect(policy.minLength).toBe(14)
     })
