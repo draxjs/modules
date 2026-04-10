@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, computed} from 'vue'
 import {useAuth} from "../../composables/useAuth.js";
 import {ClientError} from "@drax/common-front";
 import type {IClientInputError} from "@drax/common-front";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router"
+import { usePasswordValidation } from "../../composables/usePasswordValidation";
 
 const {t,te} = useI18n()
 const {$ta} = useI18nValidation()
@@ -13,6 +14,8 @@ const {$ta} = useI18nValidation()
 const router = useRouter()
 
 const {register} = useAuth()
+
+const { passwordRulesState, passwordComplexityRule } = usePasswordValidation()
 
 const variant = ref<"outlined" | "plain" | "filled" | "underlined" | "solo" | "solo-inverted" | "solo-filled" | undefined>('filled')
 
@@ -33,12 +36,21 @@ const success = ref(false)
 let passwordVisibility = ref(false)
 let confirmPasswordVisibility = ref(false)
 
+const isFormValid = computed(() => {
+  if (!form.value.password || !form.value.confirmPassword) return false
+  if (form.value.password.trim() !== form.value.confirmPassword.trim()) return false
+  return passwordComplexityRule(form.value.password) === true
+})
 
 function confirmPasswordRule(value: string) {
   return form.value.password.trim() === form.value.confirmPassword.trim() || t('validation.password.confirmed')
 }
 
+const passwordRules = computed(() => passwordRulesState(form.value.password))
+
 async function submitRegistration() {
+  if (!isFormValid.value) return
+  
   try {
     loading.value = true
     const result = await register(form.value)
@@ -144,7 +156,19 @@ async function submitRegistration() {
                     @click:append-inner="passwordVisibility = !passwordVisibility"
                     autocomplete="new-password"
                     :error-messages="$ta(inputErrors?.newPassword)"
+                    :rules="[passwordComplexityRule]"
                 ></v-text-field>
+                <div v-if="passwordRules.length">
+                  <div v-for="(rule, index) in passwordRules" :key="index" class="d-flex align-center">
+                    <v-icon :color="rule.valid ? 'success' : 'grey'" size="18" class="mr-2">
+                      {{ rule.valid ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                    </v-icon>
+
+                    <span :class="rule.valid ? 'text-success' : 'text-grey'">
+                      {{ rule.label }}
+                    </span>
+                  </div>
+                </div>
                 <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.confirmPassword') }}</div>
                 <!-- CONFIRM PASSWORD-->
                 <v-text-field
@@ -179,6 +203,7 @@ async function submitRegistration() {
                     id="submit-button"
                     type="submit"
                     :loading="loading"
+                    :disabled="!isFormValid"
                 >
                   {{ t('action.sent') }}
                 </v-btn>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import UserPasswordForm from "./UserPasswordForm.vue";
-import { type PropType, ref} from "vue";
+import { type PropType, ref, computed } from "vue";
 import type {IUserPassword} from "@drax/identity-front";
 import type {IUser} from "@drax/identity-share";
 import {UserSystemFactory} from "@drax/identity-front";
 import {ClientError, type IClientInputError} from "@drax/common-front";
 import {useI18n} from "vue-i18n";
+import { usePasswordValidation } from "../../composables/usePasswordValidation";
 
 const {t} = useI18n()
 
@@ -17,13 +18,22 @@ const {user} = defineProps({
 
 const userSystem = UserSystemFactory.getInstance()
 
-let passwordForm = ref<IUserPassword>({newPassword: "", confirmPassword: ""})
-let passwordChanged = ref(false);
-let inputErrors = ref<IClientInputError>()
-let loading = ref(false);
-let userError = ref<string>('')
+ const { passwordComplexityRule } = usePasswordValidation()
+ let passwordForm = ref<IUserPassword>({newPassword: "", confirmPassword: ""})
+ let passwordChanged = ref(false);
+ let inputErrors = ref<IClientInputError>()
+ let loading = ref(false);
+ let userError = ref<string>('')
+
+const isFormValid = computed(() => {
+  const { newPassword, confirmPassword } = passwordForm.value
+  if (!newPassword || !confirmPassword) return false
+  if (newPassword !== confirmPassword) return false
+  return passwordComplexityRule(newPassword) === true
+})
 
 async function savePassword() {
+  if (!isFormValid.value) return
   if (passwordForm.value.newPassword === passwordForm.value.confirmPassword) {
     await changeUserPassword(user._id, passwordForm.value.newPassword)
     passwordChanged.value = true
@@ -77,6 +87,7 @@ async function changeUserPassword(id: string, newPassword: string) {
             color="primary"
             @click="savePassword"
             :loading="loading"
+            :disabled="!isFormValid"
         >
           {{ t('action.change') }}
         </v-btn>
