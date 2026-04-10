@@ -55,6 +55,13 @@ describe("CacheTest", ()=>{
         const cachedValue = await cache.get(key);
         assert.equal(cachedValue, expectedValue, 'El valor debe estar presente en la caché después de cargarlo');
     });
-})
 
+    test('verificar compatibilidad del constructor con namespace', async () => {
+        const cache = new DraxCache<string>(1000, 'entityName');
+        await cache.set('shared-id', 'namespaced-value');
+
+        const value = await cache.get('shared-id');
+        assert.equal(value, 'namespaced-value', 'El valor debe recuperarse correctamente con namespace configurado');
+    });
+})
 

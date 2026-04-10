@@ -6,6 +6,7 @@ import LocalCacheAdapter from './LocalCacheAdapter.js';
 class RedisCacheAdapter<T> implements ICacheAdapter<T> {
     private client: RedisClientType;
     private ttl: number;
+    private keyPrefix?: string;
     private isConnected: boolean = false;
     private fallbackAdapter: LocalCacheAdapter<T>;
     private reconnectAttempts: number = 0;
@@ -16,9 +17,10 @@ class RedisCacheAdapter<T> implements ICacheAdapter<T> {
     private operationsSinceLastCheck: number = 0;
     private operationsThresholdForCheck: number = 100; // Intentar reconectar cada 100 operaciones
 
-    constructor(redisUrl: string, ttl: number = 10000) {
+    constructor(redisUrl: string, ttl: number = 10000, namespace?: string) {
         this.ttl = ttl;
-        this.fallbackAdapter = new LocalCacheAdapter<T>(ttl);
+        this.keyPrefix = namespace ? `${namespace}:` : undefined;
+        this.fallbackAdapter = new LocalCacheAdapter<T>(ttl, this.keyPrefix);
         this.client = createClient({
             url: redisUrl,
             socket: {
@@ -57,6 +59,27 @@ class RedisCacheAdapter<T> implements ICacheAdapter<T> {
 
         this.initializeConnection();
         this.startHealthCheck();
+    }
+
+    private getStorageKey(k: string): string {
+        return this.keyPrefix ? `${this.keyPrefix}${k}` : k;
+    }
+
+    private async clearNamespace(): Promise<void> {
+        if (!this.keyPrefix) {
+            await this.client.flushDb();
+            return;
+        }
+
+        for await (const keys of this.client.scanIterator({
+            MATCH: `${this.keyPrefix}*`,
+            COUNT: 100,
+        })) {
+            const batch = Array.isArray(keys) ? keys : [keys];
+            if (batch.length > 0) {
+                await this.client.del(batch);
+            }
+        }
     }
 
     private async initializeConnection(): Promise<void> {
@@ -122,12 +145,13 @@ class RedisCacheAdapter<T> implements ICacheAdapter<T> {
 
     async set(k: string, v: T, ttl?: number): Promise<void> {
         await this.checkConnectionAndReconnect();
+        const storageKey = this.getStorageKey(k);
 
         if (this.isConnected) {
             try {
                 const effectiveTTL = ttl ?? this.ttl;
                 const serialized = JSON.stringify(v);
-                await this.client.setEx(k, Math.floor(effectiveTTL / 1000), serialized);
+                await this.client.setEx(storageKey, Math.max(1, Math.floor(effectiveTTL / 1000)), serialized);
             } catch (error) {
                 console.warn('Error setting value in Redis, falling back to local cache:', (error as Error).message);
                 this.isConnected = false;
@@ -140,10 +164,11 @@ class RedisCacheAdapter<T> implements ICacheAdapter<T> {
 
     async get(k: string): Promise<T | undefined> {
         await this.checkConnectionAndReconnect();
+        const storageKey = this.getStorageKey(k);
 
         if (this.isConnected) {
             try {
-                const value = await this.client.get(k);
+                const value = await this.client.get(storageKey);
                 if (value === null) {
                     return undefined;
                 }
@@ -165,10 +190,11 @@ class RedisCacheAdapter<T> implements ICacheAdapter<T> {
 
     async has(k: string): Promise<boolean> {
         await this.checkConnectionAndReconnect();
+        const storageKey = this.getStorageKey(k);
 
         if (this.isConnected) {
             try {
-                const exists = await this.client.exists(k);
+                const exists = await this.client.exists(storageKey);
                 return exists === 1;
             } catch (error) {
                 console.warn('Error checking key in Redis, falling back to local cache:', (error as Error).message);
@@ -182,10 +208,11 @@ class RedisCacheAdapter<T> implements ICacheAdapter<T> {
 
     async delete(k: string): Promise<boolean> {
         await this.checkConnectionAndReconnect();
+        const storageKey = this.getStorageKey(k);
 
         if (this.isConnected) {
             try {
-                const result = await this.client.del(k);
+                const result = await this.client.del(storageKey);
                 return result === 1;
             } catch (error) {
                 console.warn('Error deleting key from Redis, falling back to local cache:', (error as Error).message);
@@ -202,7 +229,7 @@ class RedisCacheAdapter<T> implements ICacheAdapter<T> {
 
         if (this.isConnected) {
             try {
-                await this.client.flushDb();
+                await this.clearNamespace();
             } catch (error) {
                 console.warn('Error clearing Redis, falling back to local cache:', (error as Error).message);
                 this.isConnected = false;

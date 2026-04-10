@@ -9,7 +9,7 @@ import {ZodError} from "zod";
 class SettingService extends AbstractService<ISetting, ISettingBase, ISettingBase> {
 
     protected _repository: ISettingRepository
-    protected _cache: DraxCache<ISetting> = new DraxCache()
+    protected _cache: DraxCache<ISetting> = new DraxCache({ namespace: 'settings:setting' })
 
     constructor(repostitory: ISettingRepository) {
         super(repostitory, settingSchema)

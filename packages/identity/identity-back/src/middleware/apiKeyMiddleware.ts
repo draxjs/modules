@@ -6,7 +6,7 @@ import IdentityConfig from "../config/IdentityConfig.js";
 const verifyIp = DraxConfig.getOrLoad(IdentityConfig.VerifyIP, 'boolean', true);
 const cacheTTL = DraxConfig.getOrLoad(IdentityConfig.ApiKeyCacheTTL, 'number',10000)
 
-const draxCache = new DraxCache<IUserApiKey>(cacheTTL);
+const draxCache = new DraxCache<IUserApiKey>({ ttl: cacheTTL, namespace: 'identity:api-key' });
 
 
 async function userApiKeyLoader(k): Promise<IUserApiKey | null> {

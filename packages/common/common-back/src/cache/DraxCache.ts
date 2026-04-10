@@ -7,20 +7,30 @@ import CommonConfig from "../config/CommonConfig.js";
 const TTL_DEFAULT = DraxConfig.getOrLoad(CommonConfig.DraxCacheTTL, 'number',10000)
 const REDIS_URL = DraxConfig.getOrLoad(CommonConfig.DraxCacheRedisURL,'string',undefined);
 
+interface DraxCacheOptions {
+    ttl?: number;
+    namespace?: string;
+}
+
 class DraxCache<T> {
     private adapter: ICacheAdapter<T>;
     private redisAdapter?: RedisCacheAdapter<T>;
     private ttl: number;
 
-    constructor(ttl: number = TTL_DEFAULT) {
-        this.ttl = ttl;
+    constructor(ttlOrOptions: number | DraxCacheOptions = TTL_DEFAULT, namespace?: string) {
+        const options: DraxCacheOptions = typeof ttlOrOptions === 'number'
+            ? { ttl: ttlOrOptions, namespace }
+            : ttlOrOptions;
+
+        this.ttl = options.ttl ?? TTL_DEFAULT;
         const redisUrl = REDIS_URL;
+        const cacheNamespace = options.namespace?.trim() || undefined;
 
         if (redisUrl) {
-            this.redisAdapter = new RedisCacheAdapter<T>(redisUrl, ttl);
+            this.redisAdapter = new RedisCacheAdapter<T>(redisUrl, this.ttl, cacheNamespace);
             this.adapter = this.redisAdapter;
         } else {
-            this.adapter = new LocalCacheAdapter<T>(ttl);
+            this.adapter = new LocalCacheAdapter<T>(this.ttl, cacheNamespace);
         }
     }
 
@@ -82,3 +92,4 @@ class DraxCache<T> {
 
 export default DraxCache;
 export { DraxCache };
+export type { DraxCacheOptions };
