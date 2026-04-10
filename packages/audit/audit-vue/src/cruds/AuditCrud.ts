@@ -246,6 +246,14 @@ class AuditCrud extends EntityCrud implements IEntityCrud {
         return true
     }
 
+    get sortBy(){
+        return 'createdAt'
+    }
+
+    get sortOrder(): 'desc' | 'asc' {
+        return 'desc'
+    }
+
 
 }
 

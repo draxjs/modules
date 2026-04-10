@@ -23,8 +23,8 @@ class UserApiKeyCrud extends EntityCrud implements IEntityCrud {
   get permissions(){
     return {
       manage: 'userApiKey:manage',
-      view: 'userApiKey:viewMy',
-      create: 'userApiKey:createMy',
+      view: 'userApiKey:view',
+      create: 'userApiKey:create',
       update: 'userApiKey:update',
       delete: 'userApiKey:delete'
     }

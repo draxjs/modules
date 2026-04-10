@@ -532,6 +532,12 @@ export function useCrud(entity: IEntityCrud) {
         store.setFilters(staticFilters)
     }
 
+    function prepareSort(){
+        if(entity.sortBy){
+            store.setSortBy([{key: entity.sortBy, order: entity.sortOrder}])
+        }
+    }
+
     async function clearFilters() {
         prepareFilters()
         store.setSearch("")
@@ -554,7 +560,7 @@ export function useCrud(entity: IEntityCrud) {
         form, getForm, setForm,
         operation, getOperation, setOperation,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
-        prepareFilters, filters, clearFilters, applyFilters,
+        prepareFilters, filters, clearFilters, applyFilters, prepareSort,
         exportFiles, importFiles, exportLoading, importLoading, exportListVisible, importListVisible, exportError, importError,
         cloneItem, cast, prepareEdit,
         isDynamicFiltersEnable

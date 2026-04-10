@@ -16,12 +16,13 @@ const {entity} = defineProps({
 const {
   onView, onCreate, onEdit, onDelete, resetCrudStore,
   operation, dialog, notify, message, doExport, doImport,
-  prepareFilters, form
+  prepareFilters, prepareSort, form
 } = useCrud(entity);
 
 onBeforeMount(() => {
   resetCrudStore()
   prepareFilters()
+  prepareSort()
 })
 
 const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])

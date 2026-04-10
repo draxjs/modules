@@ -14,15 +14,14 @@ export default {
 
 
                 rbac.assertOrPermissions([
-                    UserApiKeyPermissions.View,
-                    UserApiKeyPermissions.ViewMy
+                    UserApiKeyPermissions.View
                 ])
 
                 if(!Array.isArray(options.filters)){
                     options.filters = []
                 }
 
-                if(!rbac.hasPermission(UserApiKeyPermissions.View)){
+                if(!rbac.hasPermission(UserApiKeyPermissions.ViewAll)){
                     options.filters.push({field: "user", operator: "eq", value: rbac.userId})
                 }
 

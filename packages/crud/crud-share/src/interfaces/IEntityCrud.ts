@@ -24,6 +24,8 @@ interface IEntityCrud {
   deleteFields: IEntityCrudField[]
   viewFields: IEntityCrudField[]
   filters: IEntityCrudFilter[]
+  sortBy?: string | undefined
+  sortOrder: 'desc' | 'asc'
   form: IEntityCrudForm
   formFilters: IDraxFieldFilter[]
   isViewable: boolean

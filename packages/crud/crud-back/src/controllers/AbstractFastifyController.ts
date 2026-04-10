@@ -300,9 +300,25 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         return 'Unknown import error'
     }
 
+    protected assertCreatePermission(request: CustomRequest) {
+        request.rbac.assertPermission(this.permission.Create)
+    }
+
+    protected assertReadPermission(request: CustomRequest) {
+        request.rbac.assertPermission(this.permission.View)
+    }
+
+    protected assertUpdatePermission(request: CustomRequest) {
+        request.rbac.assertPermission(this.permission.Update)
+    }
+
+    protected assertDeletePermission(request: CustomRequest) {
+        request.rbac.assertPermission(this.permission.Delete)
+    }
+
     async create(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.Create)
+            this.assertCreatePermission(request)
             const payload = await this.prepareCreatePayload(request, request.body)
             let item = await this.service.create(payload as C)
             this.onCreated(request, item)
@@ -323,7 +339,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async update(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.Update)
+            this.assertUpdatePermission(request)
             if (!request.params.id) {
                 reply.statusCode = 400
                 reply.send({error: 'BAD REQUEST'})
@@ -418,7 +434,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async updatePartial(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.Update)
+            this.assertUpdatePermission(request)
             if (!request.params.id) {
                 reply.statusCode = 400
                 reply.send({error: 'BAD REQUEST'})
@@ -477,7 +493,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async delete(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.Delete)
+            this.assertDeletePermission(request)
             if (!request.params.id) {
                 reply.statusCode = 400
                 reply.send({error: 'BAD REQUEST'})
@@ -519,7 +535,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async findById(request: CustomRequest, reply: FastifyReply): Promise<T> {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
             if (!request.params.id) {
                 reply.statusCode = 400
                 reply.send({error: 'BAD REQUEST'})
@@ -549,7 +565,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async findByIds(request: CustomRequest, reply: FastifyReply): Promise<T[]> {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
             if (!request.params.ids) {
                 reply.statusCode = 400
                 reply.send({error: 'BAD REQUEST'})
@@ -571,7 +587,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async find(request: CustomRequest, reply: FastifyReply): Promise<T[]> {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
 
             if (request.query.limit > this.maximumLimit) {
                 throw new LimitError(this.maximumLimit, request.query.limit)
@@ -597,7 +613,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async findOne(request: CustomRequest, reply: FastifyReply): Promise<T> {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
 
             const search = request.query.search ??= undefined
             let filters = this.parseFilters(request.query.filters)
@@ -617,7 +633,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async findBy(request: CustomRequest, reply: FastifyReply): Promise<T[]> {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
             if (!request.params.field || !request.params.value) {
                 reply.statusCode = 400
                 reply.send({error: 'BAD REQUEST'})
@@ -644,7 +660,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async findOneBy(request: CustomRequest, reply: FastifyReply): Promise<T> {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
             if (!request.params.field || !request.params.value) {
                 reply.statusCode = 400
                 reply.send({error: 'BAD REQUEST'})
@@ -671,7 +687,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async search(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
             const search = request.query.search
             let filters = []
             const limit = this.defaultLimit
@@ -689,7 +705,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async paginate(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
 
 
             if (request.query.limit > this.maximumLimit) {
@@ -716,7 +732,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async export(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
 
             const format = request.query.format as 'CSV' | 'JSON' || 'JSON'
             const headers = request.query.headers ? request.query.headers.split(",") : []
@@ -773,7 +789,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async import(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.Create)
+            this.assertCreatePermission(request)
 
             const data = await (request as any).file()
             if (!data) {
@@ -879,7 +895,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
 
     async groupBy(request: CustomRequest, reply: FastifyReply) {
         try {
-            request.rbac.assertPermission(this.permission.View)
+            this.assertReadPermission(request)
 
             const fields: string[] = request.query.fields ?
                 request.query.fields.split(',').map(f => f.trim()).filter(f => f.length > 0) :

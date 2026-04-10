@@ -1,10 +1,9 @@
 enum UserApiKeyPermissions {
     Create = "userApiKey:create",
-    CreateMy = "userApiKey:createMy",
     Update = "userApiKey:update",
     Delete = "userApiKey:delete",
     View = "userApiKey:view",
-    ViewMy = "userApiKey:viewMy",
+    ViewAll = "userApiKey:viewAll",
     Manage = "userApiKey:manage",
 
 }

@@ -85,6 +85,14 @@ class EntityCrud implements IEntityCrud {
     ]
   }
 
+  get sortBy(): string | undefined {
+    return undefined
+  }
+
+  get sortOrder(): 'desc' | 'asc' {
+    return 'asc'
+  }
+
   objectFields(field: IEntityCrudField) {
     let value: any = {}
     if (field.objectFields) {
