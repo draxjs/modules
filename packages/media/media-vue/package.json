@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.14.0",
+  "version": "3.15.0",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@drax/crud-share": "^3.14.0",
-    "@drax/crud-vue": "^3.14.0",
+    "@drax/crud-vue": "^3.15.0",
     "@drax/media-front": "^3.0.0"
   },
   "peerDependencies": {
