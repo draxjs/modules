@@ -1,6 +1,8 @@
 import {useAuthStore} from "../stores/AuthStore";
 import {AuthHelper, AuthSystemFactory} from "@drax/identity-front";
 import type {AuthSystem} from "@drax/identity-front";
+import type {IPasswordPolicy} from "@drax/identity-front";
+import {HttpRestClientFactory} from "@drax/common-front";
 import {useRouter} from 'vue-router'
 
 export function useAuth() {
@@ -9,6 +11,7 @@ export function useAuth() {
     const router = useRouter()
 
     const authSystem: AuthSystem = AuthSystemFactory.getInstance()
+    const httpRestClient = HttpRestClientFactory.getInstance()
 
     const login = async (username: string, password: string) => {
         const {accessToken} = await authSystem.login(username, password)
@@ -36,6 +39,10 @@ export function useAuth() {
 
     const changeOwnPassword = async (currentPassword: string, newPassword: string) => {
         return await authSystem.changeOwnPassword(currentPassword, newPassword)
+    }
+
+    const passwordPolicy = async () => {
+        return await httpRestClient.get('/api/auth/password-policy') as IPasswordPolicy
     }
 
     const recoveryPasswordRequest = async (email: string) => {
@@ -99,7 +106,7 @@ export function useAuth() {
         login, logout, loginWithToken,
         tokenIsValid, hasPermission,
         isAuthenticated, fetchAuthUser,
-        changeOwnPassword, changeAvatar,
+        changeOwnPassword, changeAvatar, passwordPolicy,
         recoveryPasswordRequest, recoveryPasswordComplete,
         register, switchTenant
     }

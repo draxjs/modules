@@ -3,6 +3,7 @@ import type {IHttpClient} from '@drax/common-front'
 import type {IAuthProvider} from "../../interfaces/IAuthProvider";
 import type {IAuthFullUser} from "../../interfaces/IAuthFullUser";
 import type {ILoginResponse} from "../../interfaces/ILoginResponse";
+import type {IPasswordPolicy} from "../../interfaces/IPasswordPolicy";
 import type {IUserRegistration} from "../../interfaces/IUserRegistration";
 
 
@@ -46,6 +47,11 @@ class AuthRestProvider implements IAuthProvider {
             const url = '/api/auth/me'
             let r = await this.httpClient.get(url) as IAuthFullUser
             return r
+    }
+
+    async passwordPolicy(): Promise<IPasswordPolicy> {
+        const url = '/api/auth/password-policy'
+        return await this.httpClient.get(url) as IPasswordPolicy
     }
 
     async changeOwnPassword(currentPassword: string, newPassword: string): Promise<boolean> {

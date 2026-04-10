@@ -8,9 +8,7 @@ const RegisterBodyRequestSchema = z.object({
     email: email("validation.email.invalid"),
     phone: string({ error: "validation.required" }).optional(),
     password: string({ error: "validation.required" })
-        .min(1, "validation.required")
-        .min(8, "validation.password.min8")
-        .max(64, "validation.password.max64"),
+        .min(1, "validation.required"),
 });
 
 const RegisterBodyResponseSchema = z.object({

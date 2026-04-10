@@ -7,6 +7,7 @@ import CrudList from "./components/CrudList.vue";
 import CrudListTable from "./components/CrudListTable.vue";
 import CrudListGallery from "./components/CrudListGallery.vue";
 import CrudFilters from "./components/CrudFilters.vue";
+import CrudFiltersAction from "./components/CrudFiltersAction.vue";
 import CrudNotify from "./components/CrudNotify.vue";
 import CrudSearch from "./components/CrudSearch.vue";
 import CrudAutocomplete from "./components/CrudAutocomplete.vue";
@@ -33,6 +34,7 @@ export {
     CrudSearch,
     CrudAutocomplete,
     CrudFilters,
+    CrudFiltersAction,
     useCrud,
     useFormUtils,
     useCrudStore,

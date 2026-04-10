@@ -1,5 +1,6 @@
 import type {IAuthFullUser} from "./IAuthFullUser";
 import type {ILoginResponse} from "./ILoginResponse";
+import type {IPasswordPolicy} from "./IPasswordPolicy";
 import type {IUserRegistration} from "./IUserRegistration";
 
 interface IAuthProvider {
@@ -7,6 +8,7 @@ interface IAuthProvider {
     me(): Promise<IAuthFullUser>
     switchTenant(tenantId: string): Promise<ILoginResponse>
     logout(): void
+    passwordPolicy(): Promise<IPasswordPolicy>
     changeOwnPassword(currentPassword:string, newPassword:string):Promise<boolean>
     recoveryPasswordRequest(email:string):Promise<boolean>
     recoveryPasswordComplete(recoveryCode:string, newPassword:string):Promise<boolean>

@@ -6,7 +6,7 @@ import {USER1} from "./data/users-data"
 
 describe("User Route Test", async function () {
 
-    let testSetup = new TestSetup()
+    let testSetup = new TestSetup("sqlite")
 
     beforeAll(async () => {
         await testSetup.setup()
@@ -91,7 +91,7 @@ describe("User Route Test", async function () {
 
         const items = await getResp.json();
         expect(getResp.statusCode).toBe(200);
-        expect(items[0].name).toBe(USER1.name);
+        expect(items.some((item) => item._id === result._id && item.name === USER1.name)).toBe(true);
     })
 
 
@@ -123,7 +123,7 @@ describe("User Route Test", async function () {
         const respPassword = await testSetup.fastifyInstance.inject({
             method: 'POST',
             url: '/api/users/password/change',
-            payload: {currentPassword: "basic.123", newPassword: "newpass"},
+            payload: {currentPassword: "Basic1234", newPassword: "Newpass123"},
             headers: {Authorization: `Bearer ${accessToken}`}
         });
 
@@ -141,7 +141,7 @@ describe("User Route Test", async function () {
         const respPassword = await testSetup.fastifyInstance.inject({
             method: 'POST',
             url: '/api/users/password/change/'+testSetup.rootUser._id,
-            payload: {currentPassword: "root.123", newPassword: "newpass"},
+            payload: {currentPassword: "Root1234", newPassword: "Newpass123"},
             headers: {Authorization: `Bearer ${accessToken}`}
         });
 
@@ -150,6 +150,19 @@ describe("User Route Test", async function () {
 
         console.log("resultPassword", resultPassword)
 
+    })
+
+    it("should return effective password policy", async () => {
+        const resp = await testSetup.fastifyInstance.inject({
+            method: 'GET',
+            url: '/api/auth/password-policy',
+        });
+
+        const result = await resp.json();
+        expect(resp.statusCode).toBe(200);
+        expect(result.minLength).toBe(8);
+        expect(result.requireUppercase).toBe(true);
+        expect(result.preventReuse).toBe(3);
     })
 
 

@@ -3,6 +3,8 @@ import UserService from "../services/UserService.js";
 import UserSqliteRepository from "../repository/sqlite/UserSqliteRepository.js";
 import {IUserRepository} from "../interfaces/IUserRepository";
 import {COMMON, CommonConfig, DraxConfig} from "@drax/common-back";
+import PasswordPolicyServiceFactory from "./PasswordPolicyServiceFactory.js";
+import UserPasswordHistoryServiceFactory from "./UserPasswordHistoryServiceFactory.js";
 
 let userService: UserService
 
@@ -22,7 +24,11 @@ const UserServiceFactory = (verbose:boolean = false) : UserService => {
                 throw new Error("DraxConfig.DB_ENGINE must be one of " + Object.values(COMMON.DB_ENGINES).join(", "));
         }
 
-        userService = new UserService(userRepository)
+        userService = new UserService(
+            userRepository,
+            PasswordPolicyServiceFactory(verbose),
+            UserPasswordHistoryServiceFactory(verbose)
+        )
     }
 
     return userService
