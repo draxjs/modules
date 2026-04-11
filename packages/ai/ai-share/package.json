@@ -1,0 +1,26 @@
+{
+  "name": "@drax/ai-share",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "3.15.0",
+  "description": "AI share across modules",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prepublish": "tsc",
+    "tscrun": "tsc",
+    "clean": "rm -rf dist",
+    "tsc": "tsc -b tsconfig.json"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.9.3"
+  },
+  "gitHead": "e0ef450276ded01fd9e957e30ff18b409cd11fa9"
+}

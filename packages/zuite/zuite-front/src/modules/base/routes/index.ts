@@ -4,6 +4,7 @@ import GoogleLoginCallback from "@/modules/base/pages/google/GoogleLoginCallback
 import PoliticaPrivacidad from "@/modules/base/pages/info/PoliticaPrivacidad.vue";
 import CondicionesServicio from "@/modules/base/pages/info/CondicionesServicio.vue";
 import LabPage from "@/modules/base/pages/lab/LabPage.vue";
+import AiTestPage from "@/modules/base/pages/ai/AiTestPage.vue";
 
 const index = [
   {
@@ -26,6 +27,14 @@ const index = [
     name: 'Lab',
     path: '/lab',
     component: LabPage,
+    meta: {
+      auth: true,
+    }
+  },
+  {
+    name: 'AiTest',
+    path: '/ai-test',
+    component: AiTestPage,
     meta: {
       auth: true,
     }

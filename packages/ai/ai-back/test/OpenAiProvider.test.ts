@@ -6,6 +6,97 @@ import {IPromptMemory, IPromptMessage} from "../src/interfaces/IAIProvider";
 
 describe('OpenAi Test', () => {
 
+    test('OpenAi prompt supports image inputs and vision model fallback', async () => {
+        let request: any
+
+        class MockedOpenAiProvider extends OpenAiProvider {
+            constructor() {
+                super('test-key', 'gpt-4.1-mini', 'gpt-4o-mini')
+                this._client = {
+                    chat: {
+                        completions: {
+                            create: async (payload: any) => {
+                                request = payload
+                                return {
+                                    choices: [{message: {content: '{"name":"invoice"}'}}],
+                                    usage: {
+                                        total_tokens: 10,
+                                        prompt_tokens: 7,
+                                        completion_tokens: 3
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        const openAi = new MockedOpenAiProvider()
+
+        const r = await openAi.prompt({
+            systemPrompt: 'Extract invoice data',
+            userInput: 'Read this invoice',
+            userImages: [{url: 'data:image/png;base64,abc123', detail: 'high'}]
+        })
+
+        expect(r.output).toBe('{"name":"invoice"}')
+        expect(request.model).toBe('gpt-4o-mini')
+        expect(request.messages[1]).toEqual({
+            role: 'user',
+            content: [
+                {type: 'text', text: 'Read this invoice'},
+                {
+                    type: 'image_url',
+                    image_url: {
+                        url: 'data:image/png;base64,abc123',
+                        detail: 'high'
+                    }
+                }
+            ]
+        })
+    })
+
+    test('OpenAi prompt keeps default model for text-only inputs', async () => {
+        let request: any
+
+        class MockedOpenAiProvider extends OpenAiProvider {
+            constructor() {
+                super('test-key', 'gpt-4.1-mini', 'gpt-4o-mini')
+                this._client = {
+                    chat: {
+                        completions: {
+                            create: async (payload: any) => {
+                                request = payload
+                                return {
+                                    choices: [{message: {content: 'Buenos Aires'}}],
+                                    usage: {
+                                        total_tokens: 8,
+                                        prompt_tokens: 6,
+                                        completion_tokens: 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        const openAi = new MockedOpenAiProvider()
+
+        await openAi.prompt({
+            systemPrompt: 'You are an AI assistant.',
+            userInput: 'What is the capital of Argentina?'
+        })
+
+        expect(request.model).toBe('gpt-4.1-mini')
+        expect(request.messages[1]).toEqual({
+            role: 'user',
+            content: 'What is the capital of Argentina?'
+        })
+    })
+
     test('OpenAi Factory', () => {
         const openAi = OpenAiProviderFactory.instance()
         expect(openAi).toBeInstanceOf(OpenAiProvider)

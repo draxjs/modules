@@ -2,6 +2,7 @@ import {DraxConfig} from "@drax/common-back";
 import OpenAiConfig from "../config/OpenAiConfig.js";
 import type {IAIProvider} from "../interfaces/IAIProvider"
 import OpenAiProvider from "../providers/OpenAiProvider.js";
+import AILogServiceFactory from "./services/AILogServiceFactory.js";
 
 class OpenAiProviderFactory {
     private static singleton: IAIProvider;
@@ -10,7 +11,9 @@ class OpenAiProviderFactory {
         if (!OpenAiProviderFactory.singleton) {
             OpenAiProviderFactory.singleton = new OpenAiProvider(
                 DraxConfig.getOrLoad(OpenAiConfig.OpenAiApiKey),
-                DraxConfig.getOrLoad(OpenAiConfig.OpenAiModel)
+                DraxConfig.getOrLoad(OpenAiConfig.OpenAiModel),
+                DraxConfig.getOrLoad(OpenAiConfig.OpenAiVisionModel),
+                AILogServiceFactory.instance
             );
         }
         return OpenAiProviderFactory.singleton;
@@ -21,4 +24,3 @@ export default OpenAiProviderFactory
 export {
     OpenAiProviderFactory
 }
-

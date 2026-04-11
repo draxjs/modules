@@ -18,6 +18,8 @@ import {DynamicFormRoutes} from "@drax/dynamic-back";
 import {DashboardRoutes} from "@drax/dashboard-back";
 import {AuditRoutes} from "@drax/audit-back";
 import {SettingRoutes} from "@drax/settings-back";
+import {AILogRoutes} from "@drax/ai-back";
+import {AiTestRoutes} from "../modules/base/routes/AiTestRoutes.js";
 const {typeDefs, resolvers} = await ModuleMerger()
 
 function YogaFastifyServerFactory(rootDir:string) {
@@ -27,22 +29,7 @@ function YogaFastifyServerFactory(rootDir:string) {
     server.fastifyHook('onRequest',apiKeyMiddleware)
     server.fastifyHook('onRequest',rbacMiddleware)
 
-    // server.fastifyHook('preSerialization', async (request, reply, payload) => {
-    //     try {
-    //         if (payload) {
-    //             console.log('🔍 Pre-Serialization Debug:')
-    //             console.log('   URL:', request.url)
-    //             console.log('   Method:', request.method)
-    //             console.log('   Status:', reply.statusCode)
-    //             console.log('   Payload type:', typeof payload)
-    //             console.log('   Payload:', JSON.stringify(payload, null, 2))
-    //         }
-    //         return payload
-    //     } catch (error) {
-    //         console.error('❌ Error en preSerialization:', error)
-    //         throw error
-    //     }
-    // })
+
 
 
     server.fastifyRegister(UserRoutes)
@@ -63,6 +50,10 @@ function YogaFastifyServerFactory(rootDir:string) {
     server.fastifyRegister(DynamicFormRoutes)
     server.fastifyRegister(DashboardRoutes)
     server.fastifyRegister(AuditRoutes)
+
+    server.fastifyRegister(AILogRoutes)
+    server.fastifyRegister(AiTestRoutes)
+
     return server
 }
 

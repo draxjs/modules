@@ -115,6 +115,13 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'file:manage'
       },
+      {
+        icon: 'mdi-robot',
+        text:'ailog.menu',
+        link: { name: "AILogCrudPage" },
+        gallery: true,
+        permission: 'ailog:manage'
+      },
     ]
   }
 

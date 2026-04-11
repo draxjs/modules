@@ -11,6 +11,7 @@ class CountrySqliteRepository extends AbstractSqliteRepository<ICountry, ICountr
     protected dataBaseFile: string;
     protected searchFields: string[] = ['name'];
     protected booleanFields: string[] = [];
+    protected jsonFields: string[] = ['metadata'];
     protected identifier: string = '_id';
     protected populateFields = [
         { field: 'tenant', table: 'tenant', identifier: '_id' },

@@ -1,5 +1,5 @@
 
-import {EntityCrud} from "@drax/crud-vue";
+import {EntityCrud, useCrudStore} from "@drax/crud-vue";
 import type{
   IDraxCrudProvider,
   IEntityCrud,
@@ -19,10 +19,12 @@ import {UserCrud} from "@drax/identity-vue"
 class CountryCrud extends EntityCrud implements IEntityCrud {
 
   static singleton: CountryCrud
+  private store
 
   constructor() {
     super();
     this.name = 'Country'
+    this.store = useCrudStore(this.name)
   }
   
   static get instance(): CountryCrud {

@@ -11,6 +11,7 @@ class FileSqliteRepository extends AbstractSqliteRepository<IFile, IFileBase, IF
     protected dataBaseFile: string;
     protected searchFields: string[] = ['filename', 'relativePath', 'absolutePath', 'url', 'description', 'tags', 'mimetype', 'extension', 'type'];
     protected booleanFields: string[] = ['isPublic'];
+    protected jsonFields: string[] = ['tags', 'createdBy', 'updatedBy'];
     protected identifier: string = '_id';
     protected populateFields = [
         

@@ -28,6 +28,7 @@
     "@drax/media-vue": "^3.15.0",
     "@drax/settings-front": "^3.0.0",
     "@drax/settings-vue": "^3.15.0",
+    "@drax/ai-vue": "^3.15.0",
     "@mdi/font": "7.4.47",
     "core-js": "^3.34.0",
     "deepmerge": "^4.3.1",

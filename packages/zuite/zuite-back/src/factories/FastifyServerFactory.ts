@@ -18,6 +18,7 @@ import {DynamicFormRoutes} from "@drax/dynamic-back";
 import {DashboardRoutes} from "@drax/dashboard-back";
 import {AuditRoutes} from "@drax/audit-back";
 import {SettingRoutes} from "@drax/settings-back";
+import {AiTestRoutes} from "../modules/base/routes/AiTestRoutes.js";
 
 function FastifyServerFactory(rootDir:string) {
     const server = new FastifyServer(rootDir);
@@ -46,6 +47,7 @@ function FastifyServerFactory(rootDir:string) {
     server.fastifyRegister(DynamicFormRoutes)
     server.fastifyRegister(DashboardRoutes)
     server.fastifyRegister(AuditRoutes)
+    server.fastifyRegister(AiTestRoutes)
     return server
 }
 

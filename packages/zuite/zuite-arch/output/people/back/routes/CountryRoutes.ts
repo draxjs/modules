@@ -30,6 +30,8 @@ async function CountryFastifyRoutes(fastify, options) {
     
     fastify.get('/api/countries/export', (req,rep) =>controller.export(req,rep))
     
+    fastify.post('/api/countries/import', (req,rep) => controller.import(req,rep))
+    
 }
 
 export default CountryFastifyRoutes;

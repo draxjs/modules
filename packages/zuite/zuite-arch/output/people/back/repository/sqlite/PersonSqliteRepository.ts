@@ -11,6 +11,7 @@ class PersonSqliteRepository extends AbstractSqliteRepository<IPerson, IPersonBa
     protected dataBaseFile: string;
     protected searchFields: string[] = ['fullname', 'hobbies', 'race', 'interests'];
     protected booleanFields: string[] = ['live'];
+    protected jsonFields: string[] = ['hobbies', 'interests', 'address', 'skills'];
     protected identifier: string = '_id';
     protected populateFields = [
         { field: 'nationality', table: 'nationality', identifier: '_id' },

@@ -30,6 +30,8 @@ async function PersonFastifyRoutes(fastify, options) {
     
     fastify.get('/api/person/export', (req,rep) =>controller.export(req,rep))
     
+    fastify.post('/api/person/import', (req,rep) => controller.import(req,rep))
+    
 }
 
 export default PersonFastifyRoutes;

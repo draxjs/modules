@@ -11,6 +11,7 @@ class LanguageSqliteRepository extends AbstractSqliteRepository<ILanguage, ILang
     protected dataBaseFile: string;
     protected searchFields: string[] = ['name'];
     protected booleanFields: string[] = [];
+    protected jsonFields: string[] = [];
     protected identifier: string = '_id';
     protected populateFields = [
         

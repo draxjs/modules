@@ -1,5 +1,5 @@
 
-import {EntityCrud} from "@drax/crud-vue";
+import {EntityCrud, useCrudStore} from "@drax/crud-vue";
 import type{
   IDraxCrudProvider,
   IEntityCrud,
@@ -18,10 +18,12 @@ import FileProvider from "../providers/FileProvider";
 class FileCrud extends EntityCrud implements IEntityCrud {
 
   static singleton: FileCrud
+  private store
 
   constructor() {
     super();
     this.name = 'File'
+    this.store = useCrudStore(this.name)
   }
   
   static get instance(): FileCrud {

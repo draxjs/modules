@@ -30,6 +30,8 @@ async function FileFastifyRoutes(fastify, options) {
     
     fastify.get('/api/file/export', (req,rep) =>controller.export(req,rep))
     
+    fastify.post('/api/file/import', (req,rep) => controller.import(req,rep))
+    
 }
 
 export default FileFastifyRoutes;

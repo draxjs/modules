@@ -30,6 +30,8 @@ async function LanguageFastifyRoutes(fastify, options) {
     
     fastify.get('/api/language/export', (req,rep) =>controller.export(req,rep))
     
+    fastify.post('/api/language/import', (req,rep) => controller.import(req,rep))
+    
 }
 
 export default LanguageFastifyRoutes;
