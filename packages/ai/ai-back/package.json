@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.15.0",
+  "version": "3.16.0",
   "description": "Ai utils",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -18,8 +18,8 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
+    "@drax/ai-share": "^3.16.0",
     "@drax/crud-back": "^3.15.0",
-    "@drax/ai-share": "^3.14.0",
     "mongoose": "^8.23.0",
     "mongoose-paginate-v2": "^1.8.3"
   },
