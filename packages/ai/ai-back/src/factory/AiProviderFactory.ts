@@ -4,7 +4,7 @@ import OpenAiProviderFactory from "./OpenAiProviderFactory.js";
 class AiProviderFactory {
     private static singleton: IAIProvider;
 
-    public static instance(provider: string): IAIProvider {
+    public static instance(provider: string = 'OpenAi'): IAIProvider {
         if (!AiProviderFactory.singleton) {
             switch (provider) {
                 case 'OpenAi':

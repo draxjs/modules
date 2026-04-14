@@ -342,6 +342,9 @@ class EntityCrud implements IEntityCrud {
     return 'solo-filled'
   }
 
+  get isAiAssistable(): boolean {
+    return false
+  }
 
 }
 

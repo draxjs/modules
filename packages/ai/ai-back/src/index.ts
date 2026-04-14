@@ -9,8 +9,12 @@ import {OpenAiProvider} from "./providers/OpenAiProvider.js";
 import {KnowledgeService} from "./services/KnowledgeService.js";
 import {AILogService} from "./services/AILogService.js";
 import AILogPermissions from "./permissions/AILogPermissions.js";
+import AIPermissions from "./permissions/AIPermissions.js";
 import AILogController from "./controllers/AILogController.js";
+import AICrudController from "./controllers/AICrudController.js";
+import AIGenericController from "./controllers/AIGenericController.js";
 import AILogRoutes from "./routes/AILogRoutes.js";
+import AIRoutes from "./routes/AIRoutes.js";
 import type {IAILogRepository} from "./interfaces/IAILogRepository.js";
 import type {
     IAIProvider,
@@ -53,6 +57,10 @@ export {
     KnowledgeService,
     AILogService,
     AILogPermissions,
+    AIPermissions,
     AILogController,
+    AICrudController,
+    AIGenericController,
     AILogRoutes,
+    AIRoutes
 }

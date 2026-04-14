@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import {computed, onBeforeMount, type PropType} from "vue";
+import {computed, onBeforeMount, ref, watch, type PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import CrudListTable from "./CrudListTable.vue";
 import CrudListGallery from "./CrudListGallery.vue";
 import CrudForm from "./CrudForm.vue";
 import CrudNotify from "./CrudNotify.vue";
 import CrudDialog from "./CrudDialog.vue";
+import CrudAiButton from "./buttons/CrudAiButton.vue";
+import CrudAi from "./CrudAi.vue";
 import {useCrud} from "../composables/UseCrud";
 import {useDisplay} from 'vuetify'
+import {useAuth} from "@drax/identity-vue";
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
@@ -19,6 +22,8 @@ const {
   prepareFilters, prepareSort, form
 } = useCrud(entity);
 
+const {hasPermission} = useAuth()
+
 onBeforeMount(() => {
   resetCrudStore()
   prepareFilters()
@@ -26,6 +31,7 @@ onBeforeMount(() => {
 })
 
 const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])
+const aiExpanded = ref(false)
 
 const listComponent = computed(() => {
   const listMode = entity?.listMode
@@ -42,6 +48,16 @@ const listComponent = computed(() => {
 })
 
 const {xs} = useDisplay()
+
+function applyAiSuggestions(values: Record<string, any>) {
+  form.value = values
+}
+
+watch(dialog, (value) => {
+  if (!value) {
+    aiExpanded.value = false
+  }
+})
 
 
 </script>
@@ -127,7 +143,21 @@ const {xs} = useDisplay()
         :entity="entity"
         :operation="operation"
     >
+      <template #toolbar-actions>
+        <crud-ai-button
+            v-if="entity.isAiAssistable && ['create', 'edit'].includes(operation) && hasPermission('ai:promptCrud')"
+            :entity="entity"
+            v-model="aiExpanded"
+        />
+      </template>
+
       <slot name="tools">
+        <crud-ai
+            v-if="entity.isAiAssistable && ['create', 'edit'].includes(operation) && hasPermission('ai:promptCrud')"
+            :entity="entity"
+            v-model="aiExpanded"
+            @apply="applyAiSuggestions"
+        />
 
       </slot>
 

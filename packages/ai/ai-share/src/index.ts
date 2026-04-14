@@ -1,6 +1,40 @@
 import type {IAILog, IAILogBase} from "./interfaces/IAILog";
+import type {
+    IAICrudField,
+    IAICrudFieldOption,
+    IAICrudPromptMeta,
+    IAICrudPromptPayload,
+    IAICrudPromptResponse,
+    IAIGenericPromptPayload,
+    IAIImageDetail,
+    IAIImageInput,
+    IAIInputFile,
+    IAIPromptContentPart,
+    IAIPromptContentPartImage,
+    IAIPromptContentPartText,
+    IAIPromptMemory,
+    IAIPromptMessage,
+    IAIPromptResponse,
+    IAIRole,
+} from "./interfaces/IAI";
 
 
 export type{
-    IAILog, IAILogBase
+    IAILog, IAILogBase,
+    IAIRole,
+    IAIImageDetail,
+    IAIImageInput,
+    IAIInputFile,
+    IAIPromptContentPartText,
+    IAIPromptContentPartImage,
+    IAIPromptContentPart,
+    IAIPromptMessage,
+    IAIPromptMemory,
+    IAIGenericPromptPayload,
+    IAIPromptResponse,
+    IAICrudFieldOption,
+    IAICrudField,
+    IAICrudPromptPayload,
+    IAICrudPromptMeta,
+    IAICrudPromptResponse,
 }

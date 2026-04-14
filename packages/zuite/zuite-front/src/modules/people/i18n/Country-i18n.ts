@@ -1,50 +1,49 @@
 
 const messages = {
   en: {
-  
     country: {
-          entity: 'Country',
-          menu: 'Country',
-          crud: 'Manage Country',
-          field:{
-                       name:'name',
-           description:'description',
-           flag:'flag',
-           metadata:'metadata',
-           tenant:'tenant',
-           createdBy:'createdBy'
-          }
-      },
-      permission: {
-              'country:view': 'View Country',
-              'country:create': 'Create Country',
-              'country:update': 'Edit Country',
-              'country:delete': 'Delete Country',
-              'country:manage': 'Manage Country',
+      entity: 'Country',
+      menu: 'Country',
+      crud: 'Manage Country',
+      field: {
+        name: 'Name',
+        description: 'Description',
+        flag: 'Flag',
+        metadata: 'Metadata',
+        tenant: 'Tenant',
+        createdBy: 'Created by'
       }
+    },
+    permission: {
+      'country:view': 'View Country',
+      'country:create': 'Create Country',
+      'country:update': 'Edit Country',
+      'country:delete': 'Delete Country',
+      'country:manage': 'Manage Country',
+    }
   },
   es: {
-     country: {
-          entity: 'Country',
-          menu: 'Country',
-          crud: 'Gestionar Country',
-          field:{
-                       name:'name',
-           description:'description',
-           flag:'flag',
-           metadata:'metadata',
-           tenant:'tenant',
-           createdBy:'createdBy'
-          }
-      },
-     permission: {
-              'country:view': 'Ver Country',
-              'country:create': 'Crear Country',
-              'country:update': 'Editar Country',
-              'country:delete': 'Eliminar Country',
-              'country:manage': 'Gestionar Country',
-     }
+    country: {
+      entity: 'Pais',
+      menu: 'Paises',
+      crud: 'Gestionar Paises',
+      field: {
+        name: 'Nombre',
+        description: 'Descripcion',
+        flag: 'Bandera',
+        metadata: 'Metadatos',
+        tenant: 'Inquilino',
+        createdBy: 'Creado por'
+      }
+    },
+    permission: {
+      'country:view': 'Ver Pais',
+      'country:create': 'Crear Pais',
+      'country:update': 'Editar Pais',
+      'country:delete': 'Eliminar Pais',
+      'country:manage': 'Gestionar Paises',
+    }
   }
 }
 
-export default messages;  
+export default messages;

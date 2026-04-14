@@ -39,6 +39,7 @@ interface IEntityCrud {
   isFilterable: boolean
   isColumnSelectable: boolean
   isGroupable: boolean
+  isAiAssistable: boolean
   dialogFullscreen: boolean
   dialogMaxWidth?: string
   dialogZindex?: number

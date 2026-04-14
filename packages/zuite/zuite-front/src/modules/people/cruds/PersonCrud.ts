@@ -296,6 +296,10 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return 'resonsive'
   }
 
+  get isAiAssistable(){
+    return true
+  }
+
 }
 
 export default PersonCrud

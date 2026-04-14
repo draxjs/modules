@@ -41,6 +41,7 @@ const title = computed(() => {
       <v-toolbar>
         <v-toolbar-title>{{title}}</v-toolbar-title>
         <v-spacer></v-spacer>
+        <slot name="toolbar-actions"></slot>
         <v-btn icon @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-card-text>

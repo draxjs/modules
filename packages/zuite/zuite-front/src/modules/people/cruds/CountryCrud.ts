@@ -94,12 +94,24 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
   get fields(): IEntityCrudField[] {
     return [
       {name: 'name', type: 'string', label: 'name', default: ''},
-      {name: 'description', type: 'longString', label: 'description', default: 'Some Description'},
+      {name: 'description', type: 'longString', label: 'description', default: ''},
       {name: 'flag', type: 'file', label: 'flag', default: '', prependInnerIcon: 'mdi mdi-attachment'},
       {name: 'metadata', type: 'record', label: 'metadata', default: null},
       {name: 'tenant', type: 'ref', label: 'tenant', default: null, ref: 'Tenant', refDisplay: 'name'},
       {name: 'createdBy', type: 'ref', label: 'createdBy', default: null, ref: 'User', refDisplay: 'username'}
     ]
+  }
+
+  get createFields(): IEntityCrudField[] {
+    return this.fields.filter(f => !['createdBy','tenant'].includes(f.name) )
+  }
+
+  get updateFields(): IEntityCrudField[] {
+    return this.fields.filter(f => !['createdBy','tenant'].includes(f.name) )
+  }
+
+  get editFields(): IEntityCrudField[] {
+    return this.fields.filter(f => f.name !== 'createdBy')
   }
 
   get filters(): IEntityCrudFilter[] {
@@ -163,6 +175,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
 
   get menus() {
     return []
+  }
+
+  get isAiAssistable(){
+    return true
   }
 
 
