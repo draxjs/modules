@@ -1,11 +1,11 @@
 import type {IPasswordPolicy} from "@drax/identity-share/dist";
 
 const defaultPasswordPolicy: IPasswordPolicy = {
-    minLength: 8,
+    minLength: 6,
     maxLength: 64,
-    requireUppercase: true,
-    requireLowercase: true,
-    requireNumber: true,
+    requireUppercase: false,
+    requireLowercase: false,
+    requireNumber: false,
     requireSpecialChar: false,
     disallowSpaces: true,
     preventReuse: 3,

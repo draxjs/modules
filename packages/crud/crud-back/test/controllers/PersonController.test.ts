@@ -627,6 +627,56 @@ describe("Person Controller Test", function () {
         ]))
     })
 
+    it("should groupBy a single embedded nested field", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const entityData: IPersonBase[] = [
+            {
+                fullname: "Argentina One",
+                address: { street: "Main St", country: "Argentina", city: "Buenos Aires" }
+            },
+            {
+                fullname: "Argentina Two",
+                address: { street: "Second St", country: "Argentina", city: "Cordoba" }
+            },
+            {
+                fullname: "Chile One",
+                address: { street: "Third St", country: "Chile", city: "Santiago" }
+            }
+        ]
+
+        for (const data of entityData) {
+            const createResp = await testSetup.fastifyInstance.inject({
+                method: 'POST',
+                url: '/api/person',
+                payload: data,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+
+            expect(createResp.statusCode).toBe(200)
+        }
+
+        const groupResp = await testSetup.fastifyInstance.inject({
+            method: 'GET',
+            url: '/api/person/group-by?fields=address.country',
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const groupResult = await groupResp.json()
+        expect(groupResp.statusCode).toBe(200)
+        expect(groupResult).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                'address.country': 'Argentina',
+                count: 2
+            }),
+            expect.objectContaining({
+                'address.country': 'Chile',
+                count: 1
+            })
+        ]))
+    })
+
     // 9. Error Handling - Not Found
     it("should handle error responses correctly when person is not found", async () => {
         const { accessToken } = await testSetup.rootUserLogin()

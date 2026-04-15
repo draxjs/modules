@@ -30,6 +30,10 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
     protected _populateFields: string[] | PopulateOptions[] = []
     protected _lean: boolean = true
 
+    private getNestedValue(source: any, path: string): any {
+        return path.split('.').reduce((value, key) => value == null ? undefined : value[key], source)
+    }
+
     assertId(id: string): void {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.log(`Invalid ID: ${id} is not a valid ObjectId.`)
@@ -541,7 +545,8 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         if (groupFields.length === 1) {
             const field = groupFields[0]
-            groupStage._id = dateFields.has(field) ? getDateFormat(field, dateFormat) : groupId[field]
+            const fieldAlias = groupFieldAliases.get(field) as string
+            groupStage._id = dateFields.has(field) ? getDateFormat(field, dateFormat) : groupId[fieldAlias]
         } else if (groupFields.length > 1) {
             groupStage._id = groupId
         }
@@ -567,7 +572,23 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         )
         // console.log("pipeline", JSON.stringify(pipeline, null, 2))
         const result = await this._model.aggregate(pipeline).exec()
-        return result
+
+        return result.map((item: any) => {
+            const normalizedItem = {...item}
+
+            groupFields.forEach(field => {
+                if (!field.includes('.') || normalizedItem[field] !== undefined) {
+                    return
+                }
+
+                const nestedValue = this.getNestedValue(normalizedItem, field)
+                if (nestedValue !== undefined) {
+                    normalizedItem[field] = nestedValue
+                }
+            })
+
+            return normalizedItem
+        })
     }
 }
 
