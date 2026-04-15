@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { CommonController } from "@drax/common-back";
 import { BadRequestError } from "@drax/common-back";
 import {
-    OpenAiProviderFactory,
+    AiProviderFactory
 } from "@drax/ai-back";
 import type {
     IPromptContentPart,
@@ -121,7 +121,7 @@ class AiTestController extends CommonController {
 
             const userImages = await this.buildUserImages(body)
             const inputFiles = this.normalizeInputFiles(body.inputFiles)
-            const provider = OpenAiProviderFactory.instance()
+            const provider = AiProviderFactory.instance()
             return await provider.prompt({
                 systemPrompt: body.systemPrompt,
                 userInput: body.userInput,

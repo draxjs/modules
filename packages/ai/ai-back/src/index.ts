@@ -4,6 +4,7 @@ import AILogModel from "./models/AILogModel.js";
 import AILogMongoRepository from "./repository/mongo/AILogMongoRepository.js";
 import AILogSqliteRepository from "./repository/sqlite/AILogSqliteRepository.js";
 import {OpenAiProviderFactory} from "./factory/OpenAiProviderFactory.js";
+import {AiProviderFactory} from "./factory/AiProviderFactory.js";
 import AILogServiceFactory from "./factory/services/AILogServiceFactory.js";
 import {OpenAiProvider} from "./providers/OpenAiProvider.js";
 import {KnowledgeService} from "./services/KnowledgeService.js";
@@ -52,6 +53,7 @@ export {
     AILogMongoRepository,
     AILogSqliteRepository,
     OpenAiProviderFactory,
+    AiProviderFactory,
     AILogServiceFactory,
     OpenAiProvider,
     KnowledgeService,

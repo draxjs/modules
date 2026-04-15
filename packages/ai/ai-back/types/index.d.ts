@@ -4,6 +4,7 @@ import AILogModel from "./models/AILogModel.js";
 import AILogMongoRepository from "./repository/mongo/AILogMongoRepository.js";
 import AILogSqliteRepository from "./repository/sqlite/AILogSqliteRepository.js";
 import { OpenAiProviderFactory } from "./factory/OpenAiProviderFactory.js";
+import { AiProviderFactory } from "./factory/AiProviderFactory.js";
 import AILogServiceFactory from "./factory/services/AILogServiceFactory.js";
 import { OpenAiProvider } from "./providers/OpenAiProvider.js";
 import { KnowledgeService } from "./services/KnowledgeService.js";
@@ -18,5 +19,5 @@ import AIRoutes from "./routes/AIRoutes.js";
 import type { IAILogRepository } from "./interfaces/IAILogRepository.js";
 import type { IAIProvider, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptImage, IPromptImageDetail, IPromptMessage, IPromptMemory, IPromptParams, IPromptResponse } from "./interfaces/IAIProvider.js";
 export type { IAILogRepository, IAIProvider, IPromptParams, IPromptMessage, IPromptMemory, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptResponse, };
-export { OpenAiConfig, AILogSchema, AILogBaseSchema, AILogModel, AILogMongoRepository, AILogSqliteRepository, OpenAiProviderFactory, AILogServiceFactory, OpenAiProvider, KnowledgeService, AILogService, AILogPermissions, AIPermissions, AILogController, AICrudController, AIGenericController, AILogRoutes, AIRoutes };
+export { OpenAiConfig, AILogSchema, AILogBaseSchema, AILogModel, AILogMongoRepository, AILogSqliteRepository, OpenAiProviderFactory, AiProviderFactory, AILogServiceFactory, OpenAiProvider, KnowledgeService, AILogService, AILogPermissions, AIPermissions, AILogController, AICrudController, AIGenericController, AILogRoutes, AIRoutes };
 //# sourceMappingURL=index.d.ts.map
