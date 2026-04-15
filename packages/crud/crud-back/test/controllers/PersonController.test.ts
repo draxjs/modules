@@ -561,6 +561,72 @@ describe("Person Controller Test", function () {
         expect(groupResult.length).toBeGreaterThan(0)
     })
 
+    it("should groupBy nested reference and embedded fields together", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+        await testSetup.dropCollection('Country')
+
+        const argentina = await CountryModel.create({
+            name: "Argentina",
+            createdBy: testSetup.rootUser._id
+        })
+
+        const chile = await CountryModel.create({
+            name: "Chile",
+            createdBy: testSetup.rootUser._id
+        })
+
+        const entityData: IPersonBase[] = [
+            {
+                fullname: "Buenos Aires One",
+                nationality: argentina._id.toString(),
+                address: { street: "Main St", city: "Buenos Aires" }
+            },
+            {
+                fullname: "Buenos Aires Two",
+                nationality: argentina._id.toString(),
+                address: { street: "Second St", city: "Buenos Aires" }
+            },
+            {
+                fullname: "Santiago One",
+                nationality: chile._id.toString(),
+                address: { street: "Main St", city: "Santiago" }
+            }
+        ]
+
+        for (const data of entityData) {
+            const createResp = await testSetup.fastifyInstance.inject({
+                method: 'POST',
+                url: '/api/person',
+                payload: data,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+
+            expect(createResp.statusCode).toBe(200)
+        }
+
+        const groupResp = await testSetup.fastifyInstance.inject({
+            method: 'GET',
+            url: '/api/person/group-by?fields=nationality.name,address.city',
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const groupResult = await groupResp.json()
+        expect(groupResp.statusCode).toBe(200)
+        expect(groupResult).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                'nationality.name': 'Argentina',
+                'address.city': 'Buenos Aires',
+                count: 2
+            }),
+            expect.objectContaining({
+                'nationality.name': 'Chile',
+                'address.city': 'Santiago',
+                count: 1
+            })
+        ]))
+    })
+
     // 9. Error Handling - Not Found
     it("should handle error responses correctly when person is not found", async () => {
         const { accessToken } = await testSetup.rootUserLogin()

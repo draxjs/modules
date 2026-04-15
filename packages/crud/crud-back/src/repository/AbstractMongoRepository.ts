@@ -337,17 +337,31 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         // Construir el objeto de agrupación dinámicamente
         const groupId: any = {}
-        const lookupStages: any[] = []
+        const preGroupStages: any[] = []
+        const postGroupStages: any[] = []
         const finalProjectFields: any = {count: 1, _id: 0}
         const refFields = new Set<string>()
         const dateFields = new Set<string>()
         const numericFields = new Set<string>()
         const groupFields: string[] = []
+        const groupFieldAliases = new Map<string, string>()
+        const preGroupLookupAliases = new Map<string, string>()
         const numericInstances = new Set(['Number', 'Decimal128', 'Double', 'Int32', 'Long', 'BigInt'])
         const totalGroupFields = fields.filter(field => {
             const schemaPath = schema.path(field)
             return !(schemaPath && numericInstances.has(schemaPath.instance))
         }).length
+
+        const getGroupFieldAlias = (field: string): string => {
+            const existingAlias = groupFieldAliases.get(field)
+            if (existingAlias) {
+                return existingAlias
+            }
+
+            const newAlias = `field_${groupFieldAliases.size}`
+            groupFieldAliases.set(field, newAlias)
+            return newAlias
+        }
 
         // Función para obtener el formato de fecha según el nivel de granularidad
         const getDateFormat = (field: string, format: string) => {
@@ -404,8 +418,43 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             return formats[format] || formats['day']
         }
 
+        const ensureLookupForReferencedField = (field: string, refModel: string): string => {
+            const existingAlias = preGroupLookupAliases.get(field)
+            if (existingAlias) {
+                return existingAlias
+            }
+
+            const refModelInstance = mongoose.model(refModel)
+            const collectionName = refModelInstance.collection.name
+            const lookupAlias = `${field}_groupByRef`
+
+            preGroupStages.push({
+                $lookup: {
+                    from: collectionName,
+                    localField: field,
+                    foreignField: '_id',
+                    as: lookupAlias
+                }
+            })
+
+            preGroupStages.push({
+                $unwind: {
+                    path: `$${lookupAlias}`,
+                    preserveNullAndEmptyArrays: true
+                }
+            })
+
+            preGroupLookupAliases.set(field, lookupAlias)
+            return lookupAlias
+        }
+
         fields.forEach(field => {
             const schemaPath = schema.path(field)
+            const fieldAlias = getGroupFieldAlias(field)
+            const fieldParts = field.split('.')
+            const rootField = fieldParts[0]
+            const nestedFieldPath = fieldParts.slice(1).join('.')
+            const rootSchemaPath = rootField === field ? schemaPath : schema.path(rootField)
 
             // Verificar si el campo es numérico: se agregará con $sum y no formará parte de la clave de agrupación
             if (schemaPath && numericInstances.has(schemaPath.instance)) {
@@ -419,12 +468,11 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             // Verificar si el campo es de tipo Date
             if (schemaPath && schemaPath.instance === 'Date') {
                 dateFields.add(field)
-                groupId[field] = getDateFormat(field, dateFormat)
+                groupId[fieldAlias] = getDateFormat(field, dateFormat)
             }
             // Verificar si el campo es una referencia
             else if (schemaPath && schemaPath.options && schemaPath.options.ref) {
                 const refModel = schemaPath.options.ref
-                const fieldName = field
 
                 refFields.add(field)
 
@@ -433,47 +481,51 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
                 const collectionName = refModelInstance.collection.name
 
                 // Determinar el campo local correcto según si es un solo campo o múltiples
-                const localField = totalGroupFields === 1 ? '_id' : `_id.${fieldName}`
+                const localField = totalGroupFields === 1 ? '_id' : `_id.${fieldAlias}`
 
-                lookupStages.push({
+                postGroupStages.push({
                     $lookup: {
                         from: collectionName,
                         localField: localField,
                         foreignField: '_id',
-                        as: `${fieldName}_populated`
+                        as: `${fieldAlias}_populated`
                     }
                 })
 
                 // Unwind para convertir el array en objeto único
-                lookupStages.push({
+                postGroupStages.push({
                     $unwind: {
-                        path: `$${fieldName}_populated`,
+                        path: `$${fieldAlias}_populated`,
                         preserveNullAndEmptyArrays: true
                     }
                 })
 
                 // En la proyección final, usar el objeto poblado
-                finalProjectFields[field] = `$${fieldName}_populated`
-                groupId[field] = `$${field}`
+                finalProjectFields[field] = `$${fieldAlias}_populated`
+                groupId[fieldAlias] = `$${field}`
+            } else if (nestedFieldPath && rootSchemaPath && rootSchemaPath.options && rootSchemaPath.options.ref) {
+                const lookupAlias = ensureLookupForReferencedField(rootField, rootSchemaPath.options.ref)
+                groupId[fieldAlias] = `$${lookupAlias}.${nestedFieldPath}`
             } else {
                 // Si no es una referencia ni fecha, usar el valor directo
-                groupId[field] = `$${field}`
+                groupId[fieldAlias] = `$${field}`
             }
         })
 
         // Construir la proyección final para campos de fecha
         groupFields.forEach(field => {
+            const fieldAlias = groupFieldAliases.get(field) as string
             if (dateFields.has(field)) {
                 if (groupFields.length === 1) {
                     finalProjectFields[field] = `$_id`
                 } else {
-                    finalProjectFields[field] = `$_id.${field}`
+                    finalProjectFields[field] = `$_id.${fieldAlias}`
                 }
             } else if (!refFields.has(field)) {
                 if (groupFields.length === 1) {
                     finalProjectFields[field] = `$_id`
                 } else {
-                    finalProjectFields[field] = `$_id.${field}`
+                    finalProjectFields[field] = `$_id.${fieldAlias}`
                 }
             }
         })
@@ -496,14 +548,15 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const pipeline: any[] = [
             {$match: query},
+            ...preGroupStages,
             {
                 $group: groupStage
             }
         ]
 
         // Solo agregar lookups si hay campos de referencia
-        if (lookupStages.length > 0) {
-            pipeline.push(...lookupStages)
+        if (postGroupStages.length > 0) {
+            pipeline.push(...postGroupStages)
         }
 
         pipeline.push(

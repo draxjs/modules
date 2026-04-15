@@ -5,6 +5,7 @@ const messages = {
     person: {
           entity: 'Person',
           menu: 'Person',
+          dashboard: 'Person Dashboard',
           crud: 'Manage Person',
           field:{
                        fullname:'fullname',
@@ -41,6 +42,7 @@ const messages = {
      person: {
           entity: 'Person',
           menu: 'Person',
+          dashboard: 'Dashboard de Person',
           crud: 'Gestionar Person',
           field:{
                        fullname:'fullname',

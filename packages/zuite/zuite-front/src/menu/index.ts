@@ -22,6 +22,13 @@ const menu: MenuItem[] = [
         permission: 'person:manage'
       },
       {
+        icon: 'mdi-account-box-multiple',
+        text:'person.dashboard',
+        link: { name: "PersonDashboardPage" },
+        gallery: true,
+        permission: 'person:manage'
+      },
+      {
         icon: 'mdi-country',
         text:'Country',
         link: { name: "CountryCrudPage" },
@@ -132,5 +139,3 @@ export default menu
 export {
   menu
 }
-
-
