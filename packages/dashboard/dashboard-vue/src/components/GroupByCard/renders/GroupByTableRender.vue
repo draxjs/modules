@@ -29,52 +29,57 @@ const getPercentage = (count: number) => {
 </script>
 
 <template>
-  <div>
-    <v-data-table
-        :headers="headers"
-        :items="data"
-        density="compact"
-        :items-per-page="-1"
-        hide-default-footer
-    >
-      <template v-slot:bottom></template>
-
-      <!-- Slot para personalizar la visualización de cada campo -->
-      <template
-          v-for="field in fields"
-          :key="field.name"
-          v-slot:[`item.${field.name}`]="{ value }"
+  <div class="table-render">
+    <div class="table-render__scroll">
+      <v-data-table
+          :headers="headers"
+          :items="data"
+          density="compact"
+          :items-per-page="-1"
+          hide-default-footer
+          height="100%"
+          :fixed-header="true"
+          class="table-render__table"
       >
-        <template v-if="['ref','object'].includes(field.type) && field.refDisplay">
-          {{value ? value[field.refDisplay] : '-' }}
+        <template v-slot:bottom></template>
+
+        <!-- Slot para personalizar la visualización de cada campo -->
+        <template
+            v-for="field in fields"
+            :key="field.name"
+            v-slot:[`item.${field.name}`]="{ value }"
+        >
+          <template v-if="['ref','object'].includes(field.type) && field.refDisplay">
+            {{value ? value[field.refDisplay] : '-' }}
+          </template>
+
+          <template v-else-if="field.type === 'date'">
+            {{ formatDateByUnit(value, dateFormat) }}
+          </template>
+
+          <template v-else-if="field.type === 'number'">
+            {{ value.toLocaleString('es-ar') }}
+          </template>
+
+          <template v-else>
+            {{ value }}
+          </template>
+
         </template>
 
-        <template v-else-if="field.type === 'date'">
-          {{ formatDateByUnit(value, dateFormat) }}
+        <!-- Formato especial para el count con porcentaje -->
+        <template v-slot:item.count="{ item }">
+          <div class="d-flex align-center justify-end ga-2">
+            <v-chip color="primary" size="small" variant="flat">
+              {{ item.count }}
+            </v-chip>
+            <span class="text-caption text-grey text-left percentage-text">
+              ({{ getPercentage(item.count) }}%)
+            </span>
+          </div>
         </template>
-
-        <template v-else-if="field.type === 'number'">
-          {{ value.toLocaleString('es-ar') }}
-        </template>
-
-        <template v-else>
-          {{ value }}
-        </template>
-
-      </template>
-
-      <!-- Formato especial para el count con porcentaje -->
-      <template v-slot:item.count="{ item }">
-        <div class="d-flex align-center justify-end ga-2">
-          <v-chip color="primary" size="small" variant="flat">
-            {{ item.count }}
-          </v-chip>
-          <span class="text-caption text-grey text-left percentage-text">
-            ({{ getPercentage(item.count) }}%)
-          </span>
-        </div>
-      </template>
-    </v-data-table>
+      </v-data-table>
+    </div>
 
     <!-- Fila de totales -->
     <v-divider class="my-2"></v-divider>
@@ -89,6 +94,23 @@ const getPercentage = (count: number) => {
 </template>
 
 <style scoped>
+.table-render {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.table-render__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.table-render__table {
+  height: 100%;
+}
+
 .percentage-text {
   display: inline-block;
   min-width: 45px;

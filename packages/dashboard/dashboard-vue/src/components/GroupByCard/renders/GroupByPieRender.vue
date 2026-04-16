@@ -173,13 +173,23 @@ const drawPieChart = () => {
     ctx.fillStyle = segment.color
     ctx.fill()
 
+    const textX = lineEndX + (isRightSide ? 6 : -6)
+
     ctx.fillStyle = '#374151'
     ctx.font = '500 12px sans-serif'
     ctx.textAlign = isRightSide ? 'left' : 'right'
     ctx.fillText(
       segment.shortLabel,
-      lineEndX + (isRightSide ? 6 : -6),
-      lineEndY
+      textX,
+      lineEndY - 7
+    )
+
+    ctx.fillStyle = '#6b7280'
+    ctx.font = '11px sans-serif'
+    ctx.fillText(
+      `${segment.value}`,
+      textX,
+      lineEndY + 8
     )
 
     currentAngle = endAngle

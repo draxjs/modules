@@ -21,9 +21,14 @@ const {dashboard} = defineProps({
                :md="card?.layout?.md || 12"
                :lg="card?.layout?.lg || 12"
         >
-          <v-card :variant="card?.layout?.cardVariant || 'elevated' " hover :height="card?.layout?.height || 300" style="overflow-y: auto">
+          <v-card
+              class="dashboard-card"
+              :variant="card?.layout?.cardVariant || 'elevated' "
+              hover
+              :height="card?.layout?.height || 300"
+          >
             <v-card-title>{{card?.title}}</v-card-title>
-            <v-card-text >
+            <v-card-text class="dashboard-card__content">
               <paginate-card v-if="card?.type === 'paginate'" :card="card" />
               <group-by-card v-else-if="card?.type === 'groupBy'" :card="card" />
             </v-card-text>
@@ -36,5 +41,14 @@ const {dashboard} = defineProps({
 </template>
 
 <style scoped>
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+}
 
+.dashboard-card__content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
 </style>

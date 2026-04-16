@@ -84,6 +84,62 @@ describe('MongooseQueryFilter', () => {
         }, 'The query should correctly convert comma-separated string to array for in operator');
     });
 
+    test('Should cast numeric eq filter values using schema type', async () => {
+        const query: any = {};
+        const filters: IQueryFilter[] = [
+            { field: 'address.zip', operator: 'eq', value: '123' }
+        ];
+        const model: any = {
+            schema: {
+                path(fieldName: string) {
+                    if (fieldName === 'address.zip') {
+                        return {
+                            instance: 'Number',
+                            cast(value: any) {
+                                return Number(value);
+                            }
+                        };
+                    }
+                    return undefined;
+                }
+            }
+        };
+
+        MongooseQueryFilter.applyFilters(query, filters, model);
+
+        assert.deepEqual(query, {
+            'address.zip': { $eq: 123 }
+        }, 'The query should cast numeric eq filter values');
+    });
+
+    test('Should cast numeric in filter values using schema type', async () => {
+        const query: any = {};
+        const filters: IQueryFilter[] = [
+            { field: 'address.zip', operator: 'in', value: '123,321' }
+        ];
+        const model: any = {
+            schema: {
+                path(fieldName: string) {
+                    if (fieldName === 'address.zip') {
+                        return {
+                            instance: 'Number',
+                            cast(value: any) {
+                                return Number(value);
+                            }
+                        };
+                    }
+                    return undefined;
+                }
+            }
+        };
+
+        MongooseQueryFilter.applyFilters(query, filters, model);
+
+        assert.deepEqual(query, {
+            'address.zip': { $in: [123, 321] }
+        }, 'The query should cast numeric in filter values');
+    });
+
     test('Should handle like operator with regex pattern', async () => {
         const query = {};
         const filters: IQueryFilter[] = [

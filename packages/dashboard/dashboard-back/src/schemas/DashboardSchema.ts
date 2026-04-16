@@ -27,7 +27,7 @@ const DashboardBaseSchema = z.object({
             groupBy: z.object({
                 fields: z.array(z.string()),
                 dateFormat: z.enum(['year', 'month', 'day', 'hour', 'minute', 'second']).optional().default('day'),
-                render: z.enum(['table', 'gallery', 'pie', 'bars']).optional().default('table')
+                render: z.enum(['table', 'gallery', 'pie', 'bars', 'lines']).optional().default('table')
             }),
             paginate: z.object({
                 columns: z.array(z.string()).default([]),

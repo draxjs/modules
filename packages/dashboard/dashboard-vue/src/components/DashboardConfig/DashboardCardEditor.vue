@@ -314,7 +314,7 @@ const {
                         clearable class="mb-3"></v-select>
             </v-col>
             <v-col cols="12" md="6">
-              <v-select v-model="form.groupBy!.render" :items="['pie', 'bars', 'table', 'gallery']"
+              <v-select v-model="form.groupBy!.render" :items="['pie', 'bars', 'lines', 'table', 'gallery']"
                         label="Render visual" variant="outlined" density="compact" hide-details="auto"
                         class="mb-3"></v-select>
             </v-col>

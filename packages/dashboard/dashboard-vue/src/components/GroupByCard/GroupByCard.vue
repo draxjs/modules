@@ -6,6 +6,7 @@ import GroupByTableRender from "./renders/GroupByTableRender.vue";
 import GroupByPieRender from "./renders/GroupByPieRender.vue";
 import GroupByBarsRender from "./renders/GroupByBarsRender.vue";
 import GroupByGalleryRender from "./renders/GroupByGalleryRender.vue";
+import GroupByLinesRender from "./renders/GroupByLinesRender.vue";
 import {ref, onMounted} from "vue";
 
 
@@ -38,18 +39,21 @@ watch(() => card, async () => {
                           :data="data"
                           :headers="groupByHeaders"
                           :fields="cardEntityFields"
+                          :date-format="card?.groupBy?.dateFormat"
   />
 
   <group-by-pie-render  v-else-if="card?.groupBy?.render === 'pie'"
                         :data="data"
                         :headers="groupByHeaders"
                         :fields="cardEntityFields"
+                        :date-format="card?.groupBy?.dateFormat"
   />
 
   <group-by-bars-render  v-else-if="card?.groupBy?.render === 'bars'"
                         :data="data"
                         :headers="groupByHeaders"
                         :fields="cardEntityFields"
+                        :date-format="card?.groupBy?.dateFormat"
                          :show-legend="false"
   />
 
@@ -57,7 +61,15 @@ watch(() => card, async () => {
                          :data="data"
                          :headers="groupByHeaders"
                          :fields="cardEntityFields"
+                         :date-format="card?.groupBy?.dateFormat"
                          :show-legend="false"
+  />
+
+  <group-by-lines-render  v-else-if="card?.groupBy?.render === 'lines'"
+                          :data="data"
+                          :headers="groupByHeaders"
+                          :fields="cardEntityFields"
+                          :date-format="card?.groupBy?.dateFormat"
   />
 
 </template>

@@ -41,7 +41,7 @@ const DashboardSchema = new mongoose.Schema<IDashboard>({
             },
             render: {
                 type: String,
-                enum: ['table', 'gallery', 'pie', 'bars'],
+                enum: ['table', 'gallery', 'pie', 'bars', 'lines'],
                 required: false,
                 index: false,
                 unique: false

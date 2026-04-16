@@ -18,17 +18,40 @@ class MongooseQueryFilter{
         this.assertQuerySchema(query)
         this.assertFiltersSchema(filters)
 
-        function isSchemaTypeObjectId(fieldName: string){
+        function getSchemaType(fieldName: string){
             if(model){
-                const schemaType = model.schema.path(fieldName)
-                if(schemaType?.instance === 'ObjectId'){
-                    return true
-                }else{
-                    return false
-                }
+                return model.schema.path(fieldName)
+            }else{
+                return undefined
+            }
+        }
+
+        function isSchemaTypeObjectId(fieldName: string){
+            const schemaType = getSchemaType(fieldName)
+            if(schemaType?.instance === 'ObjectId'){
+                return true
             }else{
                 return false
             }
+        }
+
+        function castSchemaValue(fieldName: string, value: any){
+            const schemaType = getSchemaType(fieldName)
+
+            if(!schemaType || value === undefined || value === null || value === ''){
+                return value
+            }
+
+            try{
+                return schemaType.cast(value)
+            }catch{
+                return value
+            }
+        }
+
+        function castSchemaArrayValue(fieldName: string, value: any){
+            const values = MongooseQueryFilter.normalizeArrayValue(value)
+            return values.map((item: any) => castSchemaValue(fieldName, item))
         }
 
         const mutableQuery = query as MongooseQuery
@@ -42,7 +65,7 @@ class MongooseQueryFilter{
         const orGroups = new Map<string, MongooseQuery[]>()
 
         for(const filter of filters){
-            const condition = this.buildCondition(filter, isSchemaTypeObjectId)
+            const condition = this.buildCondition(filter, isSchemaTypeObjectId, castSchemaValue, castSchemaArrayValue)
 
             if(!condition){
                 continue
@@ -88,7 +111,9 @@ class MongooseQueryFilter{
 
     static buildCondition(
         filter: IQueryFilter,
-        isSchemaTypeObjectId: (fieldName: string) => boolean
+        isSchemaTypeObjectId: (fieldName: string) => boolean,
+        castSchemaValue: (fieldName: string, value: any) => any,
+        castSchemaArrayValue: (fieldName: string, value: any) => any[]
     ): MongooseQuery | null {
         let value = filter.value
 
@@ -122,6 +147,12 @@ class MongooseQueryFilter{
             value = false
         }
 
+        if(['in', 'nin'].includes(filter.operator)){
+            value = castSchemaArrayValue(filter.field, value)
+        }else{
+            value = castSchemaValue(filter.field, value)
+        }
+
         switch (filter.operator) {
             case 'empty':
                 return isObjectId
@@ -134,9 +165,9 @@ class MongooseQueryFilter{
             case 'ne':
                 return {[filter.field]: {$ne: value}}
             case 'in':
-                return {[filter.field]: {$in: this.normalizeArrayValue(value)}}
+                return {[filter.field]: {$in: value}}
             case 'nin':
-                return {[filter.field]: {$nin: this.normalizeArrayValue(value)}}
+                return {[filter.field]: {$nin: value}}
             case 'gt':
                 return {[filter.field]: {$gt: value}}
             case 'gte':

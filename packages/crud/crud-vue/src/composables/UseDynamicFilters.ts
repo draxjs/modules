@@ -2,6 +2,7 @@ import {computed} from "vue"
 import type {Ref} from "vue"
 import {useI18n} from "vue-i18n"
 import type {
+    IEntityCrudField,
     IEntityCrudFilter,
     IEntityCrudFieldTypes
 } from "@drax/crud-share"
@@ -19,19 +20,58 @@ export function useDynamicFilters(
     })
 
     const fieldI18n = computed(() => {
-        return (field: any) => {
-            const key = entityName.value?.toLowerCase() + ".field." + field.name
+        return (field: Pick<IEntityCrudField, 'name' | 'label'>, fieldName = field.name) => {
+            const key = entityName.value?.toLowerCase() + ".field." + fieldName
             return te(key) ? t(key) : field.label
         }
     })
 
+    function flattenFilterableFields(
+        fields: IEntityCrudField[],
+        parentPath = '',
+        parentLabels: string[] = []
+    ): IEntityCrudField[] {
+        return fields.flatMap((field) => {
+            if (field.type === 'fullFile' || field.type === 'array.object') {
+                return []
+            }
+
+            const fieldPath = parentPath ? `${parentPath}.${field.name}` : field.name
+            const fieldLabel = fieldI18n.value(field, fieldPath)
+            const pathLabels = [...parentLabels, fieldLabel]
+
+            if (field.type === 'object') {
+                if (!field.objectFields?.length) {
+                    return []
+                }
+
+                return flattenFilterableFields(field.objectFields, fieldPath, pathLabels)
+            }
+
+            return [{
+                ...field,
+                name: fieldPath,
+                label: pathLabels.join(' / ')
+            }]
+        })
+    }
+
+    const filterableFields = computed(() => {
+        return flattenFilterableFields(entityFields.value || [])
+    })
+
     const selectableFields = computed(() => {
-        return entityFields.value
-            ?.filter((f: any) => !['fullFile', 'object', 'array.object'].includes(f.type))
-            .map((f: any) => ({
+        return filterableFields.value
+            .map((f: IEntityCrudField) => ({
                 title: fieldI18n.value(f),
                 value: f.name
             })) || []
+    })
+
+    const fieldByName = computed(() => {
+        return new Map(
+            filterableFields.value.map((field) => [field.name, field] as const)
+        )
     })
 
     function normalizeFieldType(type: string): IEntityCrudFieldTypes {
@@ -52,9 +92,7 @@ export function useDynamicFilters(
             filter.operator = 'eq'
         }
 
-        let filterName = filter.name
-
-        const field = entityFields.value?.find((e: any) => e.name === filterName)
+        const field = fieldByName.value.get(filter.name)
 
         filter.value = null
         if (!field) return
