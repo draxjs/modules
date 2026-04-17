@@ -20,7 +20,7 @@ const {t} = useI18n()
 </script>
 
 <template>
-  <div v-if="entity.isFilterable">
+  <div v-if="entity.dynamicFiltersEnable">
     <v-tooltip location="top">
       <template v-slot:activator="{ props }">
         <v-btn

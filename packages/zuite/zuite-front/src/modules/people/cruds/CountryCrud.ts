@@ -181,6 +181,9 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
+  get dynamicFiltersEnable(){
+    return false
+  }
 
 }
 
