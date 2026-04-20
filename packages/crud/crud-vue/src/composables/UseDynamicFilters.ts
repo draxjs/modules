@@ -171,6 +171,9 @@ export function useDynamicFilters(
                 if (['ref','array.ref'].includes(filter.type) && ['gt', 'gte', 'lt', 'lte', 'like'].includes(op.value)) {
                     return false
                 }
+                if (['date'].includes(filter.type) && ['in', 'nin', 'like'].includes(op.value)) {
+                    return false
+                }
                 return true
             })
         }

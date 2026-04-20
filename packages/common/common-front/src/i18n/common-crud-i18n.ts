@@ -8,6 +8,8 @@ const messages = {
       filter: 'Filter',
       field: 'Field',
       operator: 'Operator',
+      from: 'From',
+      to: 'To',
       itemsPerPage: 'ItemsPerPage',
       import: {
         link: 'Link',
@@ -51,6 +53,8 @@ const messages = {
       filter: 'Filtro',
       field: 'Campo',
       operator: 'Operador',
+      from: 'Desde',
+      to: 'Hasta',
       itemsPerPage: 'Elementos por página',
       import: {
         link: 'Link',

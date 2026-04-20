@@ -2,6 +2,7 @@ import Crud from "./components/Crud.vue";
 import CrudDialog from "./components/CrudDialog.vue";
 import CrudForm from "./components/CrudForm.vue";
 import CrudFormField from "./components/CrudFormField.vue";
+import CrudFieldRange from "./components/CrudFieldRange.vue";
 import CrudFormList from "./components/CrudFormList.vue";
 import CrudList from "./components/CrudList.vue";
 import CrudListTable from "./components/CrudListTable.vue";
@@ -26,6 +27,7 @@ export {
     CrudDialog,
     CrudForm,
     CrudFormField,
+    CrudFieldRange,
     CrudFormList,
     CrudList,
     CrudListTable,

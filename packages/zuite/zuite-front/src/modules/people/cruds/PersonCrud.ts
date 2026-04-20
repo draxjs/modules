@@ -4,7 +4,7 @@ import type {
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader, IEntityCrudOnInput,
+  IEntityCrudHeader, IEntityCrudOnInput, IEntityCrudOperation,
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
@@ -217,8 +217,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 
   get filters(): IEntityCrudFilter[] {
     return [
-      {name: '_id', type: 'string', label: 'ID', default: '', operator: 'eq' },
-      {name: 'fullname', type: 'string', label: 'Fullname', default: '', operator: 'eq' },
+      {name: 'birthdate', type: 'date', label: 'Birthdate', default: '', operator: 'range' },
     ]
   }
 
@@ -285,7 +284,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get filtersEnable(){
-    return false
+    return true
   }
 
   get dynamicFiltersEnable(){
@@ -300,7 +299,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
-  get navigationOperations(){
+  get navigationOperations():IEntityCrudOperation[]{
     return ['view', 'edit','delete']
   }
 }

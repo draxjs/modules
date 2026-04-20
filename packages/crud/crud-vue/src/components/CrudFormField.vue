@@ -82,7 +82,6 @@ const inputErrors = computed(() => {
 
 defineEmits(['updateValue'])
 
-
 const hasHideDetails = computed(() => {
   if (readonly) {
     return true

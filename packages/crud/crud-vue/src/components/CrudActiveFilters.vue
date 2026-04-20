@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { useFilterIcon } from '../composables/UseFilterIcon'
 import CrudRefDisplay from "./CrudRefDisplay.vue";
 import {formatDate} from "@drax/common-front"
+import {isRangeOperator, normalizeDateRangeValue} from "../helpers/CrudRangeFilters";
 
 const { t} = useI18n()
 
@@ -36,6 +37,13 @@ const activeFilters = computed<any[]>(() => {
         return null
       }
 
+      if (isRangeOperator(filterDef)) {
+        const rangeValue = normalizeDateRangeValue(filter.value)
+        if (!rangeValue.from && !rangeValue.to) {
+          return null
+        }
+      }
+
       return {
         ...filterDef,
         value: filter.value,
@@ -50,9 +58,20 @@ const getFilterLabel = (filter: any) => {
   return label
 }
 
+const formatRangeDate = (value: string | Date) => {
+  return formatDate(value instanceof Date ? value.toISOString() : value)
+}
+
 
 
 const getFilterValue = (filter: any) => {
+  if (isRangeOperator(filter)) {
+    const rangeValue = normalizeDateRangeValue(filter.value)
+    const from = rangeValue.from ? formatRangeDate(rangeValue.from) : t('crud.from')
+    const to = rangeValue.to ? formatRangeDate(rangeValue.to) : t('crud.to')
+    return `${from} - ${to}`
+  }
+
   switch (filter.type) {
     case 'date':
       return formatDate(filter.value)

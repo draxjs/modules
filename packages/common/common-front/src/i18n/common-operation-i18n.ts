@@ -18,6 +18,7 @@ const messages = {
       in: 'In',
       notIn: 'Not In',
       empty: 'Empty',
+      range: 'Range',
     }
   },
   es: {
@@ -39,6 +40,7 @@ const messages = {
       in: 'Incluye',
       notIn: 'No incluye',
       empty: 'Vacio',
+      range: 'Rango',
     }
   }
 }

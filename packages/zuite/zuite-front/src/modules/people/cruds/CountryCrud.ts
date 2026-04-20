@@ -185,7 +185,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
-  get navigationOperations(){
+  get navigationOperations(): ("view" | "create" | "edit" | "delete")[]{
     return ['view', ]
   }
 

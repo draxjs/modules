@@ -4,6 +4,7 @@ import type {
   IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFieldVariant, IDraxFieldFilter,
   IEntityCrudOnInput, IEntityCrudOperation
 } from "@drax/crud-share";
+import {createCrudFilterValue} from "../helpers/CrudRangeFilters";
 
 
 
@@ -138,7 +139,7 @@ class EntityCrud implements IEntityCrud {
   get formFilters(): IDraxFieldFilter[] {
     return this.filters.map(
       (filter: IEntityCrudFilter) =>
-        ({field: filter.name, value: filter.default ? filter.default : null, operator: (filter.operator ? filter.operator : 'eq')})
+        ({field: filter.name, value: createCrudFilterValue(filter), operator: (filter.operator ? filter.operator : 'eq')})
     ) as IDraxFieldFilter[]
   }
 
@@ -346,7 +347,7 @@ class EntityCrud implements IEntityCrud {
     return false
   }
 
-  get navigationOperations(): Exclude<IEntityCrudOperation, null>[] {
+  get navigationOperations(): IEntityCrudOperation[] {
     return ['view']
   }
 

@@ -41,7 +41,7 @@ interface IEntityCrud {
   isColumnSelectable: boolean
   isGroupable: boolean
   isAiAssistable: boolean
-  navigationOperations: Exclude<IEntityCrudOperation, null>[]
+  navigationOperations: IEntityCrudOperation[]
   dialogFullscreen: boolean
   dialogMaxWidth?: string
   dialogZindex?: number

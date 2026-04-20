@@ -10,6 +10,7 @@ import {computed, nextTick, toRaw, watch} from "vue";
 import getItemId from "../helpers/getItemId";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
+import {createCrudFilterValue, expandRangeFilters} from "../helpers/CrudRangeFilters";
 
 
 export function useCrud(entity: IEntityCrud) {
@@ -248,19 +249,19 @@ export function useCrud(entity: IEntityCrud) {
     })
 
     const prepareDynamicFilters = computed(() => {
-        return store.dynamicFilters.map((filter: IEntityCrudFilter) => {
+        return expandRangeFilters(store.dynamicFilters.map((filter: IEntityCrudFilter) => {
             return {
                 field: filter.name,
                 operator: filter.operator,
                 value: filter.value
             }
-        }) as IDraxFieldFilter[]
+        })) as IDraxFieldFilter[]
     })
 
 
     const getAllFilters = computed(() =>{
         return [
-            ...store.filters,
+            ...expandRangeFilters(store.filters),
             ...prepareDynamicFilters.value
         ]  as IDraxFieldFilter[]
     })
@@ -613,7 +614,7 @@ export function useCrud(entity: IEntityCrud) {
             (filter: IEntityCrudFilter) =>
                 ({
                     field: filter.name,
-                    value: filter.default ? filter.default : null,
+                    value: createCrudFilterValue(filter),
                     operator: (filter.operator ? filter.operator : 'eq')
                 })
         ) as IDraxFieldFilter[]

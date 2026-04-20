@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, type PropType} from "vue";
 import CrudFormField from "./CrudFormField.vue";
+import CrudFieldRange from "./CrudFieldRange.vue";
 import type {IEntityCrud, IEntityCrudFilter} from "@drax/crud-share";
 import {useAuth} from "@drax/identity-vue";
 import {useFilterIcon} from "../composables/UseFilterIcon";
@@ -17,6 +18,10 @@ const {entity, autoFilter} = defineProps({
 const aFields = computed(() => {
   return entity.filters.filter((field:IEntityCrudFilter) => !field.permission || hasPermission(field.permission))
 })
+
+function isRangeFilter(filter: IEntityCrudFilter) {
+  return filter.type === 'date' && filter.operator === 'range'
+}
 
 function filter() {
   emit('applyFilter')
@@ -51,8 +56,21 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
           >
 
             <slot :name="`filter.${filter.name}`" v-bind="{filter, filterIndex: index}">
+              <crud-field-range
+                  v-if="filter && valueModel[index] !== undefined && isRangeFilter(filter)"
+                  :name="filter.name"
+                  :label="filter.label"
+                  :entity="entity"
+                  :field="filter"
+                  v-model="valueModel[index].value"
+                  :clearable="true"
+                  density="compact"
+                  variant="outlined"
+                  hide-details
+                  @updateValue="onUpdateValue"
+              />
               <crud-form-field
-                  v-if="filter && valueModel[index] !== undefined"
+                  v-else-if="filter && valueModel[index] !== undefined"
                   :field="filter"
                   :entity="entity"
                   v-model="valueModel[index].value"

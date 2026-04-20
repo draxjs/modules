@@ -24,6 +24,8 @@ export function useFilterIcon() {
           return 'mdi-not-equal'
         case 'like':
           return 'mdi-contain'
+        case 'range':
+          return 'mdi-arrow-expand-horizontal'
         default:
           return 'mdi-equal'
       }
