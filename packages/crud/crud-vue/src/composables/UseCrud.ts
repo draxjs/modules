@@ -6,7 +6,7 @@ import type {
     IEntityCrudOperation
 } from "@drax/crud-share";
 import {useCrudStore} from "../stores/UseCrudStore";
-import {computed, nextTick, toRaw} from "vue";
+import {computed, nextTick, toRaw, watch} from "vue";
 import getItemId from "../helpers/getItemId";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
@@ -15,6 +15,9 @@ import {useRouter} from "vue-router";
 export function useCrud(entity: IEntityCrud) {
 
     const store = useCrudStore(entity?.name)
+    const navigationOperations = (entity as IEntityCrud & {
+        navigationOperations?: Exclude<IEntityCrudOperation, null>[]
+    }).navigationOperations ?? ['view']
 
     const router = useRouter();
 
@@ -46,6 +49,18 @@ export function useCrud(entity: IEntityCrud) {
         }, set(value) {
             store.setDialog(value)
         }
+    })
+
+    const currentViewIndex = computed({
+        get() {
+            return store.currentViewIndex
+        }, set(value) {
+            store.setCurrentViewIndex(value)
+        }
+    })
+
+    const canNavigateItems = computed(() => {
+        return operation.value !== null && navigationOperations.includes(operation.value)
     })
 
     const operation = computed({
@@ -249,6 +264,80 @@ export function useCrud(entity: IEntityCrud) {
             ...prepareDynamicFilters.value
         ]  as IDraxFieldFilter[]
     })
+
+    function resolveViewIndex(item: Record<string, any>, index?: number | null) {
+        if (typeof index === 'number' && index >= 0) {
+            return index
+        }
+
+        const itemIdentifier = entity.identifier ? item?.[entity.identifier] : getItemId(item)
+
+        if (itemIdentifier !== undefined && itemIdentifier !== null) {
+            return items.value.findIndex((currentItem: Record<string, any>) => {
+                const currentIdentifier = entity.identifier ? currentItem?.[entity.identifier] : getItemId(currentItem)
+                return currentIdentifier === itemIdentifier
+            })
+        }
+
+        return items.value.findIndex((currentItem: Record<string, any>) => currentItem === item)
+    }
+
+    function openItemAt(operation: Exclude<IEntityCrudOperation, null>, item: Record<string, any>, index?: number) {
+        const resolvedIndex = resolveViewIndex(item, index)
+        currentViewIndex.value = resolvedIndex >= 0 ? resolvedIndex : null
+
+        switch (operation) {
+            case 'view':
+                onView(item)
+                return
+            case 'edit':
+                onEdit(item)
+                return
+            case 'delete':
+                onDelete(item)
+                return
+        }
+    }
+
+    function onViewAt(item: Record<string, any>, index?: number) {
+        openItemAt('view', item, index)
+    }
+
+    function onEditAt(item: Record<string, any>, index?: number) {
+        openItemAt('edit', item, index)
+    }
+
+    function onDeleteAt(item: Record<string, any>, index?: number) {
+        openItemAt('delete', item, index)
+    }
+
+    const canNavigatePrev = computed(() => {
+        return canNavigateItems.value
+            && currentViewIndex.value !== null
+            && currentViewIndex.value > 0
+    })
+
+    const canNavigateNext = computed(() => {
+        return canNavigateItems.value
+            && currentViewIndex.value !== null
+            && currentViewIndex.value < items.value.length - 1
+    })
+
+    function navigateView(direction: -1 | 1) {
+        if (currentViewIndex.value === null || operation.value === null || !canNavigateItems.value) {
+            return
+        }
+
+        const nextIndex = currentViewIndex.value + direction
+        const nextItem = items.value[nextIndex]
+
+        if (!nextItem) {
+            return
+        }
+
+        currentViewIndex.value = nextIndex
+        openItemAt(operation.value, nextItem, nextIndex)
+    }
 
 
     async function doPaginate() {
@@ -552,13 +641,21 @@ export function useCrud(entity: IEntityCrud) {
         await doPaginate()
     }
 
+    watch(dialog, (value) => {
+        if (!value) {
+            currentViewIndex.value = null
+        }
+    })
+
 
     return {
         doPaginate, doExport, doImport, doUpdate, doCreate, doDelete,
         onView, onCreate, onEdit, onDelete, onCancel, onSubmit, resetCrudStore,
+        onViewAt, onEditAt, onDeleteAt, navigateView, resolveViewIndex, openItemAt,
         dialog,  notify, error, paginationError, message, formValid,
         form, getForm, setForm,
         operation, getOperation, setOperation,
+        currentViewIndex, canNavigateItems, canNavigatePrev, canNavigateNext,
         loading, itemsPerPage, page, sortBy, search, totalItems, items,
         prepareFilters, filters, clearFilters, applyFilters, prepareSort,
         exportFiles, importFiles, exportLoading, importLoading, exportListVisible, importListVisible, exportError, importError,

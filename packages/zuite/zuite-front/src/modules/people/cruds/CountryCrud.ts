@@ -185,6 +185,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
+  get navigationOperations(){
+    return ['view', ]
+  }
+
 }
 
 export default CountryCrud

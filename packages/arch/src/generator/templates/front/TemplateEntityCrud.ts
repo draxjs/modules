@@ -385,6 +385,13 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
     return true
   }
 
+  get isAiAssistable(){
+    return false
+  }
+
+  get navigationOperations(){
+    return ['view'] // edit, delete
+  }
 
 }
 

@@ -199,7 +199,7 @@ onMounted(() => {
 
       <!-- GALLERY GRIDS -->
       <v-row v-if="items.length > 0">
-        <v-col v-for="item in items" :key="item.id || item.uuid || item.name || Math.random()" cols="12" sm="6" md="4"
+        <v-col v-for="(item, index) in items" :key="item.id || item.uuid || item.name || Math.random()" cols="12" sm="6" md="4"
                xl="3">
 
 
@@ -231,22 +231,22 @@ onMounted(() => {
               <v-divider></v-divider>
 
               <v-card-actions class="bg-grey-lighten-4 py-2 px-4 d-flex justify-end flex-wrap gap-2">
-                <slot name="item.actions" v-bind="{item}">
+                <slot name="item.actions" v-bind="{item, index}">
                 </slot>
 
                 <crud-view-button
                     v-if="entity.isViewable && hasPermission(entity.permissions.view)"
-                    @click="$emit('view', item)"
+                    @click="$emit('view', item, index)"
                 />
 
                 <crud-update-button
                     v-if="entity.isEditable && entity.isItemEditable(item) && hasPermission(entity.permissions?.update)"
-                    @click="$emit('edit', item)"
+                    @click="$emit('edit', item, index)"
                 />
 
                 <crud-delete-button
                     v-if="entity.isDeletable && hasPermission(entity.permissions?.delete)"
-                    @click="$emit('delete', item)"
+                    @click="$emit('delete', item, index)"
                 />
               </v-card-actions>
             </v-card>

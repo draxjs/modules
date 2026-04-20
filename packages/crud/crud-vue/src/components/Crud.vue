@@ -17,9 +17,10 @@ const {entity} = defineProps({
 })
 
 const {
-  onView, onCreate, onEdit, onDelete, resetCrudStore,
+  onCreate, onEditAt, onDeleteAt, resetCrudStore,
   operation, dialog, notify, message, doExport, doImport,
-  prepareFilters, prepareSort, form
+  prepareFilters, prepareSort, form,
+  onViewAt, navigateView, canNavigateItems, canNavigatePrev, canNavigateNext
 } = useCrud(entity);
 
 const {hasPermission} = useAuth()
@@ -70,11 +71,11 @@ watch(dialog, (value) => {
           :is="listComponent"
           :entity="entity"
           @create="onCreate"
-          @edit="onEdit"
-          @delete="onDelete"
+          @edit="onEditAt"
+          @delete="onDeleteAt"
           @export="doExport"
           @import="doImport"
-          @view="onView"
+          @view="onViewAt"
       >
 
         <template v-slot:toolbar-left>
@@ -120,8 +121,8 @@ watch(dialog, (value) => {
         </template>
 
 
-        <template v-slot:item.actions="{item}">
-          <slot name="item.actions" v-bind="{item}">
+        <template v-slot:item.actions="{item, index}">
+          <slot name="item.actions" v-bind="{item, index}">
           </slot>
         </template>
 
@@ -144,6 +145,22 @@ watch(dialog, (value) => {
         :operation="operation"
     >
       <template #toolbar-actions>
+        <v-btn
+            v-if="canNavigateItems"
+            icon="mdi-chevron-left"
+            variant="text"
+            :disabled="!canNavigatePrev"
+            @click="navigateView(-1)"
+        />
+
+        <v-btn
+            v-if="canNavigateItems"
+            icon="mdi-chevron-right"
+            variant="text"
+            :disabled="!canNavigateNext"
+            @click="navigateView(1)"
+        />
+
         <crud-ai-button
             v-if="entity.isAiAssistable && ['create', 'edit'].includes(operation) && hasPermission('ai:promptCrud')"
             :entity="entity"

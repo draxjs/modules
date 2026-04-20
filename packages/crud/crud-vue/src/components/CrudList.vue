@@ -206,24 +206,24 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
     </template>
 
 
-    <template v-slot:item.actions="{item}">
+    <template v-slot:item.actions="{item, index}">
 
-      <slot name="item.actions" v-bind="{item}">
+      <slot name="item.actions" v-bind="{item, index}">
       </slot>
 
       <crud-view-button
           v-if="entity.isViewable && hasPermission(entity.permissions.view)"
-          @click="$emit('view', item)"
+          @click="$emit('view', item, index)"
       />
 
       <crud-update-button
           v-if="entity.isEditable && entity.isItemEditable(item) && hasPermission(entity.permissions?.update)"
-          @click="$emit('edit', item)"
+          @click="$emit('edit', item, index)"
       />
 
       <crud-delete-button
           v-if="entity.isDeletable && hasPermission(entity.permissions?.delete)"
-          @click="$emit('delete', item)"
+          @click="$emit('delete', item, index)"
       />
 
     </template>

@@ -5,6 +5,7 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
     state: () => (
         {
             operation: null as IEntityCrudOperation,
+            currentViewIndex: null as number | null,
             dialog: false as boolean,
             form: {} as any,
             formValid: {} as any,
@@ -78,6 +79,9 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
     actions: {
         setOperation(operation: IEntityCrudOperation) {
             this.operation = operation
+        },
+        setCurrentViewIndex(index: number | null) {
+            this.currentViewIndex = index
         },
         setDialog(dialog: boolean) {
             this.dialog = dialog

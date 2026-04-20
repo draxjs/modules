@@ -2,7 +2,7 @@ import type {
   IEntityCrud, IEntityCrudForm, IEntityCrudHeader, IEntityCrudRefs,
   IEntityCrudRules, IEntityCrudField, IEntityCrudPermissions,
   IDraxCrudProvider, IEntityCrudFilter, IEntityCrudFieldVariant, IDraxFieldFilter,
-  IEntityCrudOnInput
+  IEntityCrudOnInput, IEntityCrudOperation
 } from "@drax/crud-share";
 
 
@@ -344,6 +344,10 @@ class EntityCrud implements IEntityCrud {
 
   get isAiAssistable(): boolean {
     return false
+  }
+
+  get navigationOperations(): Exclude<IEntityCrudOperation, null>[] {
+    return ['view']
   }
 
 }

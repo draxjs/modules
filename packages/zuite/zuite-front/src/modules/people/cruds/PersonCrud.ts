@@ -300,6 +300,9 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
+  get navigationOperations(){
+    return ['view', 'edit','delete']
+  }
 }
 
 export default PersonCrud

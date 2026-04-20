@@ -9,6 +9,7 @@ import type {IEntityCrudRefs} from "./IEntityCrudRefs";
 import type {IDraxCrudProvider} from "./IDraxCrudProvider";
 import type {IDraxFieldFilter} from "./IDraxFieldFilter";
 import type {IEntityCrudFieldVariant} from "./IEntityCrudFieldVariant";
+import type {IEntityCrudOperation} from "./IEntityCrudOperation";
 
 
 interface IEntityCrud {
@@ -40,6 +41,7 @@ interface IEntityCrud {
   isColumnSelectable: boolean
   isGroupable: boolean
   isAiAssistable: boolean
+  navigationOperations: Exclude<IEntityCrudOperation, null>[]
   dialogFullscreen: boolean
   dialogMaxWidth?: string
   dialogZindex?: number
