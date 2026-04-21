@@ -168,6 +168,10 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     return 'gallery'
   }
 
+  get isSavedQueriesEnabled(){
+    return true
+  }
+
 }
 
 export default LanguageCrud

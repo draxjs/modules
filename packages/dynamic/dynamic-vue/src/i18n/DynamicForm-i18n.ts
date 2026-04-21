@@ -18,6 +18,7 @@ const messages = {
             }
         },
         permission: {
+            'dynamicform': 'DynamicForm',
             'dynamicform:view': 'View DynamicForm',
             'dynamicform:create': 'Create DynamicForm',
             'dynamicform:update': 'Edit DynamicForm',
@@ -43,6 +44,7 @@ const messages = {
             }
         },
         permission: {
+            'dynamicform': 'DynamicForm',
             'dynamicform:view': 'Ver DynamicForm',
             'dynamicform:create': 'Crear DynamicForm',
             'dynamicform:update': 'Editar DynamicForm',

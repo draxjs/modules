@@ -18,6 +18,7 @@ const messages = {
             }
         },
         permission: {
+            'dashboard': 'Dashboard',
             'dashboard:view': 'View Dashboard',
             'dashboard:create': 'Create Dashboard',
             'dashboard:update': 'Edit Dashboard',
@@ -43,6 +44,7 @@ const messages = {
             }
         },
         permission: {
+            'dashboard': 'Dashboard',
             'dashboard:view': 'Ver Dashboard',
             'dashboard:create': 'Crear Dashboard',
             'dashboard:update': 'Editar Dashboard',

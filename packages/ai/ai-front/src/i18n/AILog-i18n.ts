@@ -35,6 +35,7 @@ const messages = {
             }
         },
         permission: {
+            'ailog':'Log AI',
             'ailog:view': 'View AILog',
             'ailog:create': 'Create AILog',
             'ailog:update': 'Edit AILog',
@@ -78,6 +79,7 @@ const messages = {
             }
         },
         permission: {
+            'ailog':'Log AI',
             'ailog:view': 'Ver AILog',
             'ailog:create': 'Crear AILog',
             'ailog:update': 'Editar AILog',

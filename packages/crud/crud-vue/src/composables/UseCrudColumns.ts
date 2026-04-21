@@ -158,6 +158,16 @@ export function useCrudColumns(entity: IEntityCrud) {
     saveColumnsToStorage(defaultColumns)
   }
 
+  const setVisibleColumns = (columns: string[]) => {
+    const availableHeaders = entity.headers
+      .filter(header => !header.permission || hasPermission(header.permission))
+      .map(header => header.key)
+
+    const validColumns = columns.filter(key => availableHeaders.includes(key))
+    crudStore.setVisibleColumns(validColumns)
+    saveColumnsToStorage(validColumns)
+  }
+
   return {
     visibleColumns,
     translatedHeaders,
@@ -170,5 +180,6 @@ export function useCrudColumns(entity: IEntityCrud) {
     selectAll,
     deselectAll,
     resetToDefault,
+    setVisibleColumns,
   }
 }

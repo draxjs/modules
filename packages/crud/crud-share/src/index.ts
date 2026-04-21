@@ -32,6 +32,7 @@ import type {IEntityCrudOnInput} from "./interfaces/IEntityCrudOnInput";
 import type {IEntityCrudRefs} from "./interfaces/IEntityCrudRefs";
 
 import type {IDynamicForm,IDynamicFormBase} from "./interfaces/IDynamicForm";
+import type {ICrudSavedQuery, ICrudSavedQueryBase} from "./interfaces/ICrudSavedQuery";
 
 
 
@@ -73,5 +74,7 @@ export type {
     IEntityCrudRefs,
 
     IDynamicForm,
-    IDynamicFormBase
+    IDynamicFormBase,
+    ICrudSavedQuery,
+    ICrudSavedQueryBase
 }

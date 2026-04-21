@@ -21,6 +21,7 @@ import {useCrudColumns} from "../composables/UseCrudColumns";
 import CrudFiltersDynamic from "./CrudFiltersDynamic.vue";
 import CrudFiltersAction from "./CrudFiltersAction.vue";
 import CrudFilterButton from "./buttons/CrudFilterButton.vue";
+import CrudSavedQueriesButton from "./buttons/CrudSavedQueriesButton.vue";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -86,6 +87,11 @@ onMounted(() => {
 
           <crud-columns-button
               v-if="entity.isColumnSelectable"
+              :entity="entity"
+          />
+
+          <crud-saved-queries-button
+              v-if="entity.isSavedQueriesEnabled"
               :entity="entity"
           />
 

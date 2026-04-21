@@ -189,6 +189,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return ['view', ]
   }
 
+  get isSavedQueriesEnabled(){
+    return true
+  }
+
 }
 
 export default CountryCrud

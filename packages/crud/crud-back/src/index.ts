@@ -18,6 +18,15 @@ import {ExportBodyResponseSchema} from "./schemas/ExportBodyResponseSchema.js"
 import {ErrorBodyResponseSchema, ValidationErrorBodyResponseSchema} from "./schemas/ErrorBodyResponseSchema.js"
 import {CrudSchemaBuilder} from "./builders/CrudSchemaBuilder.js";
 
+import CrudSavedQueryFastifyRoutes from "./crud-saved-query/routes/CrudSavedQueryRoutes.js";
+import {CrudSavedQueryController} from "./crud-saved-query/controllers/CrudSavedQueryController.js";
+import {CrudSavedQueryService} from "./crud-saved-query/services/CrudSavedQueryService.js";
+import {CrudSavedQueryServiceFactory} from "./crud-saved-query/factory/services/CrudSavedQueryServiceFactory.js";
+import CrudSavedQueryMongoRepository from "./crud-saved-query/repository/mongo/CrudSavedQueryMongoRepository.js";
+import CrudSavedQuerySqliteRepository from "./crud-saved-query/repository/sqlite/CrudSavedQuerySqliteRepository.js";
+import CrudSavedQueryPermissions from "./crud-saved-query/permissions/CrudSavedQueryPermissions.js";
+import {CrudSavedQueryModel, CrudSavedQuerySchema} from "./crud-saved-query/models/CrudSavedQueryModel.js";
+
 export type {
     CustomRequest
 }
@@ -50,5 +59,15 @@ export {
     //Builder
     CrudSchemaBuilder,
 
+    //Crud saved queries
+    CrudSavedQueryFastifyRoutes,
+    CrudSavedQueryController,
+    CrudSavedQueryService,
+    CrudSavedQueryServiceFactory,
+    CrudSavedQueryMongoRepository,
+    CrudSavedQuerySqliteRepository,
+    CrudSavedQueryPermissions,
+    CrudSavedQueryModel,
+    CrudSavedQuerySchema,
 
 }

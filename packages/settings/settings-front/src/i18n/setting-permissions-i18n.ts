@@ -1,6 +1,7 @@
 const messages = {
     en: {
         permission: {
+            'setting': 'Settings',
             'setting:view': 'View Settings',
             'setting:create': 'Create Settings',
             'setting:update': 'Edit Settings',
@@ -12,6 +13,7 @@ const messages = {
     es: {
         permission: {
 
+            'setting': 'Ajustes',
             'setting:view': 'Ver Ajustes',
             'setting:create': 'Crear Ajustes',
             'setting:update': 'Editar Ajustes',

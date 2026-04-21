@@ -302,6 +302,11 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   get navigationOperations():IEntityCrudOperation[]{
     return ['view', 'edit','delete']
   }
+
+  get isSavedQueriesEnabled(){
+    return true
+  }
+
 }
 
 export default PersonCrud

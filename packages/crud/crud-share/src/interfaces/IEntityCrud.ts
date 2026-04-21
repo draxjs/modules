@@ -39,6 +39,7 @@ interface IEntityCrud {
   isImportable: boolean
   isFilterable: boolean
   isColumnSelectable: boolean
+  isSavedQueriesEnabled: boolean
   isGroupable: boolean
   isAiAssistable: boolean
   navigationOperations: IEntityCrudOperation[]

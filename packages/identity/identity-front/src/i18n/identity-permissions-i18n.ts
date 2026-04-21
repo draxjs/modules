@@ -5,6 +5,8 @@ const messages = {
             'role':'Role',
             'tenant':'Tenant',
             'userApiKey':'ApiKey',
+            'usersession':'User Session',
+            'userloginfail':'User Login Fail',
 
             'permissions': 'Permissions',
 
@@ -22,6 +24,14 @@ const messages = {
             'userApiKey:update': 'Edit my ApiKey',
             'userApiKey:delete': 'Delete my ApiKey',
             'userApiKey:manage': 'Manage ApiKey',
+
+            'usersession:view': 'View User Session',
+            'usersession:viewAll': 'View all User Sessions',
+            'usersession:manage': 'Manage User Sessions',
+
+            'userloginfail:view': 'View User Login Fail',
+            'userloginfail:viewAll': 'View all User Login Failures',
+            'userloginfail:manage': 'Manage User Login Failures',
 
             'role:view': 'View Role',
             'role:create': 'Create Role',
@@ -44,6 +54,8 @@ const messages = {
             'role':'Rol',
             'tenant':'Tenant',
             'userApiKey':'ApiKey',
+            'usersession':'Sesion de Usuario',
+            'userloginfail':'Fallo de Inicio de Sesion',
 
             'permissions': 'Permisos',
 
@@ -61,6 +73,14 @@ const messages = {
             'userApiKey:update': 'Editar mis  ApiKey',
             'userApiKey:delete': 'Eliminar mis ApiKey',
             'userApiKey:manage': 'Administrar mis ApiKey',
+
+            'usersession:view': 'Ver Sesion de Usuario',
+            'usersession:viewAll': 'Ver todas las Sesiones de Usuario',
+            'usersession:manage': 'Administrar Sesiones de Usuario',
+
+            'userloginfail:view': 'Ver Fallo de Inicio de Sesion',
+            'userloginfail:viewAll': 'Ver todos los Fallos de Inicio de Sesion',
+            'userloginfail:manage': 'Administrar Fallos de Inicio de Sesion',
 
             'role:view': 'Ver Rol',
             'role:create': 'Crear Rol',

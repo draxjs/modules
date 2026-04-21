@@ -12,6 +12,7 @@ import CrudFiltersAction from "./components/CrudFiltersAction.vue";
 import CrudNotify from "./components/CrudNotify.vue";
 import CrudSearch from "./components/CrudSearch.vue";
 import CrudAutocomplete from "./components/CrudAutocomplete.vue";
+import CrudSavedQueriesButton from "./components/buttons/CrudSavedQueriesButton.vue";
 import EntityCombobox from "./components/combobox/EntityCombobox.vue";
 import {useCrudStore} from "./stores/UseCrudStore";
 import {useEntityStore} from "./stores/UseEntityStore";
@@ -35,6 +36,7 @@ export {
     CrudNotify,
     CrudSearch,
     CrudAutocomplete,
+    CrudSavedQueriesButton,
     CrudFilters,
     CrudFiltersAction,
     useCrud,

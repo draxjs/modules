@@ -30,6 +30,7 @@ const messages = {
             }
         },
         permission: {
+            'audit':'Audit',
             'audit:view': 'View Audit',
             'audit:create': 'Create Audit',
             'audit:update': 'Edit Audit',
@@ -68,6 +69,7 @@ const messages = {
             }
         },
         permission: {
+            'audit': 'Auditoria',
             'audit:view': 'Ver Auditoria',
             'audit:create': 'Crear Auditoria',
             'audit:update': 'Editar Auditoria',

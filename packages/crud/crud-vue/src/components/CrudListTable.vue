@@ -20,6 +20,7 @@ import { useCrudColumns } from "../composables/UseCrudColumns";
 import CrudFiltersDynamic from "./CrudFiltersDynamic.vue";
 import CrudFiltersAction from "./CrudFiltersAction.vue";
 import CrudFilterButton from "./buttons/CrudFilterButton.vue";
+import CrudSavedQueriesButton from "./buttons/CrudSavedQueriesButton.vue";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -96,6 +97,12 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
         </slot>
 
+        <crud-saved-queries-button
+            v-if="entity.isSavedQueriesEnabled"
+            :entity="entity"
+        />
+
+
         <crud-import-button
             :entity="entity"
             @import="(file:any, format:any) => $emit('import', file, format)"
@@ -118,6 +125,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             v-if="entity.isColumnSelectable"
             :entity="entity"
         />
+
 
         <slot name="toolbar">
 

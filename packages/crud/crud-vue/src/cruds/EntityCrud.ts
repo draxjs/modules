@@ -225,6 +225,10 @@ class EntityCrud implements IEntityCrud {
     return true
   }
 
+  get isSavedQueriesEnabled(){
+    return false
+  }
+
   get isGroupable() {
     return false
   }

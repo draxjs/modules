@@ -392,6 +392,10 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
   get navigationOperations(){
     return ['view'] // edit, delete
   }
+  
+  get isSavedQueriesEnabled(){
+    return true
+  }
 
 }
 
