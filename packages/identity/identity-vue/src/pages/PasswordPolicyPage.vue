@@ -42,6 +42,9 @@ const rules = computed(() => {
     },
     {
       label: 'Debe incluir al menos un carácter especial',
+      description: policy.value.allowedSpecialChars
+          ? `Permitidos: ${policy.value.allowedSpecialChars}`
+          : undefined,
       enabled: policy.value.requireSpecialChar,
       icon: 'mdi-asterisk'
     },
@@ -58,7 +61,7 @@ const metadata = computed(() => {
     return []
   }
 
-  return [
+  const items = [
     {
       label: 'Reutilización',
       value: policy.value.preventReuse > 0
@@ -72,6 +75,15 @@ const metadata = computed(() => {
           : 'Sin expiración configurada'
     }
   ]
+
+  if (policy.value.requireSpecialChar && policy.value.allowedSpecialChars) {
+    items.push({
+      label: 'Caracteres especiales',
+      value: policy.value.allowedSpecialChars
+    })
+  }
+
+  return items
 })
 
 async function loadPolicy() {
@@ -122,6 +134,9 @@ onMounted(loadPolicy)
                     :prepend-icon="rule.icon"
                 >
                   <v-list-item-title>{{ rule.label }}</v-list-item-title>
+                  <v-list-item-subtitle v-if="rule.enabled && rule.description">
+                    {{ rule.description }}
+                  </v-list-item-subtitle>
                   <template #append>
                     <v-chip
                         :color="rule.enabled ? 'success' : 'default'"

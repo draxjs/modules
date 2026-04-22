@@ -80,6 +80,12 @@ const menu: MenuItem[] = [
         permission: 'userApiKey:manage'
       },
       {
+        icon: 'mdi mdi-password',
+        text:'Password Policy',
+        link: { name: "PasswordPolicy" },
+        gallery: true,
+      },
+      {
         icon: 'mdi mdi-cogs',
         text:'Settings',
         link: { name: "SettingPage" },

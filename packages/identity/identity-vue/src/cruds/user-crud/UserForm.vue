@@ -25,7 +25,6 @@ const store = useCrudStore(entity.name)
 const enablePassword = store.operation === 'create'
 
 
-
 const valid = ref()
 const formRef = ref()
 
@@ -33,12 +32,11 @@ const formRef = ref()
 const isTenantEnabled = computed(() => import.meta.env.VITE_DRAX_TENANT === 'ENABLE')
 
 
-
 async function submit() {
   store.resetErrors()
 
-  if(store.operation === 'delete') {
-    emit('submit',valueModel.value)
+  if (store.operation === 'delete') {
+    emit('submit', valueModel.value)
     return
   }
 
@@ -55,7 +53,7 @@ function cancel() {
 }
 
 const {
-   submitColor, readonly
+  submitColor, readonly
 } = useFormUtils(store.operation)
 
 
@@ -74,6 +72,11 @@ const variant = computed(() => {
 
 
 let passwordVisibility = ref(false)
+const confirmPassword = ref('')
+
+function confirmPasswordRule(value: string) {
+  return value === valueModel.value.password || t('validation.password.confirmed')
+}
 
 </script>
 
@@ -93,96 +96,134 @@ let passwordVisibility = ref(false)
 
       <v-card-text>
 
-        <v-text-field
-            id="name-input"
-            :label="t('user.field.name')"
-            v-model="valueModel.name"
-            prepend-inner-icon="mdi-card-account-details"
-            :variant="variant"
-            :rules="[v => !!v || t('validation.required')]"
-            :error-messages="$ta(store.inputErrors?.name)"
-            :readonly="readonly"
-        ></v-text-field>
+        <v-row>
 
-        <v-text-field
-            id="username-input"
-            :label="t('user.field.username')"
-            v-model="valueModel.username"
-            prepend-inner-icon="mdi-account-question"
-            :variant="variant"
-            :rules="[v => !!v || t('validation.required')]"
-            autocomplete="new-username"
-            :error-messages="$ta(store.inputErrors?.username)"
-            :readonly="readonly"
-        ></v-text-field>
+          <v-col cols="12">
+            <v-text-field
+                id="name-input"
+                :label="t('user.field.name')"
+                v-model="valueModel.name"
+                prepend-inner-icon="mdi-card-account-details"
+                :variant="variant"
+                :rules="[v => !!v || t('validation.required')]"
+                :error-messages="$ta(store.inputErrors?.name)"
+                :readonly="readonly"
+            ></v-text-field>
+          </v-col>
 
-        <v-text-field
-            v-if="enablePassword"
-            id="password-input"
-            :label="t('user.field.password')"
-            v-model="valueModel.password"
-            :type="passwordVisibility ? 'text': 'password'"
-            :variant="variant"
-            :rules="[v => !!v || t('validation.required')]"
-            prepend-inner-icon="mdi-lock-outline"
-            :append-inner-icon="passwordVisibility ? 'mdi-eye-off': 'mdi-eye'"
-            @click:append-inner="passwordVisibility = !passwordVisibility"
-            autocomplete="new-password"
-            :error-messages="$ta(store.inputErrors?.password)"
-            :readonly="readonly"
-        ></v-text-field>
+          <v-col cols="12">
+            <v-text-field
+                id="username-input"
+                :label="t('user.field.username')"
+                v-model="valueModel.username"
+                prepend-inner-icon="mdi-account-question"
+                :variant="variant"
+                :rules="[v => !!v || t('validation.required')]"
+                autocomplete="new-username"
+                :error-messages="$ta(store.inputErrors?.username)"
+                :readonly="readonly"
+            ></v-text-field>
+          </v-col>
 
-        <RoleCombobox
-            v-model="valueModel.role"
-            :label="t('user.field.role')"
-            :variant="variant"
-            :rules="[(v:any) => !!v || t('validation.required')]"
-            :error-messages="$ta(store.inputErrors?.role)"
-            :readonly="readonly"
-        ></RoleCombobox>
+          <v-col cols="12">
+            <v-text-field
+                v-if="enablePassword"
+                id="password-input"
+                :label="t('user.field.password')"
+                v-model="valueModel.password"
+                :type="passwordVisibility ? 'text': 'password'"
+                :variant="variant"
+                :rules="[v => !!v || t('validation.required')]"
+                prepend-inner-icon="mdi-lock-outline"
+                :append-inner-icon="passwordVisibility ? 'mdi-eye-off': 'mdi-eye'"
+                @click:append-inner="passwordVisibility = !passwordVisibility"
+                autocomplete="new-password"
+                :error-messages="$ta(store.inputErrors?.password)"
+                :readonly="readonly"
+            ></v-text-field>
+          </v-col>
 
-        <TenantCombobox
-            v-if="isTenantEnabled && hasPermission('tenant:manage')"
-            v-model="valueModel.tenant"
-            :label="t('user.field.tenant')"
-            :variant="variant"
-            :error-messages="$ta(store.inputErrors?.tenant)"
-            clearable
-            :readonly="readonly"
-        ></TenantCombobox>
+          <v-col cols="12">
+            <v-text-field
+                v-if="enablePassword"
+                id="confirm-password-input"
+                :label="t('user.field.confirmPassword')"
+                v-model="confirmPassword"
+                :type="passwordVisibility ? 'text': 'password'"
+                :variant="variant"
+                :rules="[
+                v => !!v || t('validation.required'),
+                confirmPasswordRule
+            ]"
+                prepend-inner-icon="mdi-lock-outline"
+                :append-inner-icon="passwordVisibility ? 'mdi-eye-off': 'mdi-eye'"
+                @click:append-inner="passwordVisibility = !passwordVisibility"
+                autocomplete="new-password"
+                :readonly="readonly"
+            ></v-text-field>
+          </v-col>
 
-        <v-text-field
-            v-model="valueModel.email"
-            :variant="variant"
-            id="email-input"
-            :label="t('user.field.email')"
-            prepend-inner-icon="mdi-email"
-            :rules="[(v:any) => !!v || t('validation.required')]"
-            :error-messages="$ta(store.inputErrors?.email)"
-            :readonly="readonly"
-        ></v-text-field>
+          <v-col cols="12">
+            <RoleCombobox
+                v-model="valueModel.role"
+                :label="t('user.field.role')"
+                :variant="variant"
+                :rules="[(v:any) => !!v || t('validation.required')]"
+                :error-messages="$ta(store.inputErrors?.role)"
+                :readonly="readonly"
+            ></RoleCombobox>
+          </v-col>
 
-        <v-text-field
-            v-model="valueModel.phone"
-            :variant="variant"
-            id="phone-input"
-            :label="t('user.field.phone')"
-            prepend-inner-icon="mdi-phone"
-            :rules="[(v:any) => !!v || t('validation.required')]"
-            :error-messages="$ta(store.inputErrors?.phone)"
-            :readonly="readonly"
-        ></v-text-field>
+          <v-col cols="12">
+            <TenantCombobox
+                v-if="isTenantEnabled && hasPermission('tenant:manage')"
+                v-model="valueModel.tenant"
+                :label="t('user.field.tenant')"
+                :variant="variant"
+                :error-messages="$ta(store.inputErrors?.tenant)"
+                clearable
+                :readonly="readonly"
+            ></TenantCombobox>
+          </v-col>
 
-        <v-switch
-            id="active-input"
-            v-model="valueModel.active"
-            color="primary"
-            label="Active"
-            :true-value="true"
-            :false-value="false"
-            :readonly="readonly"
-        ></v-switch>
+          <v-col cols="12">
+            <v-text-field
+                v-model="valueModel.email"
+                :variant="variant"
+                id="email-input"
+                :label="t('user.field.email')"
+                prepend-inner-icon="mdi-email"
+                :rules="[(v:any) => !!v || t('validation.required')]"
+                :error-messages="$ta(store.inputErrors?.email)"
+                :readonly="readonly"
+            ></v-text-field>
+          </v-col>
 
+          <v-col cols="12">
+            <v-text-field
+                v-model="valueModel.phone"
+                :variant="variant"
+                id="phone-input"
+                :label="t('user.field.phone')"
+                prepend-inner-icon="mdi-phone"
+                :rules="[(v:any) => !!v || t('validation.required')]"
+                :error-messages="$ta(store.inputErrors?.phone)"
+                :readonly="readonly"
+            ></v-text-field>
+          </v-col>
+
+          <v-col cols="12">
+            <v-switch
+                id="active-input"
+                v-model="valueModel.active"
+                color="primary"
+                label="Active"
+                :true-value="true"
+                :false-value="false"
+                :readonly="readonly"
+            ></v-switch>
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-card-actions>

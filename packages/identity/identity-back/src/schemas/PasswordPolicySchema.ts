@@ -7,6 +7,7 @@ const PasswordPolicySchemaBase = z.object({
     requireLowercase: z.boolean(),
     requireNumber: z.boolean(),
     requireSpecialChar: z.boolean(),
+    allowedSpecialChars: z.string().optional(),
     disallowSpaces: z.boolean(),
     preventReuse: z.number().int().min(0),
     expirationDays: z.number().int().min(1).nullable(),

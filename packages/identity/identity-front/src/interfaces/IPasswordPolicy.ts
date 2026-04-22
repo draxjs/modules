@@ -5,6 +5,7 @@ interface IPasswordPolicy {
     requireLowercase: boolean
     requireNumber: boolean
     requireSpecialChar: boolean
+    allowedSpecialChars?: string
     disallowSpaces: boolean
     preventReuse: number
     expirationDays: number | null

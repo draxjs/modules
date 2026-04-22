@@ -1,6 +1,7 @@
 import {afterAll, beforeAll, describe, expect, it} from "vitest";
 import {LoadIdentityConfigFromEnv} from "../../src/setup/LoadIdentityConfigFromEnv.js";
 import {TestSetup} from "../setup/TestSetup";
+import {allowedSpecialChars} from "../../src/constants/PasswordSpecialChars.js";
 
 describe("Password Policy Route Test", () => {
     const testSetup = new TestSetup("sqlite")
@@ -28,6 +29,7 @@ describe("Password Policy Route Test", () => {
         const body = response.json()
         expect(body.minLength).toBe(18)
         expect(body.requireSpecialChar).toBe(true)
-        expect(body.requireUppercase).toBe(true)
+        expect(body.allowedSpecialChars).toBe(allowedSpecialChars)
+        expect(body.requireUppercase).toBe(false)
     })
 })

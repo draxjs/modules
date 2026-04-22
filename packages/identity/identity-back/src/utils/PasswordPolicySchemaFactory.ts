@@ -1,5 +1,6 @@
 import z from "zod";
 import type {IPasswordPolicy} from "@drax/identity-share";
+import {allowedSpecialChars} from "../constants/PasswordSpecialChars.js";
 
 class PasswordPolicySchemaFactory {
     private static cache = new Map<string, z.ZodType<string>>()
@@ -29,7 +30,10 @@ class PasswordPolicySchemaFactory {
         }
 
         if (policy.requireSpecialChar) {
-            schema = schema.regex(/[^A-Za-z0-9]/, "validation.password.requireSpecialChar")
+            schema = schema.refine(
+                (value) => [...value].some((char) => allowedSpecialChars.includes(char)),
+                "validation.password.requireSpecialChar"
+            )
         }
 
         if (policy.disallowSpaces) {
