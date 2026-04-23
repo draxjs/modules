@@ -22,9 +22,11 @@ let passwordChanged = ref(false);
 let inputErrors = ref<IClientInputError>()
 let loading = ref(false);
 let userError = ref<string>('')
+let form = ref()
 
 async function savePassword() {
-  if (passwordForm.value.newPassword === passwordForm.value.confirmPassword) {
+  const result = await form.value?.validate()
+  if (result?.valid && passwordForm.value.newPassword === passwordForm.value.confirmPassword) {
     await changeUserPassword(user._id, passwordForm.value.newPassword)
     passwordChanged.value = true
   }
@@ -56,6 +58,7 @@ async function changeUserPassword(id: string, newPassword: string) {
       <v-card-subtitle>{{ t('user.field.username') }}: {{ user.username }}</v-card-subtitle>
       <v-card-text>
         <user-password-form
+            ref="form"
             v-model="passwordForm"
             :inputErrors="inputErrors"
             :passwordChanged="passwordChanged"

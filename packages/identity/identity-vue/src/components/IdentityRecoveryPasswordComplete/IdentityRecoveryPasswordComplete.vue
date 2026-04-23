@@ -6,6 +6,7 @@ import type {IClientInputError} from "@drax/common-front";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
 import {useRoute, useRouter} from "vue-router"
+import PasswordPolicyInput from "../PasswordPolicy/PasswordPolicyInput.vue";
 
 const {t,te} = useI18n()
 const {$ta} = useI18nValidation()
@@ -22,9 +23,7 @@ const inputErrors = ref<IClientInputError|undefined>({currentPassword: [], newPa
 const errorMsg = ref('')
 const loading = ref(false)
 const success = ref(false)
-
-let newPasswordVisibility = ref(false)
-
+const newPasswordVisibility = ref(false)
 
 const isFormValid = computed(() =>
     recoveryCode.value.trim() !== '' && newPassword.value.trim() !== ''
@@ -107,18 +106,14 @@ async function submitResetPassword() {
 
                 <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.newPassword') }}</div>
                 <!-- NEW PASSWORD-->
-                <v-text-field
+                <PasswordPolicyInput
                     variant="outlined"
                     id="new-password-input"
                     v-model="newPassword"
-                    :type="newPasswordVisibility ? 'text': 'password'"
                     required
-                    prepend-inner-icon="mdi-lock-outline"
-                    :append-inner-icon="newPasswordVisibility ? 'mdi-eye-off': 'mdi-eye'"
-                    @click:append-inner="newPasswordVisibility = !newPasswordVisibility"
                     autocomplete="new-password"
                     :error-messages="$ta(inputErrors?.newPassword)"
-                ></v-text-field>
+                />
                 <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.confirmPassword') }}</div>
                 <!-- CONFIRM PASSWORD-->
                 <v-text-field

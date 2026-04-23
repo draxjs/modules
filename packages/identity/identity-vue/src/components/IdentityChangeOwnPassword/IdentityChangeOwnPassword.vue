@@ -5,6 +5,7 @@ import {ClientError} from "@drax/common-front";
 import type {IClientInputError} from "@drax/common-front";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
+import PasswordPolicyInput from "../PasswordPolicy/PasswordPolicyInput.vue";
 
 const {t,te} = useI18n()
 const {$ta} = useI18nValidation()
@@ -86,18 +87,14 @@ async function submitChangePassword() {
                     :error-messages="$ta(inputErrors?.currentPassword)"
                 ></v-text-field>
                 <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.newPassword') }}</div>
-                <v-text-field
+                <PasswordPolicyInput
                     variant="outlined"
                     id="new-password-input"
                     v-model="newPassword"
-                    :type="newPasswordVisibility ? 'text': 'password'"
                     required
-                    prepend-inner-icon="mdi-lock-outline"
-                    :append-inner-icon="newPasswordVisibility ? 'mdi-eye-off': 'mdi-eye'"
-                    @click:append-inner="newPasswordVisibility = !newPasswordVisibility"
                     autocomplete="new-password"
                     :error-messages="$ta(inputErrors?.newPassword)"
-                ></v-text-field>
+                />
                 <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.confirmPassword') }}</div>
                 <v-text-field
                     variant="outlined"

@@ -7,10 +7,10 @@ import TenantCombobox from "../../combobox/TenantCombobox.vue";
 import {useAuth} from "../../composables/useAuth";
 import {useI18n} from "vue-i18n";
 import {useIdentityCrudStore} from "../../stores/IdentityCrudStore";
+import PasswordPolicyInput from "../../components/PasswordPolicy/PasswordPolicyInput.vue";
 
 const {$ta} = useI18nValidation()
 const {t, te} = useI18n()
-
 const {hasPermission} = useAuth()
 
 
@@ -126,21 +126,22 @@ function confirmPasswordRule(value: string) {
           </v-col>
 
           <v-col cols="12">
-            <v-text-field
-                v-if="enablePassword"
-                id="password-input"
-                :label="t('user.field.password')"
-                v-model="valueModel.password"
-                :type="passwordVisibility ? 'text': 'password'"
-                :variant="variant"
-                :rules="[v => !!v || t('validation.required')]"
-                prepend-inner-icon="mdi-lock-outline"
-                :append-inner-icon="passwordVisibility ? 'mdi-eye-off': 'mdi-eye'"
-                @click:append-inner="passwordVisibility = !passwordVisibility"
-                autocomplete="new-password"
-                :error-messages="$ta(store.inputErrors?.password)"
-                :readonly="readonly"
-            ></v-text-field>
+            <template v-if="enablePassword">
+
+
+              <PasswordPolicyInput
+                  id="password-input"
+                  :label="t('user.field.password')"
+                  v-model="valueModel.password"
+                  :variant="variant"
+                  :rules="[v => !!v || t('validation.required')]"
+                  autocomplete="new-password"
+                  :error-messages="$ta(store.inputErrors?.password)"
+                  :readonly="readonly"
+              />
+
+
+            </template>
           </v-col>
 
           <v-col cols="12">
@@ -248,5 +249,4 @@ function confirmPasswordRule(value: string) {
 </template>
 
 <style scoped>
-
 </style>

@@ -4,12 +4,14 @@ import type {IClientInputError} from "@drax/common-front";
 import type {IUserPassword} from "@drax/identity-front";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
+import PasswordPolicyInput from "../../components/PasswordPolicy/PasswordPolicyInput.vue";
 
 const {t} = useI18n()
 const {$ta} = useI18nValidation()
 
-let newPasswordVisibility = ref(false)
+const formRef = ref()
 
+const newPasswordVisibility = ref(false)
 
 defineProps({
   inputErrors: {
@@ -34,10 +36,17 @@ function confirmPasswordRule(value: string) {
 // Define emits
 const emits = defineEmits(['formSubmit'])
 
+async function validate() {
+  return await formRef.value?.validate()
+}
+
 // Function to call when form is attempted to be submitted
 const onSubmit = () => {
   emits('formSubmit', form); // Emitting an event with the form data
 }
+
+defineExpose({validate})
+
 </script>
 
 <template>
@@ -48,21 +57,17 @@ const onSubmit = () => {
     </v-alert>
   </v-sheet>
   <v-sheet v-else>
-    <form ref="changeUserPassword" @submit.prevent="onSubmit">
+    <v-form ref="formRef" @submit.prevent="onSubmit">
 
       <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.newPassword') }}</div>
-      <v-text-field
+      <PasswordPolicyInput
           variant="outlined"
           id="new-password-input"
           v-model="form.newPassword"
-          :type="newPasswordVisibility ? 'text': 'password'"
           required
-          prepend-inner-icon="mdi-lock-outline"
-          :append-inner-icon="newPasswordVisibility ? 'mdi-eye-off': 'mdi-eye'"
-          @click:append-inner="newPasswordVisibility = !newPasswordVisibility"
           autocomplete="new-password"
           :error-messages="$ta(inputErrors.newPassword)"
-      ></v-text-field>
+      />
 
       <div class="text-subtitle-1 text-medium-emphasis">{{ t('user.field.confirmPassword') }}</div>
 
@@ -79,7 +84,7 @@ const onSubmit = () => {
           :error-messages="$ta(inputErrors.confirmPassword)"
           :rules="[confirmPasswordRule]"
       ></v-text-field>
-    </form>
+    </v-form>
   </v-sheet>
 
 </template>
