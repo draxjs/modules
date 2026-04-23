@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-front",
-  "version": "3.21.0",
+  "version": "3.22.0",
   "private": true,
   "scripts": {
     "front": "vite",
@@ -23,12 +23,12 @@
     "@drax/dynamic-front": "^3.0.0",
     "@drax/dynamic-vue": "^3.21.0",
     "@drax/i18n-share": "^3.0.0",
-    "@drax/identity-front": "^3.21.0",
-    "@drax/identity-vue": "^3.21.0",
+    "@drax/identity-front": "^3.22.0",
+    "@drax/identity-vue": "^3.22.0",
     "@drax/media-front": "^3.0.0",
     "@drax/media-vue": "^3.21.0",
     "@drax/settings-front": "^3.21.0",
-    "@drax/settings-vue": "^3.21.0",
+    "@drax/settings-vue": "^3.22.0",
     "@mdi/font": "7.4.47",
     "core-js": "^3.34.0",
     "deepmerge": "^4.3.1",
@@ -36,7 +36,7 @@
     "pinia-plugin-persistedstate": "^4.7.1",
     "roboto-fontface": "*",
     "vue": "^3.5.28",
-    "vue-i18n": "^12",
+    "vue-i18n": "^11.3.2",
     "vuetify": "^3.11.8"
   },
   "devDependencies": {
