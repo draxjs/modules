@@ -10,6 +10,7 @@ import type {ITenant, ITenantBase} from "./interfaces/ITenant";
 import type {IUserGroup, IUserGroupBase} from "./interfaces/IUserGroup";
 import type {IUserApiKey, IUserApiKeyBase, IUserApiKeySoftDelete} from "./interfaces/IUserApiKey";
 import type {IPasswordPolicy, IPasswordPolicyProject} from "./interfaces/IPasswordPolicy";
+import {defaultPasswordSpecialChars, resolveAllowedPasswordSpecialChars} from "./constants/defaultPasswordSpecialChars.js";
 
 
 export type {
@@ -24,3 +25,5 @@ export type {
     IUserApiKey, IUserApiKeyBase, IUserApiKeySoftDelete,
     IPasswordPolicy, IPasswordPolicyProject
 }
+
+export {defaultPasswordSpecialChars, resolveAllowedPasswordSpecialChars}

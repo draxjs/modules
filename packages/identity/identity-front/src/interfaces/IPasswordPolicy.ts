@@ -5,7 +5,8 @@ interface IPasswordPolicy {
     requireLowercase: boolean
     requireNumber: boolean
     requireSpecialChar: boolean
-    allowedSpecialChars?: string
+    /** Caracteres especiales permitidos; `null` o ausente = constante por defecto (`@drax/identity-share`) */
+    allowedSpecialChars?: string | null
     disallowSpaces: boolean
     preventReuse: number
     expirationDays: number | null

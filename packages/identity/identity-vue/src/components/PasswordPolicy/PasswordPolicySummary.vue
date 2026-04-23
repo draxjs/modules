@@ -3,6 +3,7 @@ import {computed, onMounted, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useAuth} from "../../composables/useAuth";
 import type {IPasswordPolicy} from "@drax/identity-front";
+import {resolveAllowedPasswordSpecialChars} from "@drax/identity-share";
 
 const props = withDefaults(defineProps<{
   variant?: 'compact' | 'full'
@@ -18,6 +19,10 @@ const errorMsg = ref('')
 const policy = ref<IPasswordPolicy | null>(null)
 
 const compact = computed(() => props.variant === 'compact')
+
+const effectiveSpecialChars = computed(() =>
+    policy.value ? resolveAllowedPasswordSpecialChars(policy.value.allowedSpecialChars) : ''
+)
 
 const rules = computed(() => {
   if (!policy.value) {
@@ -52,8 +57,8 @@ const rules = computed(() => {
     },
     {
       label: t('user.passwordPolicy.requireSpecialChar'),
-      description: policy.value.allowedSpecialChars
-          ? t('user.passwordPolicy.specialCharsAllowed', {chars: policy.value.allowedSpecialChars})
+      description: policy.value.requireSpecialChar
+          ? t('user.passwordPolicy.specialCharsAllowed', {chars: effectiveSpecialChars.value})
           : undefined,
       enabled: policy.value.requireSpecialChar,
       icon: 'mdi-asterisk'
@@ -78,18 +83,18 @@ const metadata = computed(() => {
           ? t('user.passwordPolicy.reuseValue', {count: policy.value.preventReuse})
           : t('user.passwordPolicy.reuseNone')
     },
-    {
-      label: t('user.passwordPolicy.expirationLabel'),
-      value: policy.value.expirationDays
-          ? t('user.passwordPolicy.expirationValue', {count: policy.value.expirationDays})
-          : t('user.passwordPolicy.expirationNone')
-    }
+    // {
+    //   label: t('user.passwordPolicy.expirationLabel'),
+    //   value: policy.value.expirationDays
+    //       ? t('user.passwordPolicy.expirationValue', {count: policy.value.expirationDays})
+    //       : t('user.passwordPolicy.expirationNone')
+    // }
   ]
 
-  if (policy.value.requireSpecialChar && policy.value.allowedSpecialChars) {
+  if (policy.value.requireSpecialChar) {
     items.push({
       label: t('user.passwordPolicy.specialCharsLabel'),
-      value: policy.value.allowedSpecialChars
+      value: effectiveSpecialChars.value
     })
   }
 

@@ -7,6 +7,7 @@ const defaultPasswordPolicy: IPasswordPolicy = {
     requireLowercase: false,
     requireNumber: false,
     requireSpecialChar: false,
+    allowedSpecialChars: null,
     disallowSpaces: true,
     preventReuse: 3,
     expirationDays: null
