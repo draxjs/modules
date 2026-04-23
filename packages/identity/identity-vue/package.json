@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.22.0",
+  "version": "3.22.1",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -29,7 +29,7 @@
     "@drax/crud-front": "^3.21.0",
     "@drax/crud-share": "^3.21.0",
     "@drax/crud-vue": "^3.21.0",
-    "@drax/identity-front": "^3.22.0",
+    "@drax/identity-front": "^3.22.1",
     "@drax/identity-share": "^3.21.0"
   },
   "peerDependencies": {
