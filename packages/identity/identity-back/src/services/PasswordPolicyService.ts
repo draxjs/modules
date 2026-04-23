@@ -9,7 +9,7 @@ import type {IUserRepository} from "../interfaces/IUserRepository";
 import AuthUtils from "../utils/AuthUtils.js";
 import PasswordPolicyResolver from "../resolver/PasswordPolicyResolver.js";
 import PasswordPolicySchemaFactory from "../utils/PasswordPolicySchemaFactory.js";
-import {allowedSpecialChars} from "../constants/PasswordSpecialChars.js";
+import {resolveAllowedPasswordSpecialChars} from "@drax/identity-share";
 
 interface IValidatePasswordOptions {
     field?: string
@@ -61,7 +61,7 @@ class PasswordPolicyService {
         const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         const lowercaseChars = "abcdefghijkmnopqrstuvwxyz"
         const numericChars = "0123456789"
-        const specialChars = allowedSpecialChars
+        const specialChars = resolveAllowedPasswordSpecialChars(policy.allowedSpecialChars)
         const fallbackSpecial = policy.disallowSpaces ? "!" : " "
         const combinedChars = [
             uppercaseChars,

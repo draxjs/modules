@@ -1,5 +1,6 @@
-//Lista hardcodeada en i18n. Si se modifica aca, se tiene que cambiar en i18n
-const allowedSpecialChars = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+import {defaultPasswordSpecialChars} from "@drax/identity-share";
+
+const allowedSpecialChars = defaultPasswordSpecialChars
 
 export default allowedSpecialChars
 export {allowedSpecialChars}

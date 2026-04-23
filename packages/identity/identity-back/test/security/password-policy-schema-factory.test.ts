@@ -44,6 +44,25 @@ describe("PasswordPolicySchemaFactory", () => {
         await expect(schema.parseAsync("Password1ñ")).rejects.toThrow()
     })
 
+    it("uses custom allowedSpecialChars when set", async () => {
+        const schema = PasswordPolicySchemaFactory.create({
+            ...defaultPasswordPolicy,
+            requireSpecialChar: true,
+            allowedSpecialChars: "@#"
+        })
+        await expect(schema.parseAsync("Password1@")).resolves.toBeDefined()
+        await expect(schema.parseAsync("Password1!")).rejects.toThrow()
+    })
+
+    it("treats null allowedSpecialChars as default special set", async () => {
+        const schema = PasswordPolicySchemaFactory.create({
+            ...defaultPasswordPolicy,
+            requireSpecialChar: true,
+            allowedSpecialChars: null
+        })
+        await expect(schema.parseAsync(`Password1${allowedSpecialChars.at(-1)}`)).resolves.toBeDefined()
+    })
+
     it("validates disallowSpaces", async () => {
         const schema = PasswordPolicySchemaFactory.create(defaultPasswordPolicy)
         await expect(schema.parseAsync("Space 123A")).rejects.toThrow()
