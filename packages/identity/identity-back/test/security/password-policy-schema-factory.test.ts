@@ -1,7 +1,6 @@
 import {describe, expect, it} from "vitest";
 import PasswordPolicySchemaFactory from "../../src/utils/PasswordPolicySchemaFactory.js";
 import {defaultPasswordPolicy} from "../../src/policies/defaultPasswordPolicy.js";
-import {allowedSpecialChars} from "../../src/constants/PasswordSpecialChars.js";
 
 describe("PasswordPolicySchemaFactory", () => {
     it("validates minLength", async () => {
@@ -36,12 +35,23 @@ describe("PasswordPolicySchemaFactory", () => {
 
     it("accepts allowed special chars", async () => {
         const schema = PasswordPolicySchemaFactory.create({...defaultPasswordPolicy, requireSpecialChar: true})
-        await expect(schema.parseAsync(`Password1${allowedSpecialChars.at(-1)}`)).resolves.toBeDefined()
+        await expect(schema.parseAsync(`Password1${defaultPasswordPolicy.allowedSpecialChars.at(-1)}`)).resolves.toBeDefined()
     })
 
     it("rejects special chars outside the allowed list", async () => {
         const schema = PasswordPolicySchemaFactory.create({...defaultPasswordPolicy, requireSpecialChar: true})
         await expect(schema.parseAsync("Password1ñ")).rejects.toThrow()
+    })
+
+    it("uses the special chars defined in the policy", async () => {
+        const schema = PasswordPolicySchemaFactory.create({
+            ...defaultPasswordPolicy,
+            requireSpecialChar: true,
+            allowedSpecialChars: "%"
+        })
+
+        await expect(schema.parseAsync("Password1%")).resolves.toBeDefined()
+        await expect(schema.parseAsync("Password1!")).rejects.toThrow()
     })
 
     it("validates disallowSpaces", async () => {

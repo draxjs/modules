@@ -1,4 +1,4 @@
-import type {IPasswordPolicy} from "@drax/identity-share/dist";
+import type {IPasswordPolicy} from "@drax/identity-share";
 
 const defaultPasswordPolicy: IPasswordPolicy = {
     minLength: 6,
@@ -7,6 +7,7 @@ const defaultPasswordPolicy: IPasswordPolicy = {
     requireLowercase: false,
     requireNumber: false,
     requireSpecialChar: false,
+    allowedSpecialChars: "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
     disallowSpaces: true,
     preventReuse: 3,
     expirationDays: null

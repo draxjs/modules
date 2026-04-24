@@ -1,7 +1,6 @@
 import {afterAll, beforeAll, describe, expect, it} from "vitest";
 import {LoadIdentityConfigFromEnv} from "../../src/setup/LoadIdentityConfigFromEnv.js";
 import {TestSetup} from "../setup/TestSetup";
-import {allowedSpecialChars} from "../../src/constants/PasswordSpecialChars.js";
 
 describe("Password Policy Route Test", () => {
     const testSetup = new TestSetup("sqlite")
@@ -10,12 +9,14 @@ describe("Password Policy Route Test", () => {
         await testSetup.setup()
         process.env.PASSWORD_POLICY_REQUIRE_SPECIAL_CHAR = "true"
         process.env.PASSWORD_POLICY_MIN_LENGTH = "18"
+        process.env.PASSWORD_POLICY_ALLOWED_SPECIAL_CHARS = "@%"
         LoadIdentityConfigFromEnv()
     })
 
     afterAll(async () => {
         delete process.env.PASSWORD_POLICY_MIN_LENGTH
         delete process.env.PASSWORD_POLICY_REQUIRE_SPECIAL_CHAR
+        delete process.env.PASSWORD_POLICY_ALLOWED_SPECIAL_CHARS
         await testSetup.dropAndClose()
     })
 
@@ -29,7 +30,7 @@ describe("Password Policy Route Test", () => {
         const body = response.json()
         expect(body.minLength).toBe(18)
         expect(body.requireSpecialChar).toBe(true)
-        expect(body.allowedSpecialChars).toBe(allowedSpecialChars)
+        expect(body.allowedSpecialChars).toBe("@%")
         expect(body.requireUppercase).toBe(false)
     })
 })

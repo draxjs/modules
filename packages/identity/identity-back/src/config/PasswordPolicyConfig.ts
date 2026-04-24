@@ -5,6 +5,7 @@ enum PasswordPolicyConfig {
     RequireLowercase = "PASSWORD_POLICY_REQUIRE_LOWERCASE",
     RequireNumber = "PASSWORD_POLICY_REQUIRE_NUMBER",
     RequireSpecialChar = "PASSWORD_POLICY_REQUIRE_SPECIAL_CHAR",
+    AllowedSpecialChars = "PASSWORD_POLICY_ALLOWED_SPECIAL_CHARS",
     DisallowSpaces = "PASSWORD_POLICY_DISALLOW_SPACES",
     PreventReuse = "PASSWORD_POLICY_PREVENT_REUSE",
     ExpirationDays = "PASSWORD_POLICY_EXPIRATION_DAYS",

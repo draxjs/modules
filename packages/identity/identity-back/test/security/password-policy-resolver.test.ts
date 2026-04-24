@@ -8,18 +8,21 @@ describe("PasswordPolicyResolver", () => {
         delete process.env.PASSWORD_POLICY_MIN_LENGTH
         delete process.env.PASSWORD_POLICY_MAX_LENGTH
         delete process.env.PASSWORD_POLICY_REQUIRE_SPECIAL_CHAR
+        delete process.env.PASSWORD_POLICY_ALLOWED_SPECIAL_CHARS
         DraxConfig.set(PasswordPolicyConfig.MinLength, undefined)
         DraxConfig.set(PasswordPolicyConfig.MaxLength, undefined)
         DraxConfig.set(PasswordPolicyConfig.RequireSpecialChar, undefined)
+        DraxConfig.set(PasswordPolicyConfig.AllowedSpecialChars, undefined)
     })
 
     it("uses default policy when there are no overrides", async () => {
         const resolver = new PasswordPolicyResolver()
         const policy = await resolver.resolve()
 
-        expect(policy.minLength).toBe(8)
+        expect(policy.minLength).toBe(6)
         expect(policy.maxLength).toBe(64)
-        expect(policy.requireUppercase).toBe(true)
+        expect(policy.requireUppercase).toBe(false)
+        expect(policy.allowedSpecialChars).toBe("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
     })
 
     it("project policy overrides default policy", async () => {
@@ -32,15 +35,26 @@ describe("PasswordPolicyResolver", () => {
         expect(policy.requireUppercase).toBe(false)
     })
 
+    it("project policy can override allowed special chars", async () => {
+        const resolver = new PasswordPolicyResolver()
+        resolver.setProjectPolicy({allowedSpecialChars: "%@"})
+        const policy = await resolver.resolve()
+
+        expect(policy.allowedSpecialChars).toBe("%@")
+    })
+
     it("env policy overrides project policy", async () => {
         process.env.PASSWORD_POLICY_MIN_LENGTH = "16"
         process.env.PASSWORD_POLICY_REQUIRE_SPECIAL_CHAR = "false"
+        process.env.PASSWORD_POLICY_ALLOWED_SPECIAL_CHARS = "%^"
 
         const resolver = new PasswordPolicyResolver()
+        resolver.setProjectPolicy({allowedSpecialChars: "@@"})
         const policy = await resolver.resolve()
 
         expect(policy.minLength).toBe(16)
         expect(policy.requireSpecialChar).toBe(false)
+        expect(policy.allowedSpecialChars).toBe("%^")
     })
 
     it("ignores undefined env overrides", async () => {

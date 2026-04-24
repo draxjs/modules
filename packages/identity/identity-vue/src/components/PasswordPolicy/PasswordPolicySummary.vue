@@ -78,12 +78,12 @@ const metadata = computed(() => {
           ? t('user.passwordPolicy.reuseValue', {count: policy.value.preventReuse})
           : t('user.passwordPolicy.reuseNone')
     },
-    {
-      label: t('user.passwordPolicy.expirationLabel'),
-      value: policy.value.expirationDays
-          ? t('user.passwordPolicy.expirationValue', {count: policy.value.expirationDays})
-          : t('user.passwordPolicy.expirationNone')
-    }
+    // {
+    //   label: t('user.passwordPolicy.expirationLabel'),
+    //   value: policy.value.expirationDays
+    //       ? t('user.passwordPolicy.expirationValue', {count: policy.value.expirationDays})
+    //       : t('user.passwordPolicy.expirationNone')
+    // }
   ]
 
   if (policy.value.requireSpecialChar && policy.value.allowedSpecialChars) {

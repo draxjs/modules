@@ -9,7 +9,6 @@ import type {IUserRepository} from "../interfaces/IUserRepository";
 import AuthUtils from "../utils/AuthUtils.js";
 import PasswordPolicyResolver from "../resolver/PasswordPolicyResolver.js";
 import PasswordPolicySchemaFactory from "../utils/PasswordPolicySchemaFactory.js";
-import {allowedSpecialChars} from "../constants/PasswordSpecialChars.js";
 
 interface IValidatePasswordOptions {
     field?: string
@@ -36,8 +35,9 @@ class PasswordPolicyService {
 
     async validatePassword(password: string,  options?: IValidatePasswordOptions): Promise<void> {
         const field = options?.field || "password"
+        const policy = await this.getFinalPolicy()
         try {
-            const schema = await this.getPasswordSchema()
+            const schema = PasswordPolicySchemaFactory.create(policy)
             await schema.parseAsync(password)
         } catch (e) {
             if (e instanceof ZodError) {
@@ -61,7 +61,7 @@ class PasswordPolicyService {
         const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         const lowercaseChars = "abcdefghijkmnopqrstuvwxyz"
         const numericChars = "0123456789"
-        const specialChars = allowedSpecialChars
+        const specialChars = policy.allowedSpecialChars
         const fallbackSpecial = policy.disallowSpaces ? "!" : " "
         const combinedChars = [
             uppercaseChars,

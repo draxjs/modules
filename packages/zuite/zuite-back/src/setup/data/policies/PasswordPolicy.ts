@@ -7,6 +7,7 @@ const projectPasswordPolicy: IPasswordPolicy = {
     requireLowercase: false,
     requireNumber: false,
     requireSpecialChar: true,
+    allowedSpecialChars: "@!$%*?&)",
     disallowSpaces: false,
     preventReuse: 3,
     expirationDays: null

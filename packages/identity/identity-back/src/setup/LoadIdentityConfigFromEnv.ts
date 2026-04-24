@@ -18,6 +18,7 @@ function LoadIdentityConfigFromEnv() {
     DraxConfig.set(PasswordPolicyConfig.RequireLowercase, process.env[PasswordPolicyConfig.RequireLowercase])
     DraxConfig.set(PasswordPolicyConfig.RequireNumber, process.env[PasswordPolicyConfig.RequireNumber])
     DraxConfig.set(PasswordPolicyConfig.RequireSpecialChar, process.env[PasswordPolicyConfig.RequireSpecialChar])
+    DraxConfig.set(PasswordPolicyConfig.AllowedSpecialChars, process.env[PasswordPolicyConfig.AllowedSpecialChars])
     DraxConfig.set(PasswordPolicyConfig.DisallowSpaces, process.env[PasswordPolicyConfig.DisallowSpaces])
     DraxConfig.set(PasswordPolicyConfig.PreventReuse, process.env[PasswordPolicyConfig.PreventReuse])
     DraxConfig.set(PasswordPolicyConfig.ExpirationDays, process.env[PasswordPolicyConfig.ExpirationDays])

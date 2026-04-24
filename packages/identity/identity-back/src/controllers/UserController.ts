@@ -19,9 +19,8 @@ import {IdentityConfig} from "../config/IdentityConfig.js";
 import UserEmailService from "../services/UserEmailService.js";
 import {IDraxCrudEvent, IDraxFieldFilter} from "@drax/crud-share";
 import TenantServiceFactory from "../factory/TenantServiceFactory.js";
-import {CustomRequest} from "@drax/crud-back/dist";
+import {CustomRequest} from "@drax/crud-back";
 import PasswordPolicyServiceFactory from "../factory/PasswordPolicyServiceFactory.js";
-import {allowedSpecialChars} from "../constants/PasswordSpecialChars.js";
 
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const AVATAR_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatar';
@@ -96,11 +95,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
     async passwordPolicy(request, reply) {
         try {
             const passwordPolicyService = PasswordPolicyServiceFactory()
-            const policy = await passwordPolicyService.getFinalPolicy()
-            return {
-                ...policy,
-                allowedSpecialChars
-            }
+            return await passwordPolicyService.getFinalPolicy()
         } catch (e) {
             this.handleError(e, reply)
         }

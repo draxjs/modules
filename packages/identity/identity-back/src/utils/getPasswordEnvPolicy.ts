@@ -11,6 +11,7 @@ function getPasswordEnvPolicy(): Partial<IPasswordPolicy> {
         requireLowercase: DraxConfig.getOrLoad(PasswordPolicyConfig.RequireLowercase, "boolean"),
         requireNumber: DraxConfig.getOrLoad(PasswordPolicyConfig.RequireNumber, "boolean"),
         requireSpecialChar: DraxConfig.getOrLoad(PasswordPolicyConfig.RequireSpecialChar, "boolean"),
+        allowedSpecialChars: DraxConfig.getOrLoad(PasswordPolicyConfig.AllowedSpecialChars),
         disallowSpaces: DraxConfig.getOrLoad(PasswordPolicyConfig.DisallowSpaces, "boolean"),
         preventReuse: DraxConfig.getOrLoad(PasswordPolicyConfig.PreventReuse, "number"),
         expirationDays: DraxConfig.getOrLoad(PasswordPolicyConfig.ExpirationDays, "number")

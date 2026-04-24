@@ -8,7 +8,6 @@ import PasswordPolicyService from "../../src/services/PasswordPolicyService";
 import type {IUserPasswordHistory} from "../../src/interfaces/IUserPasswordHistory";
 import type {IUserPasswordHistoryRepository} from "../../src/interfaces/IUserPasswordHistoryRepository";
 import UserPasswordHistoryService from "../../src/services/UserPasswordHistoryService";
-import {allowedSpecialChars} from "../../src/constants/PasswordSpecialChars";
 
 class InMemoryUserRepository implements IUserRepository {
     private items = new Map<string, IUser>()
@@ -262,7 +261,7 @@ describe("UserServiceTest", function () {
 
     it("validatePassword returns allowedSpecialChars when required special char is invalid", async function () {
         const resolver = new PasswordPolicyResolver()
-        resolver.setProjectPolicy({requireSpecialChar: true})
+        resolver.setProjectPolicy({requireSpecialChar: true, allowedSpecialChars: "%"})
         const passwordPolicyService = new PasswordPolicyService(resolver, userRepository)
 
         await expect(async () => {
@@ -271,7 +270,7 @@ describe("UserServiceTest", function () {
             expect(err).toBeInstanceOf(ValidationError)
             expect(err.errors[0].field).toBe('password')
             expect(err.errors[0].reason).toBe('validation.password.requireSpecialChar')
-            expect(err.errors[0].allowedSpecialChars).toBe(allowedSpecialChars)
+            expect(err.errors[0].allowedSpecialChars).toBe("%")
             return true;
         });
     })
