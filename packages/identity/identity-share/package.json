@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.21.0",
+  "version": "3.23.0",
   "description": "Identity share across modules",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
