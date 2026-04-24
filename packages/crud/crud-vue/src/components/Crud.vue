@@ -11,6 +11,7 @@ import CrudAi from "./CrudAi.vue";
 import {useCrud} from "../composables/UseCrud";
 import {useDisplay} from 'vuetify'
 import {useAuth} from "@drax/identity-vue";
+import CrudRowValue from "./CrudRowValue.vue";
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
@@ -111,7 +112,10 @@ watch(dialog, (value) => {
 
         <template v-for="header in entity.headers" :key="header.key" v-slot:[`item.${header.key}`]="{item, value}">
           <slot :name="`item.${header.key}`" v-bind="{item, value}">
-            {{ (Array.isArray(value) && value.length > 0) || !Array.isArray(value) ? value : '' }}
+            <crud-row-value
+                :title="header.title || header.key"
+                :value="value"
+            />
           </slot>
         </template>
 

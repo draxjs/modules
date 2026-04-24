@@ -193,6 +193,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return true
   }
 
+  get listMode():'table' | 'gallery' | 'responsive' | string{
+    return 'responsive'
+  }
+
 }
 
 export default CountryCrud

@@ -21,6 +21,7 @@ import CrudFiltersDynamic from "./CrudFiltersDynamic.vue";
 import CrudFiltersAction from "./CrudFiltersAction.vue";
 import CrudFilterButton from "./buttons/CrudFilterButton.vue";
 import CrudSavedQueriesButton from "./buttons/CrudSavedQueriesButton.vue";
+import CrudRowValue from "./CrudRowValue.vue";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -37,7 +38,6 @@ const {
 
 // Usar el composable de columnas
 const { filteredHeaders } = useCrudColumns(entity)
-
 
 defineExpose({
   doPaginate
@@ -221,7 +221,10 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
     <template v-for="header in entity.headers" :key="header.key" v-slot:[`item.${header.key}`]="{item, value}">
       <slot v-if="$slots[`item.${header.key}`]" :name="`item.${header.key}`" v-bind="{item, value}">
-        {{ value }}
+        <crud-row-value
+            :title="header.title || header.key"
+            :value="value"
+        />
       </slot>
     </template>
 
@@ -247,10 +250,5 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       />
 
     </template>
-
   </v-data-table-server>
 </template>
-
-<style scoped>
-
-</style>
