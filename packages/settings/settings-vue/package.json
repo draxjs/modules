@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.24.0",
+  "version": "3.25.0",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -22,9 +22,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/common-front": "^3.19.0",
-    "@drax/crud-vue": "^3.24.0",
-    "@drax/identity-vue": "^3.24.0",
+    "@drax/common-front": "^3.25.0",
+    "@drax/crud-vue": "^3.25.0",
+    "@drax/identity-vue": "^3.25.0",
     "@drax/settings-front": "^3.21.0",
     "@drax/settings-share": "^3.0.0"
   },
