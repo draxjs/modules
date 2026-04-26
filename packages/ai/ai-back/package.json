@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.23.0",
+  "version": "3.26.0",
   "description": "Ai utils",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@drax/ai-share": "^3.18.0",
-    "@drax/crud-back": "^3.23.0",
+    "@drax/crud-back": "^3.26.0",
     "mongoose": "^8.23.0",
     "mongoose-paginate-v2": "^1.8.3"
   },
