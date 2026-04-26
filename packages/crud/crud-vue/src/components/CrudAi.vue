@@ -265,7 +265,7 @@ async function generateSuggestions() {
       },
       currentValues: currentForm.value,
       fields: editableFields.value.map(normalizeField),
-    }, {}) as CrudAiResponse
+    }, {timeout: 360000}) as CrudAiResponse
   } catch (e: any) {
     error.value = e?.message || 'No se pudo obtener una sugerencia de IA'
     response.value = null

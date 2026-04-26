@@ -37,6 +37,10 @@ class HttpGqlClient implements IGqlClient {
     delete this.baseHeaders[name];
   }
 
+  private resolveTimeout(options?: IGqlOptions): number {
+    return options?.timeout ?? this.timeout;
+  }
+
   errorHandler(error: Error): Error {
 
     if (error instanceof GqlError) {
@@ -59,7 +63,7 @@ class HttpGqlClient implements IGqlClient {
       const url = this.url;
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
       const data = {query, variables}
-      const timeout = options?.timeout ? options.timeout : this.timeout;
+      const timeout = this.resolveTimeout(options);
       const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       const response = await fetch(url, {
         method: 'POST',
@@ -104,7 +108,7 @@ class HttpGqlClient implements IGqlClient {
       const url = this.url;
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
       delete headers['content-type']
-      const timeout = options?.timeout ? options.timeout : this.timeout;
+      const timeout = this.resolveTimeout(options);
       const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       const response = await fetch(url, {
         method: 'POST',

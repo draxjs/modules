@@ -11,7 +11,7 @@ class HttpRestClient implements IHttpClient {
   baseHeaders: IHttpHeader;
   private timeout: number;
 
-  constructor(baseUrl: string = '',  baseHeaders: IHttpHeader = {'content-type': 'application/json'}, timeout : number = 10000) {
+  constructor(baseUrl: string = '',  baseHeaders: IHttpHeader = {'content-type': 'application/json'}, timeout : number = 60000) {
     this.baseUrl = baseUrl;
     this.baseHeaders = baseHeaders;
     this.timeout = timeout;
@@ -37,6 +37,23 @@ class HttpRestClient implements IHttpClient {
     delete this.baseHeaders[name];
   }
 
+  private isAbortError(error: Error): boolean {
+    return error.name === 'AbortError';
+  }
+
+  private resolveTimeout(options?: IHttpOptions): number {
+    return options?.timeout ?? this.timeout;
+  }
+
+  private handleRequestError(method: string, url: string, timeout: number, error: Error): never {
+    if (this.isAbortError(error)) {
+      console.error(`[HttpRestClient] ${method} ${url} aborted by AbortController after ${timeout}ms`, error);
+    } else {
+      console.error(`[HttpRestClient] ${method} ${url} failed`, error);
+    }
+
+    throw this.errorHandler(error);
+  }
 
   errorHandler(error: Error): Error {
     // console.error('HttpRestClient Error:', error);
@@ -61,7 +78,7 @@ class HttpRestClient implements IHttpClient {
 
   async get(url: string, options: IHttpOptions): Promise<object> {
     const controller = new AbortController();
-    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
@@ -84,8 +101,7 @@ class HttpRestClient implements IHttpClient {
 
       return response.json();
     } catch (error) {
-      console.log("httpRestClient: get error", error)
-      throw this.errorHandler(error as Error)
+      this.handleRequestError('GET', url, timeout, error as Error);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -93,7 +109,7 @@ class HttpRestClient implements IHttpClient {
 
   async post(url: string, data: any, options: IHttpOptions): Promise<object> {
     const controller = new AbortController();
-    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
@@ -117,7 +133,7 @@ class HttpRestClient implements IHttpClient {
 
       return response.json();
     } catch (error) {
-      throw this.errorHandler(error as Error)
+      this.handleRequestError('POST', url, timeout, error as Error);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -126,7 +142,7 @@ class HttpRestClient implements IHttpClient {
 
   async put(url: string, data: any, options: IHttpOptions): Promise<object> {
     const controller = new AbortController();
-    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
@@ -150,7 +166,7 @@ class HttpRestClient implements IHttpClient {
 
       return response.json();
     } catch (error) {
-      throw this.errorHandler(error as Error)
+      this.handleRequestError('PUT', url, timeout, error as Error);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -158,7 +174,7 @@ class HttpRestClient implements IHttpClient {
 
   async delete(url: string, data: any, options: IHttpOptions): Promise<object> {
     const controller = new AbortController();
-    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
@@ -183,7 +199,7 @@ class HttpRestClient implements IHttpClient {
 
       return response.json();
     } catch (error) {
-      throw this.errorHandler(error as Error)
+      this.handleRequestError('DELETE', url, timeout, error as Error);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -191,7 +207,7 @@ class HttpRestClient implements IHttpClient {
 
   async patch(url: string, data: any, options: IHttpOptions): Promise<object> {
     const controller = new AbortController();
-    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
@@ -214,7 +230,7 @@ class HttpRestClient implements IHttpClient {
 
       return response.json();
     } catch (error) {
-      throw this.errorHandler(error as Error)
+      this.handleRequestError('PATCH', url, timeout, error as Error);
     } finally {
       clearTimeout(timeoutId);
     }
