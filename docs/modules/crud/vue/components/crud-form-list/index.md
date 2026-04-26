@@ -37,6 +37,10 @@ El comportamiento depende de `field.arrayObjectUI`:
 - `chips`: el listado usa chips horizontales y el detalle queda abajo.
 - cualquier otro valor: layout maestro/detalle con menú lateral.
 
+## Reordenamiento
+
+Cuando `readonly` es `false`, la lista permite reordenar elementos con drag and drop en cualquiera de los modos de UI. 
+
 ## Cómo crea elementos
 
 Cuando se agrega un item nuevo, el componente arma un objeto inicial usando `field.objectFields` y sus valores `default`.

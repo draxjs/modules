@@ -10,7 +10,7 @@ import {useDisplay} from "vuetify"
 const {t, te} = useI18n()
 const valueModel = defineModel({type: Array, default: () => []});
 
-const {field, entity} = defineProps({
+const {field, entity, readonly} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField>, required: true},
   readonly: {type: Boolean, default: false},
@@ -45,15 +45,22 @@ function addItem() {
   const item = newItem()
   valueModel.value.push(item);
   menuSelect(item, valueModel.value.length - 1)
+  emit('updateValue')
 }
 
 function removeItem(index: number) {
-  if (indexSelected.value === index) {
-    itemSelected.value = undefined
-    indexSelected.value = undefined
-  }
-  valueModel.value.splice(index, 1);
+  const removedItem = valueModel.value[index]
 
+  if (indexSelected.value === index) {
+    valueModel.value.splice(index, 1);
+    syncSelectedItem(undefined)
+    emit('updateValue')
+    return
+  }
+
+  valueModel.value.splice(index, 1);
+  syncSelectedItem(itemSelected.value === removedItem ? undefined : itemSelected.value)
+  emit('updateValue')
 }
 
 const label = computed(() => {
@@ -81,9 +88,86 @@ const menuMaxHeight = computed(() => {
   return field.menuMaxHeight || '300px'
 })
 
-defineEmits(['updateValue'])
+const emit = defineEmits(['updateValue'])
 
 const {xs} = useDisplay()
+
+const dragIndex = ref<number | null>(null)
+const dragOverIndex = ref<number | null>(null)
+
+const isSortable = computed(() => {
+  return !readonly
+})
+
+function getItemTitle(index: number) {
+  //@ts-ignore
+  return valueModel.value[index]?.[field?.arrayObjectShowField ?? Object.keys(valueModel.value[index] as any)[0]]
+}
+
+function syncSelectedItem(item?: any) {
+  if (!item) {
+    itemSelected.value = undefined
+    indexSelected.value = undefined
+    return
+  }
+
+  const nextIndex = valueModel.value.findIndex(currentItem => currentItem === item)
+
+  if (nextIndex === -1) {
+    itemSelected.value = undefined
+    indexSelected.value = undefined
+    return
+  }
+
+  itemSelected.value = item
+  indexSelected.value = nextIndex
+}
+
+function reorderItems(fromIndex: number, toIndex: number) {
+  if (fromIndex === toIndex) {
+    return
+  }
+
+  const movedItem = valueModel.value[fromIndex]
+  const selectedItem = itemSelected.value
+
+  valueModel.value.splice(fromIndex, 1)
+  valueModel.value.splice(toIndex, 0, movedItem)
+
+  syncSelectedItem(selectedItem ?? movedItem)
+  emit('updateValue')
+}
+
+function onDragStart(index: number) {
+  if (!isSortable.value) {
+    return
+  }
+
+  dragIndex.value = index
+  dragOverIndex.value = index
+}
+
+function onDragEnter(index: number) {
+  if (!isSortable.value || dragIndex.value === null) {
+    return
+  }
+
+  dragOverIndex.value = index
+}
+
+function onDrop(index: number) {
+  if (!isSortable.value || dragIndex.value === null) {
+    return
+  }
+
+  reorderItems(dragIndex.value, index)
+  clearDragState()
+}
+
+function clearDragState() {
+  dragIndex.value = null
+  dragOverIndex.value = null
+}
 
 </script>
 
@@ -95,14 +179,19 @@ const {xs} = useDisplay()
     <!--ACCORDION-->
     <v-card-text v-if="field.arrayObjectUI === 'accordion' || xs">
       <v-expansion-panels>
-        <v-expansion-panel v-for="(item,index) in valueModel" :key="index">
+        <v-expansion-panel v-for="(item,index) in valueModel" :key="index"
+                           :class="{'crud-form-list--drag-over': dragOverIndex === index}"
+                           :draggable="isSortable"
+                           @dragstart="onDragStart(index)"
+                           @dragenter.prevent="onDragEnter(index)"
+                           @dragover.prevent
+                           @drop.prevent="onDrop(index)"
+                           @dragend="clearDragState">
 
           <v-expansion-panel-title>
+            <v-icon v-if="isSortable" class="mr-2" size="small">mdi-drag</v-icon>
             <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
-            {{
-              //@ts-ignore
-              valueModel[index][field?.arrayObjectShowField ?? Object.keys(valueModel[index] as any)[0]]
-            }}
+            {{ getItemTitle(index) }}
 
             <template v-slot:actions="{expanded}">
               <v-icon>{{ expanded ? "mdi-menu-down" : "mdi-menu-up" }}</v-icon>
@@ -169,12 +258,16 @@ const {xs} = useDisplay()
 
                 <v-chip v-for="(item,index) in valueModel" :key="index"
                         :value="index" @click="menuSelect(item, index)"
+                        :draggable="isSortable"
+                        :class="{'crud-form-list--drag-over': dragOverIndex === index}"
+                        @dragstart="onDragStart(index)"
+                        @dragenter.prevent="onDragEnter(index)"
+                        @dragover.prevent
+                        @drop.prevent="onDrop(index)"
+                        @dragend="clearDragState"
                         label class="pr-0" :color="indexSelected === index ? 'primary' : ''"
                 >
-                  {{
-                    //@ts-ignore
-                    valueModel[index][field?.arrayObjectShowField ?? Object.keys(valueModel[index] as any)[0]] || (index)
-                  }}
+                  {{ getItemTitle(index) || (index) }}
 
                   <template v-slot:append>
                     <v-btn variant="text" class="ml-2" density="compact"
@@ -227,9 +320,17 @@ const {xs} = useDisplay()
             <v-card-text>
               <v-list v-model="itemSelected" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
                 <v-list-item v-for="(item,index) in valueModel" :key="index" rounded="shaped"
+                             :class="{'crud-form-list--drag-over': dragOverIndex === index}"
                              :value="item" @click="menuSelect(item, index)"
+                             :draggable="isSortable"
+                             @dragstart="onDragStart(index)"
+                             @dragenter.prevent="onDragEnter(index)"
+                             @dragover.prevent
+                             @drop.prevent="onDrop(index)"
+                             @dragend="clearDragState"
                 >
                   <template v-slot:append>
+                    <v-icon v-if="isSortable" size="small" class="mr-2">mdi-drag</v-icon>
                     <v-btn size="x-small" variant="text" color="red" icon="mdi-delete"
                            @click="removeItem(index)"
 
@@ -237,10 +338,7 @@ const {xs} = useDisplay()
                   </template>
                   <v-list-item-title>
                     <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
-                    {{
-                      //@ts-ignore
-                      valueModel[index][field?.arrayObjectShowField ?? Object.keys(valueModel[index] as any)[0]]
-                    }}
+                    {{ getItemTitle(index) }}
                   </v-list-item-title>
                 </v-list-item>
 
@@ -287,5 +385,8 @@ const {xs} = useDisplay()
 </template>
 
 <style scoped>
-
+.crud-form-list--drag-over {
+  outline: 2px dashed rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+}
 </style>

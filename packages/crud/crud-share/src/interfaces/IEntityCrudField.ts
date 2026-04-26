@@ -23,6 +23,7 @@ interface IEntityCrudField {
     placeholder?: string
     persistentPlaceholder?: boolean
     hideDetails?: boolean
+    sortable?: boolean
     arrayObjectUI ?: 'menu' | 'accordion' | 'chips'
     arrayObjectShowField ?: string
     menuMaxHeight?: string

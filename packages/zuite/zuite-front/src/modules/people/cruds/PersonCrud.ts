@@ -197,6 +197,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         default: [],
         groupTab: 'SKILLS',
         arrayObjectShowField: 'name',
+        arrayObjectUI:'accordion',
         objectFields: [
           {name: 'fullfile', type: 'fullFile', label: 'fullfile', default: ''},
           {name: 'name', type: 'string', label: 'name', default: ''},
