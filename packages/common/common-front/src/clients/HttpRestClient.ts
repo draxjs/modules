@@ -9,17 +9,12 @@ class HttpRestClient implements IHttpClient {
 
   baseUrl: string;
   baseHeaders: IHttpHeader;
-  private signal: AbortSignal;
-  private controller: AbortController;
   private timeout: number;
 
   constructor(baseUrl: string = '',  baseHeaders: IHttpHeader = {'content-type': 'application/json'}, timeout : number = 10000) {
     this.baseUrl = baseUrl;
     this.baseHeaders = baseHeaders;
     this.timeout = timeout;
-
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
   }
 
   setTimeout(timeout: number): void {
@@ -65,6 +60,9 @@ class HttpRestClient implements IHttpClient {
 
 
   async get(url: string, options: IHttpOptions): Promise<object> {
+    const controller = new AbortController();
+    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
       const queryParams = new URLSearchParams(options?.params as any).toString();
@@ -73,14 +71,11 @@ class HttpRestClient implements IHttpClient {
       if(options?.removeHeaders){
         options?.removeHeaders.forEach(header => delete headers[header]);
       }
-      const timeout = options?.timeout ? options.timeout : this.timeout;
-      const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       const response = await fetch(url, {
         method: 'GET',
         headers: headers,
-        signal: this.signal,
+        signal: controller.signal,
       });
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const body: string = await response.json();
@@ -91,26 +86,29 @@ class HttpRestClient implements IHttpClient {
     } catch (error) {
       console.log("httpRestClient: get error", error)
       throw this.errorHandler(error as Error)
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
   async post(url: string, data: any, options: IHttpOptions): Promise<object> {
+    const controller = new AbortController();
+    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
     try {
       url = this.baseUrl + url;
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
       if(options?.removeHeaders){
         options?.removeHeaders.forEach(header => delete headers[header]);
       }
-      const timeout = options?.timeout ? options.timeout : this.timeout;
-      const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'POST',
         headers: headers,
         body:  data,
-        signal: this.signal,
+        signal: controller.signal,
       });
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const body: string = await response.json();
@@ -120,27 +118,30 @@ class HttpRestClient implements IHttpClient {
       return response.json();
     } catch (error) {
       throw this.errorHandler(error as Error)
+    } finally {
+      clearTimeout(timeoutId);
     }
 
   }
 
   async put(url: string, data: any, options: IHttpOptions): Promise<object> {
+    const controller = new AbortController();
+    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
     try {
       url = this.baseUrl + url;
       const headers = {...this.baseHeaders, ...options?.headers};
       if(options?.removeHeaders){
         options?.removeHeaders.forEach(header => delete headers[header]);
       }
-      const timeout = options?.timeout ? options.timeout : this.timeout;
-      const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'PUT',
         headers: headers,
         body: data,
-        signal: this.signal,
+        signal: controller.signal,
       });
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const body: string = await response.json();
@@ -150,10 +151,15 @@ class HttpRestClient implements IHttpClient {
       return response.json();
     } catch (error) {
       throw this.errorHandler(error as Error)
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
   async delete(url: string, data: any, options: IHttpOptions): Promise<object> {
+    const controller = new AbortController();
+    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
       url = this.baseUrl + url;
@@ -162,16 +168,13 @@ class HttpRestClient implements IHttpClient {
       if(options?.removeHeaders){
         options?.removeHeaders.forEach(header => delete headers[header]);
       }
-      const timeout = options?.timeout ? options.timeout : this.timeout;
-      const timeoutId = setTimeout(() => this.controller.abort(), timeout)
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'DELETE',
         headers: headers,
         body: data,
-        signal: this.signal,
+        signal: controller.signal,
       });
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const body: string = await response.json();
@@ -181,22 +184,28 @@ class HttpRestClient implements IHttpClient {
       return response.json();
     } catch (error) {
       throw this.errorHandler(error as Error)
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
   async patch(url: string, data: any, options: IHttpOptions): Promise<object> {
+    const controller = new AbortController();
+    const timeout = options?.timeout ? options.timeout : this.timeout;
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
     try {
       url = this.baseUrl + url;
       const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
-      const timeout = options?.timeout ? options.timeout : this.timeout;
-      const timeoutId = setTimeout(() => this.controller.abort(), timeout)
+      if(options?.removeHeaders){
+        options?.removeHeaders.forEach(header => delete headers[header]);
+      }
       const response = await fetch(url, {
         method: 'PATCH',
         headers: headers,
         body: JSON.stringify(data),
-        signal: this.signal,
+        signal: controller.signal,
       });
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const body: string = await response.json();
@@ -206,6 +215,8 @@ class HttpRestClient implements IHttpClient {
       return response.json();
     } catch (error) {
       throw this.errorHandler(error as Error)
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
