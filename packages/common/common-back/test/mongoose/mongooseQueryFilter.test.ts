@@ -3,7 +3,7 @@ import MongooseQueryFilter from '../../src/mongoose/MongooseQueryFilter.js';
 import type {IQueryFilter} from '../../src/interfaces/IQueryFilter';
 import {ObjectId} from "mongodb";
 import {isValidObjectId} from '../../src/utils/IsValidObjectId.js'
-import {isObjectIdOrHexString} from 'mongoose'
+import {Schema} from 'mongoose'
 
 describe('MongooseQueryFilter', () => {
 
@@ -138,6 +138,59 @@ describe('MongooseQueryFilter', () => {
         assert.deepEqual(query, {
             'address.zip': { $in: [123, 321] }
         }, 'The query should cast numeric in filter values');
+    });
+
+    test('Should cast eq and in values against ObjectId array elements', async () => {
+        const objectId = '69aacacef79661af0769040e';
+        const model: any = {
+            schema: new Schema({
+                users: [Schema.Types.ObjectId]
+            })
+        };
+
+        const eqQuery: any = {};
+        MongooseQueryFilter.applyFilters(eqQuery, [
+            { field: 'users', operator: 'eq', value: objectId }
+        ], model);
+
+        assert.ok(eqQuery.users.$eq instanceof ObjectId, 'eq value should be cast as an ObjectId element');
+        assert.equal(eqQuery.users.$eq.toString(), objectId, 'eq ObjectId should match the original value');
+
+        const inQuery: any = {};
+        MongooseQueryFilter.applyFilters(inQuery, [
+            { field: 'users', operator: 'in', value: objectId }
+        ], model);
+
+        assert.ok(inQuery.users.$in[0] instanceof ObjectId, 'in value should contain an ObjectId element');
+        assert.equal(inQuery.users.$in.length, 1, 'in value should not contain a nested array');
+        assert.equal(inQuery.users.$in[0].toString(), objectId, 'in ObjectId should match the original value');
+    });
+
+    test('Should preserve string array elements when values look like ObjectIds', async () => {
+        const objectIdLikeString = '69aacacef79661af0769040e';
+        const model: any = {
+            schema: new Schema({
+                users: [String]
+            })
+        };
+
+        const eqQuery: any = {};
+        MongooseQueryFilter.applyFilters(eqQuery, [
+            { field: 'users', operator: 'eq', value: objectIdLikeString }
+        ], model);
+
+        assert.deepEqual(eqQuery, {
+            users: { $eq: objectIdLikeString }
+        }, 'eq value should remain a string for string arrays');
+
+        const inQuery: any = {};
+        MongooseQueryFilter.applyFilters(inQuery, [
+            { field: 'users', operator: 'in', value: objectIdLikeString }
+        ], model);
+
+        assert.deepEqual(inQuery, {
+            users: { $in: [objectIdLikeString] }
+        }, 'in value should remain a string for string arrays');
     });
 
     test('Should handle like operator with regex pattern', async () => {

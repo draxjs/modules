@@ -17,6 +17,8 @@ import {CrudSavedQueryPermissions} from "@drax/crud-back";
 import {PersonPermissions} from "../modules/people/permissions/PersonPermissions.js";
 import {CountryPermissions} from "../modules/people/permissions/CountryPermissions.js";
 import {LanguagePermissions} from "../modules/people/permissions/LanguagePermissions.js";
+import {CovenantPermissions} from "../modules/collections/permissions/CovenantPermissions.js";
+import {GroupZonePermissions} from "../modules/collections/permissions/GroupZonePermissions.js";
 
 
 function InitializePermissions() {
@@ -36,6 +38,8 @@ function InitializePermissions() {
         ...Object.values(PersonPermissions),
         ...Object.values(CountryPermissions),
         ...Object.values(LanguagePermissions),
+        ...Object.values(CovenantPermissions),
+        ...Object.values(GroupZonePermissions),
         ...Object.values(DynamicFormPermissions),
         ...Object.values(DashboardPermissions),
         ...Object.values(AuditPermissions),

@@ -8,7 +8,29 @@ const menu: MenuItem[] = [
     gallery: false,
     auth: false
   },
+  {
+    icon: 'mdi-account-circle',
+    text: 'Cobranzas',
+    gallery: true,
+    children: [
+      {
+        icon: 'mdi-map-marker-radius',
+        text: 'groupzone.menu',
+        link: { name: "GroupZoneCrudPage" },
+        gallery: true,
+        permission: 'groupzone:manage'
+      },
+      {
+        icon: 'mdi-currency-usd',
+        text: 'covenant.menu',
+        link: { name: "CovenantCrudPage" },
+        gallery: true,
+        permission: 'covenant:manage'
+      },
 
+
+    ],
+  },
   {
     icon: 'mdi-world',
     text: 'People',

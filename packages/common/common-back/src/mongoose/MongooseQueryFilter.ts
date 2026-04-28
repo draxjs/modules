@@ -26,8 +26,19 @@ class MongooseQueryFilter{
             }
         }
 
-        function isSchemaTypeObjectId(fieldName: string){
+        function getArrayCaster(schemaType: any){
+            return schemaType?.instance === 'Array'
+                ? schemaType.caster || schemaType.$embeddedSchemaType
+                : undefined
+        }
+
+        function getSchemaValueType(fieldName: string){
             const schemaType = getSchemaType(fieldName)
+            return getArrayCaster(schemaType) || schemaType
+        }
+
+        function isSchemaTypeObjectId(fieldName: string){
+            const schemaType = getSchemaValueType(fieldName)
             if(schemaType?.instance === 'ObjectId'){
                 return true
             }else{
@@ -35,8 +46,8 @@ class MongooseQueryFilter{
             }
         }
 
-        function castSchemaValue(fieldName: string, value: any){
-            const schemaType = getSchemaType(fieldName)
+        function castSchemaElementValue(fieldName: string, value: any){
+            const schemaType = getSchemaValueType(fieldName)
 
             if(!schemaType || value === undefined || value === null || value === ''){
                 return value
@@ -51,7 +62,7 @@ class MongooseQueryFilter{
 
         function castSchemaArrayValue(fieldName: string, value: any){
             const values = MongooseQueryFilter.normalizeArrayValue(value)
-            return values.map((item: any) => castSchemaValue(fieldName, item))
+            return values.map((item: any) => castSchemaElementValue(fieldName, item))
         }
 
         const mutableQuery = query as MongooseQuery
@@ -64,8 +75,61 @@ class MongooseQueryFilter{
         const andConditions: MongooseQuery[] = []
         const orGroups = new Map<string, MongooseQuery[]>()
 
+        function isMergeableConditionValue(value: any){
+            return value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date) && !(value instanceof ObjectId)
+        }
+
+        function canMergeCondition(target: MongooseQuery, condition: MongooseQuery){
+            for(const [fieldName, value] of Object.entries(condition)){
+                if(!(fieldName in target)){
+                    continue
+                }
+
+                if(!isMergeableConditionValue(target[fieldName]) || !isMergeableConditionValue(value)){
+                    return false
+                }
+
+                for(const operator of Object.keys(value)){
+                    if(operator in target[fieldName]){
+                        return false
+                    }
+                }
+            }
+
+            return true
+        }
+
+        function mergeCondition(target: MongooseQuery, condition: MongooseQuery){
+            for(const [fieldName, value] of Object.entries(condition)){
+                if(fieldName in target && isMergeableConditionValue(target[fieldName]) && isMergeableConditionValue(value)){
+                    Object.assign(target[fieldName], value)
+                }else{
+                    target[fieldName] = value
+                }
+            }
+        }
+
+        function mergeCompatibleConditions(conditions: MongooseQuery[]){
+            const mergedCondition: MongooseQuery = {}
+            const finalConditions: MongooseQuery[] = []
+
+            for(const condition of conditions){
+                if(canMergeCondition(mergedCondition, condition)){
+                    mergeCondition(mergedCondition, condition)
+                }else{
+                    finalConditions.push(condition)
+                }
+            }
+
+            if(Object.keys(mergedCondition).length > 0){
+                finalConditions.unshift(mergedCondition)
+            }
+
+            return finalConditions
+        }
+
         for(const filter of filters){
-            const condition = this.buildCondition(filter, isSchemaTypeObjectId, castSchemaValue, castSchemaArrayValue)
+            const condition = this.buildCondition(filter, isSchemaTypeObjectId, castSchemaElementValue, castSchemaArrayValue)
 
             if(!condition){
                 continue
@@ -87,7 +151,7 @@ class MongooseQueryFilter{
             finalConditions.push(existingCondition)
         }
 
-        finalConditions.push(...andConditions)
+        finalConditions.push(...mergeCompatibleConditions(andConditions))
 
         for(const groupConditions of orGroups.values()){
             if(groupConditions.length === 1){
@@ -112,7 +176,7 @@ class MongooseQueryFilter{
     static buildCondition(
         filter: IQueryFilter,
         isSchemaTypeObjectId: (fieldName: string) => boolean,
-        castSchemaValue: (fieldName: string, value: any) => any,
+        castSchemaElementValue: (fieldName: string, value: any) => any,
         castSchemaArrayValue: (fieldName: string, value: any) => any[]
     ): MongooseQuery | null {
         let value = filter.value
@@ -150,7 +214,7 @@ class MongooseQueryFilter{
         if(['in', 'nin'].includes(filter.operator)){
             value = castSchemaArrayValue(filter.field, value)
         }else{
-            value = castSchemaValue(filter.field, value)
+            value = castSchemaElementValue(filter.field, value)
         }
 
         switch (filter.operator) {

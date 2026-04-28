@@ -1,5 +1,6 @@
 import baseRoutes from '../modules/base/routes/index'
 import peopleRoutes from '../modules/people/routes/index'
+import collectionsRoutes from '../modules/collections/routes/index'
 import {IdentityRoutes} from "@drax/identity-vue";
 import {SettingRoutes} from "@drax/settings-vue";
 import {DynamicFormCrudRoute} from "@drax/dynamic-vue";
@@ -13,6 +14,7 @@ const routes = [
   ...IdentityRoutes,
   ...SettingRoutes,
   ...peopleRoutes,
+  ...collectionsRoutes,
   ...DynamicFormCrudRoute,
   ...DashboardCrudRoute,
   ...AuditRoutes,

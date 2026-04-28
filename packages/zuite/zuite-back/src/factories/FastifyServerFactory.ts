@@ -13,6 +13,8 @@ import {MediaRoutes, FileRoutes} from "@drax/media-back"
 import {PersonFastifyRoutes} from "../modules/people/routes/PersonRoutes.js"
 import {CountryFastifyRoutes} from "../modules/people/routes/CountryRoutes.js"
 import {LanguageFastifyRoutes} from "../modules/people/routes/LanguageRoutes.js"
+import {GroupZoneFastifyRoutes} from "../modules/collections/routes/GroupZoneRoutes.js"
+import {CovenantFastifyRoutes} from "../modules/collections/routes/CovenantRoutes.js"
 import ModuleMerger from "../merge/ModuleMerger.js";
 import {DynamicFormRoutes} from "@drax/dynamic-back";
 import {DashboardRoutes} from "@drax/dashboard-back";
@@ -43,6 +45,9 @@ function FastifyServerFactory(rootDir:string) {
     server.fastifyRegister(PersonFastifyRoutes)
     server.fastifyRegister(CountryFastifyRoutes)
     server.fastifyRegister(LanguageFastifyRoutes)
+
+    server.fastifyRegister(GroupZoneFastifyRoutes)
+    server.fastifyRegister(CovenantFastifyRoutes)
 
     server.fastifyRegister(DynamicFormRoutes)
     server.fastifyRegister(DashboardRoutes)

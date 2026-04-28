@@ -16,7 +16,7 @@ const attrs = useAttrs()
 const {t} = useI18n()
 const {xs} = useDisplay()
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   id?: string
   label?: string
   variant?: 'outlined' | 'plain' | 'filled' | 'solo' | 'solo-filled' | 'solo-inverted' | 'underlined'
