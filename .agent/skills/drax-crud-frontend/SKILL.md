@@ -392,16 +392,15 @@ Available slots in `Crud.vue`:
 - `item.actions`: injects custom action buttons/actions for each item. Props: `{ item }`.
 - `export-table`: customizes the export files list UI. Props: `{ exportFiles }`.
 - `tools`: renders inside the dialog, before the form content. Props: none.
-- `form`: replaces the entire default dialog form content. Props: none.
-- `field.<fieldName>`: custom renderer for one form field declared in `entity.fields`, `createFields`, `updateFields`, `viewFields`, or `deleteFields`. Props: `{ field, form, modelValue, setValue }`.
+- `form`: replaces the entire default dialog form content. Props: `{ form, operation}`. Prop form is an object with all fields form values like {field1: value, field2: value}, and operation is either "view" | "create" | "edit" | "delete" | null
+- `field.<fieldName>`: custom renderer for one form field declared in `entity.fields`, `createFields`, `updateFields`, `viewFields`, or `deleteFields`. Props: `{ field, form, modelValue, setValue }`. It is suggested to use movelValue to read the current value and setValue(newValue) to update it
 
 How to choose the right slot:
 
 - Use `item.<field>` when the list value needs formatting, badges, chips, nested properties, or links.
 - Use `field.<field>` when one input needs a custom component, conditional layout, or special interaction.
-- `field.<field>` already exposes the reactive form state, so you usually do not need to import `useCrudStore` just to bind the value of that field.
-- Prefer `form[field.name]` when your custom component supports a normal `v-model`.
 - Prefer `modelValue` + `setValue` when your component API is based on `:model-value` and `@update:model-value`.
+- Prefer `form[field.name]` when your custom component supports a normal `v-model`.
 - Use `filter.<field>` when a standard filter input is not enough but the default filters container should remain.
 - Use `item.actions` for row/card-level actions like impersonate, clone, sync, or open related screens.
 - Use `toolbar` or `toolbar-right` for global actions like refresh, bulk actions, or shortcuts.
