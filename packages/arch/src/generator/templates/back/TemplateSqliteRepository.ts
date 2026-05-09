@@ -46,7 +46,7 @@ function generateFields(schema: ISchema) {
 
         switch(schema[field].type){
             case 'number':
-                fields.push(`{name: "${field}", type: "FLOAT", unique: ${schema[field].unique}, primary: false}`);
+                fields.push(`{name: "${field}", type: "NUMERIC", unique: ${schema[field].unique}, primary: false}`);
             default:
                 fields.push(`{name: "${field}", type: "TEXT", unique: ${schema[field].unique}, primary: false}`);
                 break;

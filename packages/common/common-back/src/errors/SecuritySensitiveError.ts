@@ -10,7 +10,7 @@ class SecuritySensitiveError extends Error implements IError{
     }
 
     get message(){
-        return `SecuritySensitiveError - ${this.message}`
+        return `Security Sensitive Error`
     }
 
     get i18nMessage(){
