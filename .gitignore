@@ -19,3 +19,4 @@ lerna-debug.log
 /.idea/vcs.xml
 /.idea/workspace.xml
 /.idea/
+/packages/ai/ai-back/.env

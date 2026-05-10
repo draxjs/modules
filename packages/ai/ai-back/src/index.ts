@@ -27,7 +27,8 @@ import type {
     IPromptMessage,
     IPromptMemory,
     IPromptParams,
-    IPromptResponse
+    IPromptResponse,
+    IPromptTool
 } from "./interfaces/IAIProvider.js";
 
 export type {
@@ -37,6 +38,7 @@ export type {
     IPromptParams,
     IPromptMessage,
     IPromptMemory,
+    IPromptTool,
     IPromptImage,
     IPromptImageDetail,
     IPromptContentPart,

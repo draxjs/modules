@@ -1,4 +1,4 @@
-import type { IAIProvider, IPromptContentPart, IPromptMessage, IPromptParams, IPromptResponse } from "../interfaces/IAIProvider";
+import type { IAIProvider, IPromptContentPart, IPromptMessage, IPromptParams, IPromptResponse, IPromptTool } from "../interfaces/IAIProvider";
 import type { AILogService } from "../services/AILogService";
 import type { IAILogBase } from "@drax/ai-share";
 declare class OpenAiProvider implements IAIProvider {
@@ -79,6 +79,17 @@ declare class OpenAiProvider implements IAIProvider {
         text: string;
         model: string;
     }): Promise<number[]>;
+    protected mapTools(tools?: IPromptTool[]): {
+        type: "function";
+        function: {
+            name: string;
+            description: string;
+            parameters: object;
+        };
+    }[];
+    protected parseToolArguments(args: string | undefined): any;
+    protected serializeToolOutput(output: unknown): string;
+    protected buildToolMessages(toolCalls?: any[], tools?: IPromptTool[]): Promise<any[]>;
     prompt(input: IPromptParams): Promise<IPromptResponse>;
 }
 export default OpenAiProvider;

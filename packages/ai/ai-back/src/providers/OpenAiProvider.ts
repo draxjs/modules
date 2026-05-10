@@ -5,7 +5,8 @@ import type {
     IPromptContentPart,
     IPromptMessage,
     IPromptParams,
-    IPromptResponse
+    IPromptResponse,
+    IPromptTool
 } from "../interfaces/IAIProvider";
 import type {AILogService} from "../services/AILogService";
 import type {IAILogBase} from "@drax/ai-share";
@@ -129,6 +130,11 @@ class OpenAiProvider implements IAIProvider{
             userContent: input.userContent,
             memory: input.memory,
             knowledgeBase: input.knowledgeBase,
+            tools: input.tools?.map(tool => ({
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters,
+            })),
         })
     }
 
@@ -221,6 +227,69 @@ class OpenAiProvider implements IAIProvider{
         return response.data[0].embedding;
     }
 
+    protected mapTools(tools: IPromptTool[] = []){
+        return tools.map(tool => ({
+            type: "function" as const,
+            function: {
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters ?? {
+                    type: "object",
+                    properties: {},
+                    additionalProperties: false,
+                },
+            },
+        }))
+    }
+
+    protected parseToolArguments(args: string | undefined){
+        if(!args){
+            return {}
+        }
+
+        try{
+            return JSON.parse(args)
+        }catch(e){
+            throw new Error(`Invalid tool arguments: ${args}`)
+        }
+    }
+
+    protected serializeToolOutput(output: unknown){
+        if(typeof output === "string"){
+            return output
+        }
+
+        if(output === undefined){
+            return ""
+        }
+
+        return JSON.stringify(output)
+    }
+
+    protected async buildToolMessages(toolCalls: any[] = [], tools: IPromptTool[] = []){
+        const toolMessages: any[] = []
+
+        for(const toolCall of toolCalls){
+            const toolName = toolCall.function?.name
+            const tool = tools.find(t => t.name === toolName)
+
+            if(!tool){
+                throw new Error(`Tool not found: ${toolName}`)
+            }
+
+            const args = this.parseToolArguments(toolCall.function?.arguments)
+            const output = await tool.execute(args)
+
+            toolMessages.push({
+                role: "tool",
+                tool_call_id: toolCall.id,
+                content: this.serializeToolOutput(output),
+            })
+        }
+
+        return toolMessages
+    }
+
     async prompt(input: IPromptParams): Promise<IPromptResponse> {
 
         if(!input.systemPrompt){
@@ -242,25 +311,49 @@ class OpenAiProvider implements IAIProvider{
         const model = input.model ?? (this.hasImageInput(input) ? this.visionModel ?? this.model : this.model)
         const startedAt = new Date()
         const startTime = performance.now()
+        let tokens = 0
+        let inputTokens = 0
+        let outputTokens = 0
 
         try {
-            const chatCompletion = await this.client.chat.completions.create({
-                messages: [
-                    {role: 'system', content: systemPrompt},
-                    ...this.mapHistory(input.history),
-                    {role: 'user', content: userInput},
-                ],
+            const messages: any[] = [
+                {role: 'system', content: systemPrompt},
+                ...this.mapHistory(input.history),
+                {role: 'user', content: userInput},
+            ]
+            const tools = input.tools ?? []
+            const maxIterations = input.toolMaxIterations ?? 5
+            let output: any
 
-                ...(input.zodSchema ? {response_format: zodResponseFormat(input.zodSchema, "event")} : {}),
-                ...(input.jsonSchema ? {response_format: input.jsonSchema} : {}),
-                model: model,
-            });
+            for(let iteration = 0; iteration < maxIterations; iteration++){
+                const chatCompletion = await this.client.chat.completions.create({
+                    messages,
 
+                    ...(input.zodSchema ? {response_format: zodResponseFormat(input.zodSchema, "event")} : {}),
+                    ...(input.jsonSchema ? {response_format: input.jsonSchema} : {}),
+                    ...(tools.length > 0 ? {tools: this.mapTools(tools)} : {}),
+                    model: model,
+                });
 
-            const output = chatCompletion.choices[0].message.content
-            const tokens = chatCompletion.usage.total_tokens
-            const inputTokens = chatCompletion.usage.prompt_tokens
-            const outputTokens = chatCompletion.usage.completion_tokens
+                tokens += chatCompletion.usage?.total_tokens ?? 0
+                inputTokens += chatCompletion.usage?.prompt_tokens ?? 0
+                outputTokens += chatCompletion.usage?.completion_tokens ?? 0
+
+                const message = chatCompletion.choices[0].message
+                const toolCalls = message.tool_calls ?? []
+
+                if(toolCalls.length === 0){
+                    output = message.content
+                    break
+                }
+
+                messages.push(message)
+                messages.push(...await this.buildToolMessages(toolCalls, tools))
+            }
+
+            if(output === undefined){
+                throw new Error(`Tool max iterations reached: ${maxIterations}`)
+            }
 
             const endTime = performance.now()
             const time = endTime - startTime

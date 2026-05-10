@@ -32,6 +32,13 @@ interface IPromptMemory {
     value: string;
 }
 
+interface IPromptTool {
+    name: string;
+    description: string;
+    parameters?: object;
+    execute: (args: any) => any | Promise<any>;
+}
+
 interface IPromptParams {
     systemPrompt: string,
     userInput?: string,
@@ -51,6 +58,8 @@ interface IPromptParams {
     knowledgeBaseHeader?: string | '[KNOWLEDGE BASE]' | '[BASE DE CONOCIMIENTO]',
     zodSchema?: ZodSchema<any>,
     jsonSchema?: object,
+    tools?: IPromptTool[],
+    toolMaxIterations?: number,
     model?: string,
     operationTitle?: string,
     operationGroup?: string,
@@ -78,6 +87,7 @@ export type {
     IPromptResponse,
     IPromptMessage,
     IPromptMemory,
+    IPromptTool,
     IPromptImage,
     IPromptImageDetail,
     IPromptContentPart,

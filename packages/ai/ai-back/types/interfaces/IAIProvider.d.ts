@@ -23,6 +23,12 @@ interface IPromptMemory {
     key: string;
     value: string;
 }
+interface IPromptTool {
+    name: string;
+    description: string;
+    parameters?: object;
+    execute: (args: any) => any | Promise<any>;
+}
 interface IPromptParams {
     systemPrompt: string;
     userInput?: string;
@@ -42,6 +48,8 @@ interface IPromptParams {
     knowledgeBaseHeader?: string | '[KNOWLEDGE BASE]' | '[BASE DE CONOCIMIENTO]';
     zodSchema?: ZodSchema<any>;
     jsonSchema?: object;
+    tools?: IPromptTool[];
+    toolMaxIterations?: number;
     model?: string;
     operationTitle?: string;
     operationGroup?: string;
@@ -60,5 +68,5 @@ interface IPromptResponse {
 interface IAIProvider {
     prompt(input: IPromptParams): Promise<IPromptResponse>;
 }
-export type { IAIProvider, IPromptParams, IPromptResponse, IPromptMessage, IPromptMemory, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, };
+export type { IAIProvider, IPromptParams, IPromptResponse, IPromptMessage, IPromptMemory, IPromptTool, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, };
 //# sourceMappingURL=IAIProvider.d.ts.map

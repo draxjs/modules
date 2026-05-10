@@ -17,7 +17,7 @@ import AIGenericController from "./controllers/AIGenericController.js";
 import AILogRoutes from "./routes/AILogRoutes.js";
 import AIRoutes from "./routes/AIRoutes.js";
 import type { IAILogRepository } from "./interfaces/IAILogRepository.js";
-import type { IAIProvider, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptImage, IPromptImageDetail, IPromptMessage, IPromptMemory, IPromptParams, IPromptResponse } from "./interfaces/IAIProvider.js";
-export type { IAILogRepository, IAIProvider, IPromptParams, IPromptMessage, IPromptMemory, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptResponse, };
+import type { IAIProvider, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptImage, IPromptImageDetail, IPromptMessage, IPromptMemory, IPromptParams, IPromptResponse, IPromptTool } from "./interfaces/IAIProvider.js";
+export type { IAILogRepository, IAIProvider, IPromptParams, IPromptMessage, IPromptMemory, IPromptTool, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptResponse, };
 export { OpenAiConfig, AILogSchema, AILogBaseSchema, AILogModel, AILogMongoRepository, AILogSqliteRepository, OpenAiProviderFactory, AiProviderFactory, AILogServiceFactory, OpenAiProvider, KnowledgeService, AILogService, AILogPermissions, AIPermissions, AILogController, AICrudController, AIGenericController, AILogRoutes, AIRoutes };
 //# sourceMappingURL=index.d.ts.map

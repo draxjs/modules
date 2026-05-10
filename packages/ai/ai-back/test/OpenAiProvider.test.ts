@@ -1,10 +1,65 @@
-import {describe, test, expect} from 'vitest'
+import {describe, test, expect, beforeAll, afterAll} from 'vitest'
 import {OpenAiProvider, OpenAiProviderFactory} from "../src";
 import z from "zod";
-import {IPromptMemory, IPromptMessage} from "../src/interfaces/IAIProvider";
+import {IPromptMemory, IPromptMessage, IPromptTool} from "../src/interfaces/IAIProvider";
+import {TestSetup} from "./setup/TestSetup";
+import {existsSync, readFileSync} from "fs";
+import * as path from "path";
+
+function loadEnvFile(){
+    const envPaths = [
+        path.resolve(process.cwd(), ".env"),
+        path.resolve(process.cwd(), "packages/ai/ai-back/.env"),
+    ]
+    const envPath = envPaths.find(filePath => existsSync(filePath))
+
+    if(!envPath){
+        return
+    }
+
+    const envContent = readFileSync(envPath, "utf8")
+
+    for(const line of envContent.split(/\r?\n/)){
+        const trimmedLine = line.trim()
+
+        if(!trimmedLine || trimmedLine.startsWith("#")){
+            continue
+        }
+
+        const separatorIndex = trimmedLine.indexOf("=")
+
+        if(separatorIndex === -1){
+            continue
+        }
+
+        const key = trimmedLine.slice(0, separatorIndex).trim()
+        let value = trimmedLine.slice(separatorIndex + 1).trim()
+
+        if((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))){
+            value = value.slice(1, -1)
+        }
+
+        if(process.env[key] === undefined || process.env[key] === ""){
+            process.env[key] = value
+        }
+    }
+}
+
+loadEnvFile()
 
 
 describe('OpenAi Test', () => {
+
+    let testSetup = new TestSetup("mongo")
+
+    beforeAll(async () => {
+        await testSetup.setup()
+    })
+
+    afterAll(async () => {
+        await testSetup.dropAndClose()
+        return
+    })
 
     test('OpenAi prompt supports image inputs and vision model fallback', async () => {
         let request: any
@@ -94,6 +149,94 @@ describe('OpenAi Test', () => {
         expect(request.messages[1]).toEqual({
             role: 'user',
             content: 'What is the capital of Argentina?'
+        })
+    })
+
+    test('OpenAi prompt executes tools and sends tool output back to model', async () => {
+        const requests: any[] = []
+        const weatherTool: IPromptTool = {
+            name: 'get_weather',
+            description: 'Get weather for a city',
+            parameters: {
+                type: 'object',
+                properties: {
+                    city: {type: 'string'}
+                },
+                required: ['city'],
+                additionalProperties: false
+            },
+            execute: async ({city}) => ({city, temperature: 21})
+        }
+
+        class MockedOpenAiProvider extends OpenAiProvider {
+            constructor() {
+                super('test-key', 'gpt-4.1-mini')
+                this._client = {
+                    chat: {
+                        completions: {
+                            create: async (payload: any) => {
+                                requests.push(payload)
+
+                                if(requests.length === 1){
+                                    return {
+                                        choices: [{
+                                            message: {
+                                                role: 'assistant',
+                                                content: null,
+                                                tool_calls: [{
+                                                    id: 'call_123',
+                                                    type: 'function',
+                                                    function: {
+                                                        name: 'get_weather',
+                                                        arguments: '{"city":"Buenos Aires"}'
+                                                    }
+                                                }]
+                                            }
+                                        }],
+                                        usage: {
+                                            total_tokens: 15,
+                                            prompt_tokens: 10,
+                                            completion_tokens: 5
+                                        }
+                                    }
+                                }
+
+                                return {
+                                    choices: [{message: {role: 'assistant', content: '21 grados'}}],
+                                    usage: {
+                                        total_tokens: 9,
+                                        prompt_tokens: 7,
+                                        completion_tokens: 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        const openAi = new MockedOpenAiProvider()
+        const r = await openAi.prompt({
+            systemPrompt: 'You are an AI assistant.',
+            userInput: 'How is the weather in Buenos Aires?',
+            tools: [weatherTool]
+        })
+
+        expect(r.output).toBe('21 grados')
+        expect(r.tokens).toBe(24)
+        expect(requests[0].tools).toEqual([{
+            type: 'function',
+            function: {
+                name: 'get_weather',
+                description: 'Get weather for a city',
+                parameters: weatherTool.parameters
+            }
+        }])
+        expect(requests[1].messages[3]).toEqual({
+            role: 'tool',
+            tool_call_id: 'call_123',
+            content: '{"city":"Buenos Aires","temperature":21}'
         })
     })
 
