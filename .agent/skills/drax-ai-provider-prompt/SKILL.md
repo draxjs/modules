@@ -1,6 +1,6 @@
 ---
 name: drax-ai-provider-prompt
-description: Explica como usar AiProviderFactory e IAIProvider en Drax para ejecutar prompts completos de forma agnostica al proveedor, incluyendo systemPrompt, userInput, userContent, userImages, history, memory, knowledgeBase, jsonSchema, zodSchema, model y metadatos de operacion. Usar cuando el usuario pida ejemplos, documentacion o implementaciones basadas en AiProviderFactory, IAIProvider, AIGenericController, AICrudController o AiTestController.
+description: Explica como usar AiProviderFactory e IAIProvider en Drax para ejecutar prompts completos de forma agnostica al proveedor, incluyendo systemPrompt, userInput, userContent, userImages, history, memory, knowledgeBase, tools, toolMaxIterations, jsonSchema, zodSchema, model y metadatos de operacion. Usar cuando el usuario pida ejemplos, documentacion o implementaciones basadas en AiProviderFactory, IAIProvider, tools de AI, AIGenericController, AICrudController o AiTestController.
 ---
 
 # Drax AI Provider Prompt
@@ -11,6 +11,7 @@ Fuentes principales para esta skill:
 
 - `packages/ai/ai-back/src/factory/AiProviderFactory.ts`
 - `packages/ai/ai-back/src/interfaces/IAIProvider.ts`
+- `packages/ai/ai-back/src/providers/OpenAiProvider.ts`
 - `packages/zuite/zuite-back/src/modules/base/controllers/AiTestController.ts`
 - `packages/ai/ai-back/src/controllers/AIGenericController.ts`
 - `packages/ai/ai-back/src/controllers/AICrudController.ts`
@@ -70,7 +71,8 @@ Cuando te pidan usar o explicar esta API:
 5. No atar la explicacion a un proveedor concreto.
 6. Si el caso parte de un controller, mantener el ejemplo igual de generico.
 7. Si se necesita salida estructurada, usar `zodSchema` o `jsonSchema` segun el caso.
-8. Si se necesita soportar un futuro multiproveedor, insistir en no importar factories concretas desde codigo de aplicacion.
+8. Si se necesita que el modelo consulte logica externa durante la respuesta, usar `tools`.
+9. Si se necesita soportar un futuro multiproveedor, insistir en no importar factories concretas desde codigo de aplicacion.
 
 ## Contrato de entrada: IPromptParams
 
@@ -149,6 +151,39 @@ La firma real viene de `IAIProvider.ts`.
 
 - `jsonSchema?: object`
   - Para solicitar una salida estructurada con un schema serializable.
+
+### Tools
+
+- `tools?: IPromptTool[]`
+  - Lista de funciones disponibles para que el modelo las invoque durante `prompt`.
+  - Tipo:
+    ```ts
+    interface IPromptTool {
+      name: string;
+      description: string;
+      parameters?: object;
+      execute: (args: any) => any | Promise<any>;
+    }
+    ```
+  - `name` identifica la tool.
+  - `description` le explica al modelo cuando usarla.
+  - `parameters` describe los argumentos esperados con JSON Schema.
+  - `execute` corre la logica real en el backend y puede ser sync o async.
+
+- `toolMaxIterations?: number`
+  - Limite de iteraciones de tool calls antes de cortar la ejecucion.
+  - Si no se informa, el proveedor actual usa `5`.
+
+Explicarlo asi:
+
+- las tools son parte del contrato publico `IPromptParams`
+- el codigo consumidor sigue llamando solo a `provider.prompt({...})`
+- la decision de invocar una tool la toma el modelo durante la generacion
+- el backend ejecuta la funcion `execute(args)` y devuelve el resultado al modelo
+- una tool debe ser deterministica, acotada y segura para ejecutarse desde el contexto del request
+- `parameters` deberia ser un JSON Schema claro para evitar argumentos ambiguos
+- no usar tools para pasar contexto estatico; para eso usar `memory` o `knowledgeBase`
+- no asumir detalles internos del proveedor salvo que el usuario pregunte especificamente por la implementacion actual
 
 ### Seleccion de modelo y trazabilidad
 
@@ -334,6 +369,76 @@ const response = await provider.prompt({
 });
 ```
 
+### 7. Prompt con tools
+
+Usar `tools` cuando el modelo necesite consultar o ejecutar logica del backend para completar la respuesta.
+
+```ts
+import { AiProviderFactory } from "@drax/ai-back";
+import type { IPromptTool } from "@drax/ai-back";
+
+const provider = AiProviderFactory.instance();
+
+const tools: IPromptTool[] = [
+  {
+    name: "get_order_status",
+    description: "Obtiene el estado actual de una orden por id.",
+    parameters: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        orderId: {
+          type: "string",
+          description: "Identificador de la orden.",
+        },
+      },
+      required: ["orderId"],
+    },
+    execute: async ({ orderId }) => {
+      const order = await orderService.findById(orderId);
+
+      if (!order) {
+        return { found: false };
+      }
+
+      return {
+        found: true,
+        status: order.status,
+        updatedAt: order.updatedAt,
+      };
+    },
+  },
+];
+
+const response = await provider.prompt({
+  systemPrompt: [
+    "Sos un asistente de soporte.",
+    "Si necesitas estado actualizado de una orden, usa la tool disponible.",
+    "Responde en espanol y no inventes estados.",
+  ].join("\n"),
+  userInput: "Que estado tiene la orden ORD-123?",
+  tools,
+  toolMaxIterations: 3,
+  operationTitle: "order-status-support",
+  operationGroup: "support-ai",
+});
+
+return response.output;
+```
+
+Reglas para documentar tools:
+
+- declarar `tools` cerca del caso de uso que las necesita
+- usar nombres estables, descriptivos y compatibles con function calling
+- describir `parameters` como JSON Schema de objeto
+- validar permisos, tenant y ownership dentro de `execute` cuando corresponda
+- devolver objetos JSON simples o strings desde `execute`
+- mantener `execute` sin efectos destructivos salvo que el flujo lo pida explicitamente y tenga validaciones de seguridad
+- configurar `toolMaxIterations` cuando se quiera limitar costo, latencia o loops accidentales
+- si el proveedor agota las iteraciones sin respuesta final, tratarlo como error operacional
+
+La implementacion actual de `OpenAiProvider` mapea cada `IPromptTool` a una function tool, parsea los argumentos, ejecuta `execute(args)`, agrega el resultado como mensaje `tool` y repite hasta obtener una respuesta final o alcanzar `toolMaxIterations`.
+
 ## Uso basado en controllers
 
 ### AIGenericController
@@ -377,12 +482,13 @@ Usar esta formula:
 2. Esa factory retorna un objeto que implementa `IAIProvider`.
 3. El codigo consumidor debe depender de `IAIProvider`, no de una implementacion concreta.
 4. La operacion principal es `prompt(input: IPromptParams): Promise<IPromptResponse>`.
-5. La API ya esta preparada para ocultar el proveedor real y hacer transparente un futuro escenario multiproveedor.
+5. Las `tools` permiten que el modelo pida datos o acciones al backend sin romper la abstraccion.
+6. La API ya esta preparada para ocultar el proveedor real y hacer transparente un futuro escenario multiproveedor.
 
 ## Que no hay que inventar
 
 - No afirmar que el consumidor debe importar una factory concreta del proveedor.
 - No acoplar explicaciones a una implementacion interna especifica.
 - No prometer features del proveedor que no aparezcan en `IAIProvider` o en los controllers que usan esta interfaz.
-- No asumir como se resuelven `model`, `userImages`, `jsonSchema` o `zodSchema` internamente mas alla de lo que expone el contrato publico.
+- No asumir como se resuelven `model`, `userImages`, `jsonSchema`, `zodSchema` o `tools` internamente mas alla de lo que expone el contrato publico.
 - No mostrar ejemplos que rompan la abstraccion multiproveedor.

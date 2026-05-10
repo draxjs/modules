@@ -225,6 +225,10 @@ class EntityCrud implements IEntityCrud {
     return true
   }
 
+  get isRefreshable() {
+    return true
+  }
+
   get isSavedQueriesEnabled(){
     return false
   }

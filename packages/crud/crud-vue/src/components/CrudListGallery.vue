@@ -22,6 +22,7 @@ import CrudFiltersDynamic from "./CrudFiltersDynamic.vue";
 import CrudFiltersAction from "./CrudFiltersAction.vue";
 import CrudFilterButton from "./buttons/CrudFilterButton.vue";
 import CrudSavedQueriesButton from "./buttons/CrudSavedQueriesButton.vue";
+import CrudRefreshButton from "./buttons/CrudRefreshButton.vue";
 
 const {t, te} = useI18n()
 const {hasPermission} = useAuth()
@@ -97,6 +98,11 @@ onMounted(() => {
 
           <slot name="toolbar">
           </slot>
+
+          <crud-refresh-button
+              v-if="entity.isRefreshable !== false"
+              @click="doPaginate"
+          />
 
           <crud-create-button
               v-if="entity.isCreatable"
