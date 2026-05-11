@@ -14,13 +14,14 @@ const {hasPermission} = useAuth()
 const {t, te} = useI18n()
 
 
-const {entity} = defineProps({
+const {entity, showSubmitAndReturn} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
+  showSubmitAndReturn: {type: Boolean, default: false},
 })
 
 const {onSubmit, onCancel, operation, error, form} = useCrud(entity)
 
-const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])
+const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled', 'saved-and-return'])
 
 const store = useCrudStore(entity?.name)
 
@@ -71,7 +72,7 @@ function setFieldModelValue(fieldName: string, value: any) {
   form.value[fieldName] = value
 }
 
-async function submit() {
+async function submitForm(returnAfterSubmit = false) {
   store.resetErrors()
 
   if (['create', 'edit'].includes(operation.value)) {
@@ -87,9 +88,15 @@ async function submit() {
   switch (result.status) {
     case "created":
       emit("created", result.item)
+      if (returnAfterSubmit) {
+        emit("saved-and-return", result.item)
+      }
       break
     case "updated":
       emit("updated", result.item)
+      if (returnAfterSubmit) {
+        emit("saved-and-return", result.item)
+      }
       break
     case "deleted":
       emit("deleted")
@@ -99,6 +106,14 @@ async function submit() {
       break
   }
 
+}
+
+async function submit() {
+  await submitForm()
+}
+
+async function submitAndReturn() {
+  await submitForm(true)
 }
 
 function cancel() {
@@ -348,6 +363,15 @@ const onlyView = computed(()=> {
         </v-btn>
         <v-btn variant="flat" v-if="operation != 'view'" :class="entity.submitBtnFormClass" @click="submit" :loading="store.loading">
           {{ operation ? t('action.'+operation) : t('action.sent') }}
+        </v-btn>
+        <v-btn
+            variant="flat"
+            v-if="showSubmitAndReturn && ['create', 'edit'].includes(operation || '')"
+            :class="entity.submitBtnFormClass"
+            @click="submitAndReturn"
+            :loading="store.loading"
+        >
+          {{ te('action.saveAndReturn') ? t('action.saveAndReturn') : 'Guardar y volver' }}
         </v-btn>
       </v-card-actions>
     </v-card>

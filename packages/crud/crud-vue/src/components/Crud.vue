@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import {computed, onBeforeMount, ref, watch, type PropType} from "vue";
+import {useRoute, useRouter} from "vue-router";
 import type {IEntityCrud} from "@drax/crud-share";
 import CrudListTable from "./CrudListTable.vue";
 import CrudListGallery from "./CrudListGallery.vue";
 import CrudForm from "./CrudForm.vue";
+import CrudRouteForm from "./CrudRouteForm.vue";
 import CrudNotify from "./CrudNotify.vue";
 import CrudDialog from "./CrudDialog.vue";
 import CrudAiButton from "./buttons/CrudAiButton.vue";
@@ -12,6 +14,7 @@ import {useCrud} from "../composables/UseCrud";
 import {useDisplay} from 'vuetify'
 import {useAuth} from "@drax/identity-vue";
 import CrudRowValue from "./CrudRowValue.vue";
+import getItemId from "../helpers/getItemId";
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
@@ -25,6 +28,8 @@ const {
 } = useCrud(entity);
 
 const {hasPermission} = useAuth()
+const route = useRoute()
+const router = useRouter()
 
 onBeforeMount(() => {
   resetCrudStore()
@@ -51,8 +56,73 @@ const listComponent = computed(() => {
 
 const {xs} = useDisplay()
 
+const routeCrudMode = computed(() => {
+  const mode = getQueryParam('mode')
+  return ['create', 'edit', 'view'].includes(mode || '') ? mode : null
+})
+
+const routeCrudId = computed(() => getQueryParam('id'))
+
+const isRouteCrudForm = computed(() => {
+  if (routeCrudMode.value === 'create') {
+    return true
+  }
+
+  return ['edit', 'view'].includes(routeCrudMode.value || '') && !!routeCrudId.value
+})
+
+const canOpenRouteCrudForm = computed(() => {
+  if (operation.value === 'create') {
+    return true
+  }
+
+  return ['edit', 'view'].includes(operation.value || '') && !!getFormId()
+})
+
+function getQueryParam(name: string): string | null {
+  const value = route.query[name]
+
+  if (Array.isArray(value)) {
+    return value[0] ?? null
+  }
+
+  return value ?? null
+}
+
 function applyAiSuggestions(values: Record<string, any>) {
   form.value = values
+}
+
+function getFormId() {
+  return entity.identifier ? form.value?.[entity.identifier] : getItemId(form.value)
+}
+
+function openRouteCrudForm() {
+  if (!operation.value || !['create', 'edit', 'view'].includes(operation.value)) {
+    return
+  }
+
+  const query: Record<string, string> = {
+    mode: operation.value,
+  }
+
+  if (operation.value !== 'create') {
+    const id = getFormId()
+
+    if (!id) {
+      return
+    }
+
+    query.id = String(id)
+  }
+
+  router.push({
+    name: route.name ?? undefined,
+    path: route.name ? undefined : route.path,
+    params: route.params,
+    hash: route.hash,
+    query,
+  })
 }
 
 watch(dialog, (value) => {
@@ -65,7 +135,22 @@ watch(dialog, (value) => {
 </script>
 
 <template>
-  <v-container :fluid="entity.containerFluid" class="mt-5">
+  <crud-route-form
+      v-if="isRouteCrudForm"
+      :entity="entity"
+      @created="item => emit('created', item)"
+      @updated="item => emit('updated', item)"
+      @deleted="emit('deleted')"
+      @viewed="emit('viewed')"
+      @canceled="emit('canceled')"
+  >
+    <template v-for="ifield in entity.fields" :key="ifield.name" v-slot:[`field.${ifield.name}`]="{field, form, modelValue, setValue}">
+      <slot :name="`field.${ifield.name}`" v-bind="{field, form, modelValue, setValue}">
+      </slot>
+    </template>
+  </crud-route-form>
+
+  <v-container v-else :fluid="entity.containerFluid" class="mt-5">
     <v-card :class="entity.cardClass" :density="entity.cardDensity">
 
       <component
@@ -149,6 +234,13 @@ watch(dialog, (value) => {
         :operation="operation"
     >
       <template #toolbar-actions>
+        <v-btn
+            v-if="canOpenRouteCrudForm"
+            icon="mdi-open-in-new"
+            variant="text"
+            @click="openRouteCrudForm"
+        />
+
         <v-btn
             v-if="canNavigateItems"
             icon="mdi-chevron-left"
