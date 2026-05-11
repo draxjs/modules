@@ -9,6 +9,7 @@ import CreateRootUserAndAdminRole from "./CreateRootUserAndAdminRole.js";
 import CreateSystemRoles from "./CreateSystemRoles.js";
 import InitializeAudit from "./InitializeAudit.js";
 import {projectPasswordPolicy} from "./data/policies/PasswordPolicy.js";
+import {initializeAgent} from "./InitializeAgent.js";
 
 
 async function SetupDrax(){
@@ -41,6 +42,8 @@ async function SetupDrax(){
     await CreateRootUserAndAdminRole()
 
     await CreateSystemRoles()
+
+    await initializeAgent()
 }
 
 export default SetupDrax

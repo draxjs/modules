@@ -7,15 +7,20 @@ import {OpenAiProviderFactory} from "./factory/OpenAiProviderFactory.js";
 import {AiProviderFactory} from "./factory/AiProviderFactory.js";
 import AILogServiceFactory from "./factory/services/AILogServiceFactory.js";
 import {OpenAiProvider} from "./providers/OpenAiProvider.js";
+import {BuilderTool} from "./tools/BuilderTool.js";
 import {KnowledgeService} from "./services/KnowledgeService.js";
 import {AILogService} from "./services/AILogService.js";
 import AILogPermissions from "./permissions/AILogPermissions.js";
+import AgentPermissions from "./permissions/AgentPermissions.js";
 import AIPermissions from "./permissions/AIPermissions.js";
 import AILogController from "./controllers/AILogController.js";
 import AICrudController from "./controllers/AICrudController.js";
 import AIGenericController from "./controllers/AIGenericController.js";
+import DraxAgentController from "./controllers/DraxAgentController.js";
 import AILogRoutes from "./routes/AILogRoutes.js";
 import AIRoutes from "./routes/AIRoutes.js";
+import DraxAgentRoutes from "./routes/DraxAgentRoutes.js";
+import {DraxAgent} from "./agents/DraxAgent.js";
 import type {IAILogRepository} from "./interfaces/IAILogRepository.js";
 import type {
     IAIProvider,
@@ -30,6 +35,29 @@ import type {
     IPromptResponse,
     IPromptTool
 } from "./interfaces/IAIProvider.js";
+import type {
+    ToolBuilderMethod,
+    ToolBuilderOptions,
+    ToolBuilderService
+} from "./interfaces/IBuilderTool.js";
+import type {
+    DraxAgentControllerOptions
+} from "./interfaces/IDraxAgentController.js";
+import type {
+    DraxAgentFastifyRoutesOptions
+} from "./interfaces/IDraxAgentRoutes.js";
+import type {
+    DraxAgentConfig,
+    DraxAgentMessageInput,
+    DraxAgentMessageOutput,
+    DraxAgentPromptContext,
+    DraxAgentSession,
+    DraxAgentSessionInput,
+    DraxAgentToolBuilder,
+    DraxAgentToolBuilderSource,
+    DraxAgentToolSource,
+    DraxAgentSystemPrompt,
+} from "./interfaces/IDraxAgent.js";
 
 export type {
 
@@ -45,6 +73,21 @@ export type {
     IPromptContentPartImage,
     IPromptContentPartText,
     IPromptResponse,
+    ToolBuilderMethod,
+    ToolBuilderOptions,
+    ToolBuilderService,
+    DraxAgentControllerOptions,
+    DraxAgentFastifyRoutesOptions,
+    DraxAgentConfig,
+    DraxAgentMessageInput,
+    DraxAgentMessageOutput,
+    DraxAgentPromptContext,
+    DraxAgentSession,
+    DraxAgentSessionInput,
+    DraxAgentToolBuilder,
+    DraxAgentToolBuilderSource,
+    DraxAgentToolSource,
+    DraxAgentSystemPrompt,
 }
 
 export {
@@ -58,13 +101,21 @@ export {
     AiProviderFactory,
     AILogServiceFactory,
     OpenAiProvider,
+    BuilderTool,
+    //Service
     KnowledgeService,
     AILogService,
+    //Permissions
     AILogPermissions,
+    AgentPermissions,
     AIPermissions,
+    //Controllers
     AILogController,
     AICrudController,
     AIGenericController,
+    DraxAgentController,
+    DraxAgent,
     AILogRoutes,
-    AIRoutes
+    AIRoutes,
+    DraxAgentRoutes,
 }

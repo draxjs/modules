@@ -3,6 +3,7 @@ import {IdentityProfileAvatar, IdentityProfileDrawer, useAuth, SwitchTenant} fro
 import {ref} from 'vue'
 import menu from '../menu'
 import { useSettingStore} from "@drax/settings-vue";
+import { DraxAgentButton} from "@drax/ai-vue";
 import DarkMode from "../components/DarkMode/index.vue";
 import {SidebarMenu} from "@drax/common-vue";
 import AnimatedBackground from "../components/AnimatedBackground/AnimatedBackground.vue";
@@ -47,7 +48,7 @@ const appName = computed(() => {
       <v-spacer></v-spacer>
       <slot name="toolbar-right"></slot>
       <dark-mode></dark-mode>
-
+      <drax-agent-button></drax-agent-button>
       <identity-profile-avatar class="cursor-pointer" @click="profileDrawer = !profileDrawer"></identity-profile-avatar>
     </v-app-bar>
 

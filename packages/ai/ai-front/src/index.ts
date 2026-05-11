@@ -1,5 +1,6 @@
 import AiProvider from './providers/AiProvider.js'
 import AILogProvider from './providers/AILogProvider.js'
+import AgentProvider from './providers/AgentProvider.js'
 import AiI18nMessages from './i18n/index.js'
 import type {
     IAICrudField,
@@ -26,6 +27,7 @@ import type {
 export {
     AiProvider,
     AILogProvider,
+    AgentProvider,
     AiI18nMessages
 }
 
