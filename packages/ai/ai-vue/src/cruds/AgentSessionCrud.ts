@@ -1,11 +1,11 @@
 
-import {EntityCrud, useCrudStore} from "@drax/crud-vue";
-import type{
+import {EntityCrud} from "@drax/crud-vue";
+import type {
   IDraxCrudProvider,
   IEntityCrud,
   IEntityCrudField,
   IEntityCrudFilter,
-  IEntityCrudHeader,
+  IEntityCrudHeader, IEntityCrudOperation,
   IEntityCrudPermissions,
   IEntityCrudRefs,
   IEntityCrudRules
@@ -19,12 +19,10 @@ import {UserCrud} from "@drax/identity-vue"
 class AgentSessionCrud extends EntityCrud implements IEntityCrud {
 
   static singleton: AgentSessionCrud
-  private store
 
   constructor() {
     super();
     this.name = 'AgentSession'
-    this.store = useCrudStore(this.name)
   }
 
   static get instance(): AgentSessionCrud {
@@ -192,7 +190,7 @@ messages: []
     return false
   }
 
-  get navigationOperations(){
+  get navigationOperations(): IEntityCrudOperation[]{
     return ['view'] // edit, delete
   }
 
