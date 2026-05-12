@@ -27,7 +27,7 @@ class FileSqliteRepository extends AbstractSqliteRepository<IFile, IFileBase, IF
 {name: "mimetype", type: "TEXT", unique: undefined, primary: false},
 {name: "encoding", type: "TEXT", unique: undefined, primary: false},
 {name: "extension", type: "TEXT", unique: undefined, primary: false},
-{name: "size", type: "FLOAT", unique: undefined, primary: false},
+{name: "size", type: "NUMERIC", unique: undefined, primary: false},
 {name: "size", type: "TEXT", unique: undefined, primary: false},
 {name: "type", type: "TEXT", unique: undefined, primary: false},
 {name: "lastAccess", type: "TEXT", unique: undefined, primary: false},
@@ -36,11 +36,11 @@ class FileSqliteRepository extends AbstractSqliteRepository<IFile, IFileBase, IF
 {name: "createdBy", type: "TEXT", unique: undefined, primary: false},
 {name: "updatedBy", type: "TEXT", unique: undefined, primary: false},
 {name: "createdFor", type: "TEXT", unique: undefined, primary: false},
-{name: "ttlSeconds", type: "FLOAT", unique: undefined, primary: false},
+{name: "ttlSeconds", type: "NUMERIC", unique: undefined, primary: false},
 {name: "ttlSeconds", type: "TEXT", unique: undefined, primary: false},
 {name: "expiresAt", type: "TEXT", unique: undefined, primary: false},
 {name: "isPublic", type: "TEXT", unique: undefined, primary: false},
-{name: "hits", type: "FLOAT", unique: undefined, primary: false},
+{name: "hits", type: "NUMERIC", unique: undefined, primary: false},
 {name: "hits", type: "TEXT", unique: undefined, primary: false}
     ]
   

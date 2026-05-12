@@ -12,14 +12,17 @@ import { KnowledgeService } from "./services/KnowledgeService.js";
 import { AILogService } from "./services/AILogService.js";
 import AILogPermissions from "./permissions/AILogPermissions.js";
 import AgentPermissions from "./permissions/AgentPermissions.js";
+import AgentSessionPermissions from "./permissions/AgentSessionPermissions.js";
 import AIPermissions from "./permissions/AIPermissions.js";
 import AILogController from "./controllers/AILogController.js";
 import AICrudController from "./controllers/AICrudController.js";
 import AIGenericController from "./controllers/AIGenericController.js";
 import DraxAgentController from "./controllers/DraxAgentController.js";
+import AgentSessionController from "./controllers/AgentSessionController.js";
 import AILogRoutes from "./routes/AILogRoutes.js";
 import AIRoutes from "./routes/AIRoutes.js";
 import DraxAgentRoutes from "./routes/DraxAgentRoutes.js";
+import AgentSessionRoutes from "./routes/AgentSessionRoutes.js";
 import { DraxAgent } from "./agents/DraxAgent.js";
 import type { IAILogRepository } from "./interfaces/IAILogRepository.js";
 import type { IAIProvider, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptImage, IPromptImageDetail, IPromptMessage, IPromptMemory, IPromptParams, IPromptResponse, IPromptTool } from "./interfaces/IAIProvider.js";
@@ -28,5 +31,5 @@ import type { DraxAgentControllerOptions } from "./interfaces/IDraxAgentControll
 import type { DraxAgentFastifyRoutesOptions } from "./interfaces/IDraxAgentRoutes.js";
 import type { DraxAgentConfig, DraxAgentMessageInput, DraxAgentMessageOutput, DraxAgentPromptContext, DraxAgentSession, DraxAgentSessionInput, DraxAgentToolBuilder, DraxAgentToolBuilderSource, DraxAgentToolSource, DraxAgentSystemPrompt } from "./interfaces/IDraxAgent.js";
 export type { IAILogRepository, IAIProvider, IPromptParams, IPromptMessage, IPromptMemory, IPromptTool, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptResponse, ToolBuilderMethod, ToolBuilderOptions, ToolBuilderService, DraxAgentControllerOptions, DraxAgentFastifyRoutesOptions, DraxAgentConfig, DraxAgentMessageInput, DraxAgentMessageOutput, DraxAgentPromptContext, DraxAgentSession, DraxAgentSessionInput, DraxAgentToolBuilder, DraxAgentToolBuilderSource, DraxAgentToolSource, DraxAgentSystemPrompt, };
-export { OpenAiConfig, AILogSchema, AILogBaseSchema, AILogModel, AILogMongoRepository, AILogSqliteRepository, OpenAiProviderFactory, AiProviderFactory, AILogServiceFactory, OpenAiProvider, BuilderTool, KnowledgeService, AILogService, AILogPermissions, AgentPermissions, AIPermissions, AILogController, AICrudController, AIGenericController, DraxAgentController, DraxAgent, AILogRoutes, AIRoutes, DraxAgentRoutes, };
+export { OpenAiConfig, AILogSchema, AILogBaseSchema, AILogModel, AILogMongoRepository, AILogSqliteRepository, OpenAiProviderFactory, AiProviderFactory, AILogServiceFactory, OpenAiProvider, BuilderTool, KnowledgeService, AILogService, AILogPermissions, AgentPermissions, AIPermissions, AgentSessionPermissions, AILogController, AICrudController, AIGenericController, DraxAgentController, AgentSessionController, DraxAgent, AILogRoutes, AIRoutes, DraxAgentRoutes, AgentSessionRoutes };
 //# sourceMappingURL=index.d.ts.map

@@ -5,6 +5,7 @@ import LanguageSchema from './schemas/people/LanguageSchema';
 import FileSchema from './schemas/media/FileSchema';
 
 import AILogSchema from './schemas/ai/AILogSchema';
+import AgentSessionSchema from './schemas/ai/AgentSessionSchema';
 // import UserSessionSchema from './schemas/identity/UserSessionSchema';
 // import UserLoginFailSchema from './schemas/identity/UserLoginFailSchema';
 // import DashboardSchema from './schemas/dashboard/DashboardSchema';
@@ -16,7 +17,9 @@ const schemas = [
     PersonSchema,
     CountrySchema,
     LanguageSchema,
-    FileSchema, AILogSchema
+    FileSchema,
+    AILogSchema,
+    AgentSessionSchema,
 ];
 
 const generator = new ArchGenerator(schemas);

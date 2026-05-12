@@ -1,4 +1,5 @@
 import type {IAILog, IAILogBase} from "./interfaces/IAILog";
+import type {IAgentSession, IAgentSessionBase} from "./interfaces/IAgentSession";
 import type {
     IAICrudField,
     IAICrudFieldOption,
@@ -16,11 +17,13 @@ import type {
     IAIPromptMessage,
     IAIPromptResponse,
     IAIRole,
+
 } from "./interfaces/IAI";
 
 
 export type{
     IAILog, IAILogBase,
+    IAgentSession, IAgentSessionBase,
     IAIRole,
     IAIImageDetail,
     IAIImageInput,

@@ -28,9 +28,10 @@ describe("DraxAgent", () => {
         const agent = DraxAgent.instance().clearSessions().configure({
             provider,
             systemPrompt: "Sos un asistente.",
+            sessionService: false,
         });
 
-        const session = agent.startSession({userId: "user-1", tenantId: "tenant-1"});
+        const session = await agent.startSession({userId: "user-1", tenantId: "tenant-1"});
         const response = await agent.sendMessage({
             sessionId: session.id,
             userId: "user-1",
@@ -76,6 +77,7 @@ describe("DraxAgent", () => {
         const agent = DraxAgent.instance().clearSessions().configure({
             provider,
             systemPrompt: "Prompt base.",
+            sessionService: false,
             toolBuilders: [{
                 getTools: () => [],
                 getSystemPromptSection: () => "[ENTIDAD: person]\nTools disponibles:",
@@ -100,6 +102,7 @@ describe("DraxAgent", () => {
         const agent = DraxAgent.instance().clearSessions().configure({
             provider,
             systemPrompt: "Sos un asistente.",
+            sessionService: false,
             toolBuilders: undefined,
             tools: undefined,
         });
@@ -125,6 +128,7 @@ describe("DraxAgent", () => {
         const agent = DraxAgent.instance().clearSessions().configure({
             provider,
             systemPrompt: "Sos un asistente.",
+            sessionService: false,
             toolBuilders: undefined,
             tools: [{
                 name: "task_findOne",
@@ -149,5 +153,69 @@ describe("DraxAgent", () => {
         });
 
         expect(response.navigationPath).toBe("/crud/task?mode=view&id=task-1");
+    });
+
+    test("persists agent session creation and message updates", async () => {
+        const provider = new MockProvider();
+        const created: any[] = [];
+        const updates: any[] = [];
+        const sessionService = {
+            create: async (data: any) => {
+                created.push(data);
+                return {_id: "agent-session-1", ...data};
+            },
+            updatePartial: async (id: string, data: any) => {
+                updates.push({id, data});
+                return {_id: id, ...data};
+            },
+            findBy: async () => [],
+            findById: async () => ({
+                _id: "agent-session-1",
+                sessionId: "session-1",
+                inputTokens: 1,
+                outputTokens: 2,
+                tokens: 3,
+            }),
+        } as any;
+
+        const agent = DraxAgent.instance().clearSessions().configure({
+            provider,
+            systemPrompt: "Sos un asistente.",
+            sessionService,
+            toolBuilders: undefined,
+            tools: undefined,
+        });
+
+        const response = await agent.sendMessage({
+            sessionId: "session-1",
+            userId: "user-1",
+            tenantId: "tenant-1",
+            message: "Hola",
+        });
+
+        expect(response.sessionId).toBe("session-1");
+        expect(created[0]).toMatchObject({
+            sessionId: "session-1",
+            tenant: "tenant-1",
+            user: "user-1",
+            messageCount: 0,
+        });
+        expect(updates[0]).toMatchObject({
+            id: "agent-session-1",
+            data: {
+                sessionId: "session-1",
+                tenant: "tenant-1",
+                user: "user-1",
+                title: "Hola",
+                messageCount: 2,
+                inputTokens: 7,
+                outputTokens: 6,
+                tokens: 13,
+            },
+        });
+        expect(updates[0].data.messages).toEqual([
+            expect.objectContaining({role: "user", content: "Hola"}),
+            expect.objectContaining({role: "assistant", content: "respuesta"}),
+        ]);
     });
 });

@@ -1,8 +1,10 @@
 
 import AILogCrudRoute from "./AILogCrudRoute"
+import AgentSessionCrudRoute from "./AgentSessionCrudRoute"
 
 export const routes = [
-    ...AILogCrudRoute
+    ...AILogCrudRoute,
+...AgentSessionCrudRoute
 ]
 
 export default routes

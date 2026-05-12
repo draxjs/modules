@@ -12,14 +12,17 @@ import {KnowledgeService} from "./services/KnowledgeService.js";
 import {AILogService} from "./services/AILogService.js";
 import AILogPermissions from "./permissions/AILogPermissions.js";
 import AgentPermissions from "./permissions/AgentPermissions.js";
+import AgentSessionPermissions from "./permissions/AgentSessionPermissions.js";
 import AIPermissions from "./permissions/AIPermissions.js";
 import AILogController from "./controllers/AILogController.js";
 import AICrudController from "./controllers/AICrudController.js";
 import AIGenericController from "./controllers/AIGenericController.js";
 import DraxAgentController from "./controllers/DraxAgentController.js";
+import AgentSessionController from "./controllers/AgentSessionController.js";
 import AILogRoutes from "./routes/AILogRoutes.js";
 import AIRoutes from "./routes/AIRoutes.js";
 import DraxAgentRoutes from "./routes/DraxAgentRoutes.js";
+import AgentSessionRoutes from "./routes/AgentSessionRoutes.js";
 import {DraxAgent} from "./agents/DraxAgent.js";
 import type {IAILogRepository} from "./interfaces/IAILogRepository.js";
 import type {
@@ -109,13 +112,16 @@ export {
     AILogPermissions,
     AgentPermissions,
     AIPermissions,
+    AgentSessionPermissions,
     //Controllers
     AILogController,
     AICrudController,
     AIGenericController,
     DraxAgentController,
+    AgentSessionController,
     DraxAgent,
     AILogRoutes,
     AIRoutes,
     DraxAgentRoutes,
+    AgentSessionRoutes
 }

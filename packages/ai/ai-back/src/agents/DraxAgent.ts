@@ -12,7 +12,11 @@ import type {
     DraxAgentToolBuilderSource,
     DraxAgentToolSource,
 } from "../interfaces/IDraxAgent.js";
+import type {IPromptMessage} from "../interfaces/IAIProvider.js";
+import type {IAgentSession, IAgentSessionBase} from "../interfaces/IAgentSession.js";
 import AiProviderFactory from "../factory/AiProviderFactory.js";
+import AgentSessionServiceFactory from "../factory/services/AgentSessionServiceFactory.js";
+import type {AgentSessionService} from "../services/AgentSessionService.js";
 
 class DraxAgent {
     private static singleton?: DraxAgent;
@@ -63,7 +67,14 @@ class DraxAgent {
         return this;
     }
 
-    startSession(input: DraxAgentSessionInput = {}): DraxAgentSession {
+    async startSession(input: DraxAgentSessionInput = {}): Promise<DraxAgentSession> {
+        if (input.sessionId) {
+            const existingSession = await this.resolveSession(input);
+            if (existingSession) {
+                return existingSession;
+            }
+        }
+
         return this.createSession(input);
     }
 
@@ -76,7 +87,7 @@ class DraxAgent {
     }
 
     async sendMessage(input: DraxAgentMessageInput): Promise<DraxAgentMessageOutput> {
-        const session = this.resolveSession(input);
+        const session = await this.resolveSession(input);
         const context: DraxAgentPromptContext = {session, input};
         const toolBuilders = await this.resolveToolBuilders(context);
         const navigationState: {path: string | null} = {path: null};
@@ -109,9 +120,16 @@ class DraxAgent {
         });
 
         const assistantMessage = this.normalizeOutput(response.output);
+        const now = new Date();
         session.messages.push({role: "user", content: input.message});
         session.messages.push({role: "assistant", content: assistantMessage});
         session.updatedAt = new Date();
+        await this.persistSessionUpdate(session, {
+            lastMessageAt: now,
+            tokens: response.tokens,
+            inputTokens: response.inputTokens,
+            outputTokens: response.outputTokens,
+        });
 
         return {
             sessionId: session.id,
@@ -125,7 +143,7 @@ class DraxAgent {
         };
     }
 
-    protected createSession(input: DraxAgentSessionInput = {}): DraxAgentSession {
+    protected async createSession(input: DraxAgentSessionInput = {}): Promise<DraxAgentSession> {
         const session: DraxAgentSession = {
             id: input.sessionId ?? randomUUID(),
             userId: input.userId ?? null,
@@ -136,10 +154,11 @@ class DraxAgent {
         };
 
         this.sessions.set(this.getSessionKey(session.userId, session.tenantId, session.id), session);
+        await this.persistSessionCreate(session);
         return session;
     }
 
-    protected resolveSession(input: DraxAgentSessionInput): DraxAgentSession {
+    protected async resolveSession(input: DraxAgentSessionInput): Promise<DraxAgentSession> {
         if (!input.sessionId) {
             return this.startSession(input);
         }
@@ -149,7 +168,177 @@ class DraxAgent {
             return existingSession;
         }
 
+        const persistedSession = await this.findPersistedSession(input);
+        if (persistedSession) {
+            const session = this.hydrateSession(persistedSession, input);
+            this.sessions.set(this.getSessionKey(session.userId, session.tenantId, session.id), session);
+            return session;
+        }
+
         return this.createSession(input);
+    }
+
+    protected async persistSessionCreate(session: DraxAgentSession): Promise<void> {
+        const sessionService = this.getSessionService();
+        if (!sessionService) {
+            return;
+        }
+
+        const record = await sessionService.create(this.buildSessionPayload(session, {
+            messageCount: 0,
+            inputTokens: 0,
+            outputTokens: 0,
+            tokens: 0,
+        }));
+
+        session.recordId = this.stringifyRecordId(record);
+    }
+
+    protected async persistSessionUpdate(
+        session: DraxAgentSession,
+        usage: Pick<IAgentSessionBase, "lastMessageAt" | "tokens" | "inputTokens" | "outputTokens">,
+    ): Promise<void> {
+        const sessionService = this.getSessionService();
+        if (!sessionService) {
+            return;
+        }
+
+        if (!session.recordId) {
+            const record = await this.findPersistedSession({
+                sessionId: session.id,
+                userId: session.userId,
+                tenantId: session.tenantId,
+            });
+            session.recordId = this.stringifyRecordId(record);
+        }
+
+        if (!session.recordId) {
+            await this.persistSessionCreate(session);
+        }
+
+        if (!session.recordId) {
+            return;
+        }
+
+        const storedUsage = await this.resolveStoredUsage(session.recordId);
+
+        await sessionService.updatePartial(session.recordId, this.buildSessionPayload(session, {
+            lastMessageAt: usage.lastMessageAt,
+            messageCount: session.messages.length,
+            inputTokens: storedUsage.inputTokens + (usage.inputTokens ?? 0),
+            outputTokens: storedUsage.outputTokens + (usage.outputTokens ?? 0),
+            tokens: storedUsage.tokens + (usage.tokens ?? 0),
+        }));
+    }
+
+    protected buildSessionPayload(session: DraxAgentSession, overrides: Partial<IAgentSessionBase> = {}): IAgentSessionBase {
+        return {
+            sessionId: session.id,
+            title: this.resolveSessionTitle(session.messages),
+            lastMessageAt: session.messages.length > 0 ? session.updatedAt : null,
+            messages: session.messages.map(message => ({
+                role: message.role,
+                content: this.stringifyMessageContent(message.content),
+                createdAt: session.updatedAt,
+            })),
+            messageCount: session.messages.length,
+            inputTokens: 0,
+            outputTokens: 0,
+            tokens: 0,
+            tenant: session.tenantId ?? null,
+            user: session.userId ?? null,
+            ...overrides,
+        };
+    }
+
+    protected async findPersistedSession(input: DraxAgentSessionInput): Promise<IAgentSession | null> {
+        if (!input.sessionId) {
+            return null;
+        }
+
+        const sessionService = this.getSessionService();
+        if (!sessionService) {
+            return null;
+        }
+
+        const filters = [
+            ...(input.tenantId ? [{field: "tenant", operator: "eq", value: input.tenantId}] : []),
+            ...(input.userId ? [{field: "user", operator: "eq", value: input.userId}] : []),
+        ];
+
+        const sessions = await sessionService.findBy("sessionId", input.sessionId, 1, filters);
+        return sessions?.[0] ?? null;
+    }
+
+    protected hydrateSession(record: IAgentSession, input: DraxAgentSessionInput): DraxAgentSession {
+        const session: DraxAgentSession = {
+            id: record.sessionId,
+            recordId: this.stringifyRecordId(record),
+            userId: input.userId ?? this.stringifyRelationId(record.user) ?? null,
+            tenantId: input.tenantId ?? this.stringifyRelationId(record.tenant) ?? null,
+            messages: this.normalizeStoredMessages(record.messages ?? []),
+            createdAt: record.createdAt ? new Date(record.createdAt) : new Date(),
+            updatedAt: record.updatedAt ? new Date(record.updatedAt) : new Date(),
+        };
+
+        return session;
+    }
+
+    protected normalizeStoredMessages(messages: IAgentSessionBase["messages"]): IPromptMessage[] {
+        return (messages ?? [])
+            .filter(message => message.role === "user" || message.role === "assistant" || message.role === "system")
+            .map(message => ({
+                role: message.role as IPromptMessage["role"],
+                content: message.content,
+            }));
+    }
+
+    protected async resolveStoredUsage(recordId: string): Promise<Required<Pick<IAgentSessionBase, "inputTokens" | "outputTokens" | "tokens">>> {
+        const sessionService = this.getSessionService();
+        if (!sessionService) {
+            return {inputTokens: 0, outputTokens: 0, tokens: 0};
+        }
+
+        const record = await sessionService.findById(recordId);
+        return {
+            inputTokens: this.normalizeNumber(record?.inputTokens),
+            outputTokens: this.normalizeNumber(record?.outputTokens),
+            tokens: this.normalizeNumber(record?.tokens),
+        };
+    }
+
+    protected normalizeNumber(value: any): number {
+        return typeof value === "number" && Number.isFinite(value) ? value : 0;
+    }
+
+    protected resolveSessionTitle(messages: IPromptMessage[]): string | undefined {
+        const firstUserMessage = messages.find(message => message.role === "user");
+        if (!firstUserMessage) {
+            return undefined;
+        }
+
+        const title = this.stringifyMessageContent(firstUserMessage.content).trim();
+        return title.length > 80 ? `${title.slice(0, 77)}...` : title;
+    }
+
+    protected stringifyMessageContent(content: IPromptMessage["content"]): string {
+        return typeof content === "string" ? content : JSON.stringify(content);
+    }
+
+    protected stringifyRecordId(record: IAgentSession | null | undefined): string | null {
+        return this.stringifyNavigationId(record?._id ?? (record as any)?.id);
+    }
+
+    protected stringifyRelationId(value: any): string | null {
+        return this.stringifyNavigationId(value?._id ?? value?.id ?? value);
+    }
+
+    protected getSessionService(): AgentSessionService | null {
+        if (this.config.sessionService === false) {
+            return null;
+        }
+
+        return this.config.sessionService ?? AgentSessionServiceFactory.instance;
     }
 
     protected getSessionKey(userId: string | null | undefined, tenantId: string | null | undefined, sessionId: string): string {

@@ -6,6 +6,7 @@ import type {
     IPromptMessage,
     IPromptTool
 } from "./IAIProvider.js";
+import type {AgentSessionService} from "../services/AgentSessionService.js";
 
 type DraxAgentSystemPrompt =
     | string
@@ -35,6 +36,7 @@ interface DraxAgentConfig {
     operationGroup?: string;
     logToolExecution?: boolean;
     normalizeOutput?: (output: any) => string;
+    sessionService?: AgentSessionService | false;
 }
 
 interface DraxAgentSessionInput {
@@ -79,6 +81,7 @@ interface DraxAgentMessageOutput {
 
 interface DraxAgentSession {
     id: string;
+    recordId?: string | null;
     userId?: string | null;
     tenantId?: string | null;
     messages: IPromptMessage[];

@@ -211,6 +211,17 @@ ttlSeconds: [(v: any) => !!v || 'validation.required']
     return true
   }
 
+  get isAiAssistable(){
+    return false
+  }
+
+  get navigationOperations(){
+    return ['view'] // edit, delete
+  }
+  
+  get isSavedQueriesEnabled(){
+    return true
+  }
 
 }
 

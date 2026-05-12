@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import DraxAgent from "@/components/DraxAgent.vue";
+import DraxAgent from "../components/DraxAgent.vue";
 </script>
 
 <template>

@@ -69,7 +69,7 @@ class DraxAgentController extends CommonController {
             this.assertAccess(request);
 
             const input = AgentSessionRequestSchema.parse(request.body ?? {});
-            const session = this.agent.startSession({
+            const session = await this.agent.startSession({
                 sessionId: input.sessionId,
                 userId: this.resolveUserId(request, input.userId),
                 tenantId: this.resolveTenantId(request, input.tenantId),

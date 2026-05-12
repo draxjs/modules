@@ -25,7 +25,7 @@ class PersonSqliteRepository extends AbstractSqliteRepository<IPerson, IPersonBa
 {name: "live", type: "TEXT", unique: false, primary: false},
 {name: "birthdate", type: "TEXT", unique: false, primary: false},
 {name: "secret", type: "TEXT", unique: false, primary: false},
-{name: "money", type: "FLOAT", unique: false, primary: false},
+{name: "money", type: "NUMERIC", unique: false, primary: false},
 {name: "money", type: "TEXT", unique: false, primary: false},
 {name: "nationality", type: "TEXT", unique: false, primary: false},
 {name: "hobbies", type: "TEXT", unique: false, primary: false},

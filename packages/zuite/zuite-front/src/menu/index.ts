@@ -157,6 +157,13 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'ailog:manage'
       },
+      {
+        icon: 'mdi-robot',
+        text:'agentsession.menu',
+        link: { name: "AgentSessionCrudPage" },
+        gallery: true,
+        permission: 'agentsession:manage'
+      },
     ]
   }
 
