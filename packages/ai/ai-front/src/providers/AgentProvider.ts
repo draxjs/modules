@@ -1,4 +1,5 @@
-import {HttpRestClientFactory, IHttpClient} from "@drax/common-front";
+import {HttpRestClientFactory} from "@drax/common-front";
+import type {IHttpClient} from "@drax/common-front";
 
 interface IChatbotTaskSessionResponse {
   sessionId: string
@@ -7,6 +8,7 @@ interface IChatbotTaskSessionResponse {
 interface IChatbotTaskMessageResponse {
   sessionId: string
   message: string
+  navigationPath?: string | null
 }
 
 class ChatbotTaskProvider {

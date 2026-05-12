@@ -69,6 +69,7 @@ interface DraxAgentMessageInput extends DraxAgentSessionInput {
 interface DraxAgentMessageOutput {
     sessionId: string;
     message: string;
+    navigationPath?: string | null;
     output: any;
     tokens: number;
     inputTokens: number;

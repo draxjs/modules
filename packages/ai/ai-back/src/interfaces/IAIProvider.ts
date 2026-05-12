@@ -37,6 +37,13 @@ interface IPromptTool {
     description: string;
     parameters?: object;
     execute: (args: any) => any | Promise<any>;
+    navigation?: IPromptToolNavigation;
+}
+
+interface IPromptToolNavigation {
+    entityName: string;
+    method: string;
+    basePath?: string;
 }
 
 interface IPromptParams {
@@ -88,6 +95,7 @@ export type {
     IPromptMessage,
     IPromptMemory,
     IPromptTool,
+    IPromptToolNavigation,
     IPromptImage,
     IPromptImageDetail,
     IPromptContentPart,

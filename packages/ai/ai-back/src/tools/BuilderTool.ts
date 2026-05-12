@@ -225,6 +225,11 @@ class BuilderTool<T = any, C = any, U = any> {
             name: this.getToolName(method),
             description: definition.description(this.options.entityName),
             parameters: definition.parameters(this),
+            navigation: {
+                entityName: this.options.entityName,
+                method,
+                basePath: this.options.navigationBasePath,
+            },
             execute: async (args: any) => definition.execute(this.options.service, args),
         };
     }

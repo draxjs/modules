@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
+import {useRouter} from 'vue-router'
 import {AgentProvider} from '@drax/ai-front'
 import VisualBot from './VisualBot.vue'
 
@@ -55,6 +56,7 @@ interface BrowserSpeechRecognitionAlternative {
 }
 
 const sessionId = ref<string>()
+const router = useRouter()
 const messages = ref<ChatMessage[]>([
   {
     role: 'assistant',
@@ -134,6 +136,7 @@ async function sendMessage() {
     const response = await AgentProvider.instance.sendMessage(message, sessionId.value)
     sessionId.value = response.sessionId
     messages.value.push({role: 'assistant', content: response.message})
+    await navigateAgentResponse(response.navigationPath)
     speakAssistantMessage(response.message)
   } catch (e: any) {
     error.value = e?.message ?? 'No se pudo enviar el mensaje.'
@@ -154,6 +157,14 @@ async function scrollToBottom() {
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
   }
+}
+
+async function navigateAgentResponse(navigationPath?: string | null) {
+  if (!navigationPath) {
+    return
+  }
+
+  await router.push(navigationPath)
 }
 
 function setupSpeechRecognition() {

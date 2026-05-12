@@ -1,5 +1,5 @@
 import {randomUUID} from "node:crypto";
-import type {IPromptTool} from "../interfaces/IAIProvider.js";
+import type {IPromptTool, IPromptToolNavigation} from "../interfaces/IAIProvider.js";
 import type {
     DraxAgentConfig,
     DraxAgentMessageInput,
@@ -79,10 +79,11 @@ class DraxAgent {
         const session = this.resolveSession(input);
         const context: DraxAgentPromptContext = {session, input};
         const toolBuilders = await this.resolveToolBuilders(context);
+        const navigationState: {path: string | null} = {path: null};
         const tools = this.prepareTools([
             ...toolBuilders.flatMap(builder => builder.getTools()),
             ...await this.resolveTools(context),
-        ], session.id);
+        ], session.id, navigationState);
 
         const systemPrompt = await this.buildSystemPrompt(context, toolBuilders);
         const response = await this.getProvider().prompt({
@@ -115,6 +116,7 @@ class DraxAgent {
         return {
             sessionId: session.id,
             message: assistantMessage,
+            navigationPath: navigationState.path,
             output: response.output,
             tokens: response.tokens,
             inputTokens: response.inputTokens,
@@ -215,40 +217,143 @@ class DraxAgent {
             : this.config.tools;
     }
 
-    protected prepareTools(tools: IPromptTool[], sessionId: string): IPromptTool[] {
-        if (!this.config.logToolExecution) {
-            return tools;
-        }
-
+    protected prepareTools(
+        tools: IPromptTool[],
+        sessionId: string,
+        navigationState: {path: string | null},
+    ): IPromptTool[] {
         return tools.map(tool => ({
             ...tool,
             execute: async (args: any) => {
-                console.log("[drax-agent] tool:start", {
-                    sessionId,
-                    tool: tool.name,
-                    args,
-                });
+                if (this.config.logToolExecution) {
+                    console.log("[drax-agent] tool:start", {
+                        sessionId,
+                        tool: tool.name,
+                        args,
+                    });
+                }
 
                 try {
                     const result = await tool.execute(args);
+                    navigationState.path = this.resolveNavigationPath(tool.navigation, args, result) ?? navigationState.path;
 
-                    console.log("[drax-agent] tool:success", {
-                        sessionId,
-                        tool: tool.name,
-                    });
+                    if (this.config.logToolExecution) {
+                        console.log("[drax-agent] tool:success", {
+                            sessionId,
+                            tool: tool.name,
+                            navigationPath: navigationState.path,
+                        });
+                    }
 
                     return result;
                 } catch (error) {
-                    console.error("[drax-agent] tool:error", {
-                        sessionId,
-                        tool: tool.name,
-                        error,
-                    });
+                    if (this.config.logToolExecution) {
+                        console.error("[drax-agent] tool:error", {
+                            sessionId,
+                            tool: tool.name,
+                            error,
+                        });
+                    }
 
                     throw error;
                 }
             },
         }));
+    }
+
+    protected resolveNavigationPath(navigation: IPromptToolNavigation | undefined, args: any, result: any): string | null {
+        if (!navigation) {
+            return null;
+        }
+
+        const mode = this.resolveNavigationMode(navigation.method);
+
+        if (!mode) {
+            return null;
+        }
+
+        const id = this.resolveNavigationId(navigation.method, args, result);
+
+        if (!id) {
+            return null;
+        }
+
+        const basePath = navigation.basePath ?? `/crud/${encodeURIComponent(navigation.entityName)}`;
+        const query = new URLSearchParams({
+            mode,
+            id,
+        });
+
+        return `${basePath}?${query.toString()}`;
+    }
+
+    protected resolveNavigationMode(method: string): "edit" | "view" | null {
+        if (["create", "update", "updatePartial"].includes(method)) {
+            return "edit";
+        }
+
+        if (["findById", "findOneBy", "findOne", "findBy", "search", "find", "paginate"].includes(method)) {
+            return "view";
+        }
+
+        return null;
+    }
+
+    protected resolveNavigationId(method: string, args: any, result: any): string | null {
+        if (["update", "updatePartial", "findById"].includes(method)) {
+            return this.stringifyNavigationId(args?.id) ?? this.extractRecordId(result);
+        }
+
+        return this.extractRecordId(result);
+    }
+
+    protected extractRecordId(result: any): string | null {
+        const record = this.resolveSingleRecord(result);
+
+        if (!record || typeof record !== "object") {
+            return null;
+        }
+
+        return this.stringifyNavigationId(record.id)
+            ?? this.stringifyNavigationId(record._id)
+            ?? this.stringifyNavigationId(record.uuid);
+    }
+
+    protected resolveSingleRecord(result: any): any {
+        if (Array.isArray(result)) {
+            return result.length === 1 ? result[0] : null;
+        }
+
+        if (Array.isArray(result?.docs)) {
+            return result.docs.length === 1 ? result.docs[0] : null;
+        }
+
+        if (Array.isArray(result?.items)) {
+            return result.items.length === 1 ? result.items[0] : null;
+        }
+
+        if (Array.isArray(result?.data)) {
+            return result.data.length === 1 ? result.data[0] : null;
+        }
+
+        return result;
+    }
+
+    protected stringifyNavigationId(id: any): string | null {
+        if (id === null || id === undefined || id === "") {
+            return null;
+        }
+
+        if (typeof id === "string" || typeof id === "number" || typeof id === "boolean") {
+            return String(id);
+        }
+
+        if (typeof id?.toString === "function") {
+            const value = id.toString();
+            return value && value !== "[object Object]" ? value : null;
+        }
+
+        return null;
     }
 
     protected normalizeOutput(output: any): string {

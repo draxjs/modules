@@ -28,6 +28,12 @@ interface IPromptTool {
     description: string;
     parameters?: object;
     execute: (args: any) => any | Promise<any>;
+    navigation?: IPromptToolNavigation;
+}
+interface IPromptToolNavigation {
+    entityName: string;
+    method: string;
+    basePath?: string;
 }
 interface IPromptParams {
     systemPrompt: string;
@@ -68,5 +74,5 @@ interface IPromptResponse {
 interface IAIProvider {
     prompt(input: IPromptParams): Promise<IPromptResponse>;
 }
-export type { IAIProvider, IPromptParams, IPromptResponse, IPromptMessage, IPromptMemory, IPromptTool, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, };
+export type { IAIProvider, IPromptParams, IPromptResponse, IPromptMessage, IPromptMemory, IPromptTool, IPromptToolNavigation, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, };
 //# sourceMappingURL=IAIProvider.d.ts.map

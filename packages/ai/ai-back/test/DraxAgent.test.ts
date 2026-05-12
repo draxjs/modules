@@ -119,4 +119,35 @@ describe("DraxAgent", () => {
             {role: "assistant", content: "respuesta"},
         ]);
     });
+
+    test("returns a navigation path from tool execution metadata", async () => {
+        const provider = new MockProvider();
+        const agent = DraxAgent.instance().clearSessions().configure({
+            provider,
+            systemPrompt: "Sos un asistente.",
+            toolBuilders: undefined,
+            tools: [{
+                name: "task_findOne",
+                description: "Buscar una tarea",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        value: {type: "string"},
+                    },
+                },
+                navigation: {
+                    entityName: "task",
+                    method: "findOne",
+                },
+                execute: async () => ({id: "task-1", title: "Ada"}),
+            }],
+        });
+
+        const response = await agent.sendMessage({
+            userId: "user-1",
+            message: "Busca Ada",
+        });
+
+        expect(response.navigationPath).toBe("/crud/task?mode=view&id=task-1");
+    });
 });

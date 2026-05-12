@@ -22,6 +22,7 @@ type ToolBuilderService<T = any, C = any, U = any> = IDraxCrudService<T, C, U> &
 interface ToolBuilderOptions<T = any, C = any, U = any> {
     entityName: string;
     entityDescription?: string;
+    navigationBasePath?: string;
     schema: ZodObject<ZodRawShape>;
     outputSchema?: ZodObject<ZodRawShape>;
     service: ToolBuilderService<T, C, U>;
