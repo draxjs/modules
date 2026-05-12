@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.30.1",
+  "version": "3.31.0",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -24,8 +24,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/ai-front": "^3.29.0",
-    "@drax/crud-vue": "^3.30.1"
+    "@drax/ai-front": "^3.31.0",
+    "@drax/crud-vue": "^3.31.0"
   },
   "peerDependencies": {
     "pinia": "^3.0.4",
