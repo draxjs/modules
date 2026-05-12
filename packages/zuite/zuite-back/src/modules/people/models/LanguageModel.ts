@@ -12,7 +12,12 @@ const LanguageSchema = new mongoose.Schema<ILanguage>({
         size: {type: Number, required: false, index: false, unique: false},
         mimetype: {type: String, required: false, index: false, unique: false},
         url: {type: String, required: false, index: false, unique: false},
-    }
+    },
+    archivedAt: {type: Date, required: false, index: false, unique: false},
+    test: {
+        date: {type: Date, required: false, index: false, unique: false},
+        note: {type: String, required: false, index: false, unique: false},
+    },
 }, {timestamps: true});
 
 LanguageSchema.plugin(uniqueValidator, {message: 'validation.unique'});

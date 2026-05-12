@@ -9,6 +9,11 @@ const LanguageBaseSchema = z.object({
         size: z.number().min(1, 'validation.required'),
         mimetype: z.string().optional(),
         url: z.string().min(1, 'validation.required')
+    }).optional(),
+    archivedAt:  z.coerce.date().nullable().optional(),
+    test: z.object({
+        date:  z.coerce.date().nullable().optional(),
+        note: z.string().optional().default('')
     }).optional()
 });
 

@@ -93,7 +93,19 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
   get fields(): IEntityCrudField[] {
     return [
       {name: 'name', type: 'string', label: 'name', default: ''},
-      {name: 'icon', type: 'fullFile', label: 'icon', default: {}, prependInnerIcon: 'mdi mdi-attachment'}
+      {name: 'icon', type: 'fullFile', label: 'icon', default: {}, prependInnerIcon: 'mdi mdi-attachment'},
+      {name: 'archivedAt', type: 'date', label: 'date', default: {}},
+      {
+        name: 'test',
+        type: 'object',
+        label: 'notes',
+        default: {date: null, note: ''},
+        objectFields: [
+          {name: 'date', type: 'date', label: 'date', default: null},
+          {name: 'note', type: 'longString', label: 'note', default: ''}
+        ]
+      },
+
     ]
   }
 

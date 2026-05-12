@@ -97,6 +97,18 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
       {name: 'description', type: 'longString', label: 'description', default: ''},
       {name: 'flag', type: 'file', label: 'flag', default: '', prependInnerIcon: 'mdi mdi-attachment'},
       {name: 'metadata', type: 'record', label: 'metadata', default: null},
+      {
+        name: 'notes',
+        type: 'array.object',
+        label: 'notes',
+        default: [],
+        arrayObjectUI: 'accordion',
+        arrayObjectShowField: 'note',
+        objectFields: [
+          {name: 'date', type: 'date', label: 'date', default: null},
+          {name: 'note', type: 'longString', label: 'note', default: ''}
+        ]
+      },
       {name: 'tenant', type: 'ref', label: 'tenant', default: null, ref: 'Tenant', refDisplay: 'name'},
       {name: 'createdBy', type: 'ref', label: 'createdBy', default: null, ref: 'User', refDisplay: 'username'}
     ]

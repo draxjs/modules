@@ -6,6 +6,10 @@ interface ICountryBase {
     metadata?: Record<string, any>
     tenant?: any
     createdBy: any
+    notes: {
+        date?: Date
+        note: string
+    }
     createdAt?: Date
     updatedAt?: Date
 }
@@ -16,6 +20,10 @@ interface ICountry {
     description?: string
     flag?: string
     metadata?: Record<string, any>
+    notes: {
+        date?: Date
+        note: string
+    }
     tenant?: any
     createdBy: any
     createdAt?: Date
@@ -23,6 +31,6 @@ interface ICountry {
 }
 
 export type {
-ICountryBase, 
+ICountryBase,
 ICountry
 }

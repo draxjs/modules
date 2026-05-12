@@ -8,6 +8,11 @@ interface ILanguageBase {
                 mimetype?: string,
                 url: string
                 }
+    archivedAt?: Date
+    test?: {
+        date?: Date
+        note?: string
+    }
     createdAt?: Date
     updatedAt?: Date
 }
@@ -22,11 +27,16 @@ interface ILanguage {
                 mimetype?: string,
                 url: string
                 }
+    archivedAt?: Date
+    test?: {
+        date?: Date
+        note?: string
+    }
     createdAt?: Date
     updatedAt?: Date
 }
 
 export type {
-ILanguageBase, 
+ILanguageBase,
 ILanguage
 }

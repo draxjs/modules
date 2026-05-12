@@ -1,4 +1,3 @@
-
 import {mongoose} from '@drax/common-back';
 import {PaginateModel} from "mongoose";
 import uniqueValidator from 'mongoose-unique-validator';
@@ -6,12 +5,16 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 import type {ICountry} from '../interfaces/ICountry'
 
 const CountrySchema = new mongoose.Schema<ICountry>({
-            name: {type: String,   required: true, index: true, unique: true },
-            description: {type: String,   required: false, index: false, unique: false },
-            flag: {type: String,   required: false, index: false, unique: false },
-            metadata: {type: mongoose.Schema.Types.Mixed,   required: false, index: false, unique: false },
-            tenant: {type: mongoose.Schema.Types.ObjectId, ref: 'Tenant',  required: false, index: false, unique: false },
-            createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User',  required: true, index: false, unique: false }
+    name: {type: String, required: true, index: true, unique: true},
+    description: {type: String, required: false, index: false, unique: false},
+    flag: {type: String, required: false, index: false, unique: false},
+    metadata: {type: mongoose.Schema.Types.Mixed, required: false, index: false, unique: false},
+    notes: [{
+        date: {type: Date, required: false},
+        note: {type: String, required: true}
+    }],
+    tenant: {type: mongoose.Schema.Types.ObjectId, ref: 'Tenant', required: false, index: false, unique: false},
+    createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: false, unique: false}
 }, {timestamps: true});
 
 CountrySchema.plugin(uniqueValidator, {message: 'validation.unique'});
@@ -28,7 +31,7 @@ CountrySchema.set('toObject', {getters: true, virtuals: true});
 
 const MODEL_NAME = 'Country';
 const COLLECTION_NAME = 'Country';
-const CountryModel = mongoose.model<ICountry, PaginateModel<ICountry>>(MODEL_NAME, CountrySchema,COLLECTION_NAME);
+const CountryModel = mongoose.model<ICountry, PaginateModel<ICountry>>(MODEL_NAME, CountrySchema, COLLECTION_NAME);
 
 export {
     CountrySchema,
