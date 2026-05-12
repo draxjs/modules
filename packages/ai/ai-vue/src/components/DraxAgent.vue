@@ -77,6 +77,8 @@ const speechAutoSendEnabled = ref(true)
 const speechAutoSending = ref(false)
 const speechAutoSendPending = ref(false)
 const speechRestartTimer = ref<number | null>(null)
+const speechRestartAttempts = ref(0)
+const speechErrorDuringCurrentRun = ref(false)
 const textToSpeechSupported = ref(false)
 const textToSpeechEnabled = ref(true)
 const textToSpeechSpeaking = ref(false)
@@ -84,6 +86,7 @@ const textToSpeechVoices = ref<SpeechSynthesisVoice[]>([])
 const currentTextToSpeechId = ref(0)
 const selectedVoiceURI = ref<string | null>(null)
 const visualBotVisible = ref(true)
+const navigationEnabled = ref(true)
 
 const canSend = computed(() => input.value.trim().length > 0 && !loading.value)
 const speechButtonIcon = computed(() => speechEnabled.value ? 'mdi-microphone-off' : 'mdi-microphone')
@@ -100,6 +103,10 @@ const selectedVoice = computed(() => {
 })
 const selectedVoiceName = computed(() => selectedVoice.value?.name ?? 'Voz predeterminada')
 const visualBotButtonLabel = computed(() => visualBotVisible.value ? 'Ocultar bot visual' : 'Mostrar bot visual')
+const navigationButtonLabel = computed(() => navigationEnabled.value
+  ? 'Apagar navegacion automatica'
+  : 'Prender navegacion automatica')
+const maxSpeechRestartAttempts = 3
 
 async function startNewSession() {
   loading.value = true
@@ -164,11 +171,18 @@ async function scrollToBottom() {
 }
 
 async function navigateAgentResponse(navigationPath?: string | null) {
-  if (!navigationPath) {
+  if (!navigationPath || !navigationEnabled.value) {
     return
   }
 
   await router.push(navigationPath)
+}
+
+function getFeatureButtonClass(isEnabled: boolean) {
+  return {
+    'chatbot-task__feature-button': true,
+    'chatbot-task__feature-button--off': !isEnabled,
+  }
 }
 
 function setupSpeechRecognition() {
@@ -197,19 +211,27 @@ function setupSpeechRecognition() {
   recognition.interimResults = true
   recognition.onstart = () => {
     speechListening.value = true
+    speechErrorDuringCurrentRun.value = false
     speechError.value = null
   }
   recognition.onend = () => {
     speechListening.value = false
     interimSpeech.value = ''
+    if (speechErrorDuringCurrentRun.value) {
+      return
+    }
     startSpeechRecognitionIfEnabled()
   }
   recognition.onerror = (event) => {
     speechListening.value = false
     interimSpeech.value = ''
+    speechErrorDuringCurrentRun.value = true
     speechError.value = getSpeechErrorMessage(event.error)
     if (isFatalSpeechRecognitionError(event.error)) {
       speechEnabled.value = false
+      clearSpeechRestartTimer()
+      resetSpeechRestartAttempts()
+      return
     }
     startSpeechRecognitionIfEnabled(event.error)
   }
@@ -233,6 +255,8 @@ function setupSpeechRecognition() {
     }
 
     if (finalTranscript.trim().length > 0) {
+      resetSpeechRestartAttempts()
+      speechError.value = null
       appendSpeechText(finalTranscript)
       sendSpeechMessageAutomatically()
     }
@@ -290,6 +314,7 @@ function toggleSpeechRecognition() {
   if (speechEnabled.value) {
     speechEnabled.value = false
     clearSpeechRestartTimer()
+    resetSpeechRestartAttempts()
     if (speechListening.value) {
       speechRecognition.value.stop()
     }
@@ -297,6 +322,7 @@ function toggleSpeechRecognition() {
   }
 
   speechEnabled.value = true
+  resetSpeechRestartAttempts()
   startSpeechRecognition()
 }
 
@@ -309,6 +335,8 @@ function startSpeechRecognition() {
     speechRecognition.value.start()
   } catch (e: any) {
     speechError.value = e?.message ?? 'No se pudo iniciar el dictado.'
+    speechEnabled.value = false
+    resetSpeechRestartAttempts()
   }
 }
 
@@ -322,11 +350,22 @@ function startSpeechRecognitionIfEnabled(lastError?: string) {
     return
   }
 
+  if (lastError && shouldLimitSpeechRestart(lastError)) {
+    speechRestartAttempts.value += 1
+    if (speechRestartAttempts.value > maxSpeechRestartAttempts) {
+      speechEnabled.value = false
+      clearSpeechRestartTimer()
+      speechError.value = 'Se pauso el microfono despues de varios errores seguidos. Volve a prenderlo para intentar de nuevo.'
+      resetSpeechRestartAttempts()
+      return
+    }
+  }
+
   clearSpeechRestartTimer()
   speechRestartTimer.value = window.setTimeout(() => {
     speechRestartTimer.value = null
     startSpeechRecognition()
-  }, 300)
+  }, lastError ? Math.max(600, 600 * speechRestartAttempts.value) : 300)
 }
 
 function clearSpeechRestartTimer() {
@@ -336,6 +375,11 @@ function clearSpeechRestartTimer() {
 
   window.clearTimeout(speechRestartTimer.value)
   speechRestartTimer.value = null
+}
+
+function resetSpeechRestartAttempts() {
+  speechRestartAttempts.value = 0
+  speechErrorDuringCurrentRun.value = false
 }
 
 function toggleSpeechAutoSend() {
@@ -353,6 +397,10 @@ function toggleTextToSpeech() {
 
 function toggleVisualBot() {
   visualBotVisible.value = !visualBotVisible.value
+}
+
+function toggleNavigation() {
+  navigationEnabled.value = !navigationEnabled.value
 }
 
 function selectTextToSpeechVoice(voiceURI: string) {
@@ -471,6 +519,10 @@ function isFatalSpeechRecognitionError(speechRecognitionError?: string) {
     || speechRecognitionError === 'audio-capture'
 }
 
+function shouldLimitSpeechRestart(speechRecognitionError: string) {
+  return speechRecognitionError !== 'no-speech'
+}
+
 onMounted(() => {
   setupSpeechRecognition()
   setupTextToSpeech()
@@ -505,6 +557,7 @@ onBeforeUnmount(() => {
         <v-btn
           color="primary"
           variant="tonal"
+          :class="getFeatureButtonClass(visualBotVisible)"
           :icon="visualBotVisible ? 'mdi-robot-off-outline' : 'mdi-robot-outline'"
           :aria-label="visualBotButtonLabel"
           :title="visualBotButtonLabel"
@@ -512,9 +565,20 @@ onBeforeUnmount(() => {
         />
 
         <v-btn
+          color="primary"
+          variant="tonal"
+          :class="getFeatureButtonClass(navigationEnabled)"
+          :icon="navigationEnabled ? 'mdi-map-marker-outline' : 'mdi-map-marker-off-outline'"
+          :aria-label="navigationButtonLabel"
+          :title="navigationButtonLabel"
+          @click="toggleNavigation"
+        />
+
+        <v-btn
           v-if="speechSupported"
           color="primary"
           variant="tonal"
+          :class="getFeatureButtonClass(speechAutoSendEnabled)"
           :icon="speechAutoSendEnabled ? 'mdi-send-check' : 'mdi-send-outline'"
           :aria-label="speechAutoSendLabel"
           :title="speechAutoSendLabel"
@@ -525,6 +589,7 @@ onBeforeUnmount(() => {
           <v-btn
             color="primary"
             variant="tonal"
+            :class="getFeatureButtonClass(textToSpeechEnabled)"
             :icon="textToSpeechEnabled ? 'mdi-volume-high' : 'mdi-volume-off'"
             :aria-label="textToSpeechEnabled ? 'Apagar lectura de respuestas' : 'Prender lectura de respuestas'"
             :title="textToSpeechEnabled ? 'Apagar lectura de respuestas' : 'Prender lectura de respuestas'"
@@ -571,7 +636,7 @@ onBeforeUnmount(() => {
           :loading="loading"
           @click="startNewSession"
         >
-          Nueva sesion
+          CHAT
         </v-btn>
       </div>
     </header>
@@ -581,7 +646,9 @@ onBeforeUnmount(() => {
       type="error"
       variant="tonal"
       density="compact"
-      class="mb-3"
+      closable
+      class="chatbot-task__error-alert mb-3"
+      @click:close="error = null"
     >
       {{ error }}
     </v-alert>
@@ -632,6 +699,7 @@ onBeforeUnmount(() => {
         v-if="speechSupported"
         color="primary"
         variant="tonal"
+        :class="getFeatureButtonClass(speechEnabled)"
         :icon="speechButtonIcon"
         :aria-label="speechButtonLabel"
         :title="speechButtonLabel"
@@ -699,6 +767,18 @@ onBeforeUnmount(() => {
 .chatbot-task__voice-list {
   min-width: 280px;
   max-width: min(420px, calc(100vw - 32px));
+}
+
+.chatbot-task__feature-button--off {
+  color: rgb(var(--v-theme-on-surface)) !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.2);
+  background: rgba(var(--v-theme-on-surface), 0.08) !important;
+}
+
+.chatbot-task__error-alert {
+  align-self: flex-start;
+  max-width: 100%;
+  width: fit-content;
 }
 
 .chatbot-task__conversation {
