@@ -69,11 +69,14 @@ const error = ref<string | null>(null)
 const messagesContainer = ref<HTMLElement | null>(null)
 const speechRecognition = ref<BrowserSpeechRecognition | null>(null)
 const speechSupported = ref(false)
+const speechEnabled = ref(false)
 const speechListening = ref(false)
 const speechError = ref<string | null>(null)
 const interimSpeech = ref('')
 const speechAutoSendEnabled = ref(true)
 const speechAutoSending = ref(false)
+const speechAutoSendPending = ref(false)
+const speechRestartTimer = ref<number | null>(null)
 const textToSpeechSupported = ref(false)
 const textToSpeechEnabled = ref(true)
 const textToSpeechSpeaking = ref(false)
@@ -83,8 +86,8 @@ const selectedVoiceURI = ref<string | null>(null)
 const visualBotVisible = ref(true)
 
 const canSend = computed(() => input.value.trim().length > 0 && !loading.value)
-const speechButtonIcon = computed(() => speechListening.value ? 'mdi-microphone-off' : 'mdi-microphone')
-const speechButtonLabel = computed(() => speechListening.value ? 'Detener dictado' : 'Dictar mensaje')
+const speechButtonIcon = computed(() => speechEnabled.value ? 'mdi-microphone-off' : 'mdi-microphone')
+const speechButtonLabel = computed(() => speechEnabled.value ? 'Apagar microfono' : 'Prender microfono')
 const speechAutoSendLabel = computed(() => speechAutoSendEnabled.value
   ? 'Apagar envio automatico al terminar de hablar'
   : 'Prender envio automatico al terminar de hablar')
@@ -149,6 +152,7 @@ async function sendMessage() {
   } finally {
     loading.value = false
     await scrollToBottom()
+    await sendPendingSpeechMessage()
   }
 }
 
@@ -198,11 +202,16 @@ function setupSpeechRecognition() {
   recognition.onend = () => {
     speechListening.value = false
     interimSpeech.value = ''
+    startSpeechRecognitionIfEnabled()
   }
   recognition.onerror = (event) => {
     speechListening.value = false
     interimSpeech.value = ''
     speechError.value = getSpeechErrorMessage(event.error)
+    if (isFatalSpeechRecognitionError(event.error)) {
+      speechEnabled.value = false
+    }
+    startSpeechRecognitionIfEnabled(event.error)
   }
   recognition.onresult = (event) => {
     let finalTranscript = ''
@@ -272,14 +281,27 @@ function loadTextToSpeechVoices() {
 }
 
 function toggleSpeechRecognition() {
-  if (!speechRecognition.value || loading.value) {
+  if (!speechRecognition.value) {
     return
   }
 
   speechError.value = null
 
-  if (speechListening.value) {
-    speechRecognition.value.stop()
+  if (speechEnabled.value) {
+    speechEnabled.value = false
+    clearSpeechRestartTimer()
+    if (speechListening.value) {
+      speechRecognition.value.stop()
+    }
+    return
+  }
+
+  speechEnabled.value = true
+  startSpeechRecognition()
+}
+
+function startSpeechRecognition() {
+  if (!speechRecognition.value || speechListening.value) {
     return
   }
 
@@ -288,6 +310,32 @@ function toggleSpeechRecognition() {
   } catch (e: any) {
     speechError.value = e?.message ?? 'No se pudo iniciar el dictado.'
   }
+}
+
+function startSpeechRecognitionIfEnabled(lastError?: string) {
+  if (
+    !speechEnabled.value
+    || !speechRecognition.value
+    || speechListening.value
+    || isFatalSpeechRecognitionError(lastError)
+  ) {
+    return
+  }
+
+  clearSpeechRestartTimer()
+  speechRestartTimer.value = window.setTimeout(() => {
+    speechRestartTimer.value = null
+    startSpeechRecognition()
+  }, 300)
+}
+
+function clearSpeechRestartTimer() {
+  if (speechRestartTimer.value === null) {
+    return
+  }
+
+  window.clearTimeout(speechRestartTimer.value)
+  speechRestartTimer.value = null
 }
 
 function toggleSpeechAutoSend() {
@@ -317,7 +365,6 @@ function selectTextToSpeechVoice(voiceURI: string) {
 
 function speakAssistantMessage(message: string) {
   if (!textToSpeechEnabled.value || typeof window === 'undefined' || !window.speechSynthesis) {
-    startSpeechRecognitionAfterAssistantResponse()
     return
   }
 
@@ -338,7 +385,6 @@ function speakAssistantMessage(message: string) {
     }
 
     textToSpeechSpeaking.value = false
-    startSpeechRecognitionAfterAssistantResponse()
   }
   utterance.onerror = () => {
     if (utteranceId !== currentTextToSpeechId.value) {
@@ -346,7 +392,6 @@ function speakAssistantMessage(message: string) {
     }
 
     textToSpeechSpeaking.value = false
-    startSpeechRecognitionAfterAssistantResponse()
   }
 
   if (selectedVoice.value) {
@@ -359,49 +404,37 @@ function speakAssistantMessage(message: string) {
 }
 
 async function sendSpeechMessageAutomatically() {
-  if (!speechAutoSendEnabled.value || speechAutoSending.value) {
-    return
-  }
-
-  speechAutoSending.value = true
-
-  if (speechRecognition.value && speechListening.value) {
-    speechRecognition.value.stop()
-  }
-
-  await nextTick()
-
-  if (canSend.value) {
-    await sendMessage()
-  }
-
-  speechAutoSending.value = false
-}
-
-function startSpeechRecognitionAfterAssistantResponse() {
   if (!speechAutoSendEnabled.value) {
     return
   }
 
-  window.setTimeout(() => {
-    if (
-      !speechAutoSendEnabled.value
-      || !speechRecognition.value
-      || speechListening.value
-      || loading.value
-      || textToSpeechSpeaking.value
-    ) {
-      return
-    }
+  await nextTick()
 
-    speechError.value = null
+  if (loading.value || speechAutoSending.value) {
+    speechAutoSendPending.value = input.value.trim().length > 0
+    return
+  }
 
-    try {
-      speechRecognition.value.start()
-    } catch (e: any) {
-      speechError.value = e?.message ?? 'No se pudo iniciar el dictado.'
-    }
-  }, 300)
+  if (!canSend.value) {
+    return
+  }
+
+  speechAutoSending.value = true
+  try {
+    await sendMessage()
+  } finally {
+    speechAutoSending.value = false
+    await sendPendingSpeechMessage()
+  }
+}
+
+async function sendPendingSpeechMessage() {
+  if (!speechAutoSendPending.value || speechAutoSending.value || loading.value) {
+    return
+  }
+
+  speechAutoSendPending.value = false
+  await sendSpeechMessageAutomatically()
 }
 
 function appendSpeechText(transcript: string) {
@@ -432,12 +465,20 @@ function getSpeechErrorMessage(speechRecognitionError: string) {
   }
 }
 
+function isFatalSpeechRecognitionError(speechRecognitionError?: string) {
+  return speechRecognitionError === 'not-allowed'
+    || speechRecognitionError === 'service-not-allowed'
+    || speechRecognitionError === 'audio-capture'
+}
+
 onMounted(() => {
   setupSpeechRecognition()
   setupTextToSpeech()
 })
 
 onBeforeUnmount(() => {
+  clearSpeechRestartTimer()
+
   if (speechRecognition.value) {
     speechRecognition.value.abort()
   }
@@ -475,7 +516,6 @@ onBeforeUnmount(() => {
           color="primary"
           variant="tonal"
           :icon="speechAutoSendEnabled ? 'mdi-send-check' : 'mdi-send-outline'"
-          :disabled="loading"
           :aria-label="speechAutoSendLabel"
           :title="speechAutoSendLabel"
           @click="toggleSpeechAutoSend"
@@ -593,7 +633,6 @@ onBeforeUnmount(() => {
         color="primary"
         variant="tonal"
         :icon="speechButtonIcon"
-        :disabled="loading"
         :aria-label="speechButtonLabel"
         :title="speechButtonLabel"
         @click="toggleSpeechRecognition"
@@ -610,11 +649,11 @@ onBeforeUnmount(() => {
     </form>
 
     <p
-      v-if="speechListening || speechError"
+      v-if="speechEnabled || speechError"
       class="chatbot-task__speech-status"
       :class="{'chatbot-task__speech-status--error': speechError}"
     >
-      {{ speechError ?? (interimSpeech ? `Escuchando: ${interimSpeech}` : 'Escuchando...') }}
+      {{ speechError ?? (interimSpeech ? `Escuchando: ${interimSpeech}` : 'Microfono activo') }}
     </p>
 
   </section>
