@@ -1,12 +1,15 @@
 import {OpenAiConfig} from "./config/OpenAiConfig.js";
+import {GoogleAiConfig} from "./config/GoogleAiConfig.js";
 import {AILogSchema, AILogBaseSchema} from "./schemas/AILogSchema.js";
 import AILogModel from "./models/AILogModel.js";
 import AILogMongoRepository from "./repository/mongo/AILogMongoRepository.js";
 import AILogSqliteRepository from "./repository/sqlite/AILogSqliteRepository.js";
 import {OpenAiProviderFactory} from "./factory/OpenAiProviderFactory.js";
+import {GoogleAiProviderFactory} from "./factory/GoogleAiProviderFactory.js";
 import {AiProviderFactory} from "./factory/AiProviderFactory.js";
 import AILogServiceFactory from "./factory/services/AILogServiceFactory.js";
 import {OpenAiProvider} from "./providers/OpenAiProvider.js";
+import {GoogleAiProvider} from "./providers/GoogleAiProvider.js";
 import {BuilderTool} from "./tools/BuilderTool.js";
 import {KnowledgeService} from "./services/KnowledgeService.js";
 import {AILogService} from "./services/AILogService.js";
@@ -95,15 +98,18 @@ export type {
 
 export {
     OpenAiConfig,
+    GoogleAiConfig,
     AILogSchema,
     AILogBaseSchema,
     AILogModel,
     AILogMongoRepository,
     AILogSqliteRepository,
     OpenAiProviderFactory,
+    GoogleAiProviderFactory,
     AiProviderFactory,
     AILogServiceFactory,
     OpenAiProvider,
+    GoogleAiProvider,
     BuilderTool,
     //Service
     KnowledgeService,

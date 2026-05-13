@@ -77,6 +77,54 @@ describe("ToolBuilder", () => {
         expect(section).toContain("Schema JSON de la entidad");
     });
 
+    test("adapts date schemas to OpenAI-compatible JSON schema", () => {
+        const service: any = {
+            async create(data: any) {
+                return data;
+            },
+            async updatePartial(_id: string, data: any) {
+                return data;
+            },
+        };
+
+        const schema = z.object({
+            birthdate: z.coerce.date().nullable().optional(),
+            createdAt: z.coerce.date().default(new Date("2024-01-01T00:00:00.000Z")),
+            history: z.array(z.object({
+                at: z.coerce.date(),
+            })),
+        });
+
+        const builder = new BuilderTool({
+            entityName: "person",
+            schema,
+            service,
+            methods: ["create", "updatePartial"],
+        });
+
+        const tools = builder.getTools();
+        const createParameters: any = tools[0].parameters;
+        const dataSchema = createParameters.properties.data;
+
+        expect(dataSchema.properties.birthdate).toMatchObject({
+            anyOf: [
+                {type: "string", format: "date-time"},
+                {type: "null"},
+            ],
+        });
+        expect(dataSchema.properties.createdAt).toMatchObject({
+            type: "string",
+            format: "date-time",
+            default: "2024-01-01T00:00:00.000Z",
+        });
+        expect(dataSchema.properties.history.items.properties.at).toMatchObject({
+            type: "string",
+            format: "date-time",
+        });
+
+        expect(() => builder.getSystemPromptSection()).not.toThrow();
+    });
+
     test("fails when a requested service method is not available", () => {
         const builder = new BuilderTool({
             entityName: "person",

@@ -258,6 +258,18 @@ class BuilderTool<T = any, C = any, U = any> {
             return this.fieldAdapter(f.unwrap()).nullable();
         }
 
+        if (typeof f?.unwrap === "function" && typeName === "ZodDefault") {
+            return this.fieldAdapter(f.unwrap()).default(f.def.defaultValue);
+        }
+
+        if (typeof f?.unwrap === "function" && typeName === "ZodCatch") {
+            return this.fieldAdapter(f.unwrap()).catch(f.def.catchValue);
+        }
+
+        if (typeof f?.unwrap === "function" && typeName === "ZodReadonly") {
+            return this.fieldAdapter(f.unwrap()).readonly();
+        }
+
         if (typeName === "ZodArray" && f?.element) {
             return z.array(this.fieldAdapter(f.element));
         }

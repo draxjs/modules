@@ -24,6 +24,7 @@
     "mongoose-paginate-v2": "^1.8.3"
   },
   "peerDependencies": {
+    "@google/genai": "^1.52.0",
     "jsdom": "^26.0.0",
     "office-text-extractor": "^3.0.3",
     "openai": "^6.0.0",
@@ -35,6 +36,7 @@
     }
   },
   "devDependencies": {
+    "@google/genai": "^1.52.0",
     "@types/node": "^25.2.3",
     "jsdom": "^26.0.0",
     "office-text-extractor": "^3.0.3",
