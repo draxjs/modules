@@ -27,7 +27,12 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'covenant:manage'
       },
-
+      {
+        icon: 'mdi-currency-usd',
+        text: 'AI TEST',
+        link: { name: "AiTest" },
+        gallery: true,
+      },
 
     ],
   },

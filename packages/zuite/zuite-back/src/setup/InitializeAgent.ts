@@ -1,4 +1,4 @@
-import {DraxAgent, BuilderTool} from "@drax/ai-back"
+import {DraxAgent, BuilderTool, AiProviderFactory} from "@drax/ai-back"
 import type {DraxAgentConfig, DraxAgentToolBuilderSource} from "@drax/ai-back"
 import {CountryServiceFactory} from "../modules/people/factory/services/CountryServiceFactory.js"
 import {CountryBaseSchema} from "../modules/people/schemas/CountrySchema.js"
@@ -19,7 +19,8 @@ async function initializeAgent(): Promise<void> {
         countryTool
     ]
     const config: DraxAgentConfig = {
-        toolBuilders: toolBuilders
+        toolBuilders: toolBuilders,
+        provider: AiProviderFactory.instance("GoogleAi")
     }
 
     DraxAgent.instance().configure(config)
