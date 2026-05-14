@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, onBeforeMount, watch, type PropType} from "vue";
 import {useRoute, useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
 import type {IEntityCrud} from "@drax/crud-share";
 import CrudForm from "./CrudForm.vue";
 import CrudNotify from "./CrudNotify.vue";
@@ -19,6 +20,7 @@ const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled']
 const route = useRoute()
 const router = useRouter()
 const store = useCrudStore(entity?.name)
+const {t, te} = useI18n()
 
 const {
   resetCrudStore,
@@ -164,6 +166,16 @@ async function prepareRouteForm() {
   <v-container :fluid="entity.containerFluid" class="mt-5">
     <v-card :class="entity.cardClass" :density="entity.cardDensity">
       <v-progress-linear v-if="store.loading" indeterminate/>
+
+      <v-card-actions class="justify-start pa-2 pb-0">
+        <v-btn
+            prepend-icon="mdi-arrow-left"
+            variant="text"
+            @click="goToList"
+        >
+          {{ te('action.back') ? t('action.back') : 'Volver' }}
+        </v-btn>
+      </v-card-actions>
 
       <crud-form
           v-if="formReady || store.error"

@@ -55,7 +55,7 @@ class UserRestProvider extends AbstractBaseRestProvider implements IUserProvider
 
     async changeUserPassword(userId: string, newPassword: string): Promise<boolean> {
         const url = '/api/users/password/change/' + userId
-        const data = {userId, newPassword}
+        const data = {newPassword}
         let r = await this.httpClient.post(url, data)
         return /true/i.test(r as string)
     }

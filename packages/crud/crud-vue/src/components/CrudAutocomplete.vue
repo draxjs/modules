@@ -8,7 +8,7 @@ import CrudCreateOnTheFlyButton from "./buttons/CrudCreateOnTheFlyButton.vue";
 
 const valueModel = defineModel<string | string[]>({type: [String, Array], required: false})
 
-const {entity, multiple} = defineProps({
+const {entity, multiple, itemValue} = defineProps({
   entity: {type: Object as PropType<IEntityCrud|undefined>, required: true},
   field: {type: Object as PropType<IEntityCrudField>, required: true},
   label: {type: String},
@@ -68,7 +68,7 @@ async function search(value: any) {
 async function checkIds(ids: Array<string> = []) {
   try{
 
-    if(valueModel.value) {
+    if(itemValue === '_id' && valueModel.value) {
       let ids = Array.isArray(valueModel.value) ? valueModel.value : [valueModel.value]
       for (let id of ids) {
         if (!items.value.some((item: any) => getItemId(item) === id)) {
