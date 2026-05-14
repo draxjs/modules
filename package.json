@@ -11,6 +11,7 @@
   },
   "scripts": {
     "setup": "sh setup.sh",
+    "fix:native-deps": "node tools/fix-native-deps.mjs",
     "vuetsc": "vue-tsc -b ./tsconfig.packages.json",
     "vuetsc:watch": "vue-tsc -b --watch  ./tsconfig.packages.json",
     "tsc": "tsc -b ./tsconfig.packages.json",

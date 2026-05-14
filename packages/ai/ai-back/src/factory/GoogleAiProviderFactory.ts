@@ -10,7 +10,7 @@ class GoogleAiProviderFactory {
     public static instance(): IAIProvider {
         if (!GoogleAiProviderFactory.singleton) {
             GoogleAiProviderFactory.singleton = new GoogleAiProvider(
-                DraxConfig.getOrLoad(GoogleAiConfig.GoogleAiApiKey) ?? DraxConfig.getOrLoad(GoogleAiConfig.GoogleApiKey),
+                DraxConfig.getOrLoad(GoogleAiConfig.GoogleAiApiKey),
                 DraxConfig.getOrLoad(GoogleAiConfig.GoogleAiModel),
                 DraxConfig.getOrLoad(GoogleAiConfig.GoogleAiVisionModel),
                 AILogServiceFactory.instance

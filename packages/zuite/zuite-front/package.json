@@ -41,7 +41,6 @@
   },
   "devDependencies": {
     "@babel/types": "^7.24.0",
-    "@rollup/rollup-linux-x64-gnu": "^4.60.3",
     "@types/node": "^25.2.3",
     "@typescript-eslint/eslint-plugin": "^8.55.0",
     "@typescript-eslint/parser": "^8.55.0",

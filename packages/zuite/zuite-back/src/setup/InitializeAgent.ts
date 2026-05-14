@@ -20,7 +20,7 @@ async function initializeAgent(): Promise<void> {
     ]
     const config: DraxAgentConfig = {
         toolBuilders: toolBuilders,
-        provider: AiProviderFactory.instance("GoogleAi")
+        provider: AiProviderFactory.instance("OllamaAi")
     }
 
     DraxAgent.instance().configure(config)
