@@ -129,8 +129,14 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
         }
     }
 
-    async onUserEvent(request: CustomRequest, action: string, resourceId: string = null, detail: string = null) {
+    async onUserEvent(request: CustomRequest, action: string, resourceId: string = null, detail: string = null, userOverride: { id?: string, username?: string } | null = null) {
         const requestData = this.extractRequestData(request)
+        if ((!requestData.user.id || !requestData.user.username) && userOverride) {
+            requestData.user = {
+                ...requestData.user,
+                ...userOverride,
+            }
+        }
         const eventData: IDraxCrudEvent = {
             action: action,
             entity: this.entityName,
@@ -376,7 +382,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             }
 
             const detail = `User ${user?.username} request a password recovery .`;
-            this.onUserEvent(request, 'passwordRecoveryRequest', user?._id, detail)
+            this.onUserEvent(request, 'passwordRecoveryRequest', user?._id, detail, {id: user?._id?.toString(), username: user?.username})
 
             reply.send({message})
 
@@ -408,7 +414,7 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             const user: IUser = await userService.changeUserPasswordByCode(recoveryCode, newPassword)
             if (user) {
                 const detail = `User ${user?.username} complete a password recovery .`;
-                this.onUserEvent(request, 'passwordRecoveryCompleted', user?._id, detail)
+                this.onUserEvent(request, 'passwordRecoveryCompleted', user?._id, detail, {id: user?._id?.toString(),username: user?.username,})
                 reply.send({message: 'action.success'})
             } else {
                 reply.statusCode = 400
