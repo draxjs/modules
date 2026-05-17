@@ -40,6 +40,7 @@ interface DraxAgentConfig {
 }
 
 interface DraxAgentSessionInput {
+    identifier?: string;
     sessionId?: string;
     userId?: string | null;
     tenantId?: string | null;
@@ -69,6 +70,7 @@ interface DraxAgentMessageInput extends DraxAgentSessionInput {
 }
 
 interface DraxAgentMessageOutput {
+    agentIdentifier: string;
     sessionId: string;
     message: string;
     navigationPath?: string | null;

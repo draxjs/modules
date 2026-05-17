@@ -1,7 +1,9 @@
 import {z} from "zod";
 import {CommonController} from "@drax/common-back";
 import {DraxAgent} from "../agents/DraxAgent.js";
+import DraxAgentFactory from "../factory/DraxAgentFactory.js";
 import {AgentPermissions} from "../permissions/AgentPermissions.js";
+import type {DraxAgentControllerOptions} from "../interfaces/IDraxAgentController.js";
 
 const PromptImageSchema = z.object({
     url: z.string().min(1),
@@ -34,6 +36,7 @@ const PromptInputFileSchema = z.object({
 });
 
 const AgentSessionRequestSchema = z.object({
+    identifier: z.string().min(1).optional(),
     sessionId: z.string().optional(),
     userId: z.string().optional().nullable(),
     tenantId: z.string().optional().nullable(),
@@ -55,13 +58,31 @@ const AgentMessageRequestSchema = AgentSessionRequestSchema.extend({
 });
 
 class DraxAgentController extends CommonController {
-    protected agent: DraxAgent;
     protected permission: string | false;
+    protected defaultAgentIdentifier: string;
+    protected defaultAgentDescription: string;
 
-    constructor() {
+    constructor(options: DraxAgentControllerOptions = {}) {
         super();
-        this.permission = AgentPermissions.Session;
-        this.agent = DraxAgent.instance();
+        this.permission = options.permission ?? AgentPermissions.Session;
+        this.defaultAgentIdentifier = options.agentIdentifier ?? "default";
+        this.defaultAgentDescription = options.agentDescription ?? "";
+        DraxAgentFactory.instance(this.defaultAgentIdentifier, this.defaultAgentDescription);
+    }
+
+    async agents(request, reply) {
+        try {
+            this.assertAccess(request);
+
+            return reply.send({
+                agents: DraxAgentFactory.agents().map(agent => ({
+                    identifier: agent.identifier,
+                    description: agent.description,
+                })),
+            });
+        } catch (e: any) {
+            this.handleControllerError(e, reply);
+        }
     }
 
     async startSession(request, reply) {
@@ -69,13 +90,15 @@ class DraxAgentController extends CommonController {
             this.assertAccess(request);
 
             const input = AgentSessionRequestSchema.parse(request.body ?? {});
-            const session = await this.agent.startSession({
+            const agent = this.resolveAgent(input.identifier);
+            const session = await agent.startSession({
                 sessionId: input.sessionId,
                 userId: this.resolveUserId(request, input.userId),
                 tenantId: this.resolveTenantId(request, input.tenantId),
             });
 
             return reply.send({
+                agentIdentifier: agent.identifier,
                 sessionId: session.id,
                 createdAt: session.createdAt,
                 updatedAt: session.updatedAt,
@@ -90,7 +113,8 @@ class DraxAgentController extends CommonController {
             this.assertAccess(request);
 
             const input = AgentMessageRequestSchema.parse(request.body ?? {});
-            const response = await this.agent.sendMessage({
+            const agent = this.resolveAgent(input.identifier);
+            const response = await agent.sendMessage({
                 ...input,
                 userId: this.resolveUserId(request, input.userId),
                 tenantId: this.resolveTenantId(request, input.tenantId),
@@ -102,6 +126,10 @@ class DraxAgentController extends CommonController {
         } catch (e: any) {
             this.handleControllerError(e, reply);
         }
+    }
+
+    protected resolveAgent(identifier?: string): DraxAgent {
+        return DraxAgentFactory.instance(identifier ?? this.defaultAgentIdentifier);
     }
 
     protected assertAccess(request: any) {

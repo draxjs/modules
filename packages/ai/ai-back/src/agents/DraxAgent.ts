@@ -19,22 +19,15 @@ import AgentSessionServiceFactory from "../factory/services/AgentSessionServiceF
 import type {AgentSessionService} from "../services/AgentSessionService.js";
 
 class DraxAgent {
-    private static singleton?: DraxAgent;
-
     protected sessions: Map<string, DraxAgentSession> = new Map();
     protected config: DraxAgentConfig = {
         systemPrompt: "Sos un asistente del sistema. Responde de forma clara, breve y util.",
     };
 
-    private constructor() {
-    }
-
-    static instance(): DraxAgent {
-        if (!DraxAgent.singleton) {
-            DraxAgent.singleton = new DraxAgent();
-        }
-
-        return DraxAgent.singleton;
+    constructor(
+        public readonly identifier: string = "default",
+        public readonly description: string = "",
+    ) {
     }
 
     configure(config: DraxAgentConfig): this {
@@ -132,6 +125,7 @@ class DraxAgent {
         });
 
         return {
+            agentIdentifier: this.identifier,
             sessionId: session.id,
             message: assistantMessage,
             navigationPath: navigationState.path,

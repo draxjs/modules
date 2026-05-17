@@ -10,6 +10,7 @@ const PANEL_MIN_WIDTH = 420
 const PANEL_MIN_HEIGHT = 420
 
 const chatbotTaskPanel = ref(false)
+const panelFullscreen = ref(false)
 const panelPosition = ref({x: PANEL_MARGIN, y: PANEL_INITIAL_TOP})
 const panelSize = ref({width: PANEL_INITIAL_WIDTH, height: PANEL_INITIAL_HEIGHT})
 const panelPositionInitialized = ref(false)
@@ -28,12 +29,22 @@ const resizeState = ref<{
   originHeight: number
 } | null>(null)
 
-const panelStyle = computed(() => ({
-  left: `${panelPosition.value.x}px`,
-  top: `${panelPosition.value.y}px`,
-  width: `${panelSize.value.width}px`,
-  height: `${panelSize.value.height}px`,
-}))
+const panelStyle = computed(() => panelFullscreen.value
+  ? {
+    left: '0',
+    top: '0',
+    width: '100vw',
+    height: '100vh',
+  }
+  : {
+    left: `${panelPosition.value.x}px`,
+    top: `${panelPosition.value.y}px`,
+    width: `${panelSize.value.width}px`,
+    height: `${panelSize.value.height}px`,
+  })
+const panelFullscreenButtonLabel = computed(() => panelFullscreen.value
+  ? 'Volver a ventana compacta'
+  : 'Maximizar asistente')
 
 async function openAgentPanel() {
   chatbotTaskPanel.value = true
@@ -52,6 +63,13 @@ async function openAgentPanel() {
 
 function closeAgentPanel() {
   chatbotTaskPanel.value = false
+  panelFullscreen.value = false
+}
+
+function togglePanelFullscreen() {
+  panelFullscreen.value = !panelFullscreen.value
+  stopPanelDrag()
+  stopPanelResize()
 }
 
 function positionPanelAtStart() {
@@ -67,6 +85,10 @@ function positionPanelAtStart() {
 }
 
 function startPanelDrag(event: PointerEvent) {
+  if (panelFullscreen.value) {
+    return
+  }
+
   if (event.button !== 0) {
     return
   }
@@ -110,6 +132,10 @@ function stopPanelDrag() {
 }
 
 function startPanelResize(event: PointerEvent) {
+  if (panelFullscreen.value) {
+    return
+  }
+
   if (event.button !== 0) {
     return
   }
@@ -156,6 +182,10 @@ function stopPanelResize() {
 
 function keepPanelInViewport() {
   if (!chatbotTaskPanel.value) {
+    return
+  }
+
+  if (panelFullscreen.value) {
     return
   }
 
@@ -220,6 +250,7 @@ onBeforeUnmount(() => {
   <v-card
     v-if="chatbotTaskPanel"
     class="drax-agent-button__panel"
+    :class="{'drax-agent-button__panel--fullscreen': panelFullscreen}"
     :style="panelStyle"
     elevation="12"
   >
@@ -231,6 +262,15 @@ onBeforeUnmount(() => {
       <v-icon class="drax-agent-button__drag-icon" icon="mdi-drag" />
       <v-toolbar-title>Asistente de tareas</v-toolbar-title>
       <v-spacer />
+      <v-btn
+        icon
+        :aria-label="panelFullscreenButtonLabel"
+        :title="panelFullscreenButtonLabel"
+        @pointerdown.stop
+        @click="togglePanelFullscreen"
+      >
+        <v-icon>{{ panelFullscreen ? 'mdi-window-restore' : 'mdi-fullscreen' }}</v-icon>
+      </v-btn>
       <v-btn
         icon
         aria-label="Cerrar asistente de tareas"
@@ -246,6 +286,7 @@ onBeforeUnmount(() => {
     </v-card-text>
 
     <button
+      v-if="!panelFullscreen"
       class="drax-agent-button__resize-handle"
       type="button"
       aria-label="Redimensionar asistente de tareas"
@@ -270,10 +311,20 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
+.drax-agent-button__panel--fullscreen {
+  border-radius: 0;
+  max-width: 100vw;
+  max-height: 100vh;
+}
+
 .drax-agent-button__panel-toolbar {
   cursor: move;
   user-select: none;
   touch-action: none;
+}
+
+.drax-agent-button__panel--fullscreen .drax-agent-button__panel-toolbar {
+  cursor: default;
 }
 
 .drax-agent-button__drag-icon {

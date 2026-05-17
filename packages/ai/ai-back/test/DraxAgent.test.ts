@@ -1,5 +1,6 @@
 import {describe, expect, test} from "vitest";
 import {DraxAgent} from "../src/agents/DraxAgent.js";
+import {DraxAgentFactory} from "../src/factory/DraxAgentFactory.js";
 import type {IAIProvider, IPromptParams, IPromptResponse, IPromptTool} from "../src/interfaces/IAIProvider.js";
 
 class MockProvider implements IAIProvider {
@@ -23,9 +24,29 @@ class MockProvider implements IAIProvider {
 }
 
 describe("DraxAgent", () => {
+    test("factory returns one agent instance per identifier", () => {
+        expect(DraxAgentFactory.instance()).toBe(DraxAgentFactory.instance("default"));
+        expect(DraxAgentFactory.instance("taskSpecialist")).toBe(DraxAgentFactory.instance("taskSpecialist"));
+        expect(DraxAgentFactory.instance("taskSpecialist")).not.toBe(DraxAgentFactory.instance("default"));
+        expect(DraxAgentFactory.agents()).toContain(DraxAgentFactory.instance("taskSpecialist"));
+        expect(new DraxAgent()).not.toBe(new DraxAgent());
+    });
+
+    test("stores agent identifier and description", () => {
+        const defaultAgent = new DraxAgent();
+        const specialist = DraxAgentFactory.instance("taskSpecialistWithDescription", "Resuelve tareas especificas");
+
+        expect(defaultAgent.identifier).toBe("default");
+        expect(defaultAgent.description).toBe("");
+        expect(specialist.identifier).toBe("taskSpecialistWithDescription");
+        expect(specialist.description).toBe("Resuelve tareas especificas");
+        expect(DraxAgentFactory.instance("taskSpecialistWithDescription", "Otra descripcion")).toBe(specialist);
+        expect(DraxAgentFactory.instance("taskSpecialistWithDescription").description).toBe("Resuelve tareas especificas");
+    });
+
     test("creates a session and sends messages through the injected provider", async () => {
         const provider = new MockProvider();
-        const agent = DraxAgent.instance().clearSessions().configure({
+        const agent = new DraxAgent().configure({
             provider,
             systemPrompt: "Sos un asistente.",
             sessionService: false,
@@ -74,7 +95,7 @@ describe("DraxAgent", () => {
             },
         };
 
-        const agent = DraxAgent.instance().clearSessions().configure({
+        const agent = new DraxAgent().configure({
             provider,
             systemPrompt: "Prompt base.",
             sessionService: false,
@@ -99,7 +120,7 @@ describe("DraxAgent", () => {
 
     test("uses previous session messages as history", async () => {
         const provider = new MockProvider();
-        const agent = DraxAgent.instance().clearSessions().configure({
+        const agent = new DraxAgent().configure({
             provider,
             systemPrompt: "Sos un asistente.",
             sessionService: false,
@@ -125,7 +146,7 @@ describe("DraxAgent", () => {
 
     test("returns a navigation path from tool execution metadata", async () => {
         const provider = new MockProvider();
-        const agent = DraxAgent.instance().clearSessions().configure({
+        const agent = new DraxAgent().configure({
             provider,
             systemPrompt: "Sos un asistente.",
             sessionService: false,
@@ -178,7 +199,7 @@ describe("DraxAgent", () => {
             }),
         } as any;
 
-        const agent = DraxAgent.instance().clearSessions().configure({
+        const agent = new DraxAgent().configure({
             provider,
             systemPrompt: "Sos un asistente.",
             sessionService,

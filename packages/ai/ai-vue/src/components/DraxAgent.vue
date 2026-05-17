@@ -2,6 +2,7 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {AgentProvider} from '@drax/ai-front'
+import type {IAgentOption} from '@drax/ai-front'
 import VisualBot from './VisualBot.vue'
 
 withDefaults(defineProps<{
@@ -57,6 +58,14 @@ interface BrowserSpeechRecognitionAlternative {
 
 const sessionId = ref<string>()
 const router = useRouter()
+const agents = ref<IAgentOption[]>([
+  {
+    identifier: 'default',
+    description: '',
+  },
+])
+const selectedAgentIdentifier = ref('default')
+const agentsLoading = ref(false)
 const messages = ref<ChatMessage[]>([
   {
     role: 'assistant',
@@ -106,14 +115,62 @@ const visualBotButtonLabel = computed(() => visualBotVisible.value ? 'Ocultar bo
 const navigationButtonLabel = computed(() => navigationEnabled.value
   ? 'Apagar navegacion automatica'
   : 'Prender navegacion automatica')
+const selectedAgent = computed(() => agents.value.find((agent) => agent.identifier === selectedAgentIdentifier.value) ?? agents.value[0])
+const showAgentSelector = computed(() => agents.value.length > 1)
+const agentSelectItems = computed(() => agents.value.map((agent) => ({
+  title: agent.description ? `${agent.identifier} - ${agent.description}` : agent.identifier,
+  value: agent.identifier,
+})))
 const maxSpeechRestartAttempts = 3
+
+async function loadAgents() {
+  agentsLoading.value = true
+
+  try {
+    const response = await AgentProvider.instance.listAgents()
+    agents.value = response.agents.length > 0
+      ? response.agents
+      : [{identifier: 'default', description: ''}]
+
+    if (!agents.value.some((agent) => agent.identifier === selectedAgentIdentifier.value)) {
+      selectedAgentIdentifier.value = agents.value[0]?.identifier ?? 'default'
+    }
+  } catch {
+    agents.value = [{identifier: 'default', description: ''}]
+    selectedAgentIdentifier.value = 'default'
+  } finally {
+    agentsLoading.value = false
+  }
+}
+
+function selectAgent(value: unknown) {
+  const identifier = typeof value === 'string' ? value : null
+
+  if (!identifier || identifier === selectedAgentIdentifier.value) {
+    return
+  }
+
+  if (!agents.value.some((agent) => agent.identifier === identifier)) {
+    selectedAgentIdentifier.value = selectedAgent.value?.identifier ?? 'default'
+    return
+  }
+
+  selectedAgentIdentifier.value = identifier
+  sessionId.value = undefined
+  messages.value = [
+    {
+      role: 'assistant',
+      content: 'Hola. Decime que tarea queres registrar y la guardo por vos.',
+    },
+  ]
+}
 
 async function startNewSession() {
   loading.value = true
   error.value = null
 
   try {
-    const response = await AgentProvider.instance.startSession()
+    const response = await AgentProvider.instance.startSession(selectedAgentIdentifier.value)
     sessionId.value = response.sessionId
     messages.value = [
       {
@@ -143,7 +200,7 @@ async function sendMessage() {
   await scrollToBottom()
 
   try {
-    const response = await AgentProvider.instance.sendMessage(message, sessionId.value)
+    const response = await AgentProvider.instance.sendMessage(message, sessionId.value, selectedAgentIdentifier.value)
     sessionId.value = response.sessionId
     messages.value.push({role: 'assistant', content: response.message})
     await navigateAgentResponse(response.navigationPath)
@@ -524,6 +581,7 @@ function shouldLimitSpeechRestart(speechRecognitionError: string) {
 }
 
 onMounted(() => {
+  loadAgents()
   setupSpeechRecognition()
   setupTextToSpeech()
 })
@@ -554,6 +612,27 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="chatbot-task__header-actions">
+        <v-combobox
+          v-if="showAgentSelector"
+          :model-value="selectedAgentIdentifier"
+          :items="agentSelectItems"
+          item-title="title"
+          item-value="value"
+          label="Agente"
+          density="compact"
+          variant="outlined"
+          hide-details
+          :loading="agentsLoading"
+          :disabled="loading || agentsLoading"
+          :return-object="false"
+          class="chatbot-task__agent-select"
+          @update:model-value="selectAgent"
+        >
+          <template #selection>
+            <span class="chatbot-task__agent-selection">{{ selectedAgent?.identifier ?? 'default' }}</span>
+          </template>
+        </v-combobox>
+
         <v-btn
           color="primary"
           variant="tonal"
@@ -764,6 +843,17 @@ onBeforeUnmount(() => {
   gap: 8px;
 }
 
+.chatbot-task__agent-select {
+  width: 190px;
+  flex: 0 0 190px;
+}
+
+.chatbot-task__agent-selection {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .chatbot-task__voice-list {
   min-width: 280px;
   max-width: min(420px, calc(100vw - 32px));
@@ -889,6 +979,11 @@ onBeforeUnmount(() => {
     width: 100%;
     flex-wrap: wrap;
     justify-content: flex-start;
+  }
+
+  .chatbot-task__agent-select {
+    width: 100%;
+    flex: 1 1 100%;
   }
 
   .chatbot-task__messages {

@@ -2,13 +2,24 @@ import {HttpRestClientFactory} from "@drax/common-front";
 import type {IHttpClient} from "@drax/common-front";
 
 interface IChatbotTaskSessionResponse {
+  agentIdentifier?: string
   sessionId: string
 }
 
 interface IChatbotTaskMessageResponse {
+  agentIdentifier?: string
   sessionId: string
   message: string
   navigationPath?: string | null
+}
+
+interface IAgentOption {
+  identifier: string
+  description: string
+}
+
+interface IAgentListResponse {
+  agents: IAgentOption[]
 }
 
 class ChatbotTaskProvider {
@@ -29,14 +40,22 @@ class ChatbotTaskProvider {
     return ChatbotTaskProvider.singleton
   }
 
-  async startSession(): Promise<IChatbotTaskSessionResponse> {
-    return await this.httpClient.post(`${this.basePath}/session`, {}, {timeout: 120000}) as IChatbotTaskSessionResponse
+  async listAgents(): Promise<IAgentListResponse> {
+    return await this.httpClient.get(this.basePath, {timeout: 120000}) as IAgentListResponse
   }
 
-  async sendMessage(message: string, sessionId?: string): Promise<IChatbotTaskMessageResponse> {
-    return await this.httpClient.post(`${this.basePath}/message`, {message, sessionId}, {timeout: 120000}) as IChatbotTaskMessageResponse
+  async startSession(identifier?: string): Promise<IChatbotTaskSessionResponse> {
+    return await this.httpClient.post(`${this.basePath}/session`, {identifier}, {timeout: 120000}) as IChatbotTaskSessionResponse
+  }
+
+  async sendMessage(message: string, sessionId?: string, identifier?: string): Promise<IChatbotTaskMessageResponse> {
+    return await this.httpClient.post(
+      `${this.basePath}/message`,
+      {message, sessionId, identifier},
+      {timeout: 120000},
+    ) as IChatbotTaskMessageResponse
   }
 }
 
-export type {IChatbotTaskMessageResponse, IChatbotTaskSessionResponse}
+export type {IAgentListResponse, IAgentOption, IChatbotTaskMessageResponse, IChatbotTaskSessionResponse}
 export default ChatbotTaskProvider

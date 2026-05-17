@@ -4,6 +4,12 @@ import AgentProvider from './providers/AgentProvider.js'
 import AgentSessionProvider from './providers/AgentSessionProvider.js'
 import AiI18nMessages from './i18n/index.js'
 import type {
+    IAgentListResponse,
+    IAgentOption,
+    IChatbotTaskMessageResponse,
+    IChatbotTaskSessionResponse,
+} from './providers/AgentProvider.js'
+import type {
     IAICrudField,
     IAICrudFieldOption,
     IAICrudPromptMeta,
@@ -52,4 +58,8 @@ export type {
     IAICrudPromptPayload,
     IAICrudPromptMeta,
     IAICrudPromptResponse,
+    IAgentListResponse,
+    IAgentOption,
+    IChatbotTaskMessageResponse,
+    IChatbotTaskSessionResponse,
 }

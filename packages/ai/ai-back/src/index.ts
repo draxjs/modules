@@ -9,6 +9,7 @@ import {OpenAiProviderFactory} from "./factory/OpenAiProviderFactory.js";
 import {GoogleAiProviderFactory} from "./factory/GoogleAiProviderFactory.js";
 import {OllamaAiProviderFactory} from "./factory/OllamaAiProviderFactory.js";
 import {AiProviderFactory} from "./factory/AiProviderFactory.js";
+import {DraxAgentFactory} from "./factory/DraxAgentFactory.js";
 import AILogServiceFactory from "./factory/services/AILogServiceFactory.js";
 import {OpenAiProvider} from "./providers/OpenAiProvider.js";
 import {GoogleAiProvider} from "./providers/GoogleAiProvider.js";
@@ -112,6 +113,7 @@ export {
     GoogleAiProviderFactory,
     OllamaAiProviderFactory,
     AiProviderFactory,
+    DraxAgentFactory,
     AILogServiceFactory,
     OpenAiProvider,
     GoogleAiProvider,

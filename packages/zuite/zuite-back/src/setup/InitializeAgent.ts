@@ -1,4 +1,4 @@
-import {DraxAgent, BuilderTool, AiProviderFactory} from "@drax/ai-back"
+import {DraxAgentFactory, BuilderTool, AiProviderFactory} from "@drax/ai-back"
 import type {DraxAgentConfig, DraxAgentToolBuilderSource} from "@drax/ai-back"
 import {CountryServiceFactory} from "../modules/people/factory/services/CountryServiceFactory.js"
 import {CountryBaseSchema} from "../modules/people/schemas/CountrySchema.js"
@@ -18,12 +18,19 @@ async function initializeAgent(): Promise<void> {
     const toolBuilders: DraxAgentToolBuilderSource = [
         countryTool
     ]
-    const config: DraxAgentConfig = {
-        toolBuilders: toolBuilders,
-        provider: AiProviderFactory.instance("OllamaAi")
+    const configDefault: DraxAgentConfig = {
+        provider: AiProviderFactory.instance("OpenAi")
     }
 
-    DraxAgent.instance().configure(config)
+    const configCountry: DraxAgentConfig = {
+        toolBuilders: toolBuilders,
+        provider: AiProviderFactory.instance("OpenAi")
+    }
+
+    DraxAgentFactory.instance("default", "Agente default")
+        .configure(configDefault)
+    DraxAgentFactory.instance("country", "Agente para operar entidad country")
+        .configure(configCountry)
 }
 
 export { initializeAgent}
