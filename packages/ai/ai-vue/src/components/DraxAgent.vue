@@ -6,8 +6,10 @@ import type {IAgentOption} from '@drax/ai-front'
 import VisualBot from './VisualBot.vue'
 
 withDefaults(defineProps<{
+  compact?: boolean
   showTitle?: boolean
 }>(), {
+  compact: false,
   showTitle: true,
 })
 
@@ -100,6 +102,21 @@ const navigationEnabled = ref(true)
 const canSend = computed(() => input.value.trim().length > 0 && !loading.value)
 const speechButtonIcon = computed(() => speechEnabled.value ? 'mdi-microphone-off' : 'mdi-microphone')
 const speechButtonLabel = computed(() => speechEnabled.value ? 'Apagar microfono' : 'Prender microfono')
+const compactSpeechStatusLabel = computed(() => {
+  if (speechError.value) {
+    return 'Error'
+  }
+
+  if (loading.value) {
+    return 'Procesando'
+  }
+
+  if (textToSpeechSpeaking.value) {
+    return 'Hablando'
+  }
+
+  return speechEnabled.value ? 'Activo' : 'Micro'
+})
 const speechAutoSendLabel = computed(() => speechAutoSendEnabled.value
   ? 'Apagar envio automatico al terminar de hablar'
   : 'Prender envio automatico al terminar de hablar')
@@ -604,205 +621,270 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="chatbot-task">
-    <header class="chatbot-task__header">
-      <div v-if="showTitle || sessionId">
-        <h1 v-if="showTitle">Asistente de tareas</h1>
-        <p v-if="sessionId">Sesion {{ sessionId.slice(0, 8) }}</p>
+  <section
+    class="chatbot-task"
+    :class="{'chatbot-task--compact': compact}"
+  >
+    <template v-if="compact">
+      <div
+        class="chatbot-task__compact-control"
+        :class="{
+          'chatbot-task__compact-control--listening': speechEnabled,
+          'chatbot-task__compact-control--loading': loading,
+          'chatbot-task__compact-control--speaking': textToSpeechSpeaking,
+          'chatbot-task__compact-control--error': Boolean(speechError),
+        }"
+      >
+        <span
+          v-if="loading"
+          class="chatbot-task__compact-processing"
+          aria-hidden="true"
+        />
+        <span
+          v-if="textToSpeechSpeaking"
+          class="chatbot-task__compact-speaking"
+          aria-hidden="true"
+        >
+          <v-icon icon="mdi-volume-high" size="16" />
+        </span>
+
+        <v-btn
+          v-if="speechSupported"
+          color="primary"
+          variant="tonal"
+          size="large"
+          :class="getFeatureButtonClass(speechEnabled)"
+          :icon="speechButtonIcon"
+          :aria-label="speechButtonLabel"
+          :title="speechButtonLabel"
+          @pointerdown.stop
+          @click="toggleSpeechRecognition"
+        />
+        <v-btn
+          v-else
+          color="primary"
+          variant="tonal"
+          size="large"
+          icon="mdi-microphone-off"
+          disabled
+          aria-label="Microfono no disponible"
+          title="Microfono no disponible"
+          @pointerdown.stop
+        />
       </div>
 
-      <div class="chatbot-task__header-actions">
-        <v-combobox
-          v-if="showAgentSelector"
-          :model-value="selectedAgentIdentifier"
-          :items="agentSelectItems"
-          item-title="title"
-          item-value="value"
-          label="Agente"
-          density="compact"
-          variant="outlined"
-          hide-details
-          :loading="agentsLoading"
-          :disabled="loading || agentsLoading"
-          :return-object="false"
-          class="chatbot-task__agent-select"
-          @update:model-value="selectAgent"
-        >
-          <template #selection>
-            <span class="chatbot-task__agent-selection">{{ selectedAgent?.identifier ?? 'default' }}</span>
+      <span
+        class="chatbot-task__compact-status"
+        :class="{
+          'chatbot-task__compact-status--active': speechEnabled,
+          'chatbot-task__compact-status--loading': loading,
+          'chatbot-task__compact-status--speaking': textToSpeechSpeaking,
+          'chatbot-task__compact-status--error': Boolean(speechError),
+        }"
+      >
+        {{ compactSpeechStatusLabel }}
+      </span>
+    </template>
+
+    <template v-else>
+      <header class="chatbot-task__header">
+        <div v-if="showTitle || sessionId">
+          <h1 v-if="showTitle">Asistente de tareas</h1>
+          <p v-if="sessionId">Sesion {{ sessionId.slice(0, 8) }}</p>
+        </div>
+
+        <div class="chatbot-task__header-actions">
+          <v-combobox
+            v-if="showAgentSelector"
+            :model-value="selectedAgentIdentifier"
+            :items="agentSelectItems"
+            item-title="title"
+            item-value="value"
+            label="Agente"
+            density="compact"
+            variant="outlined"
+            hide-details
+            :loading="agentsLoading"
+            :disabled="loading || agentsLoading"
+            :return-object="false"
+            class="chatbot-task__agent-select"
+            @update:model-value="selectAgent"
+          >
+            <template #selection>
+              <span class="chatbot-task__agent-selection">{{ selectedAgent?.identifier ?? 'default' }}</span>
+            </template>
+          </v-combobox>
+
+          <v-btn
+            color="primary"
+            variant="tonal"
+            :class="getFeatureButtonClass(visualBotVisible)"
+            :icon="visualBotVisible ? 'mdi-robot-off-outline' : 'mdi-robot-outline'"
+            :aria-label="visualBotButtonLabel"
+            :title="visualBotButtonLabel"
+            @click="toggleVisualBot"
+          />
+
+          <v-btn
+            color="primary"
+            variant="tonal"
+            :class="getFeatureButtonClass(navigationEnabled)"
+            :icon="navigationEnabled ? 'mdi-map-marker-outline' : 'mdi-map-marker-off-outline'"
+            :aria-label="navigationButtonLabel"
+            :title="navigationButtonLabel"
+            @click="toggleNavigation"
+          />
+
+          <v-btn
+            v-if="speechSupported"
+            color="primary"
+            variant="tonal"
+            :class="getFeatureButtonClass(speechAutoSendEnabled)"
+            :icon="speechAutoSendEnabled ? 'mdi-send-check' : 'mdi-send-outline'"
+            :aria-label="speechAutoSendLabel"
+            :title="speechAutoSendLabel"
+            @click="toggleSpeechAutoSend"
+          />
+
+          <template v-if="textToSpeechSupported">
+            <v-btn
+              color="primary"
+              variant="tonal"
+              :class="getFeatureButtonClass(textToSpeechEnabled)"
+              :icon="textToSpeechEnabled ? 'mdi-volume-high' : 'mdi-volume-off'"
+              :aria-label="textToSpeechEnabled ? 'Apagar lectura de respuestas' : 'Prender lectura de respuestas'"
+              :title="textToSpeechEnabled ? 'Apagar lectura de respuestas' : 'Prender lectura de respuestas'"
+              @click="toggleTextToSpeech"
+            />
+
+            <v-menu max-height="320" location="bottom end">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  color="primary"
+                  variant="tonal"
+                  icon="mdi-account-voice"
+                  aria-label="Elegir voz"
+                  :title="`Elegir voz: ${selectedVoiceName}`"
+                />
+              </template>
+
+              <v-list density="compact" class="chatbot-task__voice-list">
+                <v-list-subheader>Voces disponibles</v-list-subheader>
+                <v-list-item
+                  v-for="voice in textToSpeechVoices"
+                  :key="voice.voiceURI"
+                  :active="voice.voiceURI === selectedVoiceURI"
+                  @click="selectTextToSpeechVoice(voice.voiceURI)"
+                >
+                  <template #prepend>
+                    <v-icon
+                      :icon="voice.voiceURI === selectedVoiceURI ? 'mdi-check' : 'mdi-account-voice'"
+                      size="small"
+                    />
+                  </template>
+                  <v-list-item-title>{{ voice.name }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ voice.lang }}</v-list-item-subtitle>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
-        </v-combobox>
 
-        <v-btn
-          color="primary"
-          variant="tonal"
-          :class="getFeatureButtonClass(visualBotVisible)"
-          :icon="visualBotVisible ? 'mdi-robot-off-outline' : 'mdi-robot-outline'"
-          :aria-label="visualBotButtonLabel"
-          :title="visualBotButtonLabel"
-          @click="toggleVisualBot"
+          <v-btn
+            color="primary"
+            variant="tonal"
+            prepend-icon="mdi-plus"
+            :loading="loading"
+            @click="startNewSession"
+          >
+            CHAT
+          </v-btn>
+        </div>
+      </header>
+
+      <v-alert
+        v-if="error"
+        type="error"
+        variant="tonal"
+        density="compact"
+        closable
+        class="chatbot-task__error-alert mb-3"
+        @click:close="error = null"
+      >
+        {{ error }}
+      </v-alert>
+
+      <div
+        class="chatbot-task__conversation"
+        :class="{'chatbot-task__conversation--with-bot': visualBotVisible}"
+      >
+        <div ref="messagesContainer" class="chatbot-task__messages">
+          <div
+            v-for="(message, index) in messages"
+            :key="index"
+            class="chatbot-task__message-row"
+            :class="`chatbot-task__message-row--${message.role}`"
+          >
+            <div class="chatbot-task__message">
+              {{ message.content }}
+            </div>
+          </div>
+
+          <div v-if="loading" class="chatbot-task__message-row chatbot-task__message-row--assistant">
+            <div class="chatbot-task__message chatbot-task__message--loading">
+              Procesando...
+            </div>
+          </div>
+        </div>
+
+        <VisualBot
+          :visible="visualBotVisible"
+          :speaking="textToSpeechSpeaking"
         />
+      </div>
 
-        <v-btn
-          color="primary"
-          variant="tonal"
-          :class="getFeatureButtonClass(navigationEnabled)"
-          :icon="navigationEnabled ? 'mdi-map-marker-outline' : 'mdi-map-marker-off-outline'"
-          :aria-label="navigationButtonLabel"
-          :title="navigationButtonLabel"
-          @click="toggleNavigation"
+      <form class="chatbot-task__composer" @submit.prevent="sendMessage">
+        <v-textarea
+          v-model="input"
+          label="Mensaje"
+          rows="2"
+          auto-grow
+          max-rows="5"
+          hide-details
+          :disabled="loading"
+          variant="outlined"
+          @keydown.enter.exact.prevent="sendMessage"
         />
 
         <v-btn
           v-if="speechSupported"
           color="primary"
           variant="tonal"
-          :class="getFeatureButtonClass(speechAutoSendEnabled)"
-          :icon="speechAutoSendEnabled ? 'mdi-send-check' : 'mdi-send-outline'"
-          :aria-label="speechAutoSendLabel"
-          :title="speechAutoSendLabel"
-          @click="toggleSpeechAutoSend"
+          :class="getFeatureButtonClass(speechEnabled)"
+          :icon="speechButtonIcon"
+          :aria-label="speechButtonLabel"
+          :title="speechButtonLabel"
+          @click="toggleSpeechRecognition"
         />
-
-        <template v-if="textToSpeechSupported">
-          <v-btn
-            color="primary"
-            variant="tonal"
-            :class="getFeatureButtonClass(textToSpeechEnabled)"
-            :icon="textToSpeechEnabled ? 'mdi-volume-high' : 'mdi-volume-off'"
-            :aria-label="textToSpeechEnabled ? 'Apagar lectura de respuestas' : 'Prender lectura de respuestas'"
-            :title="textToSpeechEnabled ? 'Apagar lectura de respuestas' : 'Prender lectura de respuestas'"
-            @click="toggleTextToSpeech"
-          />
-
-          <v-menu max-height="320" location="bottom end">
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                color="primary"
-                variant="tonal"
-                icon="mdi-account-voice"
-                aria-label="Elegir voz"
-                :title="`Elegir voz: ${selectedVoiceName}`"
-              />
-            </template>
-
-            <v-list density="compact" class="chatbot-task__voice-list">
-              <v-list-subheader>Voces disponibles</v-list-subheader>
-              <v-list-item
-                v-for="voice in textToSpeechVoices"
-                :key="voice.voiceURI"
-                :active="voice.voiceURI === selectedVoiceURI"
-                @click="selectTextToSpeechVoice(voice.voiceURI)"
-              >
-                <template #prepend>
-                  <v-icon
-                    :icon="voice.voiceURI === selectedVoiceURI ? 'mdi-check' : 'mdi-account-voice'"
-                    size="small"
-                  />
-                </template>
-                <v-list-item-title>{{ voice.name }}</v-list-item-title>
-                <v-list-item-subtitle>{{ voice.lang }}</v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </template>
 
         <v-btn
           color="primary"
-          variant="tonal"
-          prepend-icon="mdi-plus"
+          icon="mdi-send"
+          type="submit"
+          :disabled="!canSend"
           :loading="loading"
-          @click="startNewSession"
-        >
-          CHAT
-        </v-btn>
-      </div>
-    </header>
+          aria-label="Enviar"
+        />
+      </form>
 
-    <v-alert
-      v-if="error"
-      type="error"
-      variant="tonal"
-      density="compact"
-      closable
-      class="chatbot-task__error-alert mb-3"
-      @click:close="error = null"
-    >
-      {{ error }}
-    </v-alert>
-
-    <div
-      class="chatbot-task__conversation"
-      :class="{'chatbot-task__conversation--with-bot': visualBotVisible}"
-    >
-      <div ref="messagesContainer" class="chatbot-task__messages">
-        <div
-          v-for="(message, index) in messages"
-          :key="index"
-          class="chatbot-task__message-row"
-          :class="`chatbot-task__message-row--${message.role}`"
-        >
-          <div class="chatbot-task__message">
-            {{ message.content }}
-          </div>
-        </div>
-
-        <div v-if="loading" class="chatbot-task__message-row chatbot-task__message-row--assistant">
-          <div class="chatbot-task__message chatbot-task__message--loading">
-            Procesando...
-          </div>
-        </div>
-      </div>
-
-      <VisualBot
-        :visible="visualBotVisible"
-        :speaking="textToSpeechSpeaking"
-      />
-    </div>
-
-    <form class="chatbot-task__composer" @submit.prevent="sendMessage">
-      <v-textarea
-        v-model="input"
-        label="Mensaje"
-        rows="2"
-        auto-grow
-        max-rows="5"
-        hide-details
-        :disabled="loading"
-        variant="outlined"
-        @keydown.enter.exact.prevent="sendMessage"
-      />
-
-      <v-btn
-        v-if="speechSupported"
-        color="primary"
-        variant="tonal"
-        :class="getFeatureButtonClass(speechEnabled)"
-        :icon="speechButtonIcon"
-        :aria-label="speechButtonLabel"
-        :title="speechButtonLabel"
-        @click="toggleSpeechRecognition"
-      />
-
-      <v-btn
-        color="primary"
-        icon="mdi-send"
-        type="submit"
-        :disabled="!canSend"
-        :loading="loading"
-        aria-label="Enviar"
-      />
-    </form>
-
-    <p
-      v-if="speechEnabled || speechError"
-      class="chatbot-task__speech-status"
-      :class="{'chatbot-task__speech-status--error': speechError}"
-    >
-      {{ speechError ?? (interimSpeech ? `Escuchando: ${interimSpeech}` : 'Microfono activo') }}
-    </p>
-
+      <p
+        v-if="speechEnabled || speechError"
+        class="chatbot-task__speech-status"
+        :class="{'chatbot-task__speech-status--error': speechError}"
+      >
+        {{ speechError ?? (interimSpeech ? `Escuchando: ${interimSpeech}` : 'Microfono activo') }}
+      </p>
+    </template>
   </section>
 </template>
 
@@ -814,6 +896,121 @@ onBeforeUnmount(() => {
   min-height: 560px;
   padding: 24px;
   background: rgb(var(--v-theme-surface));
+}
+
+.chatbot-task--compact {
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 16px 10px 10px;
+}
+
+.chatbot-task__compact-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+}
+
+.chatbot-task__compact-control::before {
+  position: absolute;
+  inset: 3px;
+  content: '';
+  border: 2px solid transparent;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chatbot-task__compact-control--listening::before {
+  border-color: rgba(var(--v-theme-primary), 0.32);
+  opacity: 1;
+}
+
+.chatbot-task__compact-control--error::before {
+  border-color: rgba(var(--v-theme-error), 0.58);
+  opacity: 1;
+}
+
+.chatbot-task__compact-processing {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: 3px solid rgba(var(--v-theme-primary), 0.18);
+  border-top-color: rgb(var(--v-theme-primary));
+  border-radius: 999px;
+  animation: chatbot-task-compact-spin 0.85s linear infinite;
+  pointer-events: none;
+}
+
+.chatbot-task__compact-speaking {
+  position: absolute;
+  right: -3px;
+  bottom: -2px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: rgb(var(--v-theme-on-primary));
+  background: rgb(var(--v-theme-primary));
+  border: 2px solid rgb(var(--v-theme-surface));
+  border-radius: 999px;
+  animation: chatbot-task-compact-speaking 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.chatbot-task__compact-control .v-btn {
+  z-index: 1;
+}
+
+.chatbot-task__compact-status {
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(var(--v-theme-on-surface), 0.68);
+  font-size: 0.75rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chatbot-task__compact-status--active {
+  color: rgb(var(--v-theme-primary));
+}
+
+.chatbot-task__compact-status--loading,
+.chatbot-task__compact-status--speaking {
+  color: rgb(var(--v-theme-primary));
+  font-weight: 600;
+}
+
+.chatbot-task__compact-status--error {
+  color: rgb(var(--v-theme-error));
+}
+
+@keyframes chatbot-task-compact-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes chatbot-task-compact-speaking {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.78;
+  }
+
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
 }
 
 .chatbot-task__header {

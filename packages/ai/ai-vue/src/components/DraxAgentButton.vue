@@ -8,9 +8,11 @@ const PANEL_INITIAL_WIDTH = 860
 const PANEL_INITIAL_HEIGHT = 620
 const PANEL_MIN_WIDTH = 420
 const PANEL_MIN_HEIGHT = 420
+const PANEL_MINIMIZED_SIZE = 108
 
 const chatbotTaskPanel = ref(false)
 const panelFullscreen = ref(false)
+const panelMinimized = ref(false)
 const panelPosition = ref({x: PANEL_MARGIN, y: PANEL_INITIAL_TOP})
 const panelSize = ref({width: PANEL_INITIAL_WIDTH, height: PANEL_INITIAL_HEIGHT})
 const panelPositionInitialized = ref(false)
@@ -29,19 +31,32 @@ const resizeState = ref<{
   originHeight: number
 } | null>(null)
 
-const panelStyle = computed(() => panelFullscreen.value
-  ? {
-    left: '0',
-    top: '0',
-    width: '100vw',
-    height: '100vh',
+const panelStyle = computed(() => {
+  if (panelFullscreen.value) {
+    return {
+      left: '0',
+      top: '0',
+      width: '100vw',
+      height: '100vh',
+    }
   }
-  : {
+
+  if (panelMinimized.value) {
+    return {
+      left: `${panelPosition.value.x}px`,
+      top: `${panelPosition.value.y}px`,
+      width: `${PANEL_MINIMIZED_SIZE}px`,
+      height: `${PANEL_MINIMIZED_SIZE}px`,
+    }
+  }
+
+  return {
     left: `${panelPosition.value.x}px`,
     top: `${panelPosition.value.y}px`,
     width: `${panelSize.value.width}px`,
     height: `${panelSize.value.height}px`,
-  })
+  }
+})
 const panelFullscreenButtonLabel = computed(() => panelFullscreen.value
   ? 'Volver a ventana compacta'
   : 'Maximizar asistente')
@@ -64,12 +79,28 @@ async function openAgentPanel() {
 function closeAgentPanel() {
   chatbotTaskPanel.value = false
   panelFullscreen.value = false
+  panelMinimized.value = false
 }
 
 function togglePanelFullscreen() {
   panelFullscreen.value = !panelFullscreen.value
+  panelMinimized.value = false
   stopPanelDrag()
   stopPanelResize()
+}
+
+function minimizeAgentPanel() {
+  panelFullscreen.value = false
+  panelMinimized.value = true
+  stopPanelDrag()
+  stopPanelResize()
+  panelPosition.value = clampPanelPosition(panelPosition.value.x, panelPosition.value.y)
+}
+
+function restoreAgentPanel() {
+  panelMinimized.value = false
+  panelSize.value = clampPanelSize(panelSize.value.width, panelSize.value.height)
+  panelPosition.value = clampPanelPosition(panelPosition.value.x, panelPosition.value.y)
 }
 
 function positionPanelAtStart() {
@@ -132,7 +163,7 @@ function stopPanelDrag() {
 }
 
 function startPanelResize(event: PointerEvent) {
-  if (panelFullscreen.value) {
+  if (panelFullscreen.value || panelMinimized.value) {
     return
   }
 
@@ -189,7 +220,9 @@ function keepPanelInViewport() {
     return
   }
 
-  panelSize.value = clampPanelSize(panelSize.value.width, panelSize.value.height)
+  if (!panelMinimized.value) {
+    panelSize.value = clampPanelSize(panelSize.value.width, panelSize.value.height)
+  }
   panelPosition.value = clampPanelPosition(panelPosition.value.x, panelPosition.value.y)
 }
 
@@ -198,8 +231,10 @@ function clampPanelPosition(x: number, y: number) {
     return {x, y}
   }
 
-  const maxX = Math.max(PANEL_MARGIN, window.innerWidth - panelSize.value.width - PANEL_MARGIN)
-  const maxY = Math.max(PANEL_MARGIN, window.innerHeight - panelSize.value.height - PANEL_MARGIN)
+  const width = panelMinimized.value ? PANEL_MINIMIZED_SIZE : panelSize.value.width
+  const height = panelMinimized.value ? PANEL_MINIMIZED_SIZE : panelSize.value.height
+  const maxX = Math.max(PANEL_MARGIN, window.innerWidth - width - PANEL_MARGIN)
+  const maxY = Math.max(PANEL_MARGIN, window.innerHeight - height - PANEL_MARGIN)
 
   return {
     x: Math.min(Math.max(PANEL_MARGIN, x), maxX),
@@ -250,11 +285,15 @@ onBeforeUnmount(() => {
   <v-card
     v-if="chatbotTaskPanel"
     class="drax-agent-button__panel"
-    :class="{'drax-agent-button__panel--fullscreen': panelFullscreen}"
+    :class="{
+      'drax-agent-button__panel--fullscreen': panelFullscreen,
+      'drax-agent-button__panel--minimized': panelMinimized,
+    }"
     :style="panelStyle"
     elevation="12"
   >
     <v-toolbar
+      v-if="!panelMinimized"
       class="drax-agent-button__panel-toolbar"
       density="comfortable"
       @pointerdown="startPanelDrag"
@@ -273,6 +312,15 @@ onBeforeUnmount(() => {
       </v-btn>
       <v-btn
         icon
+        aria-label="Minimizar asistente de tareas"
+        title="Minimizar asistente de tareas"
+        @pointerdown.stop
+        @click="minimizeAgentPanel"
+      >
+        <v-icon>mdi-window-minimize</v-icon>
+      </v-btn>
+      <v-btn
+        icon
         aria-label="Cerrar asistente de tareas"
         @pointerdown.stop
         @click="closeAgentPanel"
@@ -281,12 +329,30 @@ onBeforeUnmount(() => {
       </v-btn>
     </v-toolbar>
 
-    <v-card-text class="drax-agent-button__panel-content">
-      <DraxAgent :show-title="false" />
+    <v-card-text
+      class="drax-agent-button__panel-content"
+      @pointerdown="panelMinimized && startPanelDrag($event)"
+    >
+      <button
+        v-if="panelMinimized"
+        class="drax-agent-button__restore-button"
+        type="button"
+        aria-label="Restaurar asistente de tareas"
+        title="Restaurar asistente de tareas"
+        @pointerdown.stop
+        @click="restoreAgentPanel"
+      >
+        <v-icon icon="mdi-window-restore" size="18" />
+      </button>
+
+      <DraxAgent
+        :show-title="false"
+        :compact="panelMinimized"
+      />
     </v-card-text>
 
     <button
-      v-if="!panelFullscreen"
+      v-if="!panelFullscreen && !panelMinimized"
       class="drax-agent-button__resize-handle"
       type="button"
       aria-label="Redimensionar asistente de tareas"
@@ -317,6 +383,12 @@ onBeforeUnmount(() => {
   max-height: 100vh;
 }
 
+.drax-agent-button__panel--minimized {
+  min-width: 108px;
+  min-height: 108px;
+  border-radius: 16px;
+}
+
 .drax-agent-button__panel-toolbar {
   cursor: move;
   user-select: none;
@@ -333,6 +405,7 @@ onBeforeUnmount(() => {
 }
 
 .drax-agent-button__panel-content {
+  position: relative;
   flex: 1;
   min-height: 0;
   padding: 0;
@@ -342,6 +415,33 @@ onBeforeUnmount(() => {
 .drax-agent-button__panel-content :deep(.chatbot-task) {
   height: 100%;
   min-height: 0;
+}
+
+.drax-agent-button__panel--minimized .drax-agent-button__panel-content {
+  cursor: move;
+  touch-action: none;
+}
+
+.drax-agent-button__restore-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  color: rgba(var(--v-theme-on-surface), 0.72);
+  cursor: pointer;
+  background: rgba(var(--v-theme-surface), 0.86);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 999px;
+}
+
+.drax-agent-button__restore-button:hover {
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .drax-agent-button__resize-handle {
