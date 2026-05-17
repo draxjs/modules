@@ -9,7 +9,7 @@ async function initializeAgent(): Promise<void> {
     const countryTool = new BuilderTool({
         entityDescription: "Paises del sistema",
         entityName: "Country",
-        methods: ["search","find","create","updatePartial"],
+        methods: ["search","findFirst","findLast","create","updatePartial"],
         schema: CountryBaseSchema,
         service: CountryServiceFactory.instance
 

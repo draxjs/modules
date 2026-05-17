@@ -12,6 +12,8 @@ type ToolBuilderMethod =
     | "findOne"
     | "findBy"
     | "fetchAll"
+    | "findFirst"
+    | "findLast"
     | "search"
     | "find"
     | "paginate"

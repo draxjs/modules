@@ -375,6 +375,48 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return items
     }
 
+    async findFirst(quantity: number, filters: IDraxFieldFilter[] = []): Promise<T[]> {
+        let where = ""
+        let params: any[] = []
+
+        if (filters.length > 0) {
+            const result = SqlQueryFilter.applyFilters(where, filters)
+            where = result.where
+            params.push(...result.params)
+        }
+
+        const items = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where} ORDER BY ${this.identifier} ASC LIMIT ?`)
+            .all([...params, quantity]) as T[]
+
+        for (const item of items) {
+            await this.decorate(item)
+        }
+
+        return items
+    }
+
+    async findLast(quantity: number, filters: IDraxFieldFilter[] = []): Promise<T[]> {
+        let where = ""
+        let params: any[] = []
+
+        if (filters.length > 0) {
+            const result = SqlQueryFilter.applyFilters(where, filters)
+            where = result.where
+            params.push(...result.params)
+        }
+
+        const items = this.db
+            .prepare(`SELECT * FROM ${this.tableName} ${where} ORDER BY ${this.identifier} DESC LIMIT ?`)
+            .all([...params, quantity]) as T[]
+
+        for (const item of items) {
+            await this.decorate(item)
+        }
+
+        return items
+    }
+
     async search(value: any, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[]> {
 
         let where = ""

@@ -16,6 +16,8 @@ interface IDraxCrud<T,C,U>{
   findById?(id: string): Promise<T | null>
   findByIds?(ids: Array<string>, filters?: IDraxFieldFilter[]): Promise<T[]>
   fetchAll?(): Promise<T[]>
+  findFirst?(quantity: number, filters?: IDraxFieldFilter[]): Promise<T[]>
+  findLast?(quantity: number, filters?: IDraxFieldFilter[]): Promise<T[]>
   search?(value: any, limit: number, filters: IDraxFieldFilter[]): Promise<T[]>
   find?(options: IDraxFindOptions): Promise<T[]>
   findOne?(options: IDraxFindOneOptions): Promise<T>

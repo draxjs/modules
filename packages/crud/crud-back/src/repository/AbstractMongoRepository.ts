@@ -187,6 +187,42 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return items as T[]
     }
 
+    async findFirst(quantity: number, filters: IDraxFieldFilter[] = []): Promise<T[]> {
+
+        const query = {}
+
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
+
+        const items = await this._model
+            .find(query)
+            .sort({_id: 1})
+            .limit(quantity)
+            .populate(this._populateFields)
+            .lean(this._lean)
+            .exec()
+
+
+        return items as T[]
+    }
+
+    async findLast(quantity: number, filters: IDraxFieldFilter[] = []): Promise<T[]> {
+
+        const query = {}
+
+        MongooseQueryFilter.applyFilters(query, filters, this._model)
+
+        const items = await this._model
+            .find(query)
+            .sort({_id: -1})
+            .limit(quantity)
+            .populate(this._populateFields)
+            .lean(this._lean)
+            .exec()
+
+
+        return items as T[]
+    }
+
     async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[]> {
 
         const query = {}

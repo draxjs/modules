@@ -475,7 +475,7 @@ class DraxAgent {
             return "edit";
         }
 
-        if (["findById", "findOneBy", "findOne", "findBy", "search", "find", "paginate"].includes(method)) {
+        if (["findById", "findOneBy", "findOne", "findBy", "fetchAll", "findFirst", "findLast", "search", "find", "paginate"].includes(method)) {
             return "view";
         }
 

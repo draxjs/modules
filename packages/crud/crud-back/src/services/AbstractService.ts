@@ -337,6 +337,48 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     }
 
+    async findFirst(quantity: number, filters: IDraxFieldFilter[] = []): Promise<T[]> {
+        try {
+            let items: T[] = await this._repository.findFirst(quantity, filters);
+            if (this.transformRead) {
+                items = await Promise.all(items.map(item => this.transformRead(item)))
+            }
+            if(this._fullSchema){
+                items = await Promise.all(items.map(item => this.validateOutput(item)))
+            }
+            return items
+        } catch (e) {
+            console.error("Error findFirst", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
+            throw e;
+        }
+
+    }
+
+    async findLast(quantity: number, filters: IDraxFieldFilter[] = []): Promise<T[]> {
+        try {
+            let items: T[] = await this._repository.findLast(quantity, filters);
+            if (this.transformRead) {
+                items = await Promise.all(items.map(item => this.transformRead(item)))
+            }
+            if(this._fullSchema){
+                items = await Promise.all(items.map(item => this.validateOutput(item)))
+            }
+            return items
+        } catch (e) {
+            console.error("Error findLast", {
+                name: e?.name,
+                message: e?.message,
+                stack: e?.stack,
+            });
+            throw e;
+        }
+
+    }
+
     async search(value: string, limit: number = 1000, filters: IDraxFieldFilter[] = []): Promise<T[]> {
         try {
 

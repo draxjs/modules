@@ -100,6 +100,22 @@ const toolDefinitions: Record<ToolBuilderMethod, ToolDefinition> = {
         parameters: () => emptyParameters,
         execute: service => service.fetchAll?.(),
     },
+    findFirst: {
+        description: entityName => `Obtener los primeros registros de ${entityName} ordenados por _id`,
+        parameters: builder => builder.objectParameters(z.object({
+            quantity: z.number().describe("Number of records to return"),
+            filters: filtersSchema,
+        })),
+        execute: (service, args) => service.findFirst?.(args.quantity, args.filters ?? []),
+    },
+    findLast: {
+        description: entityName => `Obtener los ultimos registros de ${entityName} ordenados por _id`,
+        parameters: builder => builder.objectParameters(z.object({
+            quantity: z.number().describe("Number of records to return"),
+            filters: filtersSchema,
+        })),
+        execute: (service, args) => service.findLast?.(args.quantity, args.filters ?? []),
+    },
     search: {
         description: entityName => `Buscar registros de ${entityName} por texto`,
         parameters: builder => builder.objectParameters(z.object({
