@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 import { useAuth} from "@drax/identity-vue";
-import {ref} from 'vue'
-import menu from '../menu'
 import { useSettingStore} from "@drax/settings-vue";
 import DarkMode from "../components/DarkMode/index.vue";
 import {useRouter} from "vue-router";
@@ -13,7 +11,6 @@ onMounted(() => {
   loadDarkMode()
 })
 
-let drawer = ref(false)
 
 const {push} = useRouter()
 

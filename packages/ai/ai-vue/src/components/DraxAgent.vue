@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type {ComponentPublicInstance} from 'vue'
 import {useDraxAgent} from '../composables'
 import VManagerBot from './vbots/VManagerBot.vue'
 
@@ -53,6 +54,10 @@ const {
   visualBotButtonLabel,
   visualBotVisible,
 } = useDraxAgent()
+
+function setMessagesContainer(element: Element | ComponentPublicInstance | null) {
+  messagesContainer.value = element instanceof HTMLElement ? element : null
+}
 </script>
 
 <template>
@@ -253,7 +258,7 @@ const {
         class="chatbot-task__conversation"
         :class="{'chatbot-task__conversation--with-bot': visualBotVisible}"
       >
-        <div ref="messagesContainer" class="chatbot-task__messages">
+        <div :ref="setMessagesContainer" class="chatbot-task__messages">
           <div
             v-for="(message, index) in messages"
             :key="index"
