@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useDraxAgent} from '../composables'
-import VisualBot from './VisualBot.vue'
+import VManagerBot from './vbots/VManagerBot.vue'
 
 withDefaults(defineProps<{
   compact?: boolean
@@ -272,10 +272,15 @@ const {
           </div>
         </div>
 
-        <VisualBot
-          :visible="visualBotVisible"
-          :speaking="textToSpeechSpeaking"
-        />
+        <div
+          v-if="visualBotVisible"
+          class="chatbot-task__visual-bot"
+        >
+          <VManagerBot
+            :visible="true"
+            :speaking="textToSpeechSpeaking"
+          />
+        </div>
       </div>
 
       <form class="chatbot-task__composer" @submit.prevent="sendMessage">
@@ -516,14 +521,17 @@ const {
   grid-template-columns: minmax(0, 1fr);
 }
 
-.chatbot-task__conversation .visual-bot {
-  --visual-bot-scale: 0.5;
-
+.chatbot-task__visual-bot {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
-  z-index: 1;
-  opacity: 0.86;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+}
+
+.chatbot-task__visual-bot :deep(.visual-bot-manager) {
+  --visual-bot-scale: 0.68;
 }
 
 .chatbot-task__messages {
@@ -536,8 +544,8 @@ const {
 }
 
 .chatbot-task__conversation--with-bot .chatbot-task__messages {
-  padding-right: 92px;
-  padding-bottom: 92px;
+  padding-right: 124px;
+  padding-bottom: 124px;
 }
 
 .chatbot-task__message-row {

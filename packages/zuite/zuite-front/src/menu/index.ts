@@ -15,17 +15,24 @@ const menu: MenuItem[] = [
     children: [
       {
         icon: 'mdi-map-marker-radius',
-        text: 'groupzone.menu',
-        link: { name: "GroupZoneCrudPage" },
+        text: 'Drax Agent',
+        link: { name: "DraxAgentPage" },
         gallery: true,
-        permission: 'groupzone:manage'
+
       },
       {
         icon: 'mdi-currency-usd',
-        text: 'covenant.menu',
-        link: { name: "CovenantCrudPage" },
+        text: 'Drax Agent Express',
+        link: { name: "DraxAgentExpressPage" },
         gallery: true,
-        permission: 'covenant:manage'
+
+      },
+      {
+        icon: 'mdi-currency-usd',
+        text: 'EA',
+        link: { name: "ExpressAgent" },
+        gallery: true,
+
       },
       {
         icon: 'mdi-currency-usd',
@@ -36,6 +43,7 @@ const menu: MenuItem[] = [
 
     ],
   },
+
   {
     icon: 'mdi-world',
     text: 'People',
@@ -70,6 +78,29 @@ const menu: MenuItem[] = [
         permission: 'language:manage'
       },
     ]
+  },
+  {
+    icon: 'mdi-account-circle',
+    text: 'Cobranzas',
+    gallery: true,
+    children: [
+      {
+        icon: 'mdi-map-marker-radius',
+        text: 'Grupo Cobranza',
+        link: { name: "GroupZoneCrudPage" },
+        gallery: true,
+        permission: 'groupzone:manage'
+      },
+      {
+        icon: 'mdi-currency-usd',
+        text: 'Cobranzas',
+        link: { name: "CovenantCrudPage" },
+        gallery: true,
+        permission: 'covenant:manage'
+      },
+
+
+    ],
   },
   {
     icon: 'mdi-account-circle',

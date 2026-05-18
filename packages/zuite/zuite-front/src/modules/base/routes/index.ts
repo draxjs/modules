@@ -5,6 +5,7 @@ import PoliticaPrivacidad from "@/modules/base/pages/info/PoliticaPrivacidad.vue
 import CondicionesServicio from "@/modules/base/pages/info/CondicionesServicio.vue";
 import LabPage from "@/modules/base/pages/lab/LabPage.vue";
 import AiTestPage from "@/modules/base/pages/ai/AiTestPage.vue";
+import {DraxAgentExpressPage} from "@drax/ai-vue"
 
 const index = [
   {
@@ -21,6 +22,15 @@ const index = [
     component: HomePage,
     meta: {
       auth: true,
+    }
+  },
+  {
+    name: 'ExpressAgent',
+    path: '/ea',
+    component: DraxAgentExpressPage,
+    meta: {
+      auth: true,
+      layout:'base'
     }
   },
   {

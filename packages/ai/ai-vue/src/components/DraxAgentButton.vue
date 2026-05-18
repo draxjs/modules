@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import DraxAgent from './DraxAgent.vue'
+import DraxAgentExpress from './DraxAgentExpress.vue'
 
 const PANEL_MARGIN = 16
 const PANEL_INITIAL_TOP = 72
@@ -13,6 +14,7 @@ const PANEL_MINIMIZED_SIZE = 108
 const chatbotTaskPanel = ref(false)
 const panelFullscreen = ref(false)
 const panelMinimized = ref(false)
+const agentViewMode = ref<'agent' | 'express'>('agent')
 const panelPosition = ref({x: PANEL_MARGIN, y: PANEL_INITIAL_TOP})
 const panelSize = ref({width: PANEL_INITIAL_WIDTH, height: PANEL_INITIAL_HEIGHT})
 const panelPositionInitialized = ref(false)
@@ -60,6 +62,9 @@ const panelStyle = computed(() => {
 const panelFullscreenButtonLabel = computed(() => panelFullscreen.value
   ? 'Volver a ventana compacta'
   : 'Maximizar asistente')
+const agentViewModeLabel = computed(() => agentViewMode.value === 'agent'
+  ? 'Chat completo'
+  : 'Express')
 
 async function openAgentPanel() {
   chatbotTaskPanel.value = true
@@ -301,6 +306,33 @@ onBeforeUnmount(() => {
       <v-icon class="drax-agent-button__drag-icon" icon="mdi-drag" />
       <v-toolbar-title>Asistente de tareas</v-toolbar-title>
       <v-spacer />
+      <v-btn-toggle
+        v-model="agentViewMode"
+        mandatory
+        density="compact"
+        variant="tonal"
+        divided
+        class="drax-agent-button__mode-toggle"
+        :aria-label="`Vista del asistente: ${agentViewModeLabel}`"
+        @pointerdown.stop
+      >
+        <v-btn
+          value="agent"
+          size="small"
+          aria-label="Usar chat completo"
+          title="Chat completo"
+        >
+          <v-icon icon="mdi-message-text-outline" size="18" />
+        </v-btn>
+        <v-btn
+          value="express"
+          size="small"
+          aria-label="Usar modo Express"
+          title="Express"
+        >
+          <v-icon icon="mdi-microphone-outline" size="18" />
+        </v-btn>
+      </v-btn-toggle>
       <v-btn
         icon
         :aria-label="panelFullscreenButtonLabel"
@@ -346,8 +378,14 @@ onBeforeUnmount(() => {
       </button>
 
       <DraxAgent
+        v-if="panelMinimized || agentViewMode === 'agent'"
         :show-title="false"
         :compact="panelMinimized"
+      />
+
+      <DraxAgentExpress
+        v-else
+        :allow-navigation-toggle="true"
       />
     </v-card-text>
 
@@ -404,6 +442,11 @@ onBeforeUnmount(() => {
   color: rgba(var(--v-theme-on-surface), 0.6);
 }
 
+.drax-agent-button__mode-toggle {
+  flex: 0 0 auto;
+  margin-right: 8px;
+}
+
 .drax-agent-button__panel-content {
   position: relative;
   flex: 1;
@@ -413,6 +456,11 @@ onBeforeUnmount(() => {
 }
 
 .drax-agent-button__panel-content :deep(.chatbot-task) {
+  height: 100%;
+  min-height: 0;
+}
+
+.drax-agent-button__panel-content :deep(.drax-agent-express) {
   height: 100%;
   min-height: 0;
 }
@@ -466,6 +514,15 @@ onBeforeUnmount(() => {
 }
 
 @container (max-width: 700px) {
+  .drax-agent-button__panel-toolbar :deep(.v-toolbar-title) {
+    display: none;
+  }
+
+  .drax-agent-button__mode-toggle {
+    margin-left: 8px;
+    margin-right: 4px;
+  }
+
   .drax-agent-button__panel-content :deep(.chatbot-task) {
     padding: 12px;
   }
@@ -492,8 +549,8 @@ onBeforeUnmount(() => {
   }
 
   .drax-agent-button__panel-content :deep(.chatbot-task__conversation--with-bot .chatbot-task__messages) {
-    padding-right: 92px;
-    padding-bottom: 92px;
+    padding-right: 124px;
+    padding-bottom: 124px;
   }
 
   .drax-agent-button__panel-content :deep(.chatbot-task__message) {

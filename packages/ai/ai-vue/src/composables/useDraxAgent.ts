@@ -52,6 +52,8 @@ const initialAssistantMessage = 'Hola. Decime que tarea queres registrar y la gu
 const defaultAgents: IAgentOption[] = [{identifier: 'default', description: ''}]
 const maxSpeechRestartAttempts = 3
 const textToSpeechMicrophoneResumeDelayMs = 700
+const textToSpeechProgressIntervalMs = 80
+const textToSpeechBoundaryStaleMs = 900
 
 export function useDraxAgent() {
   const router = useRouter()
@@ -78,6 +80,8 @@ export function useDraxAgent() {
   const speechAutoSendEnabled = ref(true)
   const speechAutoSending = ref(false)
   const speechAutoSendPending = ref(false)
+  const speechPressToTalkActive = ref(false)
+  const speechSendOnStop = ref(false)
   const speechRestartTimer = ref<number | null>(null)
   const speechRestartAttempts = ref(0)
   const speechErrorDuringCurrentRun = ref(false)
@@ -88,6 +92,12 @@ export function useDraxAgent() {
   const textToSpeechEnabled = ref(true)
   const textToSpeechSpeaking = ref(false)
   const textToSpeechVoices = ref<SpeechSynthesisVoice[]>([])
+  const textToSpeechMessage = ref(initialAssistantMessage)
+  const textToSpeechCharIndex = ref(initialAssistantMessage.length)
+  const textToSpeechStartedAt = ref(0)
+  const textToSpeechEstimatedDurationMs = ref(0)
+  const textToSpeechLastBoundaryAt = ref(0)
+  const textToSpeechProgressTimer = ref<number | null>(null)
   const currentTextToSpeechId = ref(0)
   const selectedVoiceURI = ref<string | null>(null)
   const visualBotVisible = ref(true)
@@ -132,6 +142,28 @@ export function useDraxAgent() {
     title: agent.description ? `${agent.identifier} - ${agent.description}` : agent.identifier,
     value: agent.identifier,
   })))
+  const currentAssistantMessage = computed(() => {
+    for (let index = messages.value.length - 1; index >= 0; index -= 1) {
+      const message = messages.value[index]
+      if (message?.role === 'assistant') {
+        return message.content
+      }
+    }
+
+    return initialAssistantMessage
+  })
+  const assistantSpeechMessage = computed(() => textToSpeechSpeaking.value
+    ? textToSpeechMessage.value
+    : currentAssistantMessage.value)
+  const assistantSpeechCharIndex = computed(() => {
+    if (!textToSpeechSpeaking.value) {
+      return assistantSpeechMessage.value.length
+    }
+
+    return Math.min(textToSpeechCharIndex.value, assistantSpeechMessage.value.length)
+  })
+  const assistantSpeechSpokenText = computed(() => assistantSpeechMessage.value.slice(0, assistantSpeechCharIndex.value))
+  const assistantSpeechPendingText = computed(() => assistantSpeechMessage.value.slice(assistantSpeechCharIndex.value))
 
   async function loadAgents() {
     agentsLoading.value = true
@@ -287,6 +319,11 @@ export function useDraxAgent() {
       if (speechPausedForTextToSpeech.value) {
         return
       }
+      if (speechSendOnStop.value) {
+        speechSendOnStop.value = false
+        void sendSpeechMessageAutomatically()
+        return
+      }
       if (speechErrorDuringCurrentRun.value) {
         return
       }
@@ -336,6 +373,9 @@ export function useDraxAgent() {
         resetSpeechRestartAttempts()
         speechError.value = null
         appendSpeechText(finalTranscript)
+        if (speechPressToTalkActive.value) {
+          return
+        }
         sendSpeechMessageAutomatically()
       }
 
@@ -402,6 +442,39 @@ export function useDraxAgent() {
     speechEnabled.value = true
     resetSpeechRestartAttempts()
     startSpeechRecognition()
+  }
+
+  function startPressToTalk() {
+    if (!speechRecognition.value || loading.value || speechPressToTalkActive.value) {
+      return
+    }
+
+    speechPressToTalkActive.value = true
+    speechSendOnStop.value = false
+    speechEnabled.value = true
+    speechError.value = null
+    resetSpeechRestartAttempts()
+    startSpeechRecognition()
+  }
+
+  function stopPressToTalk() {
+    if (!speechPressToTalkActive.value) {
+      return
+    }
+
+    speechPressToTalkActive.value = false
+    speechSendOnStop.value = true
+    speechEnabled.value = false
+    clearSpeechRestartTimer()
+    resetSpeechRestartAttempts()
+
+    if (speechListening.value && speechRecognition.value) {
+      speechRecognition.value.stop()
+      return
+    }
+
+    speechSendOnStop.value = false
+    void sendSpeechMessageAutomatically()
   }
 
   function startSpeechRecognition() {
@@ -482,11 +555,8 @@ export function useDraxAgent() {
   function toggleTextToSpeech() {
     textToSpeechEnabled.value = !textToSpeechEnabled.value
 
-    if (!textToSpeechEnabled.value && typeof window !== 'undefined' && window.speechSynthesis) {
-      currentTextToSpeechId.value += 1
-      window.speechSynthesis.cancel()
-      textToSpeechSpeaking.value = false
-      resumeSpeechRecognitionAfterTextToSpeech()
+    if (!textToSpeechEnabled.value) {
+      stopTextToSpeech()
     }
   }
 
@@ -501,12 +571,20 @@ export function useDraxAgent() {
   function selectTextToSpeechVoice(voiceURI: string) {
     selectedVoiceURI.value = voiceURI
 
+    stopTextToSpeech()
+  }
+
+  function stopTextToSpeech() {
+    currentTextToSpeechId.value += 1
+
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-      currentTextToSpeechId.value += 1
       window.speechSynthesis.cancel()
-      textToSpeechSpeaking.value = false
-      resumeSpeechRecognitionAfterTextToSpeech()
     }
+
+    clearTextToSpeechProgressTimer()
+    textToSpeechSpeaking.value = false
+    textToSpeechCharIndex.value = textToSpeechMessage.value.length
+    resumeSpeechRecognitionAfterTextToSpeech()
   }
 
   function speakAssistantMessage(message: string) {
@@ -518,14 +596,33 @@ export function useDraxAgent() {
     const utteranceId = currentTextToSpeechId.value
     const utterance = new SpeechSynthesisUtterance(message)
     utterance.lang = selectedVoice.value?.lang ?? 'es-AR'
+    textToSpeechMessage.value = message
+    textToSpeechCharIndex.value = 0
+    textToSpeechStartedAt.value = 0
+    textToSpeechEstimatedDurationMs.value = estimateSpeechDurationMs(message)
+    textToSpeechLastBoundaryAt.value = 0
     utterance.onstart = () => {
       if (utteranceId !== currentTextToSpeechId.value) {
         return
       }
 
       textToSpeechSpeaking.value = true
+      textToSpeechStartedAt.value = performance.now()
+      startTextToSpeechProgressTimer(utteranceId, message)
+    }
+    utterance.onboundary = (event) => {
+      if (utteranceId !== currentTextToSpeechId.value) {
+        return
+      }
+
+      textToSpeechLastBoundaryAt.value = performance.now()
+      textToSpeechCharIndex.value = Math.max(
+        textToSpeechCharIndex.value,
+        getSpeechBoundaryEndIndex(message, event.charIndex, event.charLength),
+      )
     }
     utterance.onend = () => {
+      textToSpeechCharIndex.value = message.length
       finishTextToSpeech(utteranceId)
     }
     utterance.onerror = () => {
@@ -537,9 +634,101 @@ export function useDraxAgent() {
     }
 
     window.speechSynthesis.cancel()
+    clearTextToSpeechProgressTimer()
     textToSpeechSpeaking.value = false
     pauseSpeechRecognitionForTextToSpeech()
     window.speechSynthesis.speak(utterance)
+  }
+
+  function startTextToSpeechProgressTimer(utteranceId: number, message: string) {
+    clearTextToSpeechProgressTimer()
+    textToSpeechProgressTimer.value = window.setInterval(() => {
+      updateEstimatedTextToSpeechProgress(utteranceId, message)
+    }, textToSpeechProgressIntervalMs)
+  }
+
+  function clearTextToSpeechProgressTimer() {
+    if (textToSpeechProgressTimer.value === null) {
+      return
+    }
+
+    window.clearInterval(textToSpeechProgressTimer.value)
+    textToSpeechProgressTimer.value = null
+  }
+
+  function updateEstimatedTextToSpeechProgress(utteranceId: number, message: string) {
+    if (
+      utteranceId !== currentTextToSpeechId.value
+      || !textToSpeechSpeaking.value
+      || !textToSpeechStartedAt.value
+      || textToSpeechCharIndex.value >= message.length
+    ) {
+      return
+    }
+
+    const now = performance.now()
+    const boundaryIsFresh = textToSpeechLastBoundaryAt.value > 0
+      && now - textToSpeechLastBoundaryAt.value < textToSpeechBoundaryStaleMs
+
+    if (boundaryIsFresh) {
+      return
+    }
+
+    const elapsedMs = now - textToSpeechStartedAt.value
+    const estimatedIndex = getEstimatedSpeechCharIndex(message, elapsedMs, textToSpeechEstimatedDurationMs.value)
+
+    if (estimatedIndex > textToSpeechCharIndex.value) {
+      textToSpeechCharIndex.value = estimatedIndex
+    }
+  }
+
+  function getSpeechBoundaryEndIndex(message: string, charIndex: number, charLength?: number) {
+    const startIndex = Math.max(0, Math.min(charIndex, message.length))
+
+    if (typeof charLength === 'number' && Number.isFinite(charLength) && charLength > 0) {
+      return Math.min(startIndex + charLength, message.length)
+    }
+
+    const nextBreakMatch = message.slice(startIndex).match(/[\s.,;:!?)]/)
+
+    return nextBreakMatch?.index === undefined
+      ? message.length
+      : Math.min(startIndex + nextBreakMatch.index + 1, message.length)
+  }
+
+  function getEstimatedSpeechCharIndex(message: string, elapsedMs: number, durationMs: number) {
+    if (durationMs <= 0) {
+      return message.length
+    }
+
+    const progress = Math.min(elapsedMs / durationMs, 1)
+    const rawIndex = Math.floor(message.length * progress)
+
+    return getReadableSpeechCharIndex(message, rawIndex)
+  }
+
+  function getReadableSpeechCharIndex(message: string, rawIndex: number) {
+    const clampedIndex = Math.max(0, Math.min(rawIndex, message.length))
+
+    if (clampedIndex === 0 || clampedIndex === message.length) {
+      return clampedIndex
+    }
+
+    const nextSpaceIndex = message.indexOf(' ', clampedIndex)
+
+    if (nextSpaceIndex === -1) {
+      return message.length
+    }
+
+    return nextSpaceIndex + 1
+  }
+
+  function estimateSpeechDurationMs(message: string) {
+    const words = message.trim().split(/\s+/).filter(Boolean).length
+    const punctuationPauses = (message.match(/[.,;:!?]/g)?.length ?? 0) * 120
+    const wordDurationMs = words * 360
+
+    return Math.max(900, wordDurationMs + punctuationPauses)
   }
 
   function pauseSpeechRecognitionForTextToSpeech() {
@@ -562,6 +751,7 @@ export function useDraxAgent() {
       return
     }
 
+    clearTextToSpeechProgressTimer()
     textToSpeechSpeaking.value = false
     resumeSpeechRecognitionAfterTextToSpeech()
   }
@@ -682,15 +872,24 @@ export function useDraxAgent() {
       window.speechSynthesis.onvoiceschanged = null
     }
 
+    clearTextToSpeechProgressTimer()
     textToSpeechSpeaking.value = false
+    textToSpeechCharIndex.value = textToSpeechMessage.value.length
+    speechPressToTalkActive.value = false
+    speechSendOnStop.value = false
   })
 
   return {
     agentSelectItems,
     agents,
     agentsLoading,
+    assistantSpeechCharIndex,
+    assistantSpeechMessage,
+    assistantSpeechPendingText,
+    assistantSpeechSpokenText,
     canSend,
     compactSpeechStatusLabel,
+    currentAssistantMessage,
     error,
     getFeatureButtonClass,
     input,
@@ -716,8 +915,12 @@ export function useDraxAgent() {
     speechButtonLabel,
     speechEnabled,
     speechError,
+    speechPressToTalkActive,
     speechSupported,
+    startPressToTalk,
     startNewSession,
+    stopPressToTalk,
+    stopTextToSpeech,
     textToSpeechEnabled,
     textToSpeechSpeaking,
     textToSpeechSupported,

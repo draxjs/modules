@@ -21,7 +21,7 @@ import type {AgentSessionService} from "../services/AgentSessionService.js";
 class DraxAgent {
     protected sessions: Map<string, DraxAgentSession> = new Map();
     protected config: DraxAgentConfig = {
-        systemPrompt: "Sos un asistente del sistema. Responde de forma clara, breve y util.",
+        systemPrompt: "Sos un asistente del sistema. Respondé siempre en texto plano. No uses emojis, markdown, asteriscos, ni símbolos decorativos.",
     };
 
     constructor(
