@@ -1,6 +1,7 @@
 import {OpenAiConfig} from "./config/OpenAiConfig.js";
 import {GoogleAiConfig} from "./config/GoogleAiConfig.js";
 import {OllamaAiConfig} from "./config/OllamaAiConfig.js";
+import {DeepSeekConfig} from "./config/DeepSeekConfig.js";
 import {AILogSchema, AILogBaseSchema} from "./schemas/AILogSchema.js";
 import AILogModel from "./models/AILogModel.js";
 import AILogMongoRepository from "./repository/mongo/AILogMongoRepository.js";
@@ -8,12 +9,14 @@ import AILogSqliteRepository from "./repository/sqlite/AILogSqliteRepository.js"
 import {OpenAiProviderFactory} from "./factory/OpenAiProviderFactory.js";
 import {GoogleAiProviderFactory} from "./factory/GoogleAiProviderFactory.js";
 import {OllamaAiProviderFactory} from "./factory/OllamaAiProviderFactory.js";
+import {DeepSeekProviderFactory} from "./factory/DeepSeekProviderFactory.js";
 import {AiProviderFactory} from "./factory/AiProviderFactory.js";
 import {DraxAgentFactory} from "./factory/DraxAgentFactory.js";
 import AILogServiceFactory from "./factory/services/AILogServiceFactory.js";
 import {OpenAiProvider} from "./providers/OpenAiProvider.js";
 import {GoogleAiProvider} from "./providers/GoogleAiProvider.js";
 import {OllamaAiProvider} from "./providers/OllamaAiProvider.js";
+import {DeepSeekProvider} from "./providers/DeepSeekProvider.js";
 import {BuilderTool} from "./tools/BuilderTool.js";
 import {KnowledgeService} from "./services/KnowledgeService.js";
 import {AILogService} from "./services/AILogService.js";
@@ -104,6 +107,7 @@ export {
     OpenAiConfig,
     GoogleAiConfig,
     OllamaAiConfig,
+    DeepSeekConfig,
     AILogSchema,
     AILogBaseSchema,
     AILogModel,
@@ -112,12 +116,14 @@ export {
     OpenAiProviderFactory,
     GoogleAiProviderFactory,
     OllamaAiProviderFactory,
+    DeepSeekProviderFactory,
     AiProviderFactory,
     DraxAgentFactory,
     AILogServiceFactory,
     OpenAiProvider,
     GoogleAiProvider,
     OllamaAiProvider,
+    DeepSeekProvider,
     BuilderTool,
     //Service
     KnowledgeService,

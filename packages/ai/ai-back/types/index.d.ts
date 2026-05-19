@@ -1,13 +1,22 @@
 import { OpenAiConfig } from "./config/OpenAiConfig.js";
+import { GoogleAiConfig } from "./config/GoogleAiConfig.js";
+import { OllamaAiConfig } from "./config/OllamaAiConfig.js";
+import { DeepSeekConfig } from "./config/DeepSeekConfig.js";
 import { AILogSchema, AILogBaseSchema } from "./schemas/AILogSchema.js";
 import AILogModel from "./models/AILogModel.js";
 import AILogMongoRepository from "./repository/mongo/AILogMongoRepository.js";
 import AILogSqliteRepository from "./repository/sqlite/AILogSqliteRepository.js";
 import { OpenAiProviderFactory } from "./factory/OpenAiProviderFactory.js";
+import { GoogleAiProviderFactory } from "./factory/GoogleAiProviderFactory.js";
+import { OllamaAiProviderFactory } from "./factory/OllamaAiProviderFactory.js";
+import { DeepSeekProviderFactory } from "./factory/DeepSeekProviderFactory.js";
 import { AiProviderFactory } from "./factory/AiProviderFactory.js";
 import { DraxAgentFactory } from "./factory/DraxAgentFactory.js";
 import AILogServiceFactory from "./factory/services/AILogServiceFactory.js";
 import { OpenAiProvider } from "./providers/OpenAiProvider.js";
+import { GoogleAiProvider } from "./providers/GoogleAiProvider.js";
+import { OllamaAiProvider } from "./providers/OllamaAiProvider.js";
+import { DeepSeekProvider } from "./providers/DeepSeekProvider.js";
 import { BuilderTool } from "./tools/BuilderTool.js";
 import { KnowledgeService } from "./services/KnowledgeService.js";
 import { AILogService } from "./services/AILogService.js";
@@ -32,5 +41,5 @@ import type { DraxAgentControllerOptions } from "./interfaces/IDraxAgentControll
 import type { DraxAgentFastifyRoutesOptions } from "./interfaces/IDraxAgentRoutes.js";
 import type { DraxAgentConfig, DraxAgentMessageInput, DraxAgentMessageOutput, DraxAgentPromptContext, DraxAgentSession, DraxAgentSessionInput, DraxAgentToolBuilder, DraxAgentToolBuilderSource, DraxAgentToolSource, DraxAgentSystemPrompt } from "./interfaces/IDraxAgent.js";
 export type { IAILogRepository, IAIProvider, IPromptParams, IPromptMessage, IPromptMemory, IPromptTool, IPromptImage, IPromptImageDetail, IPromptContentPart, IPromptContentPartImage, IPromptContentPartText, IPromptResponse, ToolBuilderMethod, ToolBuilderOptions, ToolBuilderService, DraxAgentControllerOptions, DraxAgentFastifyRoutesOptions, DraxAgentConfig, DraxAgentMessageInput, DraxAgentMessageOutput, DraxAgentPromptContext, DraxAgentSession, DraxAgentSessionInput, DraxAgentToolBuilder, DraxAgentToolBuilderSource, DraxAgentToolSource, DraxAgentSystemPrompt, };
-export { OpenAiConfig, AILogSchema, AILogBaseSchema, AILogModel, AILogMongoRepository, AILogSqliteRepository, OpenAiProviderFactory, AiProviderFactory, DraxAgentFactory, AILogServiceFactory, OpenAiProvider, BuilderTool, KnowledgeService, AILogService, AILogPermissions, AgentPermissions, AIPermissions, AgentSessionPermissions, AILogController, AICrudController, AIGenericController, DraxAgentController, AgentSessionController, DraxAgent, AILogRoutes, AIRoutes, DraxAgentRoutes, AgentSessionRoutes };
+export { OpenAiConfig, GoogleAiConfig, OllamaAiConfig, DeepSeekConfig, AILogSchema, AILogBaseSchema, AILogModel, AILogMongoRepository, AILogSqliteRepository, OpenAiProviderFactory, GoogleAiProviderFactory, OllamaAiProviderFactory, DeepSeekProviderFactory, AiProviderFactory, DraxAgentFactory, AILogServiceFactory, OpenAiProvider, GoogleAiProvider, OllamaAiProvider, DeepSeekProvider, BuilderTool, KnowledgeService, AILogService, AILogPermissions, AgentPermissions, AIPermissions, AgentSessionPermissions, AILogController, AICrudController, AIGenericController, DraxAgentController, AgentSessionController, DraxAgent, AILogRoutes, AIRoutes, DraxAgentRoutes, AgentSessionRoutes };
 //# sourceMappingURL=index.d.ts.map
