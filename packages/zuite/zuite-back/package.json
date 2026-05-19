@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-back",
-  "version": "3.40.0",
+  "version": "3.41.0",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
     "recoveryAdmin": " node --env-file .env --loader ts-node/esm src/setup/scripts/RecoverAdminPassword.ts"
   },
   "dependencies": {
-    "@drax/ai-back": "^3.40.0",
+    "@drax/ai-back": "^3.41.0",
     "@drax/audit-back": "^3.39.0",
     "@drax/common-back": "^3.28.0",
     "@drax/crud-back": "^3.39.0",
