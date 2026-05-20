@@ -26,11 +26,11 @@ const {
   navigationButtonLabel,
   navigationEnabled,
   selectAgent,
-  selectTextToSpeechVoice,
+  selectTextToSpeechProvider,
   selectedAgent,
   selectedAgentIdentifier,
-  selectedVoiceName,
-  selectedVoiceURI,
+  selectedTextToSpeechProvider,
+  selectedTextToSpeechProviderLabel,
   sendMessage,
   sessionId,
   showAgentSelector,
@@ -43,9 +43,10 @@ const {
   speechSupported,
   startNewSession,
   textToSpeechEnabled,
+  textToSpeechProviderItems,
+  textToSpeechProvidersLoading,
   textToSpeechSpeaking,
   textToSpeechSupported,
-  textToSpeechVoices,
   toggleNavigation,
   toggleSpeechAutoSend,
   toggleSpeechRecognition,
@@ -204,27 +205,28 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
                   color="primary"
                   variant="tonal"
                   icon="mdi-account-voice"
-                  aria-label="Elegir voz"
-                  :title="`Elegir voz: ${selectedVoiceName}`"
+                  aria-label="Elegir proveedor de voz"
+                  :title="`Elegir proveedor de voz: ${selectedTextToSpeechProviderLabel}`"
+                  :loading="textToSpeechProvidersLoading"
                 />
               </template>
 
-              <v-list density="compact" class="chatbot-task__voice-list">
-                <v-list-subheader>Voces disponibles</v-list-subheader>
+              <v-list density="compact" class="chatbot-task__tts-provider-list">
+                <v-list-subheader>Proveedor de voz</v-list-subheader>
                 <v-list-item
-                  v-for="voice in textToSpeechVoices"
-                  :key="voice.voiceURI"
-                  :active="voice.voiceURI === selectedVoiceURI"
-                  @click="selectTextToSpeechVoice(voice.voiceURI)"
+                  v-for="provider in textToSpeechProviderItems"
+                  :key="provider.value"
+                  :active="provider.value === selectedTextToSpeechProvider"
+                  :disabled="provider.props.disabled"
+                  @click="selectTextToSpeechProvider(provider.value)"
                 >
                   <template #prepend>
                     <v-icon
-                      :icon="voice.voiceURI === selectedVoiceURI ? 'mdi-check' : 'mdi-account-voice'"
+                      :icon="provider.value === selectedTextToSpeechProvider ? 'mdi-check' : 'mdi-account-voice'"
                       size="small"
                     />
                   </template>
-                  <v-list-item-title>{{ voice.name }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ voice.lang }}</v-list-item-subtitle>
+                  <v-list-item-title>{{ provider.title }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -496,7 +498,7 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
   white-space: nowrap;
 }
 
-.chatbot-task__voice-list {
+.chatbot-task__tts-provider-list {
   min-width: 280px;
   max-width: min(420px, calc(100vw - 32px));
 }

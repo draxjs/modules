@@ -8,4 +8,3 @@ enum AIPermissions {
 
 export { AIPermissions };
 export default AIPermissions;
-

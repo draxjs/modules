@@ -1,7 +1,7 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {AgentProvider} from '@drax/ai-front'
-import type {IAgentOption} from '@drax/ai-front'
+import {AgentProvider, TTSProvider} from '@drax/ai-front'
+import type {IAgentOption, ITTSProviderInfo} from '@drax/ai-front'
 
 export interface ChatMessage {
   role: 'user' | 'assistant'
@@ -54,6 +54,11 @@ const maxSpeechRestartAttempts = 3
 const textToSpeechMicrophoneResumeDelayMs = 700
 const textToSpeechProgressIntervalMs = 80
 const textToSpeechBoundaryStaleMs = 900
+const browserTextToSpeechProviderName = 'browser'
+const browserTextToSpeechProvider: ITTSProviderInfo = {
+  name: browserTextToSpeechProviderName,
+  label: 'Nativo del navegador',
+}
 
 export function useDraxAgent() {
   const router = useRouter()
@@ -88,10 +93,16 @@ export function useDraxAgent() {
   const speechPausedForTextToSpeech = ref(false)
   const speechResumeTimer = ref<number | null>(null)
   const speechInputMutedUntil = ref(0)
+  const browserTextToSpeechSupported = ref(false)
   const textToSpeechSupported = ref(false)
   const textToSpeechEnabled = ref(true)
   const textToSpeechSpeaking = ref(false)
   const textToSpeechVoices = ref<SpeechSynthesisVoice[]>([])
+  const textToSpeechProviders = ref<ITTSProviderInfo[]>([browserTextToSpeechProvider])
+  const textToSpeechProvidersLoading = ref(false)
+  const selectedTextToSpeechProvider = ref(browserTextToSpeechProviderName)
+  const textToSpeechAudio = ref<HTMLAudioElement | null>(null)
+  const textToSpeechAudioObjectUrl = ref<string | null>(null)
   const textToSpeechMessage = ref(initialAssistantMessage)
   const textToSpeechCharIndex = ref(initialAssistantMessage.length)
   const textToSpeechStartedAt = ref(0)
@@ -132,6 +143,18 @@ export function useDraxAgent() {
     return textToSpeechVoices.value.find((voice) => voice.voiceURI === selectedVoiceURI.value) ?? null
   })
   const selectedVoiceName = computed(() => selectedVoice.value?.name ?? 'Voz predeterminada')
+  const selectedTextToSpeechProviderInfo = computed(() => textToSpeechProviders.value.find((provider) => (
+    provider.name === selectedTextToSpeechProvider.value
+  )) ?? browserTextToSpeechProvider)
+  const selectedTextToSpeechProviderLabel = computed(() => selectedTextToSpeechProviderInfo.value.label)
+  const textToSpeechProviderItems = computed(() => textToSpeechProviders.value.map((provider) => ({
+    title: provider.label,
+    value: provider.name,
+    props: {
+      disabled: provider.name === browserTextToSpeechProviderName && !browserTextToSpeechSupported.value,
+    },
+  })))
+  const isBrowserTextToSpeechSelected = computed(() => selectedTextToSpeechProvider.value === browserTextToSpeechProviderName)
   const visualBotButtonLabel = computed(() => visualBotVisible.value ? 'Ocultar bot visual' : 'Mostrar bot visual')
   const navigationButtonLabel = computed(() => navigationEnabled.value
     ? 'Apagar navegacion automatica'
@@ -305,7 +328,7 @@ export function useDraxAgent() {
     }
 
     const recognition = new recognitionConstructor()
-    recognition.lang = 'es-AR'
+    recognition.lang = 'es'
     recognition.continuous = true
     recognition.interimResults = true
     recognition.onstart = () => {
@@ -388,12 +411,38 @@ export function useDraxAgent() {
 
   function setupTextToSpeech() {
     if (typeof window === 'undefined' || !window.speechSynthesis) {
+      updateTextToSpeechSupported()
       return
     }
 
-    textToSpeechSupported.value = true
+    browserTextToSpeechSupported.value = true
+    updateTextToSpeechSupported()
     loadTextToSpeechVoices()
     window.speechSynthesis.onvoiceschanged = loadTextToSpeechVoices
+  }
+
+  async function loadTextToSpeechProviders() {
+    textToSpeechProvidersLoading.value = true
+
+    try {
+      const response = await TTSProvider.instance.availableProviders()
+      const externalProviders = response.providers.filter((provider) => provider.name !== browserTextToSpeechProviderName)
+      textToSpeechProviders.value = [browserTextToSpeechProvider, ...externalProviders]
+
+      if (!textToSpeechProviders.value.some((provider) => provider.name === selectedTextToSpeechProvider.value)) {
+        selectedTextToSpeechProvider.value = browserTextToSpeechProviderName
+      }
+    } catch {
+      textToSpeechProviders.value = [browserTextToSpeechProvider]
+      selectedTextToSpeechProvider.value = browserTextToSpeechProviderName
+    } finally {
+      textToSpeechProvidersLoading.value = false
+      updateTextToSpeechSupported()
+    }
+  }
+
+  function updateTextToSpeechSupported() {
+    textToSpeechSupported.value = browserTextToSpeechSupported.value || textToSpeechProviders.value.length > 1
   }
 
   function loadTextToSpeechVoices() {
@@ -574,6 +623,26 @@ export function useDraxAgent() {
     stopTextToSpeech()
   }
 
+  function selectTextToSpeechProvider(value: unknown) {
+    const providerName = typeof value === 'string' ? value : null
+
+    if (!providerName || providerName === selectedTextToSpeechProvider.value) {
+      return
+    }
+
+    if (providerName === browserTextToSpeechProviderName && !browserTextToSpeechSupported.value) {
+      return
+    }
+
+    if (!textToSpeechProviders.value.some((provider) => provider.name === providerName)) {
+      selectedTextToSpeechProvider.value = browserTextToSpeechProviderName
+      return
+    }
+
+    selectedTextToSpeechProvider.value = providerName
+    stopTextToSpeech()
+  }
+
   function stopTextToSpeech() {
     currentTextToSpeechId.value += 1
 
@@ -581,6 +650,7 @@ export function useDraxAgent() {
       window.speechSynthesis.cancel()
     }
 
+    stopTextToSpeechAudio()
     clearTextToSpeechProgressTimer()
     textToSpeechSpeaking.value = false
     textToSpeechCharIndex.value = textToSpeechMessage.value.length
@@ -588,14 +658,23 @@ export function useDraxAgent() {
   }
 
   function speakAssistantMessage(message: string) {
-    if (!textToSpeechEnabled.value || typeof window === 'undefined' || !window.speechSynthesis) {
+    if (!textToSpeechEnabled.value || typeof window === 'undefined' || !textToSpeechSupported.value) {
+      return
+    }
+
+    if (!isBrowserTextToSpeechSelected.value) {
+      void speakAssistantMessageWithProvider(message)
+      return
+    }
+
+    if (!window.speechSynthesis) {
       return
     }
 
     currentTextToSpeechId.value += 1
     const utteranceId = currentTextToSpeechId.value
     const utterance = new SpeechSynthesisUtterance(message)
-    utterance.lang = selectedVoice.value?.lang ?? 'es-AR'
+    utterance.lang = selectedVoice.value?.lang ?? 'es'
     textToSpeechMessage.value = message
     textToSpeechCharIndex.value = 0
     textToSpeechStartedAt.value = 0
@@ -638,6 +717,82 @@ export function useDraxAgent() {
     textToSpeechSpeaking.value = false
     pauseSpeechRecognitionForTextToSpeech()
     window.speechSynthesis.speak(utterance)
+  }
+
+  async function speakAssistantMessageWithProvider(message: string) {
+    currentTextToSpeechId.value += 1
+    const audioId = currentTextToSpeechId.value
+    textToSpeechMessage.value = message
+    textToSpeechCharIndex.value = 0
+    textToSpeechStartedAt.value = 0
+    textToSpeechEstimatedDurationMs.value = estimateSpeechDurationMs(message)
+    textToSpeechLastBoundaryAt.value = 0
+
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel()
+    }
+
+    stopTextToSpeechAudio()
+    clearTextToSpeechProgressTimer()
+    textToSpeechSpeaking.value = false
+    pauseSpeechRecognitionForTextToSpeech()
+
+    try {
+      const objectUrl = await TTSProvider.instance.textToSpeechObjectUrl({
+        text: message,
+        provider: selectedTextToSpeechProvider.value,
+        languageCode: 'es',
+        operationTitle: 'drax-agent-tts',
+        operationGroup: 'drax-agent',
+      })
+
+      if (audioId !== currentTextToSpeechId.value) {
+        URL.revokeObjectURL(objectUrl)
+        return
+      }
+
+      textToSpeechAudioObjectUrl.value = objectUrl
+      const audio = new Audio(objectUrl)
+      textToSpeechAudio.value = audio
+      audio.onplaying = () => {
+        if (audioId !== currentTextToSpeechId.value) {
+          return
+        }
+
+        textToSpeechSpeaking.value = true
+        textToSpeechStartedAt.value = performance.now()
+        startTextToSpeechProgressTimer(audioId, message)
+      }
+      audio.onended = () => {
+        textToSpeechCharIndex.value = message.length
+        finishTextToSpeech(audioId)
+      }
+      audio.onerror = () => {
+        finishTextToSpeech(audioId)
+      }
+
+      await audio.play()
+    } catch {
+      finishTextToSpeech(audioId)
+    }
+  }
+
+  function stopTextToSpeechAudio() {
+    if (textToSpeechAudio.value) {
+      textToSpeechAudio.value.onplay = null
+      textToSpeechAudio.value.onplaying = null
+      textToSpeechAudio.value.onended = null
+      textToSpeechAudio.value.onerror = null
+      textToSpeechAudio.value.pause()
+      textToSpeechAudio.value.src = ''
+      textToSpeechAudio.value.load()
+      textToSpeechAudio.value = null
+    }
+
+    if (textToSpeechAudioObjectUrl.value) {
+      URL.revokeObjectURL(textToSpeechAudioObjectUrl.value)
+      textToSpeechAudioObjectUrl.value = null
+    }
   }
 
   function startTextToSpeechProgressTimer(utteranceId: number, message: string) {
@@ -752,6 +907,7 @@ export function useDraxAgent() {
     }
 
     clearTextToSpeechProgressTimer()
+    stopTextToSpeechAudio()
     textToSpeechSpeaking.value = false
     resumeSpeechRecognitionAfterTextToSpeech()
   }
@@ -855,6 +1011,7 @@ export function useDraxAgent() {
 
   onMounted(() => {
     loadAgents()
+    loadTextToSpeechProviders()
     setupSpeechRecognition()
     setupTextToSpeech()
   })
@@ -873,6 +1030,7 @@ export function useDraxAgent() {
     }
 
     clearTextToSpeechProgressTimer()
+    stopTextToSpeechAudio()
     textToSpeechSpeaking.value = false
     textToSpeechCharIndex.value = textToSpeechMessage.value.length
     speechPressToTalkActive.value = false
@@ -900,9 +1058,12 @@ export function useDraxAgent() {
     navigationButtonLabel,
     navigationEnabled,
     selectAgent,
+    selectTextToSpeechProvider,
     selectTextToSpeechVoice,
     selectedAgent,
     selectedAgentIdentifier,
+    selectedTextToSpeechProvider,
+    selectedTextToSpeechProviderLabel,
     selectedVoice,
     selectedVoiceName,
     selectedVoiceURI,
@@ -922,6 +1083,9 @@ export function useDraxAgent() {
     stopPressToTalk,
     stopTextToSpeech,
     textToSpeechEnabled,
+    textToSpeechProviderItems,
+    textToSpeechProviders,
+    textToSpeechProvidersLoading,
     textToSpeechSpeaking,
     textToSpeechSupported,
     textToSpeechVoices,

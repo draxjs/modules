@@ -1,5 +1,5 @@
 import {describe, expect, test} from "vitest";
-import {AiProviderFactory, DeepSeekProvider} from "../src";
+import {AiProviderFactory, DeepSeekAiProvider} from "../src";
 import {IPromptTool} from "../src/interfaces/IAIProvider";
 
 describe("DeepSeekProvider Test", () => {
@@ -7,7 +7,7 @@ describe("DeepSeekProvider Test", () => {
     test("DeepSeek prompt uses OpenAI-compatible chat completions", async () => {
         let request: any
 
-        class MockedDeepSeekProvider extends DeepSeekProvider {
+        class MockedDeepSeekProvider extends DeepSeekAiProvider {
             constructor() {
                 super("test-key", "deepseek-chat")
                 this._client = {
@@ -61,7 +61,7 @@ describe("DeepSeekProvider Test", () => {
             execute: async ({city}) => ({city, temperature: 21})
         }
 
-        class MockedDeepSeekProvider extends DeepSeekProvider {
+        class MockedDeepSeekProvider extends DeepSeekAiProvider {
             constructor() {
                 super("test-key", "deepseek-chat")
                 this._client = {
@@ -141,6 +141,6 @@ describe("DeepSeekProvider Test", () => {
         process.env.DRAX_DB_ENGINE = "mongo"
 
         const deepSeek = AiProviderFactory.instance("DeepSeek")
-        expect(deepSeek).toBeInstanceOf(DeepSeekProvider)
+        expect(deepSeek).toBeInstanceOf(DeepSeekAiProvider)
     })
 })

@@ -1,5 +1,12 @@
-import OpenAI from "openai";
-import { zodResponseFormat } from "openai/helpers/zod";
+import {GoogleGenAI} from "@google/genai";
+import type {
+    Content,
+    FunctionCall,
+    FunctionDeclaration,
+    GenerateContentConfig,
+    Part
+} from "@google/genai";
+import {toJSONSchema} from "zod";
 import type {
     IAIProvider,
     IPromptContentPart,
@@ -7,24 +14,24 @@ import type {
     IPromptParams,
     IPromptResponse,
     IPromptTool
-} from "../interfaces/IAIProvider";
-import type {AILogService} from "../services/AILogService";
+} from "../../interfaces/IAIProvider.js";
+import type {AILogService} from "../../services/AILogService.js";
 import type {IAILogBase} from "@drax/ai-share";
 
-class OpenAiProvider implements IAIProvider{
+class GoogleAiProvider implements IAIProvider{
     protected _apiKey: string
     protected _model: any
     protected _visionModel?: string
-    protected _client: any
+    protected _client: GoogleGenAI | undefined
     protected _aiLogService?: AILogService
 
     constructor(apiKey: string, model: string, visionModel?: string, aiLogService?: AILogService) {
 
         if (!apiKey) {
-            throw new Error("OpenAI apiKey required")
+            throw new Error("Google AI apiKey required")
         }
         if (!model) {
-            throw new Error("OpenAI model required")
+            throw new Error("Google AI model required")
         }
 
         this._apiKey = apiKey
@@ -35,14 +42,14 @@ class OpenAiProvider implements IAIProvider{
 
     get model(){
         if(!this._model){
-            throw new Error("OpenAI model not found")
+            throw new Error("Google AI model not found")
         }
         return this._model;
     }
 
     get client(){
         if(!this._client){
-            this._client = new OpenAI({
+            this._client = new GoogleGenAI({
                 apiKey: this._apiKey,
             });
         }
@@ -54,58 +61,111 @@ class OpenAiProvider implements IAIProvider{
         return this._visionModel
     }
 
-    protected buildUserContent(input: IPromptParams): string | Array<{type: 'text', text: string} | {type: 'image_url', image_url: {url: string, detail?: 'auto' | 'low' | 'high'}}> {
+    protected buildUserContent(input: IPromptParams): Part[] {
         if(input.userContent && input.userContent.length > 0){
             return this.mapContentParts(input.userContent)
         }
 
         if(input.userImages && input.userImages.length > 0){
-            const content: Array<{type: 'text', text: string} | {type: 'image_url', image_url: {url: string, detail?: 'auto' | 'low' | 'high'}}> = []
+            const content: Part[] = []
 
             if(input.userInput){
-                content.push({type: 'text', text: input.userInput})
+                content.push({text: input.userInput})
             }
 
-            content.push(...input.userImages.map(image => ({
-                type: 'image_url' as const,
-                image_url: {
-                    url: image.url,
-                    ...(image.detail ? {detail: image.detail} : {}),
-                }
-            })))
+            content.push(...input.userImages.map(image => this.mapImageUrl(image.url)))
 
             return content
         }
 
-        return input.userInput ?? ""
+        return input.userInput ? [{text: input.userInput}] : [{text: ""}]
     }
 
-    protected mapContentParts(content: IPromptContentPart[]){
+    protected mapContentParts(content: IPromptContentPart[]): Part[]{
         return content.map(part => {
             if(part.type === 'text'){
                 return {
-                    type: 'text' as const,
                     text: part.text
                 }
             }
 
-            return {
-                type: 'image_url' as const,
-                image_url: {
-                    url: part.imageUrl,
-                    ...(part.detail ? {detail: part.detail} : {}),
-                }
-            }
+            return this.mapImageUrl(part.imageUrl)
         })
     }
 
-    protected mapHistory(history: IPromptMessage[] = []){
-        return history.map(message => ({
-            role: message.role,
-            content: typeof message.content === 'string'
-                ? message.content
+    protected mapImageUrl(url: string): Part {
+        const dataUrlMatch = url.match(/^data:([^;,]+);base64,(.+)$/)
+
+        if(dataUrlMatch){
+            return {
+                inlineData: {
+                    mimeType: dataUrlMatch[1],
+                    data: dataUrlMatch[2],
+                }
+            }
+        }
+
+        return {
+            fileData: {
+                fileUri: url,
+                mimeType: this.inferImageMimeType(url),
+            }
+        }
+    }
+
+    protected inferImageMimeType(url: string){
+        const normalizedUrl = url.split("?")[0].toLowerCase()
+
+        if(normalizedUrl.endsWith(".png")){
+            return "image/png"
+        }
+        if(normalizedUrl.endsWith(".webp")){
+            return "image/webp"
+        }
+        if(normalizedUrl.endsWith(".gif")){
+            return "image/gif"
+        }
+        if(normalizedUrl.endsWith(".bmp")){
+            return "image/bmp"
+        }
+        if(normalizedUrl.endsWith(".heic")){
+            return "image/heic"
+        }
+        if(normalizedUrl.endsWith(".heif")){
+            return "image/heif"
+        }
+
+        return "image/jpeg"
+    }
+
+    protected mapHistory(history: IPromptMessage[] = []): Content[]{
+        return history.map(message => {
+            const parts = typeof message.content === 'string'
+                ? [{text: message.content}]
                 : this.mapContentParts(message.content)
-        }))
+
+            if(message.role === "assistant"){
+                return {
+                    role: "model",
+                    parts,
+                }
+            }
+
+            if(message.role === "system"){
+                return {
+                    role: "user",
+                    parts: [
+                        {text: "[SYSTEM]"},
+                        ...parts,
+                    ],
+                }
+            }
+
+            return {
+                role: "user",
+                parts,
+            }
+        })
     }
 
     protected hasImageInput(input: IPromptParams){
@@ -163,7 +223,7 @@ class OpenAiProvider implements IAIProvider{
         errorMessage?: string,
     }): IAILogBase {
         return {
-            provider: "openai",
+            provider: "googleai",
             model: params.model,
             operationTitle: input.operationTitle,
             operationGroup: input.operationGroup,
@@ -219,75 +279,105 @@ class OpenAiProvider implements IAIProvider{
         }
     }
 
-    async generateEmbedding({text, model="text-embedding-ada-002"}: {text:string,model:string }): Promise<number[]> {
-        const response = await this.client.embeddings.create({
-            model: model,
-            input: text,
+    async generateEmbedding({text, model="text-embedding-004"}: {text:string,model?:string }): Promise<number[]> {
+        const response = await this.client.models.embedContent({
+            model,
+            contents: text,
         });
-        return response.data[0].embedding;
+        return response.embeddings?.[0]?.values ?? [];
     }
 
-    protected mapTools(tools: IPromptTool[] = []){
-        return tools.map(tool => ({
-            type: "function" as const,
-            function: {
+    protected mapTools(tools: IPromptTool[] = []): Array<{functionDeclarations: FunctionDeclaration[]}> {
+        if(tools.length === 0){
+            return []
+        }
+
+        return [{
+            functionDeclarations: tools.map(tool => ({
                 name: tool.name,
                 description: tool.description,
-                parameters: tool.parameters ?? {
+                parametersJsonSchema: tool.parameters ?? {
                     type: "object",
                     properties: {},
                     additionalProperties: false,
                 },
-            },
-        }))
+            }))
+        }]
     }
 
-    protected parseToolArguments(args: string | undefined){
-        if(!args){
-            return {}
+    protected buildResponseConfig(input: IPromptParams, systemPrompt: string): GenerateContentConfig {
+        const config: GenerateContentConfig = {
+            systemInstruction: systemPrompt,
         }
 
-        try{
-            return JSON.parse(args)
-        }catch(e){
-            throw new Error(`Invalid tool arguments: ${args}`)
+        const responseJsonSchema = this.normalizeResponseJsonSchema(input)
+
+        if(responseJsonSchema){
+            config.responseMimeType = "application/json"
+            config.responseJsonSchema = responseJsonSchema
         }
+
+        if(input.tools && input.tools.length > 0){
+            config.tools = this.mapTools(input.tools)
+        }
+
+        return config
     }
 
-    protected serializeToolOutput(output: unknown){
-        if(typeof output === "string"){
-            return output
+    protected normalizeResponseJsonSchema(input: IPromptParams){
+        if(input.zodSchema){
+            return toJSONSchema(input.zodSchema, {
+                target: "draft-7",
+            })
         }
 
-        if(output === undefined){
-            return ""
+        if(!input.jsonSchema){
+            return undefined
         }
 
-        return JSON.stringify(output)
+        const jsonSchema: any = input.jsonSchema
+
+        if(jsonSchema.type === "json_schema" && jsonSchema.json_schema?.schema){
+            return jsonSchema.json_schema.schema
+        }
+
+        return jsonSchema
     }
 
-    protected async buildToolMessages(toolCalls: any[] = [], tools: IPromptTool[] = []){
-        const toolMessages: any[] = []
+    protected async buildToolResponseParts(functionCalls: FunctionCall[] = [], tools: IPromptTool[] = []){
+        const parts: Part[] = []
 
-        for(const toolCall of toolCalls){
-            const toolName = toolCall.function?.name
+        for(const functionCall of functionCalls){
+            const toolName = functionCall.name
             const tool = tools.find(t => t.name === toolName)
 
             if(!tool){
                 throw new Error(`Tool not found: ${toolName}`)
             }
 
-            const args = this.parseToolArguments(toolCall.function?.arguments)
-            const output = await tool.execute(args)
+            const output = await tool.execute(functionCall.args ?? {})
 
-            toolMessages.push({
-                role: "tool",
-                tool_call_id: toolCall.id,
-                content: this.serializeToolOutput(output),
+            parts.push({
+                functionResponse: {
+                    id: functionCall.id,
+                    name: toolName,
+                    response: {
+                        output,
+                    },
+                }
             })
         }
 
-        return toolMessages
+        return parts
+    }
+
+    protected buildModelFunctionCallContent(functionCalls: FunctionCall[] = []): Content {
+        return {
+            role: "model",
+            parts: functionCalls.map(functionCall => ({
+                functionCall,
+            }))
+        }
     }
 
     async prompt(input: IPromptParams): Promise<IPromptResponse> {
@@ -316,39 +406,37 @@ class OpenAiProvider implements IAIProvider{
         let outputTokens = 0
 
         try {
-            const messages: any[] = [
-                {role: 'system', content: systemPrompt},
+            const contents: Content[] = [
                 ...this.mapHistory(input.history),
-                {role: 'user', content: userInput},
+                {role: 'user', parts: userInput},
             ]
             const tools = input.tools ?? []
             const maxIterations = input.toolMaxIterations ?? 5
             let output: any
 
             for(let iteration = 0; iteration < maxIterations; iteration++){
-                const chatCompletion = await this.client.chat.completions.create({
-                    messages,
-
-                    ...(input.zodSchema ? {response_format: zodResponseFormat(input.zodSchema, "event")} : {}),
-                    ...(input.jsonSchema ? {response_format: input.jsonSchema} : {}),
-                    ...(tools.length > 0 ? {tools: this.mapTools(tools)} : {}),
-                    model: model,
+                const response = await this.client.models.generateContent({
+                    model,
+                    contents,
+                    config: this.buildResponseConfig(input, systemPrompt),
                 });
 
-                tokens += chatCompletion.usage?.total_tokens ?? 0
-                inputTokens += chatCompletion.usage?.prompt_tokens ?? 0
-                outputTokens += chatCompletion.usage?.completion_tokens ?? 0
+                tokens += response.usageMetadata?.totalTokenCount ?? 0
+                inputTokens += response.usageMetadata?.promptTokenCount ?? 0
+                outputTokens += response.usageMetadata?.candidatesTokenCount ?? 0
 
-                const message = chatCompletion.choices[0].message
-                const toolCalls = message.tool_calls ?? []
+                const functionCalls = response.functionCalls ?? []
 
-                if(toolCalls.length === 0){
-                    output = message.content
+                if(functionCalls.length === 0){
+                    output = response.text
                     break
                 }
 
-                messages.push(message)
-                messages.push(...await this.buildToolMessages(toolCalls, tools))
+                contents.push(response.candidates?.[0]?.content ?? this.buildModelFunctionCallContent(functionCalls))
+                contents.push({
+                    role: "user",
+                    parts: await this.buildToolResponseParts(functionCalls, tools),
+                })
             }
 
             if(output === undefined){
@@ -397,5 +485,5 @@ class OpenAiProvider implements IAIProvider{
 }
 
 
-export default OpenAiProvider
-export {OpenAiProvider}
+export default GoogleAiProvider
+export {GoogleAiProvider}

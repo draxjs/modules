@@ -22,8 +22,11 @@ const {
   navigationButtonLabel,
   navigationEnabled,
   selectAgent,
+  selectTextToSpeechProvider,
   selectedAgent,
   selectedAgentIdentifier,
+  selectedTextToSpeechProvider,
+  selectedTextToSpeechProviderLabel,
   showAgentSelector,
   speechError,
   speechPressToTalkActive,
@@ -32,6 +35,8 @@ const {
   stopTextToSpeech,
   stopPressToTalk,
   textToSpeechEnabled,
+  textToSpeechProviderItems,
+  textToSpeechProvidersLoading,
   textToSpeechSpeaking,
   textToSpeechSupported,
   toggleNavigation,
@@ -185,6 +190,46 @@ onBeforeUnmount(() => {
           :title="textModeButtonLabel"
           @click="toggleTextToSpeech"
         />
+
+        <v-menu
+          location="bottom end"
+          max-height="320"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              color="primary"
+              variant="tonal"
+              size="small"
+              icon="mdi-account-voice"
+              :loading="textToSpeechProvidersLoading"
+              :aria-label="`Elegir proveedor de voz. Actual: ${selectedTextToSpeechProviderLabel}`"
+              :title="`Proveedor de voz: ${selectedTextToSpeechProviderLabel}`"
+            />
+          </template>
+
+          <v-list
+            class="drax-agent-express__tts-provider-list"
+            density="compact"
+          >
+            <v-list-subheader>Proveedor de voz</v-list-subheader>
+            <v-list-item
+              v-for="provider in textToSpeechProviderItems"
+              :key="provider.value"
+              :active="provider.value === selectedTextToSpeechProvider"
+              :disabled="provider.props.disabled"
+              @click="selectTextToSpeechProvider(provider.value)"
+            >
+              <template #prepend>
+                <v-icon
+                  :icon="provider.value === selectedTextToSpeechProvider ? 'mdi-check' : 'mdi-account-voice'"
+                  size="small"
+                />
+              </template>
+              <v-list-item-title>{{ provider.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
 
       <v-btn
@@ -300,7 +345,8 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(6px);
 }
 
-.drax-agent-express__agent-list {
+.drax-agent-express__agent-list,
+.drax-agent-express__tts-provider-list {
   min-width: 240px;
   max-width: min(360px, calc(100vw - 32px));
 }

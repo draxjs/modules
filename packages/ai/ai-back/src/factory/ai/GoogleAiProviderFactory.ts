@@ -1,8 +1,8 @@
 import {DraxConfig} from "@drax/common-back";
-import GoogleAiConfig from "../config/GoogleAiConfig.js";
-import type {IAIProvider} from "../interfaces/IAIProvider"
-import GoogleAiProvider from "../providers/GoogleAiProvider.js";
-import AILogServiceFactory from "./services/AILogServiceFactory.js";
+import GoogleAiConfig from "../../config/GoogleAiConfig.js";
+import type {IAIProvider} from "../../interfaces/IAIProvider.js"
+import GoogleAiProvider from "../../providers/ai/GoogleAiProvider.js";
+import AILogServiceFactory from "../services/AILogServiceFactory.js";
 
 class GoogleAiProviderFactory {
     private static singleton: IAIProvider;

@@ -14,7 +14,7 @@ import type {
 } from "../interfaces/IDraxAgent.js";
 import type {IPromptMessage} from "../interfaces/IAIProvider.js";
 import type {IAgentSession, IAgentSessionBase} from "../interfaces/IAgentSession.js";
-import AiProviderFactory from "../factory/AiProviderFactory.js";
+import AiProviderFactory from "../factory/ai/AiProviderFactory.js";
 import AgentSessionServiceFactory from "../factory/services/AgentSessionServiceFactory.js";
 import type {AgentSessionService} from "../services/AgentSessionService.js";
 

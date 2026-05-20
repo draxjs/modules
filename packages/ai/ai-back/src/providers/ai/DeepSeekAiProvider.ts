@@ -1,10 +1,10 @@
 import OpenAI from "openai";
 import type {IAILogBase} from "@drax/ai-share";
-import type {IPromptParams} from "../interfaces/IAIProvider.js";
-import type {AILogService} from "../services/AILogService.js";
+import type {IPromptParams} from "../../interfaces/IAIProvider.js";
+import type {AILogService} from "../../services/AILogService.js";
 import OpenAiProvider from "./OpenAiProvider.js";
 
-class DeepSeekProvider extends OpenAiProvider{
+class DeepSeekAiProvider extends OpenAiProvider{
     protected _baseUrl: string
 
     constructor(apiKey: string, model: string, baseUrl: string = "https://api.deepseek.com", visionModel?: string, aiLogService?: AILogService) {
@@ -54,5 +54,5 @@ class DeepSeekProvider extends OpenAiProvider{
     }
 }
 
-export default DeepSeekProvider
-export {DeepSeekProvider}
+export default DeepSeekAiProvider
+export {DeepSeekAiProvider}

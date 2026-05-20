@@ -1,8 +1,8 @@
 import {DraxConfig} from "@drax/common-back";
-import OllamaAiConfig from "../config/OllamaAiConfig.js";
-import type {IAIProvider} from "../interfaces/IAIProvider"
-import OllamaAiProvider from "../providers/OllamaAiProvider.js";
-import AILogServiceFactory from "./services/AILogServiceFactory.js";
+import OllamaAiConfig from "../../config/OllamaAiConfig.js";
+import type {IAIProvider} from "../../interfaces/IAIProvider.js"
+import OllamaAiProvider from "../../providers/ai/OllamaAiProvider.js";
+import AILogServiceFactory from "../services/AILogServiceFactory.js";
 
 class OllamaAiProviderFactory {
     private static singleton: IAIProvider;

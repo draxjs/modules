@@ -1,6 +1,6 @@
 import {z} from "zod";
 import {CommonController} from "@drax/common-back";
-import AiProviderFactory from "../factory/AiProviderFactory.js";
+import AiProviderFactory from "../factory/ai/AiProviderFactory.js";
 import AIPermissions from "../permissions/AIPermissions.js";
 import type {IPromptParams} from "../interfaces/IAIProvider.js";
 

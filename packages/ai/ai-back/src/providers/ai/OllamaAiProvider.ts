@@ -6,8 +6,8 @@ import type {
     IPromptParams,
     IPromptResponse,
     IPromptTool
-} from "../interfaces/IAIProvider";
-import type {AILogService} from "../services/AILogService";
+} from "../../interfaces/IAIProvider.js";
+import type {AILogService} from "../../services/AILogService.js";
 import type {IAILogBase} from "@drax/ai-share";
 
 type OllamaMessage = {

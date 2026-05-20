@@ -1,6 +1,6 @@
 import {z} from "zod";
 import {CommonController} from "@drax/common-back";
-import AiProviderFactory from "../factory/AiProviderFactory.js";
+import AiProviderFactory from "../factory/ai/AiProviderFactory.js";
 import AIPermissions from "../permissions/AIPermissions.js";
 
 const CrudAiFieldSchema: z.ZodType<any> = z.lazy(() => z.object({

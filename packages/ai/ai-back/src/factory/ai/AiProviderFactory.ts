@@ -1,8 +1,8 @@
-import type {IAIProvider} from "../interfaces/IAIProvider"
+import type {IAIProvider} from "../../interfaces/IAIProvider.js"
 import OpenAiProviderFactory from "./OpenAiProviderFactory.js";
 import GoogleAiProviderFactory from "./GoogleAiProviderFactory.js";
 import OllamaAiProviderFactory from "./OllamaAiProviderFactory.js";
-import DeepSeekProviderFactory from "./DeepSeekProviderFactory.js";
+import DeepSeekAiProviderFactory from "./DeepSeekAiProviderFactory.js";
 
 class AiProviderFactory {
     private static singletons: Record<string, IAIProvider> = {};
@@ -20,7 +20,7 @@ class AiProviderFactory {
                     AiProviderFactory.singletons[provider] =  OllamaAiProviderFactory.instance()
                     break;
                 case 'DeepSeek':
-                    AiProviderFactory.singletons[provider] =  DeepSeekProviderFactory.instance()
+                    AiProviderFactory.singletons[provider] =  DeepSeekAiProviderFactory.instance()
                     break;
                 default:
                     throw new Error(`Unsupported AI provider: ${provider}`);

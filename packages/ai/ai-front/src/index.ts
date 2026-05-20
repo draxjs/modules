@@ -1,8 +1,17 @@
 import AiProvider from './providers/AiProvider.js'
+import TTSProvider from './providers/TTSProvider.js'
 import AILogProvider from './providers/AILogProvider.js'
 import AgentProvider from './providers/AgentProvider.js'
 import AgentSessionProvider from './providers/AgentSessionProvider.js'
 import AiI18nMessages from './i18n/index.js'
+import type {
+    ITTSTextToSpeechMeta,
+    ITTSTextToSpeechPayload,
+    ITTSTextToSpeechResponse,
+    ITTSProviderInfo,
+    ITTSProvidersResponse,
+    ITTSVoiceSettings,
+} from './providers/TTSProvider.js'
 import type {
     IAgentListResponse,
     IAgentOption,
@@ -33,6 +42,7 @@ import type {
 
 export {
     AiProvider,
+    TTSProvider,
     AILogProvider,
     AgentProvider,
     AgentSessionProvider,
@@ -58,6 +68,12 @@ export type {
     IAICrudPromptPayload,
     IAICrudPromptMeta,
     IAICrudPromptResponse,
+    ITTSVoiceSettings,
+    ITTSTextToSpeechPayload,
+    ITTSTextToSpeechMeta,
+    ITTSTextToSpeechResponse,
+    ITTSProviderInfo,
+    ITTSProvidersResponse,
     IAgentListResponse,
     IAgentOption,
     IChatbotTaskMessageResponse,
