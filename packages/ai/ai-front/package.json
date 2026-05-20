@@ -4,7 +4,7 @@
     "access": "public"
   },
   "type": "module",
-  "version": "3.38.0",
+  "version": "3.42.0",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",
