@@ -22,11 +22,11 @@ const {
   navigationButtonLabel,
   navigationEnabled,
   selectAgent,
-  selectTextToSpeechProvider,
+  selectTextToSpeechVoice,
   selectedAgent,
   selectedAgentIdentifier,
-  selectedTextToSpeechProvider,
-  selectedTextToSpeechProviderLabel,
+  selectedTextToSpeechVoiceLabel,
+  selectedTextToSpeechVoiceSelection,
   showAgentSelector,
   speechError,
   speechPressToTalkActive,
@@ -35,8 +35,8 @@ const {
   stopTextToSpeech,
   stopPressToTalk,
   textToSpeechEnabled,
-  textToSpeechProviderItems,
-  textToSpeechProvidersLoading,
+  textToSpeechVoiceItems,
+  textToSpeechVoicesLoading,
   textToSpeechSpeaking,
   textToSpeechSupported,
   toggleNavigation,
@@ -202,9 +202,9 @@ onBeforeUnmount(() => {
               variant="tonal"
               size="small"
               icon="mdi-account-voice"
-              :loading="textToSpeechProvidersLoading"
-              :aria-label="`Elegir proveedor de voz. Actual: ${selectedTextToSpeechProviderLabel}`"
-              :title="`Proveedor de voz: ${selectedTextToSpeechProviderLabel}`"
+              :loading="textToSpeechVoicesLoading"
+              :aria-label="`Elegir voz. Actual: ${selectedTextToSpeechVoiceLabel}`"
+              :title="`Voz: ${selectedTextToSpeechVoiceLabel}`"
             />
           </template>
 
@@ -212,21 +212,22 @@ onBeforeUnmount(() => {
             class="drax-agent-express__tts-provider-list"
             density="compact"
           >
-            <v-list-subheader>Proveedor de voz</v-list-subheader>
+            <v-list-subheader>Voz</v-list-subheader>
             <v-list-item
-              v-for="provider in textToSpeechProviderItems"
-              :key="provider.value"
-              :active="provider.value === selectedTextToSpeechProvider"
-              :disabled="provider.props.disabled"
-              @click="selectTextToSpeechProvider(provider.value)"
+              v-for="voice in textToSpeechVoiceItems"
+              :key="voice.value"
+              :active="voice.value === selectedTextToSpeechVoiceSelection"
+              :disabled="voice.props.disabled"
+              @click="selectTextToSpeechVoice(voice.value)"
             >
               <template #prepend>
                 <v-icon
-                  :icon="provider.value === selectedTextToSpeechProvider ? 'mdi-check' : 'mdi-account-voice'"
+                  :icon="voice.value === selectedTextToSpeechVoiceSelection ? 'mdi-check' : 'mdi-account-voice'"
                   size="small"
                 />
               </template>
-              <v-list-item-title>{{ provider.title }}</v-list-item-title>
+              <v-list-item-title>{{ voice.title }}</v-list-item-title>
+              <v-list-item-subtitle>{{ voice.subtitle }}</v-list-item-subtitle>
             </v-list-item>
           </v-list>
         </v-menu>

@@ -1,7 +1,7 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {AgentProvider, TTSProvider} from '@drax/ai-front'
-import type {IAgentOption, IAIPromptAudioParams, IAIPromptAudioResponse, ITTSProviderInfo} from '@drax/ai-front'
+import {AgentProvider, TTSProvider, TTSVoiceProvider} from '@drax/ai-front'
+import type {IAgentOption, IAIPromptAudioParams, IAIPromptAudioResponse, ITTSProviderInfo, ITTSVoice} from '@drax/ai-front'
 
 export interface ChatMessage {
   role: 'user' | 'assistant'
@@ -55,7 +55,9 @@ const textToSpeechMicrophoneResumeDelayMs = 700
 const textToSpeechProgressIntervalMs = 80
 const textToSpeechBoundaryStaleMs = 900
 const browserTextToSpeechProviderName = 'browser'
+const browserTextToSpeechVoiceValue = 'WebSpeechAPI'
 const textToSpeechProviderStorageKey = 'drax.tts.selectedProvider'
+const textToSpeechVoiceStorageKey = 'drax.tts.selectedVoice'
 const browserTextToSpeechProvider: ITTSProviderInfo = {
   name: browserTextToSpeechProviderName,
   label: 'Nativo del navegador',
@@ -87,6 +89,10 @@ function safeLocalStorageSet(key: string, value: string) {
 
 function readStoredTextToSpeechProvider() {
   return safeLocalStorageGet(textToSpeechProviderStorageKey) || browserTextToSpeechProviderName
+}
+
+function readStoredTextToSpeechVoice() {
+  return safeLocalStorageGet(textToSpeechVoiceStorageKey)
 }
 
 export function useDraxAgent() {
@@ -127,9 +133,17 @@ export function useDraxAgent() {
   const textToSpeechEnabled = ref(true)
   const textToSpeechSpeaking = ref(false)
   const textToSpeechVoices = ref<SpeechSynthesisVoice[]>([])
+  const configuredTextToSpeechVoices = ref<ITTSVoice[]>([])
   const textToSpeechProviders = ref<ITTSProviderInfo[]>([browserTextToSpeechProvider])
   const textToSpeechProvidersLoading = ref(false)
+  const textToSpeechVoicesLoading = ref(false)
   const selectedTextToSpeechProvider = ref(readStoredTextToSpeechProvider())
+  const storedTextToSpeechVoice = readStoredTextToSpeechVoice()
+  const selectedTextToSpeechVoiceId = ref<string | null>(
+    storedTextToSpeechVoice === browserTextToSpeechVoiceValue || storedTextToSpeechVoice?.startsWith('browser:')
+      ? null
+      : storedTextToSpeechVoice,
+  )
   const textToSpeechAudio = ref<HTMLAudioElement | null>(null)
   const textToSpeechAudioObjectUrl = ref<string | null>(null)
   const textToSpeechMessage = ref(initialAssistantMessage)
@@ -164,18 +178,47 @@ export function useDraxAgent() {
   const speechAutoSendLabel = computed(() => speechAutoSendEnabled.value
     ? 'Apagar envio automatico al terminar de hablar'
     : 'Prender envio automatico al terminar de hablar')
-  const selectedVoice = computed(() => {
-    if (!selectedVoiceURI.value) {
+  const selectedTextToSpeechVoice = computed(() => {
+    if (!selectedTextToSpeechVoiceId.value) {
       return null
     }
 
-    return textToSpeechVoices.value.find((voice) => voice.voiceURI === selectedVoiceURI.value) ?? null
+    return configuredTextToSpeechVoices.value.find((voice) => voice._id === selectedTextToSpeechVoiceId.value) ?? null
   })
-  const selectedVoiceName = computed(() => selectedVoice.value?.name ?? 'Voz predeterminada')
+  const selectedVoice = computed<SpeechSynthesisVoice | null>(() => {
+    return null
+  })
+  const selectedVoiceName = computed(() => selectedTextToSpeechVoice.value?.name ?? 'WebSpeechAPI')
   const selectedTextToSpeechProviderInfo = computed(() => textToSpeechProviders.value.find((provider) => (
     provider.name === selectedTextToSpeechProvider.value
   )) ?? browserTextToSpeechProvider)
   const selectedTextToSpeechProviderLabel = computed(() => selectedTextToSpeechProviderInfo.value.label)
+  const textToSpeechVoiceItems = computed(() => {
+    const browserVoiceItem = {
+      title: 'WebSpeechAPI',
+      subtitle: 'Voz default del navegador',
+      value: browserTextToSpeechVoiceValue,
+      props: {
+        disabled: !browserTextToSpeechSupported.value,
+      },
+    }
+
+    return [
+      browserVoiceItem,
+      ...configuredTextToSpeechVoices.value.map((voice) => ({
+        title: voice.name,
+        subtitle: [voice.ttsProvider, voice.model, voice.languageCode].filter(Boolean).join(' - '),
+        value: voice._id,
+        props: {
+          disabled: false,
+        },
+      })),
+    ]
+  })
+  const selectedTextToSpeechVoiceLabel = computed(() => selectedVoiceName.value)
+  const selectedTextToSpeechVoiceSelection = computed(() => (
+    selectedTextToSpeechVoiceId.value ?? browserTextToSpeechVoiceValue
+  ))
   const textToSpeechProviderItems = computed(() => textToSpeechProviders.value.map((provider) => ({
     title: provider.label,
     value: provider.name,
@@ -184,6 +227,7 @@ export function useDraxAgent() {
     },
   })))
   const isBrowserTextToSpeechSelected = computed(() => selectedTextToSpeechProvider.value === browserTextToSpeechProviderName)
+  const isBrowserVoiceSelected = computed(() => !selectedTextToSpeechVoice.value || isBrowserTextToSpeechSelected.value)
   const visualBotButtonLabel = computed(() => visualBotVisible.value ? 'Ocultar bot visual' : 'Mostrar bot visual')
   const navigationButtonLabel = computed(() => navigationEnabled.value
     ? 'Apagar navegacion automatica'
@@ -475,8 +519,47 @@ export function useDraxAgent() {
     }
   }
 
+  async function loadConfiguredTextToSpeechVoices() {
+    textToSpeechVoicesLoading.value = true
+
+    try {
+      configuredTextToSpeechVoices.value = await TTSVoiceProvider.instance.find({
+        limit: 200,
+        orderBy: 'name',
+        order: 'asc',
+      })
+      syncSelectedConfiguredTextToSpeechVoice()
+    } catch {
+      configuredTextToSpeechVoices.value = []
+    } finally {
+      textToSpeechVoicesLoading.value = false
+      updateTextToSpeechSupported()
+    }
+  }
+
+  function syncSelectedConfiguredTextToSpeechVoice() {
+    if (!selectedTextToSpeechVoiceId.value) {
+      selectedTextToSpeechVoiceId.value = null
+      selectedTextToSpeechProvider.value = browserTextToSpeechProviderName
+      return
+    }
+
+    const selectedConfiguredVoice = configuredTextToSpeechVoices.value.find((voice) => voice._id === selectedTextToSpeechVoiceId.value)
+
+    if (!selectedConfiguredVoice) {
+      selectedTextToSpeechVoiceId.value = null
+      selectedTextToSpeechProvider.value = browserTextToSpeechProviderName
+      return
+    }
+
+    selectedTextToSpeechVoiceId.value = selectedConfiguredVoice._id
+    applyConfiguredTextToSpeechVoice(selectedConfiguredVoice)
+  }
+
   function updateTextToSpeechSupported() {
-    textToSpeechSupported.value = browserTextToSpeechSupported.value || textToSpeechProviders.value.length > 1
+    textToSpeechSupported.value = browserTextToSpeechSupported.value
+      || textToSpeechProviders.value.length > 1
+      || configuredTextToSpeechVoices.value.length > 0
   }
 
   function loadTextToSpeechVoices() {
@@ -498,11 +581,6 @@ export function useDraxAgent() {
 
     textToSpeechVoices.value = voices
 
-    if (!selectedVoiceURI.value && voices.length > 0) {
-      selectedVoiceURI.value = voices.find((voice) => voice.lang.toLowerCase().startsWith('es'))?.voiceURI
-        ?? voices[0]?.voiceURI
-        ?? null
-    }
   }
 
   function toggleSpeechRecognition() {
@@ -651,10 +729,38 @@ export function useDraxAgent() {
     navigationEnabled.value = !navigationEnabled.value
   }
 
-  function selectTextToSpeechVoice(voiceURI: string) {
-    selectedVoiceURI.value = voiceURI
+  function selectTextToSpeechVoice(value: unknown) {
+    const voiceValue = typeof value === 'string' ? value : null
+
+    if (!voiceValue) {
+      return
+    }
+
+    if (voiceValue === browserTextToSpeechVoiceValue) {
+      selectedTextToSpeechVoiceId.value = null
+      selectedTextToSpeechProvider.value = browserTextToSpeechProviderName
+      safeLocalStorageSet(textToSpeechProviderStorageKey, browserTextToSpeechProviderName)
+      safeLocalStorageSet(textToSpeechVoiceStorageKey, browserTextToSpeechVoiceValue)
+      stopTextToSpeech()
+      return
+    }
+
+    const configuredVoice = configuredTextToSpeechVoices.value.find((voice) => voice._id === voiceValue)
+
+    if (!configuredVoice) {
+      return
+    }
+
+    selectedTextToSpeechVoiceId.value = configuredVoice._id
+    safeLocalStorageSet(textToSpeechVoiceStorageKey, configuredVoice._id)
+    applyConfiguredTextToSpeechVoice(configuredVoice)
 
     stopTextToSpeech()
+  }
+
+  function applyConfiguredTextToSpeechVoice(voice: ITTSVoice) {
+    selectedTextToSpeechProvider.value = voice.ttsProvider
+    safeLocalStorageSet(textToSpeechProviderStorageKey, voice.ttsProvider)
   }
 
   function selectTextToSpeechProvider(value: unknown) {
@@ -684,13 +790,17 @@ export function useDraxAgent() {
   }
 
   function buildPromptAudioResponseParams(): IAIPromptAudioParams | undefined {
-    if (!textToSpeechEnabled.value || isBrowserTextToSpeechSelected.value) {
+    if (!textToSpeechEnabled.value || isBrowserVoiceSelected.value) {
       return undefined
     }
 
+    const voice = selectedTextToSpeechVoice.value
+
     return {
-      provider: selectedTextToSpeechProvider.value,
-      languageCode: 'es',
+      provider: voice?.ttsProvider ?? selectedTextToSpeechProvider.value,
+      voiceId: voice?.voiceId,
+      model: voice?.model ?? undefined,
+      languageCode: voice?.languageCode ?? 'es',
       operationTitle: 'drax-agent-tts',
       operationGroup: 'drax-agent',
     }
@@ -715,7 +825,7 @@ export function useDraxAgent() {
       return
     }
 
-    if (!isBrowserTextToSpeechSelected.value) {
+    if (!isBrowserVoiceSelected.value) {
       void speakAssistantMessageWithProvider(message, audioResponse)
       return
     }
@@ -775,6 +885,7 @@ export function useDraxAgent() {
   async function speakAssistantMessageWithProvider(message: string, audioResponse?: IAIPromptAudioResponse) {
     currentTextToSpeechId.value += 1
     const audioId = currentTextToSpeechId.value
+    const voice = selectedTextToSpeechVoice.value
     textToSpeechMessage.value = message
     textToSpeechCharIndex.value = 0
     textToSpeechStartedAt.value = 0
@@ -795,8 +906,10 @@ export function useDraxAgent() {
         ? createAudioObjectUrl(audioResponse)
         : await TTSProvider.instance.textToSpeechObjectUrl({
           text: message,
-          provider: selectedTextToSpeechProvider.value,
-          languageCode: 'es',
+          provider: voice?.ttsProvider ?? selectedTextToSpeechProvider.value,
+          voiceId: voice?.voiceId,
+          model: voice?.model ?? undefined,
+          languageCode: voice?.languageCode ?? 'es',
           operationTitle: 'drax-agent-tts',
           operationGroup: 'drax-agent',
         })
@@ -1085,6 +1198,7 @@ export function useDraxAgent() {
   onMounted(() => {
     loadAgents()
     loadTextToSpeechProviders()
+    loadConfiguredTextToSpeechVoices()
     setupSpeechRecognition()
     setupTextToSpeech()
   })
@@ -1137,6 +1251,10 @@ export function useDraxAgent() {
     selectedAgentIdentifier,
     selectedTextToSpeechProvider,
     selectedTextToSpeechProviderLabel,
+    selectedTextToSpeechVoice,
+    selectedTextToSpeechVoiceId,
+    selectedTextToSpeechVoiceLabel,
+    selectedTextToSpeechVoiceSelection,
     selectedVoice,
     selectedVoiceName,
     selectedVoiceURI,
@@ -1161,6 +1279,8 @@ export function useDraxAgent() {
     textToSpeechProvidersLoading,
     textToSpeechSpeaking,
     textToSpeechSupported,
+    textToSpeechVoiceItems,
+    textToSpeechVoicesLoading,
     textToSpeechVoices,
     toggleNavigation,
     toggleSpeechAutoSend,

@@ -200,6 +200,13 @@ const menu: MenuItem[] = [
         gallery: true,
         permission: 'agentsession:manage'
       },
+      {
+        icon: 'mdi-account-voice',
+        text:'ttsvoice.menu',
+        link: { name: "TTSVoiceCrudPage" },
+        gallery: true,
+        permission: 'ttsvoice:manage'
+      },
     ]
   }
 

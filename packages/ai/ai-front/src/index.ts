@@ -3,6 +3,7 @@ import TTSProvider from './providers/TTSProvider.js'
 import AILogProvider from './providers/AILogProvider.js'
 import AgentProvider from './providers/AgentProvider.js'
 import AgentSessionProvider from './providers/AgentSessionProvider.js'
+import TTSVoiceProvider from './providers/TTSVoiceProvider.js'
 import AiI18nMessages from './i18n/index.js'
 import type {
     ITTSTextToSpeechMeta,
@@ -42,6 +43,11 @@ import type {
     IAIPromptResponse,
     IAIRole,
 } from '@drax/ai-share'
+import type {
+    ITTSVoice,
+    ITTSVoiceBase,
+    TTSVoiceProvider as TTSVoiceProviderName,
+} from '@drax/ai-share'
 
 
 export {
@@ -50,6 +56,7 @@ export {
     AILogProvider,
     AgentProvider,
     AgentSessionProvider,
+    TTSVoiceProvider,
     AiI18nMessages
 }
 
@@ -86,4 +93,7 @@ export type {
     IAgentOption,
     IChatbotTaskMessageResponse,
     IChatbotTaskSessionResponse,
+    ITTSVoice,
+    ITTSVoiceBase,
+    TTSVoiceProviderName,
 }

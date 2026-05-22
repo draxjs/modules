@@ -1,5 +1,6 @@
 import type {IAILog, IAILogBase} from "./interfaces/IAILog";
 import type {IAgentSession, IAgentSessionBase} from "./interfaces/IAgentSession";
+import type {ITTSVoice, ITTSVoiceBase, TTSVoiceProvider} from "./interfaces/ITTSVoice";
 import type {
     IAICrudField,
     IAICrudFieldOption,
@@ -28,6 +29,7 @@ import type {
 export type{
     IAILog, IAILogBase,
     IAgentSession, IAgentSessionBase,
+    ITTSVoice, ITTSVoiceBase, TTSVoiceProvider,
     IAIRole,
     IAIImageDetail,
     IAIImageInput,

@@ -21,7 +21,7 @@ import {DynamicFormRoutes} from "@drax/dynamic-back";
 import {DashboardRoutes} from "@drax/dashboard-back";
 import {AuditRoutes} from "@drax/audit-back";
 import {SettingRoutes} from "@drax/settings-back";
-import {AILogRoutes,AIRoutes, DraxAgentRoutes, AgentSessionRoutes, TTSRoutes} from "@drax/ai-back";
+import {AILogRoutes,AIRoutes, DraxAgentRoutes, AgentSessionRoutes, TTSRoutes, TTSVoiceRoutes} from "@drax/ai-back";
 import {CrudSavedQueryFastifyRoutes} from "@drax/crud-back";
 import {AiTestRoutes} from "../modules/base/routes/AiTestRoutes.js";
 const {typeDefs, resolvers} = await ModuleMerger()
@@ -63,6 +63,7 @@ function YogaFastifyServerFactory(rootDir:string) {
     server.fastifyRegister(AILogRoutes)
     server.fastifyRegister(AIRoutes)
     server.fastifyRegister(TTSRoutes)
+    server.fastifyRegister(TTSVoiceRoutes)
     server.fastifyRegister(DraxAgentRoutes)
     server.fastifyRegister(AgentSessionRoutes)
 

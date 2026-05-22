@@ -4,10 +4,14 @@ import {OllamaAiConfig} from "./config/OllamaAiConfig.js";
 import {DeepSeekConfig} from "./config/DeepSeekConfig.js";
 import {ElevenLabsTTSConfig} from "./config/ElevenLabsTTSConfig.js";
 import {AILogSchema, AILogBaseSchema} from "./schemas/AILogSchema.js";
+import {TTSVoiceSchema, TTSVoiceBaseSchema, TTSVoiceProviderSchema} from "./schemas/TTSVoiceSchema.js";
 import {TTSRequestSchema, TTSVoiceSettingsSchema} from "./schemas/TTSRequestSchema.js";
 import AILogModel from "./models/AILogModel.js";
+import TTSVoiceModel from "./models/TTSVoiceModel.js";
 import AILogMongoRepository from "./repository/mongo/AILogMongoRepository.js";
 import AILogSqliteRepository from "./repository/sqlite/AILogSqliteRepository.js";
+import TTSVoiceMongoRepository from "./repository/mongo/TTSVoiceMongoRepository.js";
+import TTSVoiceSqliteRepository from "./repository/sqlite/TTSVoiceSqliteRepository.js";
 import {OpenAiProviderFactory} from "./factory/ai/OpenAiProviderFactory.js";
 import {GoogleAiProviderFactory} from "./factory/ai/GoogleAiProviderFactory.js";
 import {OllamaAiProviderFactory} from "./factory/ai/OllamaAiProviderFactory.js";
@@ -18,6 +22,7 @@ import {TTSProviderFactory} from "./factory/tts/TTSProviderFactory.js";
 import type {TTSProviderInfo} from "./factory/tts/TTSProviderFactory.js";
 import {DraxAgentFactory} from "./factory/DraxAgentFactory.js";
 import AILogServiceFactory from "./factory/services/AILogServiceFactory.js";
+import TTSVoiceServiceFactory from "./factory/services/TTSVoiceServiceFactory.js";
 import {OpenAiProvider} from "./providers/ai/OpenAiProvider.js";
 import {GoogleAiProvider} from "./providers/ai/GoogleAiProvider.js";
 import {OllamaAiProvider} from "./providers/ai/OllamaAiProvider.js";
@@ -26,6 +31,7 @@ import {ElevenLabsTTSProvider} from "./providers/tts/ElevenLabsTTSProvider.js";
 import {BuilderTool} from "./tools/BuilderTool.js";
 import {KnowledgeService} from "./services/KnowledgeService.js";
 import {AILogService} from "./services/AILogService.js";
+import {TTSVoiceService} from "./services/TTSVoiceService.js";
 import {TTSGenericService} from "./services/TTSGenericService.js";
 import {PromptAudioService} from "./services/PromptAudioService.js";
 import AILogPermissions from "./permissions/AILogPermissions.js";
@@ -33,20 +39,24 @@ import AgentPermissions from "./permissions/AgentPermissions.js";
 import AgentSessionPermissions from "./permissions/AgentSessionPermissions.js";
 import AIPermissions from "./permissions/AIPermissions.js";
 import TTSPermissions from "./permissions/TTSPermissions.js";
+import TTSVoicePermissions from "./permissions/TTSVoicePermissions.js";
 import AILogController from "./controllers/AILogController.js";
 import AICrudController from "./controllers/AICrudController.js";
 import AIGenericController from "./controllers/AIGenericController.js";
 import TTSGenericController from "./controllers/TTSGenericController.js";
+import TTSVoiceController from "./controllers/TTSVoiceController.js";
 import DraxAgentController from "./controllers/DraxAgentController.js";
 import AgentSessionController from "./controllers/AgentSessionController.js";
 import AILogRoutes from "./routes/AILogRoutes.js";
 import AIRoutes from "./routes/AIRoutes.js";
 import TTSRoutes from "./routes/TTSRoutes.js";
+import TTSVoiceRoutes from "./routes/TTSVoiceRoutes.js";
 import DraxAgentRoutes from "./routes/DraxAgentRoutes.js";
 import AgentSessionRoutes from "./routes/AgentSessionRoutes.js";
 import {DraxAgent} from "./agents/DraxAgent.js";
 import {BuildContextTool} from "./tools/BuildContextTool.js";
 import type {IAILogRepository} from "./interfaces/IAILogRepository.js";
+import type {ITTSVoiceRepository} from "./interfaces/ITTSVoiceRepository.js";
 import type {
     IAIProvider,
     IPromptContentPart,
@@ -107,6 +117,7 @@ import type {
 export type {
 
     IAILogRepository,
+    ITTSVoiceRepository,
     IAIProvider,
     IPromptParams,
     IPromptMessage,
@@ -156,11 +167,17 @@ export {
     ElevenLabsTTSConfig,
     AILogSchema,
     AILogBaseSchema,
+    TTSVoiceSchema,
+    TTSVoiceBaseSchema,
+    TTSVoiceProviderSchema,
     TTSRequestSchema,
     TTSVoiceSettingsSchema,
     AILogModel,
+    TTSVoiceModel,
     AILogMongoRepository,
     AILogSqliteRepository,
+    TTSVoiceMongoRepository,
+    TTSVoiceSqliteRepository,
     OpenAiProviderFactory,
     GoogleAiProviderFactory,
     OllamaAiProviderFactory,
@@ -170,6 +187,7 @@ export {
     TTSProviderFactory,
     DraxAgentFactory,
     AILogServiceFactory,
+    TTSVoiceServiceFactory,
     OpenAiProvider,
     GoogleAiProvider,
     OllamaAiProvider,
@@ -180,6 +198,7 @@ export {
     //Service
     KnowledgeService,
     AILogService,
+    TTSVoiceService,
     TTSGenericService,
     PromptAudioService,
     //Permissions
@@ -187,18 +206,21 @@ export {
     AgentPermissions,
     AIPermissions,
     TTSPermissions,
+    TTSVoicePermissions,
     AgentSessionPermissions,
     //Controllers
     AILogController,
     AICrudController,
     AIGenericController,
     TTSGenericController,
+    TTSVoiceController,
     DraxAgentController,
     AgentSessionController,
     DraxAgent,
     AILogRoutes,
     AIRoutes,
     TTSRoutes,
+    TTSVoiceRoutes,
     DraxAgentRoutes,
     AgentSessionRoutes
 }
