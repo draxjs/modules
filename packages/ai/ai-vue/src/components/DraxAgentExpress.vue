@@ -293,7 +293,6 @@ onBeforeUnmount(() => {
         <v-icon
           class="drax-agent-express__mic-icon"
           :icon="speechPressToTalkActive ? 'mdi-microphone' : 'mdi-microphone-outline'"
-          size="76"
         />
       </button>
 
@@ -312,6 +311,7 @@ onBeforeUnmount(() => {
   position: relative;
   display: grid;
   grid-template-rows: minmax(0, 3fr) minmax(0, 2fr);
+  container-type: inline-size;
   width: 100%;
   height: calc(100vh - 128px);
   min-height: 540px;
@@ -376,11 +376,12 @@ onBeforeUnmount(() => {
   min-height: 74px;
   margin: 0;
   color: rgba(var(--v-theme-on-surface), 0.78);
-  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  font-size: clamp(1.08rem, 1.75vw, 1.58rem);
   font-weight: 600;
-  line-height: 1.32;
+  line-height: 1.28;
   text-align: center;
   text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 
 .drax-agent-express__message--speaking {
@@ -464,6 +465,9 @@ onBeforeUnmount(() => {
 .drax-agent-express__mic-icon {
   position: relative;
   z-index: 1;
+  width: 1em;
+  height: 1em;
+  font-size: clamp(3rem, 10vw, 4.75rem);
 }
 
 .drax-agent-express__status {
@@ -472,7 +476,7 @@ onBeforeUnmount(() => {
   margin: 0;
   overflow: hidden;
   color: rgba(var(--v-theme-on-surface), 0.68);
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   line-height: 1.4;
   text-align: center;
@@ -533,12 +537,75 @@ onBeforeUnmount(() => {
 
   .drax-agent-express__message {
     min-height: 86px;
-    font-size: 1.18rem;
+    font-size: 1rem;
   }
 
   .drax-agent-express__mic-button {
     min-height: 118px;
     border-radius: 16px;
+  }
+
+  .drax-agent-express__mic-icon {
+    font-size: 3.25rem;
+  }
+
+  .drax-agent-express__status {
+    font-size: 0.82rem;
+  }
+}
+
+@container (max-width: 520px) {
+  .drax-agent-express__bot-panel,
+  .drax-agent-express__talk-panel {
+    padding: 16px;
+  }
+
+  .drax-agent-express__bot-panel {
+    gap: 14px;
+  }
+
+  .drax-agent-express__message {
+    min-height: 66px;
+    font-size: 0.94rem;
+    line-height: 1.24;
+  }
+
+  .drax-agent-express__mic-button {
+    min-height: 96px;
+    border-radius: 14px;
+  }
+
+  .drax-agent-express__mic-icon {
+    font-size: 2.9rem;
+  }
+
+  .drax-agent-express__status {
+    min-height: 24px;
+    font-size: 0.78rem;
+  }
+}
+
+@container (max-width: 360px) {
+  .drax-agent-express__bot-panel,
+  .drax-agent-express__talk-panel {
+    padding: 12px;
+  }
+
+  .drax-agent-express__message {
+    min-height: 58px;
+    font-size: 0.86rem;
+  }
+
+  .drax-agent-express__mic-button {
+    min-height: 82px;
+  }
+
+  .drax-agent-express__mic-icon {
+    font-size: 2.5rem;
+  }
+
+  .drax-agent-express__status {
+    font-size: 0.74rem;
   }
 }
 </style>

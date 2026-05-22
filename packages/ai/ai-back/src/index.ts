@@ -27,6 +27,7 @@ import {BuilderTool} from "./tools/BuilderTool.js";
 import {KnowledgeService} from "./services/KnowledgeService.js";
 import {AILogService} from "./services/AILogService.js";
 import {TTSGenericService} from "./services/TTSGenericService.js";
+import {PromptAudioService} from "./services/PromptAudioService.js";
 import AILogPermissions from "./permissions/AILogPermissions.js";
 import AgentPermissions from "./permissions/AgentPermissions.js";
 import AgentSessionPermissions from "./permissions/AgentSessionPermissions.js";
@@ -50,6 +51,9 @@ import type {
     IPromptContentPart,
     IPromptContentPartImage,
     IPromptContentPartText,
+    IPromptAudioParams,
+    IPromptAudioResponse,
+    IPromptAudioResponseMeta,
     IPromptImage,
     IPromptImageDetail,
     IPromptMessage,
@@ -108,6 +112,9 @@ export type {
     IPromptContentPart,
     IPromptContentPartImage,
     IPromptContentPartText,
+    IPromptAudioParams,
+    IPromptAudioResponse,
+    IPromptAudioResponseMeta,
     IPromptResponse,
     ITTSProvider,
     ITTSParams,
@@ -166,6 +173,7 @@ export {
     KnowledgeService,
     AILogService,
     TTSGenericService,
+    PromptAudioService,
     //Permissions
     AILogPermissions,
     AgentPermissions,

@@ -1,7 +1,7 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {AgentProvider, TTSProvider} from '@drax/ai-front'
-import type {IAgentOption, ITTSProviderInfo} from '@drax/ai-front'
+import type {IAgentOption, IAIPromptAudioParams, IAIPromptAudioResponse, ITTSProviderInfo} from '@drax/ai-front'
 
 export interface ChatMessage {
   role: 'user' | 'assistant'
@@ -55,9 +55,38 @@ const textToSpeechMicrophoneResumeDelayMs = 700
 const textToSpeechProgressIntervalMs = 80
 const textToSpeechBoundaryStaleMs = 900
 const browserTextToSpeechProviderName = 'browser'
+const textToSpeechProviderStorageKey = 'drax.tts.selectedProvider'
 const browserTextToSpeechProvider: ITTSProviderInfo = {
   name: browserTextToSpeechProviderName,
   label: 'Nativo del navegador',
+}
+
+function safeLocalStorageGet(key: string) {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  try {
+    return window.localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function safeLocalStorageSet(key: string, value: string) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    window.localStorage.setItem(key, value)
+  } catch {
+    // Preference persistence is optional.
+  }
+}
+
+function readStoredTextToSpeechProvider() {
+  return safeLocalStorageGet(textToSpeechProviderStorageKey) || browserTextToSpeechProviderName
 }
 
 export function useDraxAgent() {
@@ -100,7 +129,7 @@ export function useDraxAgent() {
   const textToSpeechVoices = ref<SpeechSynthesisVoice[]>([])
   const textToSpeechProviders = ref<ITTSProviderInfo[]>([browserTextToSpeechProvider])
   const textToSpeechProvidersLoading = ref(false)
-  const selectedTextToSpeechProvider = ref(browserTextToSpeechProviderName)
+  const selectedTextToSpeechProvider = ref(readStoredTextToSpeechProvider())
   const textToSpeechAudio = ref<HTMLAudioElement | null>(null)
   const textToSpeechAudioObjectUrl = ref<string | null>(null)
   const textToSpeechMessage = ref(initialAssistantMessage)
@@ -265,11 +294,16 @@ export function useDraxAgent() {
     await scrollToBottom()
 
     try {
-      const response = await AgentProvider.instance.sendMessage(message, sessionId.value, selectedAgentIdentifier.value)
+      const response = await AgentProvider.instance.sendMessage(
+        message,
+        sessionId.value,
+        selectedAgentIdentifier.value,
+        buildPromptAudioResponseParams(),
+      )
       sessionId.value = response.sessionId
       messages.value.push({role: 'assistant', content: response.message})
       await navigateAgentResponse(response.navigationPath)
-      speakAssistantMessage(response.message)
+      speakAssistantMessage(response.message, response.audio)
     } catch (e: any) {
       error.value = e?.message ?? 'No se pudo enviar el mensaje.'
       const fallbackMessage = 'No pude procesar el pedido. Proba de nuevo en unos segundos.'
@@ -626,7 +660,7 @@ export function useDraxAgent() {
   function selectTextToSpeechProvider(value: unknown) {
     const providerName = typeof value === 'string' ? value : null
 
-    if (!providerName || providerName === selectedTextToSpeechProvider.value) {
+    if (!providerName) {
       return
     }
 
@@ -639,8 +673,27 @@ export function useDraxAgent() {
       return
     }
 
+    safeLocalStorageSet(textToSpeechProviderStorageKey, providerName)
+
+    if (providerName === selectedTextToSpeechProvider.value) {
+      return
+    }
+
     selectedTextToSpeechProvider.value = providerName
     stopTextToSpeech()
+  }
+
+  function buildPromptAudioResponseParams(): IAIPromptAudioParams | undefined {
+    if (!textToSpeechEnabled.value || isBrowserTextToSpeechSelected.value) {
+      return undefined
+    }
+
+    return {
+      provider: selectedTextToSpeechProvider.value,
+      languageCode: 'es',
+      operationTitle: 'drax-agent-tts',
+      operationGroup: 'drax-agent',
+    }
   }
 
   function stopTextToSpeech() {
@@ -657,13 +710,13 @@ export function useDraxAgent() {
     resumeSpeechRecognitionAfterTextToSpeech()
   }
 
-  function speakAssistantMessage(message: string) {
+  function speakAssistantMessage(message: string, audioResponse?: IAIPromptAudioResponse) {
     if (!textToSpeechEnabled.value || typeof window === 'undefined' || !textToSpeechSupported.value) {
       return
     }
 
     if (!isBrowserTextToSpeechSelected.value) {
-      void speakAssistantMessageWithProvider(message)
+      void speakAssistantMessageWithProvider(message, audioResponse)
       return
     }
 
@@ -719,7 +772,7 @@ export function useDraxAgent() {
     window.speechSynthesis.speak(utterance)
   }
 
-  async function speakAssistantMessageWithProvider(message: string) {
+  async function speakAssistantMessageWithProvider(message: string, audioResponse?: IAIPromptAudioResponse) {
     currentTextToSpeechId.value += 1
     const audioId = currentTextToSpeechId.value
     textToSpeechMessage.value = message
@@ -738,13 +791,15 @@ export function useDraxAgent() {
     pauseSpeechRecognitionForTextToSpeech()
 
     try {
-      const objectUrl = await TTSProvider.instance.textToSpeechObjectUrl({
-        text: message,
-        provider: selectedTextToSpeechProvider.value,
-        languageCode: 'es',
-        operationTitle: 'drax-agent-tts',
-        operationGroup: 'drax-agent',
-      })
+      const objectUrl = audioResponse
+        ? createAudioObjectUrl(audioResponse)
+        : await TTSProvider.instance.textToSpeechObjectUrl({
+          text: message,
+          provider: selectedTextToSpeechProvider.value,
+          languageCode: 'es',
+          operationTitle: 'drax-agent-tts',
+          operationGroup: 'drax-agent',
+        })
 
       if (audioId !== currentTextToSpeechId.value) {
         URL.revokeObjectURL(objectUrl)
@@ -793,6 +848,24 @@ export function useDraxAgent() {
       URL.revokeObjectURL(textToSpeechAudioObjectUrl.value)
       textToSpeechAudioObjectUrl.value = null
     }
+  }
+
+  function createAudioObjectUrl(audioResponse: IAIPromptAudioResponse) {
+    const byteCharacters = atob(audioResponse.audio)
+    const byteArrays: ArrayBuffer[] = []
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+      const slice = byteCharacters.slice(offset, offset + 1024)
+      const byteNumbers = new Array(slice.length)
+
+      for (let index = 0; index < slice.length; index += 1) {
+        byteNumbers[index] = slice.charCodeAt(index)
+      }
+
+      byteArrays.push(new Uint8Array(byteNumbers).buffer)
+    }
+
+    return URL.createObjectURL(new Blob(byteArrays, {type: audioResponse.contentType}))
   }
 
   function startTextToSpeechProgressTimer(utteranceId: number, message: string) {

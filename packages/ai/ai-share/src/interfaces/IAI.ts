@@ -38,6 +38,29 @@ interface IAIPromptMemory {
     value: string
 }
 
+interface IAIPromptAudioVoiceSettings {
+    stability?: number
+    similarityBoost?: number
+    style?: number
+    useSpeakerBoost?: boolean
+    speed?: number
+}
+
+interface IAIPromptAudioParams {
+    enabled?: boolean
+    provider?: string
+    voiceId?: string
+    model?: string
+    outputFormat?: string
+    voiceSettings?: IAIPromptAudioVoiceSettings
+    previousText?: string
+    nextText?: string
+    languageCode?: string
+    seed?: number
+    operationTitle?: string
+    operationGroup?: string
+}
+
 interface IAIGenericPromptPayload {
     systemPrompt: string
     userInput?: string
@@ -53,6 +76,23 @@ interface IAIGenericPromptPayload {
     model?: string
     operationTitle?: string
     operationGroup?: string
+    audioResponse?: boolean | IAIPromptAudioParams
+}
+
+interface IAIPromptAudioResponseMeta {
+    provider: string
+    model: string
+    voiceId: string
+    outputFormat?: string
+    size: number
+    time: number
+}
+
+interface IAIPromptAudioResponse {
+    audio: string
+    contentType: string
+    encoding: 'base64'
+    meta: IAIPromptAudioResponseMeta
 }
 
 interface IAIPromptResponse {
@@ -61,6 +101,7 @@ interface IAIPromptResponse {
     inputTokens: number
     outputTokens: number
     time: number
+    audio?: IAIPromptAudioResponse
 }
 
 interface IAICrudFieldOption {
@@ -118,6 +159,10 @@ export type {
     IAIPromptContentPart,
     IAIPromptMessage,
     IAIPromptMemory,
+    IAIPromptAudioVoiceSettings,
+    IAIPromptAudioParams,
+    IAIPromptAudioResponse,
+    IAIPromptAudioResponseMeta,
     IAIGenericPromptPayload,
     IAIPromptResponse,
     IAICrudFieldOption,

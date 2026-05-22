@@ -17,6 +17,7 @@ import type {
 } from "../../interfaces/IAIProvider.js";
 import type {AILogService} from "../../services/AILogService.js";
 import type {IAILogBase} from "@drax/ai-share";
+import PromptAudioService from "../../services/PromptAudioService.js";
 
 class GoogleAiProvider implements IAIProvider{
     protected _apiKey: string
@@ -446,6 +447,7 @@ class GoogleAiProvider implements IAIProvider{
             const endTime = performance.now()
             const time = endTime - startTime
             const endedAt = new Date()
+            const audio = await PromptAudioService.build(input, output)
 
             await this.registerPromptLog(input, {
                 model,
@@ -464,7 +466,8 @@ class GoogleAiProvider implements IAIProvider{
                 tokens,
                 inputTokens,
                 outputTokens,
-                time
+                time,
+                ...(audio ? {audio} : {}),
             }
         } catch (e: any) {
             const endedAt = new Date()

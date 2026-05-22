@@ -42,6 +42,29 @@ const PromptInputFileSchema = z.object({
     url: z.string().optional(),
 })
 
+const PromptAudioVoiceSettingsSchema = z.object({
+    stability: z.number().min(0).max(1).optional(),
+    similarityBoost: z.number().min(0).max(1).optional(),
+    style: z.number().min(0).max(1).optional(),
+    useSpeakerBoost: z.boolean().optional(),
+    speed: z.number().positive().optional(),
+})
+
+const PromptAudioParamsSchema = z.object({
+    enabled: z.boolean().optional(),
+    provider: z.string().optional(),
+    voiceId: z.string().optional(),
+    model: z.string().optional(),
+    outputFormat: z.string().optional(),
+    voiceSettings: PromptAudioVoiceSettingsSchema.optional(),
+    previousText: z.string().optional(),
+    nextText: z.string().optional(),
+    languageCode: z.string().optional(),
+    seed: z.number().int().optional(),
+    operationTitle: z.string().optional(),
+    operationGroup: z.string().optional(),
+})
+
 const GenericPromptRequestSchema = z.object({
     systemPrompt: z.string().min(1),
     userInput: z.string().optional(),
@@ -57,6 +80,7 @@ const GenericPromptRequestSchema = z.object({
     model: z.string().optional(),
     operationTitle: z.string().optional(),
     operationGroup: z.string().optional(),
+    audioResponse: z.union([z.boolean(), PromptAudioParamsSchema]).optional(),
 })
 
 class AIGenericController extends CommonController {

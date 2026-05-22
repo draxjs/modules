@@ -1,4 +1,5 @@
 import { ZodSchema } from 'zod'
+import type {ITTSVoiceSettings} from "./ITTSProvider.js";
 
 type Role = 'user' | 'assistant' | 'system';
 
@@ -74,6 +75,38 @@ interface IPromptParams {
     userAgent?: string,
     tenant?: string | null,
     user?: string | null,
+    audioResponse?: boolean | IPromptAudioParams,
+}
+
+interface IPromptAudioParams {
+    enabled?: boolean,
+    provider?: string,
+    voiceId?: string,
+    model?: string,
+    outputFormat?: string,
+    voiceSettings?: ITTSVoiceSettings,
+    previousText?: string,
+    nextText?: string,
+    languageCode?: string,
+    seed?: number,
+    operationTitle?: string,
+    operationGroup?: string,
+}
+
+interface IPromptAudioResponseMeta {
+    provider: string,
+    model: string,
+    voiceId: string,
+    outputFormat?: string,
+    size: number,
+    time: number,
+}
+
+interface IPromptAudioResponse {
+    audio: string,
+    contentType: string,
+    encoding: 'base64',
+    meta: IPromptAudioResponseMeta,
 }
 
 interface IPromptResponse {
@@ -81,7 +114,8 @@ interface IPromptResponse {
     tokens: number,
     inputTokens: number,
     outputTokens: number,
-    time: number
+    time: number,
+    audio?: IPromptAudioResponse,
 }
 
 interface IAIProvider {
@@ -92,6 +126,9 @@ export type {
     IAIProvider,
     IPromptParams,
     IPromptResponse,
+    IPromptAudioParams,
+    IPromptAudioResponse,
+    IPromptAudioResponseMeta,
     IPromptMessage,
     IPromptMemory,
     IPromptTool,

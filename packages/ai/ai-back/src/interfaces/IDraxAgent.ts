@@ -1,5 +1,7 @@
 import type {
     IAIProvider,
+    IPromptAudioParams,
+    IPromptAudioResponse,
     IPromptContentPart,
     IPromptImage,
     IPromptMemory,
@@ -67,6 +69,7 @@ interface DraxAgentMessageInput extends DraxAgentSessionInput {
     toolMaxIterations?: number;
     operationTitle?: string;
     operationGroup?: string;
+    audioResponse?: boolean | IPromptAudioParams;
 }
 
 interface DraxAgentMessageOutput {
@@ -79,6 +82,7 @@ interface DraxAgentMessageOutput {
     inputTokens: number;
     outputTokens: number;
     time: number;
+    audio?: IPromptAudioResponse;
 }
 
 interface DraxAgentSession {

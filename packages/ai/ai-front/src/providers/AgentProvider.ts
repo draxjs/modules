@@ -1,5 +1,6 @@
 import {HttpRestClientFactory} from "@drax/common-front";
 import type {IHttpClient} from "@drax/common-front";
+import type {IAIPromptAudioParams, IAIPromptAudioResponse} from "@drax/ai-share";
 
 interface IChatbotTaskSessionResponse {
   agentIdentifier?: string
@@ -11,6 +12,7 @@ interface IChatbotTaskMessageResponse {
   sessionId: string
   message: string
   navigationPath?: string | null
+  audio?: IAIPromptAudioResponse
 }
 
 interface IAgentOption {
@@ -48,11 +50,16 @@ class ChatbotTaskProvider {
     return await this.httpClient.post(`${this.basePath}/session`, {identifier}, {timeout: 120000}) as IChatbotTaskSessionResponse
   }
 
-  async sendMessage(message: string, sessionId?: string, identifier?: string): Promise<IChatbotTaskMessageResponse> {
+  async sendMessage(
+    message: string,
+    sessionId?: string,
+    identifier?: string,
+    audioResponse?: boolean | IAIPromptAudioParams,
+  ): Promise<IChatbotTaskMessageResponse> {
     return await this.httpClient.post(
       `${this.basePath}/message`,
-      {message, sessionId, identifier},
-      {timeout: 120000},
+      {message, sessionId, identifier, ...(audioResponse ? {audioResponse} : {})},
+      {timeout: 360000},
     ) as IChatbotTaskMessageResponse
   }
 }

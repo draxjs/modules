@@ -144,6 +144,70 @@ describe("DraxAgent", () => {
         ]);
     });
 
+    test("passes audioResponse to provider and returns prompt audio", async () => {
+        class AudioMockProvider extends MockProvider {
+            async prompt(input: IPromptParams): Promise<IPromptResponse> {
+                this.requests.push(input);
+
+                return {
+                    output: "respuesta hablada",
+                    tokens: 10,
+                    inputTokens: 6,
+                    outputTokens: 4,
+                    time: 12,
+                    audio: {
+                        audio: Buffer.from("audio").toString("base64"),
+                        contentType: "audio/mpeg",
+                        encoding: "base64",
+                        meta: {
+                            provider: "elevenlabs",
+                            model: "eleven_multilingual_v2",
+                            voiceId: "voice-1",
+                            size: 5,
+                            time: 20,
+                        },
+                    },
+                };
+            }
+        }
+
+        const provider = new AudioMockProvider();
+        const agent = new DraxAgent().configure({
+            provider,
+            systemPrompt: "Sos un asistente.",
+            sessionService: false,
+            toolBuilders: undefined,
+            tools: undefined,
+        });
+
+        const response = await agent.sendMessage({
+            userId: "user-1",
+            message: "Hola",
+            audioResponse: {
+                provider: "ElevenLabs",
+                languageCode: "es",
+            },
+        });
+
+        expect(provider.requests[0].audioResponse).toEqual({
+            provider: "ElevenLabs",
+            languageCode: "es",
+        });
+        expect(response.message).toBe("respuesta hablada");
+        expect(response.audio).toEqual({
+            audio: Buffer.from("audio").toString("base64"),
+            contentType: "audio/mpeg",
+            encoding: "base64",
+            meta: {
+                provider: "elevenlabs",
+                model: "eleven_multilingual_v2",
+                voiceId: "voice-1",
+                size: 5,
+                time: 20,
+            },
+        });
+    });
+
     test("returns a navigation path from tool execution metadata", async () => {
         const provider = new MockProvider();
         const agent = new DraxAgent().configure({

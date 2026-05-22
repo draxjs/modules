@@ -110,6 +110,7 @@ class DraxAgent {
             userAgent: input.userAgent,
             tenant: input.tenantId ?? session.tenantId ?? null,
             user: input.userId ?? session.userId ?? null,
+            audioResponse: input.audioResponse,
         });
 
         const assistantMessage = this.normalizeOutput(response.output);
@@ -134,6 +135,7 @@ class DraxAgent {
             inputTokens: response.inputTokens,
             outputTokens: response.outputTokens,
             time: response.time,
+            ...(response.audio ? {audio: response.audio} : {}),
         };
     }
 
