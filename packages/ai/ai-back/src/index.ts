@@ -45,6 +45,7 @@ import TTSRoutes from "./routes/TTSRoutes.js";
 import DraxAgentRoutes from "./routes/DraxAgentRoutes.js";
 import AgentSessionRoutes from "./routes/AgentSessionRoutes.js";
 import {DraxAgent} from "./agents/DraxAgent.js";
+import {BuildContextTool} from "./tools/BuildContextTool.js";
 import type {IAILogRepository} from "./interfaces/IAILogRepository.js";
 import type {
     IAIProvider,
@@ -80,6 +81,10 @@ import type {
     ToolBuilderOptions,
     ToolBuilderService
 } from "./interfaces/IBuilderTool.js";
+import type {
+    BuildContextToolContext,
+    BuildContextToolOptions,
+} from "./tools/BuildContextTool.js";
 import type {
     DraxAgentControllerOptions
 } from "./interfaces/IDraxAgentController.js";
@@ -127,6 +132,8 @@ export type {
     ToolBuilderMethod,
     ToolBuilderOptions,
     ToolBuilderService,
+    BuildContextToolContext,
+    BuildContextToolOptions,
     DraxAgentControllerOptions,
     DraxAgentFastifyRoutesOptions,
     DraxAgentConfig,
@@ -169,6 +176,7 @@ export {
     DeepSeekAiProvider,
     ElevenLabsTTSProvider,
     BuilderTool,
+    BuildContextTool,
     //Service
     KnowledgeService,
     AILogService,
