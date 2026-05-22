@@ -1,47 +1,46 @@
 <script setup lang="ts">
-import {onMounted, ref, computed} from "vue";
+import {ref, watch} from "vue";
 import type {PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share";
-import type {IDraxFieldFilter} from "@drax/crud-share";
+import {useCrudRefDisplay} from "../composables/useCrudRefDisplay";
 
-const {entity, value, refDisplay} = defineProps({
+const props = defineProps({
   entity: {type: Object as PropType<IEntityCrud | undefined>, required: true},
-  value: {type: Array as PropType<any[]>, required: true},
-  refDisplay: {type: String as PropType<String>, required: true},
+  value: {type: null, required: true},
+  displayField: {type: String, required: false},
+  refDisplay: {type: String, required: false},
 })
 
+const {refDisplay} = useCrudRefDisplay()
 const loading = ref(false)
-const items = ref<any[]>([])
-
-onMounted(()=> {
-  console.log('onMounted',entity, value, refDisplay)
-  fetch()
-})
+const display = ref<any>('')
 
 async function fetch() {
   try{
     loading.value = true
-    if(entity?.provider?.find){
-      const ids = Array.isArray(value) ? value : [value]
-      const filters: IDraxFieldFilter[] = [{field: '_id', operator: 'in', value: ids}]
-      items.value = await entity.provider.find({filters})
+    if(props.entity){
+      display.value = await refDisplay(
+        props.entity,
+        props.value,
+        props.displayField ?? props.refDisplay
+      )
     }
   }catch (e){
     console.error(e)
+    display.value = props.value
   }finally{
     loading.value = false
   }
 }
 
-const display = computed(() => {
-  return items.value.map(item => item[refDisplay as any]).join(', ')
-})
-
-
+watch(
+  () => [props.entity, props.value, props.displayField, props.refDisplay],
+  fetch,
+  {immediate: true}
+)
 </script>
 
 <template>
-  {{display}}
-
+  <span v-if="loading">...</span>
+  <span v-else>{{display}}</span>
 </template>
-

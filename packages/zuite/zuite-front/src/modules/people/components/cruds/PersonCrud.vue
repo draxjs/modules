@@ -1,7 +1,8 @@
 
 <script setup lang="ts">
 import PersonCrud from '../../cruds/PersonCrud'
-import {Crud} from "@drax/crud-vue";
+import CountryCrud from '../../cruds/CountryCrud'
+import {Crud, CrudRefDisplay} from "@drax/crud-vue";
 import {formatDate} from "@drax/common-front"
 
 </script>
@@ -9,6 +10,9 @@ import {formatDate} from "@drax/common-front"
 <template>
   <crud :entity="PersonCrud.instance">
 
+    <template v-slot:field.nationality="{modelValue}">
+      refDisplay: <crud-ref-display :entity="CountryCrud.instance" :value="modelValue" display-field="name" />
+    </template>
 
     <template v-slot:item.birthdate="{value}">{{formatDate(value)}}</template>
     <template v-slot:item.nationality="{value}">{{value?.name}}</template>
@@ -32,4 +36,3 @@ import {formatDate} from "@drax/common-front"
 <style scoped>
 
 </style>
-

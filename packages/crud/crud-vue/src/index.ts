@@ -15,12 +15,14 @@ import CrudFiltersAction from "./components/CrudFiltersAction.vue";
 import CrudNotify from "./components/CrudNotify.vue";
 import CrudSearch from "./components/CrudSearch.vue";
 import CrudAutocomplete from "./components/CrudAutocomplete.vue";
+import CrudRefDisplay from "./components/CrudRefDisplay.vue";
 import CrudSavedQueriesButton from "./components/buttons/CrudSavedQueriesButton.vue";
 import CrudRefreshButton from "./components/buttons/CrudRefreshButton.vue";
 import EntityCombobox from "./components/combobox/EntityCombobox.vue";
 import {useCrudStore} from "./stores/UseCrudStore";
 import {useEntityStore} from "./stores/UseEntityStore";
 import {useCrud} from "./composables/UseCrud";
+import {useCrudRefDisplay} from "./composables/useCrudRefDisplay";
 import {useDynamicFilters} from "./composables/UseDynamicFilters";
 import {useFilterIcon} from "./composables/UseFilterIcon";
 import {useFormUtils} from "./composables/UseFormUtils";
@@ -43,6 +45,7 @@ export {
     CrudNotify,
     CrudSearch,
     CrudAutocomplete,
+    CrudRefDisplay,
     CrudSavedQueriesButton,
     CrudRefreshButton,
     CrudFilters,
@@ -54,6 +57,7 @@ export {
     useCrudStore,
     useInputErrorI18n,
     useFilterIcon,
+    useCrudRefDisplay,
     EntityCrud,
     useEntityStore,
     EntityCombobox

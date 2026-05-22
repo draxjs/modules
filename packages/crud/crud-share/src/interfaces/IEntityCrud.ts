@@ -15,6 +15,7 @@ import type {IEntityCrudOperation} from "./IEntityCrudOperation";
 interface IEntityCrud {
   name: string
   identifier: string
+  displayField?: string
   headers: IEntityCrudHeader[]
   selectedHeaders: string[]  // Nuevo getter
   actionHeaders: IEntityCrudHeader[]
