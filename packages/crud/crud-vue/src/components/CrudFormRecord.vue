@@ -90,18 +90,20 @@ defineEmits(['updateValue'])
 </script>
 
 <template>
-  <div class="record-field">
-    <v-card variant="flat" border class="mt-3">
-      <v-card-title class="text-h5">{{ field.label }}</v-card-title>
-      <v-card-text>
-        <div v-if="localEntries.length === 0" class="text-center py-4">
-          <p class="text-grey">{{ t('common.noData') || 'No data' }}</p>
+  <div :id="`crud-form-record-${field.name}`" class="crud-form-record record-field">
+    <v-card :id="`crud-form-record-card-${field.name}`" variant="flat" border class="crud-form-record__card mt-3">
+      <v-card-title :id="`crud-form-record-title-${field.name}`" class="crud-form-record__title text-h5">{{ field.label }}</v-card-title>
+      <v-card-text :id="`crud-form-record-content-${field.name}`" class="crud-form-record__content">
+        <div v-if="localEntries.length === 0" :id="`crud-form-record-empty-${field.name}`" class="crud-form-record__empty text-center py-4">
+          <p class="crud-form-record__empty-text text-grey">{{ t('common.noData') || 'No data' }}</p>
         </div>
 
-        <div v-for="entry in localEntries" :key="entry.id" class="record-entry mb-3">
-          <v-row dense>
-            <v-col cols="12" sm="5">
+        <div v-for="entry in localEntries" :key="entry.id" :id="`crud-form-record-entry-${field.name}-${entry.id}`" class="crud-form-record__entry record-entry mb-3">
+          <v-row :id="`crud-form-record-entry-row-${field.name}-${entry.id}`" class="crud-form-record__entry-row" dense>
+            <v-col :id="`crud-form-record-key-column-${field.name}-${entry.id}`" class="crud-form-record__key-column" cols="12" sm="5">
               <v-text-field
+                  :id="`crud-form-record-key-field-${field.name}-${entry.id}`"
+                  class="crud-form-record__key-field"
                   :model-value="entry.key"
                   :label="t('common.key') || 'Key'"
                   :density="density"
@@ -112,8 +114,10 @@ defineEmits(['updateValue'])
                   outlined
               />
             </v-col>
-            <v-col cols="12" sm="5">
+            <v-col :id="`crud-form-record-value-column-${field.name}-${entry.id}`" class="crud-form-record__value-column" cols="12" sm="5">
               <v-text-field
+                  :id="`crud-form-record-value-field-${field.name}-${entry.id}`"
+                  class="crud-form-record__value-field"
                   :model-value="entry.value"
                   :label="t('common.value') || 'Value'"
                   :density="density"
@@ -124,9 +128,11 @@ defineEmits(['updateValue'])
                   outlined
               />
             </v-col>
-            <v-col cols="12" sm="2" class="d-flex align-center">
+            <v-col :id="`crud-form-record-actions-column-${field.name}-${entry.id}`" cols="12" sm="2" class="crud-form-record__actions-column d-flex align-center">
               <v-btn
                   v-if="!readonly"
+                  :id="`crud-form-record-delete-button-${field.name}-${entry.id}`"
+                  class="crud-form-record__delete-button"
                   icon="mdi-delete"
                   size="small"
                   color="error"
@@ -141,6 +147,8 @@ defineEmits(['updateValue'])
 
         <v-btn
             v-if="!readonly"
+            :id="`crud-form-record-add-button-${field.name}`"
+            class="crud-form-record__add-button"
             prepend-icon="mdi-plus"
             color="primary"
             variant="tonal"

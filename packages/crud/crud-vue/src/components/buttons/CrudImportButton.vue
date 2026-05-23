@@ -37,22 +37,24 @@ function onFileChange(event: Event) {
 </script>
 
 <template>
-  <div v-if="entity.isImportable">
+  <div v-if="entity.isImportable" id="crud-import-button-wrapper" class="crud-import-button-wrapper">
     <input
         ref="fileInput"
-        class="d-none"
+        id="crud-import-file-input"
+        class="crud-import-button__file-input d-none"
         type="file"
         :accept="entity.importFormats.includes('CSV') && entity.importFormats.includes('JSON') ? '.csv,.json,application/json,text/csv' : entity.importFormats.includes('CSV') ? '.csv,text/csv' : '.json,application/json'"
         @change="onFileChange"
     />
-    <v-menu>
+    <v-menu id="crud-import-menu" class="crud-import-menu">
       <template v-slot:activator="{ props: mp }">
-      <v-tooltip location="top">
+      <v-tooltip id="crud-import-button-tooltip" class="crud-import-button__tooltip" location="top">
         <template v-slot:activator="{ props }">
           <v-btn
               v-bind="{...mp, ...props}"
               :disabled="importLoading"
-              class="mr-1"
+              id="crud-import-button"
+              class="crud-import-button mr-1"
               variant="text"
               :loading="importLoading"
               icon="mdi-database-import-outline"
@@ -61,9 +63,9 @@ function onFileChange(event: Event) {
         {{ t('action.import')}}
       </v-tooltip>
       </template>
-      <v-list>
-        <v-list-item v-for="format in entity.importFormats" @click="selectFormat(format)">
-          <v-list-item-title>{{ format }}</v-list-item-title>
+      <v-list id="crud-import-format-list" class="crud-import-menu__list">
+        <v-list-item v-for="format in entity.importFormats" :id="`crud-import-format-${format}`" class="crud-import-menu__item" @click="selectFormat(format)">
+          <v-list-item-title class="crud-import-menu__item-title">{{ format }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>

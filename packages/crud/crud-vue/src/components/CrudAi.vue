@@ -300,32 +300,36 @@ watch(prompt, () => {
 
 <template>
   <v-expand-transition>
-    <div v-if="expanded" class="mb-4">
-      <v-card variant="tonal" class="crud-ai-panel">
-        <v-card-text>
-          <div class="d-flex align-center mb-4">
-            <div class="text-subtitle-1">{{ subtitle }}</div>
+    <div v-if="expanded" id="crud-ai-panel-wrapper" class="crud-ai-panel-wrapper mb-4">
+      <v-card id="crud-ai-panel" variant="tonal" class="crud-ai-panel">
+        <v-card-text id="crud-ai-content" class="crud-ai-panel__content">
+          <div id="crud-ai-header" class="crud-ai-panel__header d-flex align-center mb-4">
+            <div id="crud-ai-subtitle" class="crud-ai-panel__subtitle text-subtitle-1">{{ subtitle }}</div>
             <v-spacer />
-            <v-btn icon="mdi-close" variant="text" @click="expanded = false" />
+            <v-btn id="crud-ai-close-button" class="crud-ai-panel__close-button" icon="mdi-close" variant="text" @click="expanded = false" />
           </div>
 
           <v-alert
               v-if="error"
+              id="crud-ai-error"
               type="error"
               variant="tonal"
-              class="mb-4"
+              class="crud-ai-panel__error mb-4"
               :text="error"
           />
 
           <v-alert
               v-if="editableFields.length === 0"
+              id="crud-ai-empty-fields-warning"
               type="warning"
               variant="tonal"
-              class="mb-4"
+              class="crud-ai-panel__empty-fields-warning mb-4"
               :text="te('ai.noEditableFields') ? t('ai.noEditableFields') : 'No hay campos editables disponibles para asistir con IA.'"
           />
 
           <v-textarea
+              id="crud-ai-prompt"
+              class="crud-ai-panel__prompt"
               v-model="prompt"
               rows="3"
               auto-grow
@@ -334,8 +338,10 @@ watch(prompt, () => {
               :placeholder="te('ai.promptPlaceholder') ? t('ai.promptPlaceholder') : 'Ejemplo: completá este formulario para un producto premium orientado a pequeñas empresas.'"
           />
 
-          <div class="d-flex justify-end mt-2">
+          <div id="crud-ai-prompt-actions" class="crud-ai-panel__prompt-actions d-flex justify-end mt-2">
             <v-btn
+                id="crud-ai-generate-button"
+                class="crud-ai-panel__generate-button"
                 color="primary"
                 variant="flat"
                 :loading="loading"
@@ -346,54 +352,59 @@ watch(prompt, () => {
             </v-btn>
           </div>
 
-          <v-card v-if="response" variant="outlined" class="mt-6">
-            <v-card-title>
+          <v-card v-if="response" id="crud-ai-preview" variant="outlined" class="crud-ai-panel__preview mt-6">
+            <v-card-title id="crud-ai-preview-title" class="crud-ai-panel__preview-title">
               {{ te('ai.preview') ? t('ai.preview') : 'Vista previa' }}
             </v-card-title>
 
-            <v-card-text>
+            <v-card-text id="crud-ai-preview-content" class="crud-ai-panel__preview-content">
               <v-alert
                   v-if="response.message"
+                  id="crud-ai-response-message"
                   variant="tonal"
                   type="info"
-                  class="mb-4"
+                  class="crud-ai-panel__response-message mb-4"
                   :text="response.message"
               />
 
               <v-alert
                   v-if="changedEntries.length === 0"
+                  id="crud-ai-no-changes"
                   variant="tonal"
                   type="info"
+                  class="crud-ai-panel__no-changes"
                   :text="te('ai.noChanges') ? t('ai.noChanges') : 'La IA no propuso cambios aplicables para este formulario.'"
               />
 
-              <v-list v-else lines="three">
+              <v-list v-else id="crud-ai-changes-list" class="crud-ai-panel__changes-list" lines="three">
                 <v-list-item
                     v-for="entry in changedEntries"
                     :key="entry.field.name"
-                    class="px-0"
+                    :id="`crud-ai-change-${entry.field.name}`"
+                    class="crud-ai-panel__change px-0"
                 >
-                  <v-list-item-title>
+                  <v-list-item-title class="crud-ai-panel__change-title">
                     {{ entry.field.label || entry.field.name }}
                   </v-list-item-title>
-                  <div class="mt-1 preview-block">
+                  <div class="crud-ai-panel__change-preview mt-1 preview-block">
                     <template v-if="showCurrentValues">
-                      <div class="text-caption text-medium-emphasis">Actual</div>
-                      <pre class="value-preview">{{ formatValue(entry.currentValue) }}</pre>
+                      <div class="crud-ai-panel__current-label text-caption text-medium-emphasis">Actual</div>
+                      <pre class="crud-ai-panel__current-value value-preview">{{ formatValue(entry.currentValue) }}</pre>
                     </template>
-                    <div class="text-caption text-medium-emphasis mt-2">Sugerido</div>
-                    <pre class="value-preview">{{ formatValue(entry.suggestedValue) }}</pre>
+                    <div class="crud-ai-panel__suggested-label text-caption text-medium-emphasis mt-2">Sugerido</div>
+                    <pre class="crud-ai-panel__suggested-value value-preview">{{ formatValue(entry.suggestedValue) }}</pre>
                   </div>
                 </v-list-item>
               </v-list>
 
-              <div v-if="(response.warnings || []).length > 0" class="mt-4">
+              <div v-if="(response.warnings || []).length > 0" id="crud-ai-warnings" class="crud-ai-panel__warnings mt-4">
                 <v-alert
                     v-for="warning in response.warnings || []"
                     :key="warning"
+                    :id="`crud-ai-warning-${warning.replace(/[^a-zA-Z0-9_-]/g, '-')}`"
                     variant="tonal"
                     type="warning"
-                    class="mb-3"
+                    class="crud-ai-panel__warning mb-3"
                     :text="warning"
                 />
               </div>
@@ -401,12 +412,14 @@ watch(prompt, () => {
           </v-card>
         </v-card-text>
 
-        <v-card-actions v-if="response">
+        <v-card-actions v-if="response" id="crud-ai-actions" class="crud-ai-panel__actions">
           <v-spacer />
-          <v-btn variant="text" @click="expanded = false">
+          <v-btn id="crud-ai-cancel-button" class="crud-ai-panel__cancel-button" variant="text" @click="expanded = false">
             {{ t('action.cancel') }}
           </v-btn>
           <v-btn
+              id="crud-ai-apply-button"
+              class="crud-ai-panel__apply-button"
               color="primary"
               variant="flat"
               :disabled="changedEntries.length === 0"

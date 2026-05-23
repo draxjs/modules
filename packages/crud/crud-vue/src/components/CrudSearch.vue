@@ -28,8 +28,9 @@ function clear() {
 
 <template>
   <v-text-field v-model="input"
+                id="crud-search-input"
                 density="compact"
-                class="mr-2"
+                class="crud-search-input mr-2"
                 variant="outlined"
                 append-inner-icon="mdi-magnify"
                 :label="t('action.search')"

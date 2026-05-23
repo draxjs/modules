@@ -122,16 +122,18 @@ const emit = defineEmits(['filterRemoved', 'filtersCleared'])
 </script>
 
 <template>
-  <v-card v-if="activeFilters.length > 0" flat class="mb-2">
-    <v-card-text class="py-2">
-      <div class="d-flex align-center flex-wrap ga-2">
-        <span class="text-caption text-medium-emphasis">
-          <v-icon size="x-small">mdi-filter</v-icon> {{ t('crud.activeFilters') }}:
+  <v-card v-if="activeFilters.length > 0" id="crud-active-filters" flat class="crud-active-filters mb-2">
+    <v-card-text id="crud-active-filters-content" class="crud-active-filters__content py-2">
+      <div id="crud-active-filters-list" class="crud-active-filters__list d-flex align-center flex-wrap ga-2">
+        <span id="crud-active-filters-label" class="crud-active-filters__label text-caption text-medium-emphasis">
+          <v-icon id="crud-active-filters-icon" class="crud-active-filters__icon" size="x-small">mdi-filter</v-icon> {{ t('crud.activeFilters') }}:
         </span>
 
         <v-chip
           v-for="filter in activeFilters"
           :key="filter.index"
+          :id="`crud-active-filter-${filter.index}`"
+          class="crud-active-filters__chip"
           closable
           size="small"
           color="primary"
@@ -139,15 +141,15 @@ const emit = defineEmits(['filterRemoved', 'filtersCleared'])
           @click:close="removeFilter(filter.index)"
         >
 
-          <span class="font-weight-medium">{{ getFilterLabel(filter) }}</span>
-          <v-icon :icon="filterIcon(filter)" size="x-small" class="mx-1" />
-          <span v-if="['ref','array.ref'].includes(filter.type)">
+          <span class="crud-active-filters__chip-label font-weight-medium">{{ getFilterLabel(filter) }}</span>
+          <v-icon :icon="filterIcon(filter)" size="x-small" class="crud-active-filters__chip-icon mx-1" />
+          <span v-if="['ref','array.ref'].includes(filter.type)" class="crud-active-filters__chip-ref-value">
             <crud-ref-display
                 :ref-display="filter.refDisplay"
                 :value="filter.value"
                 :entity="entity.getRef(filter.ref)" />
           </span>
-          <span v-else>{{ getFilterValue(filter) }}</span>
+          <span v-else class="crud-active-filters__chip-value">{{ getFilterValue(filter) }}</span>
 
           <v-tooltip
             v-if="filter.endOfDay"

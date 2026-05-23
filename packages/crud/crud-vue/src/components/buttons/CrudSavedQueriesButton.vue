@@ -216,6 +216,8 @@ function onMenuUpdate(value: boolean) {
 <template>
   <v-menu
       v-if="canViewSavedQueries"
+      id="crud-saved-queries-menu"
+      class="crud-saved-queries-menu"
       :model-value="menu"
       offset-y
       :close-on-content-click="false"
@@ -224,21 +226,25 @@ function onMenuUpdate(value: boolean) {
     <template #activator="{ props: activatorProps }">
       <v-btn
           v-bind="activatorProps"
+          id="crud-saved-queries-button"
+          class="crud-saved-queries-button"
           icon
           variant="text"
       >
-        <v-icon>mdi-content-save-cog</v-icon>
+        <v-icon id="crud-saved-queries-button-icon" class="crud-saved-queries-button__icon">mdi-content-save-cog</v-icon>
         <v-tooltip activator="parent" location="bottom">
           {{ title }}
         </v-tooltip>
       </v-btn>
     </template>
 
-    <v-list min-width="280">
-      <v-list-subheader>{{ title }}</v-list-subheader>
+    <v-list id="crud-saved-queries-list" class="crud-saved-queries-menu__list" min-width="280">
+      <v-list-subheader id="crud-saved-queries-title" class="crud-saved-queries-menu__title">{{ title }}</v-list-subheader>
 
       <v-list-item
           v-if="canCreateSavedQueries"
+          id="crud-saved-queries-save-item"
+          class="crud-saved-queries-menu__save-item"
           @click="openSaveDialog"
       >
         <template #prepend>
@@ -249,17 +255,19 @@ function onMenuUpdate(value: boolean) {
 
       <v-divider />
 
-      <v-list-item v-if="loading">
-        <v-progress-linear indeterminate />
+      <v-list-item v-if="loading" id="crud-saved-queries-loading-item" class="crud-saved-queries-menu__loading-item">
+        <v-progress-linear id="crud-saved-queries-loading" class="crud-saved-queries-menu__loading" indeterminate />
       </v-list-item>
 
-      <v-list-item v-else-if="savedQueries.length === 0">
-        <v-list-item-title class="text-medium-emphasis">{{ noQueriesText }}</v-list-item-title>
+      <v-list-item v-else-if="savedQueries.length === 0" id="crud-saved-queries-empty-item" class="crud-saved-queries-menu__empty-item">
+        <v-list-item-title class="crud-saved-queries-menu__empty-title text-medium-emphasis">{{ noQueriesText }}</v-list-item-title>
       </v-list-item>
 
       <v-list-item
           v-for="query in savedQueries"
           :key="query._id"
+          :id="`crud-saved-query-${query._id}`"
+          class="crud-saved-queries-menu__query-item"
           @click="applyQuery(query)"
       >
         <template #prepend>
@@ -269,6 +277,8 @@ function onMenuUpdate(value: boolean) {
         <template #append>
           <v-btn
               v-if="canDeleteQuery(query)"
+              :id="`crud-saved-query-delete-${query._id}`"
+              class="crud-saved-queries-menu__delete-button"
               icon
               variant="text"
               color="red"
@@ -285,11 +295,13 @@ function onMenuUpdate(value: boolean) {
     </v-list>
   </v-menu>
 
-  <v-dialog v-model="saveDialog" max-width="460">
-    <v-card>
-      <v-card-title>{{ saveTitle }}</v-card-title>
-      <v-card-text>
+  <v-dialog id="crud-saved-query-save-dialog" class="crud-saved-query-save-dialog" v-model="saveDialog" max-width="460">
+    <v-card id="crud-saved-query-save-card" class="crud-saved-query-save-dialog__card">
+      <v-card-title id="crud-saved-query-save-title" class="crud-saved-query-save-dialog__title">{{ saveTitle }}</v-card-title>
+      <v-card-text id="crud-saved-query-save-content" class="crud-saved-query-save-dialog__content">
         <v-text-field
+            id="crud-saved-query-name-field"
+            class="crud-saved-query-save-dialog__name-field"
             v-model="form.name"
             :label="te('crud.savedQueries.name') ? t('crud.savedQueries.name') : 'Name'"
             density="compact"
@@ -297,18 +309,22 @@ function onMenuUpdate(value: boolean) {
             autofocus
         />
         <v-switch
+            id="crud-saved-query-shared-switch"
+            class="crud-saved-query-save-dialog__shared-switch"
             v-model="form.shared"
             :label="te('crud.savedQueries.shared') ? t('crud.savedQueries.shared') : 'Shared'"
             color="primary"
             hide-details
         />
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions id="crud-saved-query-save-actions" class="crud-saved-query-save-dialog__actions">
         <v-spacer />
-        <v-btn variant="text" @click="saveDialog = false">
+        <v-btn id="crud-saved-query-save-cancel-button" class="crud-saved-query-save-dialog__cancel-button" variant="text" @click="saveDialog = false">
           {{ te('action.cancel') ? t('action.cancel') : 'Cancel' }}
         </v-btn>
         <v-btn
+            id="crud-saved-query-save-submit-button"
+            class="crud-saved-query-save-dialog__submit-button"
             color="primary"
             variant="flat"
             :loading="saving"
@@ -321,18 +337,20 @@ function onMenuUpdate(value: boolean) {
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="deleteDialog" max-width="460">
-    <v-card>
-      <v-card-title>{{ deleteTitle }}</v-card-title>
-      <v-card-text>
+  <v-dialog id="crud-saved-query-delete-dialog" class="crud-saved-query-delete-dialog" v-model="deleteDialog" max-width="460">
+    <v-card id="crud-saved-query-delete-card" class="crud-saved-query-delete-dialog__card">
+      <v-card-title id="crud-saved-query-delete-title" class="crud-saved-query-delete-dialog__title">{{ deleteTitle }}</v-card-title>
+      <v-card-text id="crud-saved-query-delete-content" class="crud-saved-query-delete-dialog__content">
         {{ deleteConfirmText }}
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions id="crud-saved-query-delete-actions" class="crud-saved-query-delete-dialog__actions">
         <v-spacer />
-        <v-btn variant="text" @click="deleteDialog = false">
+        <v-btn id="crud-saved-query-delete-cancel-button" class="crud-saved-query-delete-dialog__cancel-button" variant="text" @click="deleteDialog = false">
           {{ te('action.cancel') ? t('action.cancel') : 'Cancel' }}
         </v-btn>
         <v-btn
+            id="crud-saved-query-delete-confirm-button"
+            class="crud-saved-query-delete-dialog__confirm-button"
             color="red"
             variant="flat"
             :loading="deleting"

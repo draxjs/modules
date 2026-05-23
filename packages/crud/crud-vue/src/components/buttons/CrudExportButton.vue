@@ -16,14 +16,15 @@ const {
 </script>
 
 <template>
-  <v-menu v-if="entity.isExportable">
+  <v-menu v-if="entity.isExportable" id="crud-export-menu" class="crud-export-menu">
     <template v-slot:activator="{ props: mp }">
-      <v-tooltip location="top">
+      <v-tooltip id="crud-export-button-tooltip" class="crud-export-button__tooltip" location="top">
         <template v-slot:activator="{ props: tp }">
           <v-btn
               v-bind="{...mp, ...tp}"
               :disabled="exportLoading"
-              class="mr-1"
+              id="crud-export-button"
+              class="crud-export-button mr-1"
               variant="text"
               :loading="exportLoading"
               icon="mdi-database-export-outline"
@@ -33,9 +34,9 @@ const {
       </v-tooltip>
 
     </template>
-    <v-list>
-      <v-list-item v-for="format in entity.exportFormats" @click="$emit('export', format)">
-        <v-list-item-title>{{format}}</v-list-item-title>
+    <v-list id="crud-export-format-list" class="crud-export-menu__list">
+      <v-list-item v-for="format in entity.exportFormats" :id="`crud-export-format-${format}`" class="crud-export-menu__item" @click="$emit('export', format)">
+        <v-list-item-title class="crud-export-menu__item-title">{{format}}</v-list-item-title>
       </v-list-item>
     </v-list>
 

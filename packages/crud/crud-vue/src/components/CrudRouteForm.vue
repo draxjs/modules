@@ -163,12 +163,14 @@ async function prepareRouteForm() {
 </script>
 
 <template>
-  <v-container :fluid="entity.containerFluid" class="mt-5">
-    <v-card :class="entity.cardClass" :density="entity.cardDensity">
-      <v-progress-linear v-if="store.loading" indeterminate/>
+  <v-container :id="`crud-route-form-container-${entity.name}`" :fluid="entity.containerFluid" class="crud-route-form mt-5">
+    <v-card :id="`crud-route-form-card-${entity.name}`" :class="['crud-route-form__card', entity.cardClass]" :density="entity.cardDensity">
+      <v-progress-linear v-if="store.loading" id="crud-route-form-loading" class="crud-route-form__loading" indeterminate/>
 
-      <v-card-actions class="justify-start pa-2 pb-0">
+      <v-card-actions id="crud-route-form-actions" class="crud-route-form__actions justify-start pa-2 pb-0">
         <v-btn
+            id="crud-route-form-back-button"
+            class="crud-route-form__back-button"
             prepend-icon="mdi-arrow-left"
             variant="text"
             @click="goToList"
@@ -179,6 +181,8 @@ async function prepareRouteForm() {
 
       <crud-form
           v-if="formReady || store.error"
+          id="crud-route-form-form"
+          class="crud-route-form__form"
           :entity="entity"
           show-submit-and-return
           @created="created"

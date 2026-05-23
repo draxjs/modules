@@ -96,14 +96,17 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
 </script>
 
 <template>
-  <v-row dense class="mt-4">
+  <v-row id="crud-dynamic-filters" class="crud-dynamic-filters mt-4" dense>
     <v-col v-for="(filter,index) in aFields"
            :key="filter.name"
-           cols="12" class="tdash"
+           :id="`crud-dynamic-filter-${index}`"
+           cols="12" class="crud-dynamic-filters__item tdash"
     >
-      <v-row >
-        <v-col cols="12" sm="4">
+      <v-row :id="`crud-dynamic-filter-row-${index}`" class="crud-dynamic-filters__item-row">
+        <v-col :id="`crud-dynamic-filter-field-column-${index}`" class="crud-dynamic-filters__field-column" cols="12" sm="4">
           <v-select
+              :id="`crud-dynamic-filter-field-select-${index}`"
+              class="crud-dynamic-filters__field-select"
               :items="selectableFields"
               v-model="getDynamicFilter(index)!.name"
               :label="t('crud.field')"
@@ -113,8 +116,10 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
               @update:modelValue="(_v:string) => updateDynamicField(index, true)"
           />
         </v-col>
-        <v-col cols="12" sm="3">
+        <v-col :id="`crud-dynamic-filter-operator-column-${index}`" class="crud-dynamic-filters__operator-column" cols="12" sm="3">
           <v-select
+              :id="`crud-dynamic-filter-operator-select-${index}`"
+              class="crud-dynamic-filters__operator-select"
               :items="getDynamicOperations(index)"
               v-model="getDynamicFilter(index)!.operator"
               :label="t('crud.operator')"
@@ -124,9 +129,11 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
               @update:modelValue="(_v:string) => updateDynamicField(index)"
           />
         </v-col>
-        <v-col cols="10" sm="4">
+        <v-col :id="`crud-dynamic-filter-value-column-${index}`" class="crud-dynamic-filters__value-column" cols="10" sm="4">
           <crud-form-field
               v-if="dynamicValueRequired(index)"
+              :id="`crud-dynamic-filter-value-field-${index}`"
+              class="crud-dynamic-filters__value-field"
               :field="filter"
               :entity="entity"
               v-model="getDynamicFilter(index)!.value"
@@ -138,10 +145,11 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
               @updateValue="onUpdateValue"
           />
         </v-col>
-        <v-col cols="2" sm="1">
+        <v-col :id="`crud-dynamic-filter-delete-column-${index}`" class="crud-dynamic-filters__delete-column" cols="2" sm="1">
           <v-btn @click="deleteFilter(index)"
+                 :id="`crud-dynamic-filter-delete-button-${index}`"
                  icon="mdi-delete"
-                 class="mr-1"
+                 class="crud-dynamic-filters__delete-button mr-1"
                  variant="text"
                  color="red"
           >
@@ -152,8 +160,8 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
 
     </v-col>
 
-    <v-col cols="12">
-      <v-btn size="small" variant="outlined" color="primary" @click="addFilter">+ {{ t('action.addFilter') }}</v-btn>
+    <v-col id="crud-dynamic-filters-add-column" class="crud-dynamic-filters__add-column" cols="12">
+      <v-btn id="crud-dynamic-filters-add-button" class="crud-dynamic-filters__add-button" size="small" variant="outlined" color="primary" @click="addFilter">+ {{ t('action.addFilter') }}</v-btn>
     </v-col>
 
   </v-row>

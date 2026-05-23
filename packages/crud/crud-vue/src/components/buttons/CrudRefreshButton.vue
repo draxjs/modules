@@ -5,12 +5,13 @@ const {t} = useI18n()
 </script>
 
 <template>
-  <v-tooltip location="top">
+  <v-tooltip :id="`${$attrs.id || 'crud-refresh-button'}-tooltip`" class="crud-refresh-button__tooltip" location="top">
     <template v-slot:activator="{ props }">
       <v-btn
           v-bind="{ ...$attrs, ...props }"
           icon="mdi-refresh"
-          class="mr-1"
+          :id="$attrs.id || 'crud-refresh-button'"
+          class="crud-refresh-button mr-1"
           variant="text"
       >
       </v-btn>

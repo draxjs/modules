@@ -38,12 +38,13 @@ const emit = defineEmits(['created'])
 </script>
 
 <template>
-  <v-tooltip location="top">
+  <v-tooltip :id="`${$attrs.id || 'crud-create-on-the-fly-button'}-tooltip`" class="crud-create-on-the-fly-button__tooltip" location="top">
     <template v-slot:activator="{ props }">
       <v-btn
           v-bind="{ ...$attrs, ...props }"
              icon="mdi-plus"
-             class="mr-1"
+             :id="$attrs.id || 'crud-create-on-the-fly-button'"
+             class="crud-create-on-the-fly-button mr-1"
              variant="text"
              @click="openDialog"
       >
@@ -53,12 +54,16 @@ const emit = defineEmits(['created'])
   </v-tooltip>
 
   <crud-dialog
+      id="crud-create-on-the-fly-dialog"
+      class="crud-create-on-the-fly-dialog"
       v-model="dialog"
       :entity="entity"
       operation="create"
       :fullscreen="false"
   >
     <crud-form
+        id="crud-create-on-the-fly-form"
+        class="crud-create-on-the-fly-form"
         :entity="entity"
         @created="onCreated"
         @canceled="onCanceled"

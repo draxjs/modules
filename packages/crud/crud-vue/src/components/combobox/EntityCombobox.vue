@@ -17,6 +17,8 @@ const getEntityLabel = (entity: IEntityCrud) => {
 <template>
 
   <v-select
+  id="entity-combobox"
+  class="entity-combobox"
   :items="entityStore.entities"
   item-value="name"
   v-model="valueModel"
@@ -28,6 +30,8 @@ const getEntityLabel = (entity: IEntityCrud) => {
     <template v-slot:item="{ props: itemProps, item }">
       <v-list-item
           v-bind="itemProps"
+          :id="`entity-combobox-item-${(item.raw as IEntityCrud).name}`"
+          class="entity-combobox__item"
           density="compact"
           :title="getEntityLabel(item.raw as IEntityCrud)"
 

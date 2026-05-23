@@ -22,10 +22,10 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
 
 <template>
 
-    <v-card-actions  class="pb-0">
+    <v-card-actions id="crud-filters-actions" class="crud-filters-actions pb-0">
       <v-spacer />
-      <v-btn  variant="text" density="compact" :class="entity.cleanFilterClass" @click="clear">{{ t('action.clear') }}</v-btn>
-      <v-btn variant="flat" density="compact" :class="entity.applyFilterClass"  @click="filter">
+      <v-btn id="crud-filters-clear-button" variant="text" density="compact" :class="['crud-filters-actions__clear-button', entity.cleanFilterClass]" @click="clear">{{ t('action.clear') }}</v-btn>
+      <v-btn id="crud-filters-apply-button" variant="flat" density="compact" :class="['crud-filters-actions__apply-button', entity.applyFilterClass]"  @click="filter">
         {{ t('action.filter') }}
       </v-btn>
     </v-card-actions>

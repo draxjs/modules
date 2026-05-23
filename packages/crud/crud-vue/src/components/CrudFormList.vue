@@ -172,15 +172,16 @@ function clearDragState() {
 </script>
 
 <template>
-  <v-card class="mt-3" variant="flat" border>
+  <v-card :id="`crud-form-list-${field.name}`" class="crud-form-list mt-3" variant="flat" border>
 
-    <v-card-title class="text-h5">{{ label }}</v-card-title>
+    <v-card-title :id="`crud-form-list-title-${field.name}`" class="crud-form-list__title text-h5">{{ label }}</v-card-title>
 
     <!--ACCORDION-->
-    <v-card-text v-if="field.arrayObjectUI === 'accordion' || xs">
-      <v-expansion-panels>
+    <v-card-text v-if="field.arrayObjectUI === 'accordion' || xs" :id="`crud-form-list-accordion-${field.name}`" class="crud-form-list__accordion">
+      <v-expansion-panels :id="`crud-form-list-accordion-panels-${field.name}`" class="crud-form-list__accordion-panels">
         <v-expansion-panel v-for="(item,index) in valueModel" :key="index"
-                           :class="{'crud-form-list--drag-over': dragOverIndex === index}"
+                           :id="`crud-form-list-accordion-item-${field.name}-${index}`"
+                           :class="['crud-form-list__accordion-item', {'crud-form-list--drag-over': dragOverIndex === index}]"
                            :draggable="isSortable"
                            @dragstart="onDragStart(index)"
                            @dragenter.prevent="onDragEnter(index)"
@@ -188,28 +189,31 @@ function clearDragState() {
                            @drop.prevent="onDrop(index)"
                            @dragend="clearDragState">
 
-          <v-expansion-panel-title>
-            <v-icon v-if="isSortable" class="mr-2" size="small">mdi-drag</v-icon>
-            <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
+          <v-expansion-panel-title class="crud-form-list__accordion-title">
+            <v-icon v-if="isSortable" class="crud-form-list__drag-icon mr-2" size="small">mdi-drag</v-icon>
+            <v-chip class="crud-form-list__index-chip mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
             {{ getItemTitle(index) }}
 
             <template v-slot:actions="{expanded}">
-              <v-icon>{{ expanded ? "mdi-menu-down" : "mdi-menu-up" }}</v-icon>
+              <v-icon class="crud-form-list__expand-icon">{{ expanded ? "mdi-menu-down" : "mdi-menu-up" }}</v-icon>
 
               <v-btn v-if="!readonly" variant="text" @click="removeItem(index)" density="compact"
-                     class="text-red text--darken-3">
+                     :id="`crud-form-list-accordion-remove-${field.name}-${index}`"
+                     class="crud-form-list__remove-button text-red text--darken-3">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </template>
 
           </v-expansion-panel-title>
 
-          <v-expansion-panel-text>
-            <v-row>
+          <v-expansion-panel-text class="crud-form-list__accordion-content">
+            <v-row class="crud-form-list__fields-row">
               <template v-for="key in Object.keys(item as Record<string, any>)" :key="key">
-                <v-col cols="12">
+                <v-col :id="`crud-form-list-accordion-field-column-${field.name}-${index}-${key}`" class="crud-form-list__field-column" cols="12">
                   <crud-form-field
                       v-if="hasField(key)"
+                      :id="`crud-form-list-accordion-field-${field.name}-${index}-${key}`"
+                      class="crud-form-list__field"
                       :entity="entity"
                       :field="getField(key)"
                       v-model="(valueModel[index] as any)[key]"
@@ -230,7 +234,7 @@ function clearDragState() {
           </v-expansion-panel-text>
 
         </v-expansion-panel>
-        <v-btn icon @click="addItem" class="text-blue text--darken-3">
+        <v-btn :id="`crud-form-list-accordion-add-${field.name}`" icon @click="addItem" class="crud-form-list__add-button text-blue text--darken-3">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
 
@@ -238,28 +242,29 @@ function clearDragState() {
     </v-card-text>
 
     <!--CHIPS-->
-    <v-card-text v-else-if="field.arrayObjectUI === 'chips' ">
-      <v-row dense>
+    <v-card-text v-else-if="field.arrayObjectUI === 'chips' " :id="`crud-form-list-chips-${field.name}`" class="crud-form-list__chips">
+      <v-row class="crud-form-list__chips-row" dense>
         <v-col cols="12" sm="12" md="12">
           <v-card variant="flat">
             <v-card-text>
-              <v-btn color="primary" rounded="xl" @click="addItem"
-                     class="text-blue text--darken-3 float-left mt-1 mr-2">
+              <v-btn :id="`crud-form-list-chips-add-${field.name}`" color="primary" rounded="xl" @click="addItem"
+                     class="crud-form-list__chips-add-button text-blue text--darken-3 float-left mt-1 mr-2">
                 <v-icon>mdi-plus</v-icon>
                 {{ label }}
               </v-btn>
 
 
-              <v-chip-group v-model="indexSelected"
+              <v-chip-group :id="`crud-form-list-chip-group-${field.name}`" class="crud-form-list__chip-group" v-model="indexSelected"
                             :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }"
                             direction="horizontal"
 
               >
 
                 <v-chip v-for="(item,index) in valueModel" :key="index"
+                        :id="`crud-form-list-chip-${field.name}-${index}`"
                         :value="index" @click="menuSelect(item, index)"
                         :draggable="isSortable"
-                        :class="{'crud-form-list--drag-over': dragOverIndex === index}"
+                        :class="['crud-form-list__chip', {'crud-form-list--drag-over': dragOverIndex === index}]"
                         @dragstart="onDragStart(index)"
                         @dragenter.prevent="onDragEnter(index)"
                         @dragover.prevent
@@ -270,7 +275,7 @@ function clearDragState() {
                   {{ getItemTitle(index) || (index) }}
 
                   <template v-slot:append>
-                    <v-btn variant="text" class="ml-2" density="compact"
+                    <v-btn variant="text" :id="`crud-form-list-chip-remove-${field.name}-${index}`" class="crud-form-list__chip-remove-button ml-2" density="compact"
                            icon="mdi-close-circle"
                            @click="removeItem(index)"
                     ></v-btn>
@@ -283,13 +288,15 @@ function clearDragState() {
           </v-card>
         </v-col>
         <v-col cols="12" sm="12" md="12">
-          <v-card v-if="itemSelected" variant="flat">
+          <v-card v-if="itemSelected" :id="`crud-form-list-chips-fields-card-${field.name}`" class="crud-form-list__chips-fields-card" variant="flat">
             <v-card-text>
               <v-row>
                 <template v-for="key in Object.keys(itemSelected as Record<string, any>)" :key="key">
-                  <v-col cols="12">
+                  <v-col :id="`crud-form-list-chips-field-column-${field.name}-${key}`" class="crud-form-list__field-column" cols="12">
                     <crud-form-field
                         v-if="hasField(key)"
+                        :id="`crud-form-list-chips-field-${field.name}-${key}`"
+                        class="crud-form-list__field"
                         :entity="entity"
                         :field="getField(key)"
                         v-model="(itemSelected as any)[key]"
@@ -313,14 +320,15 @@ function clearDragState() {
     </v-card-text>
 
     <!--MENU-->
-    <v-card-text v-else>
-      <v-row>
+    <v-card-text v-else :id="`crud-form-list-menu-${field.name}`" class="crud-form-list__menu">
+      <v-row class="crud-form-list__menu-row">
         <v-col cols="12" sm="4" md="3">
           <v-card variant="outlined">
             <v-card-text>
-              <v-list v-model="itemSelected" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
+              <v-list :id="`crud-form-list-menu-list-${field.name}`" class="crud-form-list__menu-list" v-model="itemSelected" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
                 <v-list-item v-for="(item,index) in valueModel" :key="index" rounded="shaped"
-                             :class="{'crud-form-list--drag-over': dragOverIndex === index}"
+                             :id="`crud-form-list-menu-item-${field.name}-${index}`"
+                             :class="['crud-form-list__menu-item', {'crud-form-list--drag-over': dragOverIndex === index}]"
                              :value="item" @click="menuSelect(item, index)"
                              :draggable="isSortable"
                              @dragstart="onDragStart(index)"
@@ -330,34 +338,38 @@ function clearDragState() {
                              @dragend="clearDragState"
                 >
                   <template v-slot:append>
-                    <v-icon v-if="isSortable" size="small" class="mr-2">mdi-drag</v-icon>
+                    <v-icon v-if="isSortable" size="small" class="crud-form-list__drag-icon mr-2">mdi-drag</v-icon>
                     <v-btn size="x-small" variant="text" color="red" icon="mdi-delete"
+                           :id="`crud-form-list-menu-remove-${field.name}-${index}`"
+                           class="crud-form-list__remove-button"
                            @click="removeItem(index)"
 
                     />
                   </template>
                   <v-list-item-title>
-                    <v-chip class="mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
+                    <v-chip class="crud-form-list__index-chip mr-2" :color="hasError(index) ? 'red':'teal'">{{ index }}</v-chip>
                     {{ getItemTitle(index) }}
                   </v-list-item-title>
                 </v-list-item>
 
               </v-list>
 
-              <v-btn variant="text" @click="addItem" class="text-blue text--darken-3 float-right my-2">
+              <v-btn :id="`crud-form-list-menu-add-${field.name}`" variant="text" @click="addItem" class="crud-form-list__add-button text-blue text--darken-3 float-right my-2">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </v-card-text>
           </v-card>
         </v-col>
         <v-col cols="12" sm="8" md="9">
-          <v-card v-if="itemSelected" variant="outlined">
+          <v-card v-if="itemSelected" :id="`crud-form-list-menu-fields-card-${field.name}`" class="crud-form-list__menu-fields-card" variant="outlined">
             <v-card-text>
               <v-row>
                 <template v-for="key in Object.keys(itemSelected as Record<string, any>)" :key="key">
-                  <v-col cols="12">
+                  <v-col :id="`crud-form-list-menu-field-column-${field.name}-${key}`" class="crud-form-list__field-column" cols="12">
                     <crud-form-field
                         v-if="hasField(key)"
+                        :id="`crud-form-list-menu-field-${field.name}-${key}`"
+                        class="crud-form-list__field"
                         :entity="entity"
                         :field="getField(key)"
                         v-model="(itemSelected as any)[key]"

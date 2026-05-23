@@ -33,24 +33,25 @@ const openFullTextDialog = () => {
 <template>
   <span
       v-if="isLongString"
-      class="d-inline-block text-truncate crud-row-value__truncated"
+      id="crud-row-value-truncated"
+      class="crud-row-value crud-row-value--truncated d-inline-block text-truncate crud-row-value__truncated"
       @click="openFullTextDialog"
   >
     {{ displayValue }}
   </span>
-  <span v-else>{{ displayValue }}</span>
+  <span v-else id="crud-row-value-text" class="crud-row-value crud-row-value--text">{{ displayValue }}</span>
 
-  <v-dialog v-model="fullTextDialog" max-width="720">
-    <v-card>
-      <v-card-title class="text-wrap">
+  <v-dialog id="crud-row-value-dialog" class="crud-row-value-dialog" v-model="fullTextDialog" max-width="720">
+    <v-card id="crud-row-value-dialog-card" class="crud-row-value-dialog__card">
+      <v-card-title id="crud-row-value-dialog-title" class="crud-row-value-dialog__title text-wrap">
         {{ title }}
       </v-card-title>
-      <v-card-text class="crud-row-value__dialog-text">
+      <v-card-text id="crud-row-value-dialog-text" class="crud-row-value-dialog__text crud-row-value__dialog-text">
         {{ displayValue }}
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions id="crud-row-value-dialog-actions" class="crud-row-value-dialog__actions">
         <v-spacer />
-        <v-btn variant="text" @click="fullTextDialog = false">
+        <v-btn id="crud-row-value-dialog-close-button" class="crud-row-value-dialog__close-button" variant="text" @click="fullTextDialog = false">
           {{ te('action.close') ? t('action.close') : 'Close' }}
         </v-btn>
       </v-card-actions>

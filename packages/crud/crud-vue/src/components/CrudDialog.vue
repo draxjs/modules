@@ -32,19 +32,19 @@ const title = computed(() => {
 </script>
 
 <template>
-  <v-dialog v-model="dialog"
+  <v-dialog id="crud-dialog" class="crud-dialog" v-model="dialog"
             :z-index="entity.dialogZindex"
             :fullscreen="fullscreen === undefined ?  entity.dialogFullscreen : fullscreen"
             :max-width="maxWidth === undefined ? entity.dialogMaxWidth : maxWidth"
   >
-    <v-card>
-      <v-toolbar>
-        <v-toolbar-title>{{title}}</v-toolbar-title>
+    <v-card id="crud-dialog-card" class="crud-dialog__card">
+      <v-toolbar id="crud-dialog-toolbar" class="crud-dialog__toolbar">
+        <v-toolbar-title id="crud-dialog-title" class="crud-dialog__title">{{title}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <slot name="toolbar-actions"></slot>
-        <v-btn icon @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
+        <v-btn id="crud-dialog-close-button" class="crud-dialog__close-button" icon @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
-      <v-card-text>
+      <v-card-text id="crud-dialog-content" class="crud-dialog__content">
         <slot></slot>
       </v-card-text>
     </v-card>

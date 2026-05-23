@@ -21,27 +21,31 @@ const {
 </script>
 
 <template>
-  <v-menu offset-y :close-on-content-click="false">
+  <v-menu id="crud-columns-menu" class="crud-columns-menu" offset-y :close-on-content-click="false">
     <template v-slot:activator="{ props }">
       <v-btn
         v-bind="props"
+        id="crud-columns-button"
+        class="crud-columns-button"
         icon
         variant="text"
       >
-        <v-icon>mdi-view-column</v-icon>
+        <v-icon id="crud-columns-button-icon" class="crud-columns-button__icon">mdi-view-column</v-icon>
         <v-tooltip activator="parent" location="bottom">
           {{ t('crud.columns.select') }}
         </v-tooltip>
       </v-btn>
     </template>
-    <v-list>
-      <v-list-subheader>
+    <v-list id="crud-columns-list" class="crud-columns-menu__list">
+      <v-list-subheader id="crud-columns-title" class="crud-columns-menu__title">
         {{ t('crud.columns.title') }}
       </v-list-subheader>
 
-      <v-list-item>
-        <div class="d-flex gap-2">
+      <v-list-item id="crud-columns-bulk-actions" class="crud-columns-menu__bulk-actions">
+        <div id="crud-columns-bulk-actions-content" class="crud-columns-menu__bulk-actions-content d-flex gap-2">
           <v-btn
+            id="crud-columns-select-all-button"
+            class="crud-columns-menu__select-all-button"
             size="small"
             variant="text"
             color="primary"
@@ -51,6 +55,8 @@ const {
             {{ t('crud.columns.selectAll') }}
           </v-btn>
           <v-btn
+            id="crud-columns-deselect-all-button"
+            class="crud-columns-menu__deselect-all-button"
             size="small"
             variant="text"
             color="primary"
@@ -67,15 +73,19 @@ const {
       <v-list-item
         v-for="column in availableColumns"
         :key="column.key"
+        :id="`crud-columns-item-${column.key}`"
+        class="crud-columns-menu__item"
         @click="toggleColumn(column.key)"
       >
         <template v-slot:prepend>
           <v-checkbox-btn
+            :id="`crud-columns-checkbox-${column.key}`"
+            class="crud-columns-menu__checkbox"
             :model-value="column.visible"
             @click.stop="toggleColumn(column.key)"
           ></v-checkbox-btn>
         </template>
-        <v-list-item-title>{{ column.title }}</v-list-item-title>
+        <v-list-item-title class="crud-columns-menu__item-title">{{ column.title }}</v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>

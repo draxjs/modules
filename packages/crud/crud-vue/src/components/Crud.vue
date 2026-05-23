@@ -137,6 +137,8 @@ watch(dialog, (value) => {
 <template>
   <crud-route-form
       v-if="isRouteCrudForm"
+      :id="`crud-route-form-${entity.name}`"
+      class="crud__route-form"
       :entity="entity"
       @created="item => emit('created', item)"
       @updated="item => emit('updated', item)"
@@ -150,11 +152,13 @@ watch(dialog, (value) => {
     </template>
   </crud-route-form>
 
-  <v-container v-else :fluid="entity.containerFluid" class="mt-5">
-    <v-card :class="entity.cardClass" :density="entity.cardDensity">
+  <v-container v-else :id="`crud-container-${entity.name}`" :fluid="entity.containerFluid" class="crud mt-5">
+    <v-card :id="`crud-card-${entity.name}`" :class="['crud__card', entity.cardClass]" :density="entity.cardDensity">
 
       <component
           :is="listComponent"
+          :id="`crud-list-component-${entity.name}`"
+          class="crud__list"
           :entity="entity"
           @create="onCreate"
           @edit="onEditAt"
@@ -229,6 +233,8 @@ watch(dialog, (value) => {
     </v-card>
 
     <crud-dialog
+        :id="`crud-dialog-${entity.name}`"
+        class="crud__dialog"
         v-model="dialog"
         :entity="entity"
         :operation="operation"
@@ -236,6 +242,8 @@ watch(dialog, (value) => {
       <template #toolbar-actions>
         <v-btn
             v-if="canOpenRouteCrudForm"
+            id="crud-open-route-form-button"
+            class="crud__open-route-form-button"
             icon="mdi-open-in-new"
             variant="text"
             @click="openRouteCrudForm"
@@ -243,6 +251,8 @@ watch(dialog, (value) => {
 
         <v-btn
             v-if="canNavigateItems"
+            id="crud-dialog-prev-button"
+            class="crud__dialog-prev-button"
             icon="mdi-chevron-left"
             variant="text"
             :disabled="!canNavigatePrev"
@@ -251,6 +261,8 @@ watch(dialog, (value) => {
 
         <v-btn
             v-if="canNavigateItems"
+            id="crud-dialog-next-button"
+            class="crud__dialog-next-button"
             icon="mdi-chevron-right"
             variant="text"
             :disabled="!canNavigateNext"
@@ -259,6 +271,8 @@ watch(dialog, (value) => {
 
         <crud-ai-button
             v-if="entity.isAiAssistable && ['create', 'edit'].includes(operation) && hasPermission('ai:promptCrud')"
+            id="crud-ai-toggle-button"
+            class="crud__ai-toggle-button"
             :entity="entity"
             v-model="aiExpanded"
         />
@@ -267,6 +281,8 @@ watch(dialog, (value) => {
       <slot name="tools">
         <crud-ai
             v-if="entity.isAiAssistable && ['create', 'edit'].includes(operation) && hasPermission('ai:promptCrud')"
+            id="crud-ai"
+            class="crud__ai"
             :entity="entity"
             v-model="aiExpanded"
             @apply="applyAiSuggestions"
@@ -277,6 +293,8 @@ watch(dialog, (value) => {
       <slot name="form" v-bind="{form, operation}">
 
         <crud-form
+            id="crud-form-dialog"
+            class="crud__form"
             :entity="entity"
             @created="item => emit('created', item)"
             @updated="item => emit('updated', item)"
@@ -295,7 +313,7 @@ watch(dialog, (value) => {
 
     </crud-dialog>
 
-    <crud-notify v-model="notify" :message="message"></crud-notify>
+    <crud-notify id="crud-notify" class="crud__notify" v-model="notify" :message="message"></crud-notify>
   </v-container>
 </template>
 

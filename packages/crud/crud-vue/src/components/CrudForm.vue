@@ -168,22 +168,24 @@ const onlyView = computed(()=> {
 </script>
 
 <template>
-  <v-form ref="formRef" @submit.prevent>
-    <v-card flat>
+  <v-form id="crud-form" class="crud-form" ref="formRef" @submit.prevent>
+    <v-card id="crud-form-card" class="crud-form__card" flat>
 
-      <v-card-subtitle v-if="getItemId(form)">ID: {{ getItemId(form) }}</v-card-subtitle>
+      <v-card-subtitle v-if="getItemId(form)" id="crud-form-id" class="crud-form__id">ID: {{ getItemId(form) }}</v-card-subtitle>
 
-      <v-card-text v-if="error">
-        <v-alert color="error">{{ te(error) ? t(error) : error }}</v-alert>
+      <v-card-text v-if="error" id="crud-form-error-content" class="crud-form__error-content">
+        <v-alert id="crud-form-error-alert" class="crud-form__error-alert" color="error">{{ te(error) ? t(error) : error }}</v-alert>
       </v-card-text>
 
-      <v-card-text>
+      <v-card-text id="crud-form-content" class="crud-form__content">
 
         <!--GENERAL-->
-        <v-row>
+        <v-row id="crud-form-general-fields" class="crud-form__general-fields">
           <v-col
               v-for="field in generalFields"
               :key="field.name"
+              :id="`crud-form-general-field-column-${field.name}`"
+              class="crud-form__general-field-column"
               :cols="field.cols ? field.cols : 12"
               :sm="field.sm ? field.sm : undefined"
               :md="field.md ? field.md : undefined"
@@ -201,6 +203,8 @@ const onlyView = computed(()=> {
             >
 
               <crud-form-field
+                  :id="`crud-form-general-field-${field.name}`"
+                  class="crud-form__general-field"
                   :field="field"
                   :entity="entity"
                   v-model="form[field.name]"
@@ -226,22 +230,24 @@ const onlyView = computed(()=> {
         </v-row>
 
         <!--TAB-->
-        <v-card class="mt-4" variant="outlined" v-if="entity.tabs && entity.tabs.length > 0">
+        <v-card id="crud-form-tabs-card" class="crud-form__tabs-card mt-4" variant="outlined" v-if="entity.tabs && entity.tabs.length > 0">
 
-            <v-tabs v-model="tabSelected">
-              <v-tab v-for="tab in entity.tabs" :value="tab" :key="tab">
-                <span  :class="tabInputErrors(tab) ? 'text-red' : ''">
+            <v-tabs id="crud-form-tabs" class="crud-form__tabs" v-model="tabSelected">
+              <v-tab v-for="tab in entity.tabs" :id="`crud-form-tab-${tab}`" class="crud-form__tab" :value="tab" :key="tab">
+                <span :id="`crud-form-tab-label-${tab}`" :class="['crud-form__tab-label', tabInputErrors(tab) ? 'text-red' : '']">
                 {{ te(tab) ? t(tab) : tab }}
                 </span>
               </v-tab>
             </v-tabs>
-          <v-card-text>
-            <v-tabs-window v-model="tabSelected">
-              <v-tabs-window-item v-for="tab in entity.tabs" :value="tab">
-                <v-row class="pt-3">
+          <v-card-text id="crud-form-tabs-content" class="crud-form__tabs-content">
+            <v-tabs-window id="crud-form-tabs-window" class="crud-form__tabs-window" v-model="tabSelected">
+              <v-tabs-window-item v-for="tab in entity.tabs" :id="`crud-form-tab-panel-${tab}`" class="crud-form__tab-panel" :value="tab">
+                <v-row class="crud-form__tab-fields pt-3">
                   <v-col
                       v-for="field in tabFields(tab)"
                       :key="field.name"
+                      :id="`crud-form-tab-field-column-${tab}-${field.name}`"
+                      class="crud-form__tab-field-column"
                       :cols="field.cols ? field.cols : 12"
                       :sm="field.sm ? field.sm : undefined"
                       :md="field.md ? field.md : undefined"
@@ -261,6 +267,8 @@ const onlyView = computed(()=> {
 
 
                       <crud-form-field
+                          :id="`crud-form-tab-field-${tab}-${field.name}`"
+                          class="crud-form__tab-field"
                           :field="field"
                           :entity="entity"
                           v-model="form[field.name]"
@@ -288,14 +296,14 @@ const onlyView = computed(()=> {
         </v-card>
 
         <!--MENU-->
-        <v-row v-if="entity.menus && entity.menus.length > 0">
-          <v-col cols="12" sm="4" md="3">
-            <v-card variant="outlined">
-              <v-card-text :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
-                <v-list v-model="menuSelected">
-                  <v-list-item v-for="menu in entity.menus" rounded="shaped" :value="menu" @click="menuSelected = menu">
-                    <v-list-item-title>
-                    <span :class="menuInputErrors(menu) ? 'text-red' : ''">
+        <v-row v-if="entity.menus && entity.menus.length > 0" id="crud-form-menu-layout" class="crud-form__menu-layout">
+          <v-col id="crud-form-menu-nav-column" class="crud-form__menu-nav-column" cols="12" sm="4" md="3">
+            <v-card id="crud-form-menu-nav-card" class="crud-form__menu-nav-card" variant="outlined">
+              <v-card-text id="crud-form-menu-nav-content" class="crud-form__menu-nav-content" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
+                <v-list id="crud-form-menu-list" class="crud-form__menu-list" v-model="menuSelected">
+                  <v-list-item v-for="menu in entity.menus" :id="`crud-form-menu-item-${menu}`" class="crud-form__menu-item" rounded="shaped" :value="menu" @click="menuSelected = menu">
+                    <v-list-item-title class="crud-form__menu-item-title">
+                    <span :id="`crud-form-menu-label-${menu}`" :class="['crud-form__menu-label', menuInputErrors(menu) ? 'text-red' : '']">
                         {{ te(menu) ? t(menu) : menu }}
                       </span>
 
@@ -305,13 +313,15 @@ const onlyView = computed(()=> {
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12" sm="8" md="9">
-            <v-card v-if="menuSelected" variant="outlined">
-              <v-card-text>
-                <v-row>
+          <v-col id="crud-form-menu-fields-column" class="crud-form__menu-fields-column" cols="12" sm="8" md="9">
+            <v-card v-if="menuSelected" id="crud-form-menu-fields-card" class="crud-form__menu-fields-card" variant="outlined">
+              <v-card-text id="crud-form-menu-fields-content" class="crud-form__menu-fields-content">
+                <v-row id="crud-form-menu-fields" class="crud-form__menu-fields">
                   <v-col
                       v-for="field in menuFields(menuSelected)"
                       :key="field.name"
+                      :id="`crud-form-menu-field-column-${menuSelected}-${field.name}`"
+                      class="crud-form__menu-field-column"
                       :cols="field.cols ? field.cols : 12"
                       :sm="field.sm ? field.sm : undefined"
                       :md="field.md ? field.md : undefined"
@@ -328,6 +338,8 @@ const onlyView = computed(()=> {
                         }"
                     >
                       <crud-form-field
+                          :id="`crud-form-menu-field-${menuSelected}-${field.name}`"
+                          class="crud-form__menu-field"
                           :field="field"
                           :entity="entity"
                           v-model="form[field.name]"
@@ -356,18 +368,19 @@ const onlyView = computed(()=> {
 
       </v-card-text>
 
-      <v-card-actions>
+      <v-card-actions id="crud-form-actions" class="crud-form__actions">
         <v-spacer></v-spacer>
-        <v-btn variant="text" :class="entity.cancelBtnFormClass" @click="cancel">
+        <v-btn id="crud-form-cancel-button" variant="text" :class="['crud-form__cancel-button', entity.cancelBtnFormClass]" @click="cancel">
           {{ operation == 'view' ? t('action.close') : t('action.cancel') }}
         </v-btn>
-        <v-btn variant="flat" v-if="operation != 'view'" :class="entity.submitBtnFormClass" @click="submit" :loading="store.loading">
+        <v-btn id="crud-form-submit-button" variant="flat" v-if="operation != 'view'" :class="['crud-form__submit-button', entity.submitBtnFormClass]" @click="submit" :loading="store.loading">
           {{ operation ? t('action.'+operation) : t('action.sent') }}
         </v-btn>
         <v-btn
+            id="crud-form-submit-and-return-button"
             variant="flat"
             v-if="showSubmitAndReturn && ['create', 'edit'].includes(operation || '')"
-            :class="entity.submitBtnFormClass"
+            :class="['crud-form__submit-and-return-button', entity.submitBtnFormClass]"
             @click="submitAndReturn"
             :loading="store.loading"
         >

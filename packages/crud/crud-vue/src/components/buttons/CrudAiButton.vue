@@ -22,12 +22,13 @@ function toggleExpanded() {
 </script>
 
 <template>
-  <v-tooltip location="top">
+  <v-tooltip :id="`${$attrs.id || 'crud-ai-button'}-tooltip`" class="crud-ai-button__tooltip" location="top">
     <template v-slot:activator="{ props }">
       <v-btn
           v-bind="{ ...$attrs, ...props }"
           icon="mdi-robot-outline"
-          class="mr-1"
+          :id="$attrs.id || 'crud-ai-button'"
+          class="crud-ai-button mr-1"
           variant="text"
           @click="toggleExpanded"
       />

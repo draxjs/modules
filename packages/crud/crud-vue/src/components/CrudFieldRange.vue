@@ -149,9 +149,11 @@ const toInnerIcon = computed(() => {
 </script>
 
 <template>
-  <v-row dense>
-    <v-col cols="12" sm="6">
+  <v-row :id="`crud-field-range-${name}`" class="crud-field-range" dense>
+    <v-col :id="`crud-field-range-from-column-${name}`" class="crud-field-range__from-column" cols="12" sm="6">
       <v-date-input
+          :id="`crud-field-range-from-${name}`"
+          class="crud-field-range__from-input"
           :name="`${name}_from`"
           :label="`${label} ${t('crud.from')}`"
           :hint="hint ?? field.hint"
@@ -177,8 +179,10 @@ const toInnerIcon = computed(() => {
       />
     </v-col>
 
-    <v-col cols="12" sm="6">
+    <v-col :id="`crud-field-range-to-column-${name}`" class="crud-field-range__to-column" cols="12" sm="6">
       <v-date-input
+          :id="`crud-field-range-to-${name}`"
+          class="crud-field-range__to-input"
           :name="`${name}_to`"
           :label="`${label} ${t('crud.to')}`"
           :hint="hint ?? field.hint"
@@ -204,7 +208,7 @@ const toInnerIcon = computed(() => {
           @input="onInput"
       >
         <template v-if="field.endOfDay && field.showEndOfDayChip !== false" v-slot:append-inner>
-          <v-chip size="small">23:59</v-chip>
+          <v-chip :id="`crud-field-range-end-of-day-${name}`" class="crud-field-range__end-of-day-chip" size="small">23:59</v-chip>
         </template>
       </v-date-input>
     </v-col>

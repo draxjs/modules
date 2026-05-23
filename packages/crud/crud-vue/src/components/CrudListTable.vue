@@ -50,6 +50,8 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
 <template>
   <v-data-table-server
+      :id="`crud-list-table-${entity.name}`"
+      class="crud-list-table"
       :density="entity.tableDensity"
       :striped="entity.tableStriped"
       :header-props="entity.headerProps"
@@ -71,25 +73,26 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
     <template v-slot:no-data>
       <v-alert
           v-if="paginationError"
+          id="crud-list-table-pagination-error"
           variant="tonal"
-          class="w-100 ma-2"
+          class="crud-list-table__pagination-error w-100 ma-2"
           style="width: 100%; min-width: 100%"
           prominent
           type="error"
           :text="te(paginationError) ? t(paginationError) : paginationError"
       />
-      <v-alert v-else variant="tonal"  class="w-100 ma-2 " type="info" :text="te('crud.noData') ? t('crud.noData') : 'No data' " />
+      <v-alert v-else id="crud-list-table-no-data" variant="tonal"  class="crud-list-table__no-data w-100 ma-2 " type="info" :text="te('crud.noData') ? t('crud.noData') : 'No data' " />
     </template>
 
     <template v-slot:bottom>
-      <v-data-table-footer :class="entity.footerClass"
+      <v-data-table-footer id="crud-list-table-footer" :class="['crud-list-table__footer', entity.footerClass]"
                            :items-per-page-options="[5, 10, 20, 50]"
       ></v-data-table-footer>
     </template>
 
     <template v-slot:top>
-      <v-toolbar :class="entity.toolbarClass" :density="entity.toolbarDensity">
-        <v-toolbar-title>
+      <v-toolbar id="crud-list-table-toolbar" :class="['crud-list-table__toolbar', entity.toolbarClass]" :density="entity.toolbarDensity">
+        <v-toolbar-title id="crud-list-table-title" class="crud-list-table__title">
           {{ te(`${entity.name.toLowerCase()}.crud`) ? t(`${entity.name.toLowerCase()}.crud`) : entity.name }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
@@ -100,30 +103,42 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
         <crud-saved-queries-button
             v-if="entity.isSavedQueriesEnabled"
+            id="crud-list-table-saved-queries-button"
+            class="crud-list-table__saved-queries-button"
             :entity="entity"
         />
 
 
         <crud-import-button
+            id="crud-list-table-import-button"
+            class="crud-list-table__import-button"
             :entity="entity"
             @import="(file:any, format:any) => $emit('import', file, format)"
         />
 
         <crud-export-button
+            id="crud-list-table-export-button"
+            class="crud-list-table__export-button"
             :entity="entity"
             @export="(v:any) => $emit('export',v)"
         />
 
         <crud-group-by-button
             v-if="entity.isGroupable"
+            id="crud-list-table-group-by-button"
+            class="crud-list-table__group-by-button"
             :entity="entity"
         />
 
         <crud-filter-button
+            id="crud-list-table-filter-button"
+            class="crud-list-table__filter-button"
             :entity="entity" />
 
         <crud-columns-button
             v-if="entity.isColumnSelectable"
+            id="crud-list-table-columns-button"
+            class="crud-list-table__columns-button"
             :entity="entity"
         />
 
@@ -134,11 +149,15 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
         <crud-refresh-button
             v-if="entity.isRefreshable !== false"
+            id="crud-list-table-refresh-button"
+            class="crud-list-table__refresh-button"
             @click="doPaginate"
         />
 
         <crud-create-button
             v-if="entity.isCreatable"
+            id="crud-list-table-create-button"
+            class="crud-list-table__create-button"
             :entity="entity"
             @click="$emit('create')"
         />
@@ -150,6 +169,8 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       </v-toolbar>
 
       <crud-export-list
+          id="crud-list-table-export-list"
+          class="crud-list-table__export-list"
           :entity="entity"
       >
         <template #export-table="{ exportFiles }">
@@ -158,6 +179,8 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
       </crud-export-list>
 
       <crud-import-list
+          id="crud-list-table-import-list"
+          class="crud-list-table__import-list"
           :entity="entity"
       >
         <template #import-table="{ importFiles }">
@@ -165,20 +188,24 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
         </template>
       </crud-import-list>
 
-      <v-card variant="flat">
-        <v-card-text v-if="entity.searchEnable">
+      <v-card id="crud-list-table-controls" class="crud-list-table__controls" variant="flat">
+        <v-card-text v-if="entity.searchEnable" id="crud-list-table-search-section" class="crud-list-table__search-section">
           <crud-search
+              id="crud-list-table-search"
+              class="crud-list-table__search"
               v-model="search"
           />
         </v-card-text>
 
-        <v-card-text class="pt-0">
+        <v-card-text id="crud-list-table-filters-section" class="crud-list-table__filters-section pt-0">
           <slot name="filters" v-bind="{filters}"></slot>
 
-          <v-card variant="flat" v-if="!$slots.filters">
+          <v-card id="crud-list-table-default-filters" class="crud-list-table__default-filters" variant="flat" v-if="!$slots.filters">
 
             <crud-filters
                 v-if="entity.filtersEnable"
+                id="crud-list-table-filters"
+                class="crud-list-table__filters"
                 :entity="entity"
                 v-model="filters"
                 :auto-filter="!entity.filterButtons"
@@ -199,6 +226,8 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
             <crud-filters-dynamic
                 v-if="isDynamicFiltersEnable"
+                id="crud-list-table-dynamic-filters"
+                class="crud-list-table__dynamic-filters"
                 :entity="entity"
                 v-model="filters"
                 :auto-filter="!entity.filterButtons"
@@ -208,6 +237,8 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
             </crud-filters-dynamic>
 
             <crud-filters-action v-if="entity.filterButtons"
+                                 id="crud-list-table-filters-actions"
+                                 class="crud-list-table__filters-actions"
                                  :entity="entity"
                                  @clearFilter="clearFilters()"
                                  @applyFilter="applyFilters()"
@@ -218,7 +249,7 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
       </v-card>
 
-      <v-divider></v-divider>
+      <v-divider id="crud-list-table-toolbar-divider" class="crud-list-table__toolbar-divider"></v-divider>
 
 
 
@@ -228,6 +259,8 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
     <template v-for="header in entity.headers" :key="header.key" v-slot:[`item.${header.key}`]="{item, value}">
       <slot v-if="$slots[`item.${header.key}`]" :name="`item.${header.key}`" v-bind="{item, value}">
         <crud-row-value
+            :id="`crud-list-table-row-value-${header.key}`"
+            class="crud-list-table__row-value"
             :title="header.title || header.key"
             :value="value"
         />
@@ -242,16 +275,22 @@ defineEmits(['import', 'export', 'create', 'update', 'delete', 'view', 'edit'])
 
       <crud-view-button
           v-if="entity.isViewable && hasPermission(entity.permissions.view)"
+          :id="`crud-list-table-row-view-button-${index}`"
+          class="crud-list-table__row-view-button"
           @click="$emit('view', item, index)"
       />
 
       <crud-update-button
           v-if="entity.isEditable && entity.isItemEditable(item) && hasPermission(entity.permissions?.update)"
+          :id="`crud-list-table-row-update-button-${index}`"
+          class="crud-list-table__row-update-button"
           @click="$emit('edit', item, index)"
       />
 
       <crud-delete-button
           v-if="entity.isDeletable && hasPermission(entity.permissions?.delete)"
+          :id="`crud-list-table-row-delete-button-${index}`"
+          class="crud-list-table__row-delete-button"
           @click="$emit('delete', item, index)"
       />
 

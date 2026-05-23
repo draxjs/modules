@@ -41,6 +41,6 @@ watch(
 </script>
 
 <template>
-  <span v-if="loading">...</span>
-  <span v-else>{{display}}</span>
+  <span v-if="loading" id="crud-ref-display-loading" class="crud-ref-display crud-ref-display--loading">...</span>
+  <span v-else id="crud-ref-display-value" class="crud-ref-display crud-ref-display--value">{{display}}</span>
 </template>

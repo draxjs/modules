@@ -109,6 +109,8 @@ defineEmits(['updateValue'])
 
   <v-select
       v-if="noFilter"
+      :id="`crud-autocomplete-select-${field.name}`"
+      class="crud-autocomplete crud-autocomplete--select"
       v-model="valueModel"
       :label="label ? label : field.label"
       :placeholder="label ? label : field.label"
@@ -143,12 +145,14 @@ defineEmits(['updateValue'])
   >
 
     <template v-if="addOnTheFly" v-slot:append>
-      <crud-create-on-the-fly-button :entity="entity" @created="onCreated"></crud-create-on-the-fly-button>
+      <crud-create-on-the-fly-button :id="`crud-autocomplete-create-${field.name}`" class="crud-autocomplete__create-button" :entity="entity" @created="onCreated"></crud-create-on-the-fly-button>
     </template>
 
     <template v-slot:item="{ props: itemProps, item }">
       <v-list-item
           v-bind="itemProps"
+          :id="`crud-autocomplete-select-item-${field.name}-${item.raw[itemValue]}`"
+          class="crud-autocomplete__item"
           density="compact"
           :title="item.raw[itemTitle]"
           :color="item.raw?.color"
@@ -159,6 +163,8 @@ defineEmits(['updateValue'])
 
     <template v-slot:selection="{item}">
       <v-chip tile density="compact"
+              :id="`crud-autocomplete-select-selection-${field.name}-${item.raw[itemValue]}`"
+              class="crud-autocomplete__selection-chip"
               :color="item.raw?.color"
               :prepend-icon="typeof item.raw?.icon=== 'string' ? item.raw?.icon : null"
       >
@@ -171,6 +177,8 @@ defineEmits(['updateValue'])
 
   <v-autocomplete
       v-else
+      :id="`crud-autocomplete-input-${field.name}`"
+      class="crud-autocomplete crud-autocomplete--filterable"
       v-model="valueModel"
       :label="label ? label : field.label"
       :placeholder="label ? label : field.label"
@@ -206,12 +214,14 @@ defineEmits(['updateValue'])
   >
 
     <template v-if="addOnTheFly" v-slot:append>
-      <crud-create-on-the-fly-button :entity="entity" @created="onCreated"></crud-create-on-the-fly-button>
+      <crud-create-on-the-fly-button :id="`crud-autocomplete-create-${field.name}`" class="crud-autocomplete__create-button" :entity="entity" @created="onCreated"></crud-create-on-the-fly-button>
     </template>
 
     <template v-slot:item="{ props: itemProps, item }">
       <v-list-item
           v-bind="itemProps"
+          :id="`crud-autocomplete-item-${field.name}-${item.raw[itemValue]}`"
+          class="crud-autocomplete__item"
           density="compact"
           :title="item.raw[itemTitle]"
           :color="item.raw?.color"
@@ -222,6 +232,8 @@ defineEmits(['updateValue'])
 
     <template v-slot:selection="{item}">
       <v-chip tile density="compact"
+              :id="`crud-autocomplete-selection-${field.name}-${item.raw[itemValue]}`"
+              class="crud-autocomplete__selection-chip"
               :color="item.raw?.color"
               :prepend-icon="typeof item.raw?.icon=== 'string' ? item.raw?.icon : null"
       >

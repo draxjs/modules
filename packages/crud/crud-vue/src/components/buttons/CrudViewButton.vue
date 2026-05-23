@@ -4,12 +4,13 @@ const {t} = useI18n()
 </script>
 
 <template>
-  <v-tooltip location="top">
+  <v-tooltip :id="`${$attrs.id || 'crud-view-button'}-tooltip`" class="crud-view-button__tooltip" location="top">
     <template v-slot:activator="{ props}">
       <v-btn
           v-bind="{ ...$attrs, ...props }"
           icon="mdi-magnify"
-          class="mr-1"
+          :id="$attrs.id || 'crud-view-button'"
+          class="crud-view-button mr-1"
           variant="text"
           color="teal"
           slim

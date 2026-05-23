@@ -20,13 +20,14 @@ const {t} = useI18n()
 </script>
 
 <template>
-  <div v-if="entity.dynamicFiltersEnable">
-    <v-tooltip location="top">
+  <div v-if="entity.dynamicFiltersEnable" id="crud-filter-button-wrapper" class="crud-filter-button-wrapper">
+    <v-tooltip id="crud-filter-button-tooltip" class="crud-filter-button__tooltip" location="top">
       <template v-slot:activator="{ props }">
         <v-btn
             v-bind="{ ...$attrs, ...props }"
             :icon="dynamicFiltersEnable ? 'mdi-filter-off' : 'mdi-filter' "
-            class="mr-1"
+            id="crud-filter-button"
+            class="crud-filter-button mr-1"
             variant="text"
             @click="dynamicFiltersEnable = !dynamicFiltersEnable"
         >

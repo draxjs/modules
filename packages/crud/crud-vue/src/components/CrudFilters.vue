@@ -44,10 +44,12 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
 </script>
 
 <template>
-  <v-card flat >
-        <v-row dense class="mt-1">
+  <v-card id="crud-filters" class="crud-filters" flat >
+        <v-row id="crud-filters-row" class="crud-filters__row mt-1" dense>
           <v-col v-for="(filter,index) in aFields"
                  :key="filter.name"
+                 :id="`crud-filter-column-${filter.name}`"
+                 class="crud-filters__column"
                  :cols="filter.cols ? filter.cols : 12"
                  :sm="filter.sm ? filter.sm : 6"
                  :md="filter.md ? filter.md : 6"
@@ -58,6 +60,8 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
             <slot :name="`filter.${filter.name}`" v-bind="{filter, filterIndex: index}">
               <crud-field-range
                   v-if="filter && valueModel[index] !== undefined && isRangeFilter(filter)"
+                  :id="`crud-filter-range-${filter.name}`"
+                  class="crud-filters__range-field"
                   :name="filter.name"
                   :label="filter.label"
                   :entity="entity"
@@ -71,6 +75,8 @@ const emit = defineEmits(['applyFilter', 'clearFilter'])
               />
               <crud-form-field
                   v-else-if="filter && valueModel[index] !== undefined"
+                  :id="`crud-filter-field-${filter.name}`"
+                  class="crud-filters__field"
                   :field="filter"
                   :entity="entity"
                   v-model="valueModel[index].value"

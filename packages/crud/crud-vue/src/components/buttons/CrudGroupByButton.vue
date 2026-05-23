@@ -66,25 +66,29 @@ const totalCount = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div id="crud-group-by-wrapper" class="crud-group-by-wrapper">
     <v-btn
+      id="crud-group-by-button"
+      class="crud-group-by-button"
       icon
       variant="text"
       @click="openDialog"
     >
-      <v-icon>mdi-chart-bar</v-icon>
+      <v-icon id="crud-group-by-button-icon" class="crud-group-by-button__icon">mdi-chart-bar</v-icon>
       <v-tooltip activator="parent" location="bottom">
         {{ t('crud.groupBy.button') }}
       </v-tooltip>
     </v-btn>
 
-    <v-dialog v-model="dialog" max-width="800" >
-      <v-card>
-        <v-card-title class="d-flex align-center">
-          <v-icon class="mr-2">mdi-chart-bar</v-icon>
+    <v-dialog id="crud-group-by-dialog" class="crud-group-by-dialog" v-model="dialog" max-width="800" >
+      <v-card id="crud-group-by-card" class="crud-group-by-dialog__card">
+        <v-card-title id="crud-group-by-title" class="crud-group-by-dialog__title d-flex align-center">
+          <v-icon id="crud-group-by-title-icon" class="crud-group-by-dialog__title-icon mr-2">mdi-chart-bar</v-icon>
           {{ t('crud.groupBy.title') }}
           <v-spacer></v-spacer>
           <v-btn
+            id="crud-group-by-close-button"
+            class="crud-group-by-dialog__close-button"
             icon
             variant="text"
             @click="resetAndClose"
@@ -96,11 +100,13 @@ const totalCount = computed(() => {
 
         <v-divider></v-divider>
 
-        <v-card-text>
-          <crud-active-filters :entity="entity"></crud-active-filters>
+        <v-card-text id="crud-group-by-config" class="crud-group-by-dialog__config">
+          <crud-active-filters id="crud-group-by-active-filters" class="crud-group-by-dialog__active-filters" :entity="entity"></crud-active-filters>
           <v-divider></v-divider>
 
           <v-select
+            id="crud-group-by-fields-select"
+            class="crud-group-by-dialog__fields-select"
             v-model="selectedFields"
             :items="availableFields"
             item-title="label"
@@ -116,12 +122,13 @@ const totalCount = computed(() => {
           <!-- Selector de formato de fecha -->
           <v-select
             v-if="hasDateFields"
+            id="crud-group-by-date-format-select"
             v-model="dateFormat"
             :items="dateFormatOptions"
             :label="t('crud.groupBy.dateFormatLabel')"
             density="compact"
             variant="outlined"
-            class="mt-4"
+            class="crud-group-by-dialog__date-format-select mt-4"
             :menu-props="{ zIndex: 3000 }"
           >
             <template v-slot:prepend-inner>
@@ -134,9 +141,11 @@ const totalCount = computed(() => {
 
         <v-divider></v-divider>
 
-        <v-card-actions>
+        <v-card-actions id="crud-group-by-actions" class="crud-group-by-dialog__actions">
           <v-spacer></v-spacer>
           <v-btn
+            id="crud-group-by-apply-button"
+            class="crud-group-by-dialog__apply-button"
             color="primary"
             variant="flat"
             @click="handleGroupBy"
@@ -148,20 +157,22 @@ const totalCount = computed(() => {
         </v-card-actions>
         <v-divider class="mb-4"></v-divider>
         <!-- Tabla de resultados -->
-        <v-card-text v-if="groupByData.length > 0">
+        <v-card-text v-if="groupByData.length > 0" id="crud-group-by-results" class="crud-group-by-dialog__results">
 
 
-          <div class="d-flex align-center mb-3">
-            <v-icon class="mr-2">mdi-table</v-icon>
-            <span class="text-h6">{{ t('crud.groupBy.results') }}</span>
+          <div id="crud-group-by-results-header" class="crud-group-by-dialog__results-header d-flex align-center mb-3">
+            <v-icon id="crud-group-by-results-icon" class="crud-group-by-dialog__results-icon mr-2">mdi-table</v-icon>
+            <span id="crud-group-by-results-title" class="crud-group-by-dialog__results-title text-h6">{{ t('crud.groupBy.results') }}</span>
             <v-spacer></v-spacer>
-            <v-chip color="primary" variant="flat" size="small">
+            <v-chip id="crud-group-by-total-chip" class="crud-group-by-dialog__total-chip" color="primary" variant="flat" size="small">
               {{ t('crud.groupBy.total') }}: {{ totalCount }}
             </v-chip>
           </div>
 
 
           <v-data-table
+            id="crud-group-by-results-table"
+            class="crud-group-by-dialog__results-table"
             :headers="headers"
             :items="groupByData"
             density="compact"
@@ -191,7 +202,9 @@ const totalCount = computed(() => {
             <!-- Formato especial para el count -->
             <template v-slot:item.count="{ value }">
               <v-chip color="primary" size="small" variant="flat">
+                <span class="crud-group-by-dialog__count-value">
                 {{ value }}
+                </span>
               </v-chip>
             </template>
           </v-data-table>

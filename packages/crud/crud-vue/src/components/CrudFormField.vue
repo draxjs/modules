@@ -95,9 +95,11 @@ const hasHideDetails = computed(() => {
 
 <template>
 
-  <div v-if="field && field.type && (!field.permission || hasPermission(field.permission) )">
+  <div v-if="field && field.type && (!field.permission || hasPermission(field.permission) )" :id="`crud-form-field-${name}`" :class="['crud-form-field', `crud-form-field--${field.type.replace(/\./g, '-')}`]">
     <v-text-field
         v-if="field.type === 'string'"
+        :id="`crud-form-field-string-${name}`"
+        class="crud-form-field__string-input"
         type="text"
         :name="name"
         :label="label"
@@ -124,6 +126,8 @@ const hasHideDetails = computed(() => {
 
     <v-textarea
         v-if="field.type === 'longString'"
+        :id="`crud-form-field-long-string-${name}`"
+        class="crud-form-field__long-string-input"
         :rows="field.rows || 5"
         type="text"
         :name="name"
@@ -151,6 +155,8 @@ const hasHideDetails = computed(() => {
 
     <v-text-field
         v-if="field.type === 'password'"
+        :id="`crud-form-field-password-${name}`"
+        class="crud-form-field__password-input"
         :name="name"
         :label="label"
         :hint="hint ?? field.hint"
@@ -179,6 +185,8 @@ const hasHideDetails = computed(() => {
 
     <v-combobox
         v-if="field.type === 'enum' && !field.noFilter"
+        :id="`crud-form-field-enum-combobox-${name}`"
+        class="crud-form-field__enum-combobox"
         :name="name"
         :label="label"
         :hint="hint ?? field.hint"
@@ -211,6 +219,8 @@ const hasHideDetails = computed(() => {
 
     <v-select
         v-if="field.type === 'select'"
+        :id="`crud-form-field-select-${name}`"
+        class="crud-form-field__select"
         :name="name"
         :label="label"
         :hint="hint ?? field.hint"
@@ -244,6 +254,8 @@ const hasHideDetails = computed(() => {
       <template v-slot:item="{ props: itemProps, item }">
         <v-list-item
             v-bind="itemProps"
+            :id="`crud-form-field-select-item-${name}-${item.raw.value}`"
+            class="crud-form-field__select-item"
             density="compact"
             :title="item.raw.title"
             :color="item.raw.color"
@@ -253,7 +265,7 @@ const hasHideDetails = computed(() => {
       </template>
 
       <template v-slot:selection="{item}">
-        <v-chip tile density="compact" :color="item.raw.color" :prepend-icon="item.raw.icon">{{
+        <v-chip tile density="compact" :id="`crud-form-field-select-selection-${name}-${item.raw.value}`" class="crud-form-field__select-selection-chip" :color="item.raw.color" :prepend-icon="item.raw.icon">{{
             item.raw.title
           }}
         </v-chip>
@@ -263,6 +275,8 @@ const hasHideDetails = computed(() => {
 
     <v-select
         v-if="field.type === 'enum' && field.noFilter"
+        :id="`crud-form-field-enum-select-${name}`"
+        class="crud-form-field__enum-select"
         :name="name"
         :label="label"
         :hint="hint ?? field.hint"
@@ -291,6 +305,8 @@ const hasHideDetails = computed(() => {
 
     <v-text-field
         v-if="field.type === 'number'"
+        :id="`crud-form-field-number-${name}`"
+        class="crud-form-field__number-input"
         type="number"
         :name="name"
         :label="label"
@@ -317,6 +333,8 @@ const hasHideDetails = computed(() => {
 
     <media-field
         v-if="field.type === 'file'"
+        :id="`crud-form-field-file-${name}`"
+        class="crud-form-field__file-input"
         :name="name"
         :label="label"
         v-model.number="valueModel"
@@ -339,6 +357,8 @@ const hasHideDetails = computed(() => {
 
     <media-full-field
         v-if="field.type === 'fullFile'"
+        :id="`crud-form-field-full-file-${name}`"
+        class="crud-form-field__full-file-input"
         :name="name"
         :label="label"
         v-model.number="valueModel"
@@ -361,6 +381,8 @@ const hasHideDetails = computed(() => {
 
     <v-switch
         v-if="field.type === 'boolean'"
+        :id="`crud-form-field-boolean-${name}`"
+        class="crud-form-field__boolean-switch"
         :name="name"
         :label="label"
         :hint="hint ?? field.hint"
@@ -388,6 +410,8 @@ const hasHideDetails = computed(() => {
 
     <v-date-input
         v-if="field.type === 'date'"
+        :id="`crud-form-field-date-${name}`"
+        class="crud-form-field__date-input"
         :name="name"
         :label="label"
         :hint="hint ?? field.hint"
@@ -422,12 +446,14 @@ const hasHideDetails = computed(() => {
         @input="onInput"
     >
       <template v-if="field.endOfDay && field.showEndOfDayChip !== false" v-slot:append-inner>
-        <v-chip size="small">23:59</v-chip>
+        <v-chip :id="`crud-form-field-date-end-of-day-${name}`" class="crud-form-field__end-of-day-chip" size="small">23:59</v-chip>
       </template>
     </v-date-input>
 
     <crud-autocomplete
         v-if="field.type === 'ref'"
+        :id="`crud-form-field-ref-${name}`"
+        class="crud-form-field__ref-autocomplete"
         :entity="entity.getRef(field.ref)"
         :field="field"
         v-model="valueModel"
@@ -455,14 +481,16 @@ const hasHideDetails = computed(() => {
         :on-input="onInput"
     />
 
-    <v-card v-if="field.type === 'object'" class="mt-3" variant="flat" border>
+    <v-card v-if="field.type === 'object'" :id="`crud-form-field-object-${name}`" class="crud-form-field__object-card mt-3" variant="flat" border>
 
-      <v-card-title class="text-h5">{{ field.label }}</v-card-title>
-      <v-card-text>
+      <v-card-title :id="`crud-form-field-object-title-${name}`" class="crud-form-field__object-title text-h5">{{ field.label }}</v-card-title>
+      <v-card-text :id="`crud-form-field-object-content-${name}`" class="crud-form-field__object-content">
 
-        <v-row dense>
-          <v-col cols="12" v-for="oField in field.objectFields">
+        <v-row :id="`crud-form-field-object-row-${name}`" class="crud-form-field__object-row" dense>
+          <v-col :id="`crud-form-field-object-column-${name}-${oField.name}`" class="crud-form-field__object-column" cols="12" v-for="oField in field.objectFields">
             <crud-form-field
+                :id="`crud-form-field-object-field-${name}-${oField.name}`"
+                class="crud-form-field__object-field"
 
                 :entity="entity"
                 :field="oField"
@@ -490,6 +518,8 @@ const hasHideDetails = computed(() => {
 
     <v-combobox
         v-if="field.type === 'array.string'"
+        :id="`crud-form-field-array-string-${name}`"
+        class="crud-form-field__array-string-combobox"
         type="text"
         :name="name"
         :label="label"
@@ -525,6 +555,8 @@ const hasHideDetails = computed(() => {
 
     <v-combobox
         v-if="field.type === 'array.enum'"
+        :id="`crud-form-field-array-enum-${name}`"
+        class="crud-form-field__array-enum-combobox"
         type="text"
         :name="name"
         :label="label"
@@ -562,6 +594,8 @@ const hasHideDetails = computed(() => {
 
     <crud-autocomplete
         v-if="field.type === 'array.ref'"
+        :id="`crud-form-field-array-ref-${name}`"
+        class="crud-form-field__array-ref-autocomplete"
         :entity="entity.getRef(field.ref)"
         :field="field"
         :item-title="field?.refDisplay"
@@ -593,6 +627,8 @@ const hasHideDetails = computed(() => {
 
     <v-combobox
         v-if="field.type === 'array.number'"
+        :id="`crud-form-field-array-number-${name}`"
+        class="crud-form-field__array-number-combobox"
         type="number"
         :name="name"
         :label="label"
@@ -628,6 +664,8 @@ const hasHideDetails = computed(() => {
 
     <crud-form-list
         v-if="field.type === 'array.object'"
+        :id="`crud-form-field-array-object-${name}`"
+        class="crud-form-field__array-object-list"
         :entity="entity"
         :field="field"
         v-model="valueModel"
@@ -642,6 +680,8 @@ const hasHideDetails = computed(() => {
 
     <crud-form-record
         v-if="field.type === 'record'"
+        :id="`crud-form-field-record-${name}`"
+        class="crud-form-field__record"
         :entity="entity"
         :field="field"
         v-model="valueModel"
