@@ -16,7 +16,6 @@ const buttonConfig = useCrudButtonConfig("view")
           :variant="buttonConfig.variant"
           :rounded="buttonConfig.rounded"
           :color="buttonConfig.color"
-          slim
       >
       </v-btn>
     </template>
