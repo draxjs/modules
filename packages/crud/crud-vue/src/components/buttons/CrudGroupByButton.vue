@@ -6,8 +6,10 @@ import { useDateFormat } from "@drax/common-vue"
 import { useI18n } from "vue-i18n"
 import { useCrudGroupBy } from '../../composables/UseCrudGroupBy'
 import CrudActiveFilters from "../CrudActiveFilters.vue";
+import { useCrudButtonConfig } from "../../config/CrudButtonConfig";
 
 const { t, te } = useI18n()
+const buttonConfig = useCrudButtonConfig("groupBy")
 
 const {formatDateByUnit} = useDateFormat()
 
@@ -69,12 +71,14 @@ const totalCount = computed(() => {
   <div id="crud-group-by-wrapper" class="crud-group-by-wrapper">
     <v-btn
       id="crud-group-by-button"
-      class="crud-group-by-button"
+      class="crud-group-by-button mr-1"
       icon
-      variant="text"
+      :variant="buttonConfig.variant"
+      :rounded="buttonConfig.rounded"
+      :color="buttonConfig.color"
       @click="openDialog"
     >
-      <v-icon id="crud-group-by-button-icon" class="crud-group-by-button__icon">mdi-chart-bar</v-icon>
+      <v-icon id="crud-group-by-button-icon" class="crud-group-by-button__icon">{{ buttonConfig.icon }}</v-icon>
       <v-tooltip activator="parent" location="bottom">
         {{ t('crud.groupBy.button') }}
       </v-tooltip>

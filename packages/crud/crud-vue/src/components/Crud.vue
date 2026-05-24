@@ -9,6 +9,9 @@ import CrudRouteForm from "./CrudRouteForm.vue";
 import CrudNotify from "./CrudNotify.vue";
 import CrudDialog from "./CrudDialog.vue";
 import CrudAiButton from "./buttons/CrudAiButton.vue";
+import CrudDialogNextButton from "./buttons/CrudDialogNextButton.vue";
+import CrudDialogPrevButton from "./buttons/CrudDialogPrevButton.vue";
+import CrudOpenRouteFormButton from "./buttons/CrudOpenRouteFormButton.vue";
 import CrudAi from "./CrudAi.vue";
 import {useCrud} from "../composables/UseCrud";
 import {useDisplay} from 'vuetify'
@@ -240,31 +243,25 @@ watch(dialog, (value) => {
         :operation="operation"
     >
       <template #toolbar-actions>
-        <v-btn
+        <crud-open-route-form-button
             v-if="canOpenRouteCrudForm"
             id="crud-open-route-form-button"
             class="crud__open-route-form-button"
-            icon="mdi-open-in-new"
-            variant="text"
             @click="openRouteCrudForm"
         />
 
-        <v-btn
+        <crud-dialog-prev-button
             v-if="canNavigateItems"
             id="crud-dialog-prev-button"
             class="crud__dialog-prev-button"
-            icon="mdi-chevron-left"
-            variant="text"
             :disabled="!canNavigatePrev"
             @click="navigateView(-1)"
         />
 
-        <v-btn
+        <crud-dialog-next-button
             v-if="canNavigateItems"
             id="crud-dialog-next-button"
             class="crud__dialog-next-button"
-            icon="mdi-chevron-right"
-            variant="text"
             :disabled="!canNavigateNext"
             @click="navigateView(1)"
         />

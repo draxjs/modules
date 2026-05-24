@@ -3,8 +3,10 @@ import type { PropType } from 'vue'
 import type { IEntityCrud } from '@drax/crud-share'
 import { useI18n } from 'vue-i18n'
 import { useCrudColumns } from '../../composables/UseCrudColumns'
+import { useCrudButtonConfig } from '../../config/CrudButtonConfig'
 
 const { t } = useI18n()
+const buttonConfig = useCrudButtonConfig('columns')
 
 const props = defineProps({
   entity: { type: Object as PropType<IEntityCrud>, required: true },
@@ -28,9 +30,11 @@ const {
         id="crud-columns-button"
         class="crud-columns-button"
         icon
-        variant="text"
+        :variant="buttonConfig.variant"
+        :rounded="buttonConfig.rounded"
+        :color="buttonConfig.color"
       >
-        <v-icon id="crud-columns-button-icon" class="crud-columns-button__icon">mdi-view-column</v-icon>
+        <v-icon id="crud-columns-button-icon" class="crud-columns-button__icon">{{ buttonConfig.icon }}</v-icon>
         <v-tooltip activator="parent" location="bottom">
           {{ t('crud.columns.select') }}
         </v-tooltip>

@@ -3,8 +3,10 @@ import type {PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share"
 import {useCrud} from "../../composables/UseCrud";
 import {useI18n} from "vue-i18n";
+import {useCrudButtonConfig} from "../../config/CrudButtonConfig";
 
 const {t} = useI18n()
+const buttonConfig = useCrudButtonConfig("export")
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
@@ -25,9 +27,11 @@ const {
               :disabled="exportLoading"
               id="crud-export-button"
               class="crud-export-button mr-1"
-              variant="text"
+              :variant="buttonConfig.variant"
+              :rounded="buttonConfig.rounded"
+              :color="buttonConfig.color"
               :loading="exportLoading"
-              icon="mdi-database-export-outline"
+              :icon="buttonConfig.icon"
           ></v-btn>
         </template>
         {{ t('action.export')}}

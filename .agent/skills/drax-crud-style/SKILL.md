@@ -349,3 +349,37 @@ Los componentes exponen `id` y `class` sin estilos nuevos. Las clases son la API
 
 - `#entity-combobox` / `.entity-combobox`: select de entidades.
 - `#entity-combobox-item-${entity.name}` / `.entity-combobox__item`: opcion de entidad.
+
+
+## Reglas de Seguridad para CSS
+
+Al personalizar clases de Drax con CSS global, no asumas que una clase `crud-*` siempre esta aplicada al elemento visual que su nombre sugiere. Algunos componentes de Vuetify propagan `$attrs.class` a wrappers auxiliares como `v-tooltip`, `v-overlay`, menus o activadores. Por ejemplo, una clase como `.crud-list-table__create-button` puede aparecer tanto en el `v-btn` real como en el wrapper del tooltip/overlay. Si se le aplica `background`, `position`, `width`, `height`, `display`, `z-index`, `inset`, `box-shadow` o `border` sin acotar el selector, puede pintar o bloquear toda la pantalla.
+
+Buenas practicas:
+
+- Para botones, acotar por elemento Vuetify real: usar `.v-btn.crud-create-button`, `.v-btn.crud-refresh-button`, `.v-btn.crud-list-table__create-button`, `.v-btn.crud-list-gallery__create-button`, `.v-btn.crud-list-table__row-delete-button`, etc. Evitar estilos de caja sobre `.crud-create-button` o `.crud-list-table__create-button` sin `.v-btn`.
+- Para overlays, tooltips y menus, acotar al contenido interno cuando corresponda: usar `.crud-export-menu .v-list`, `.crud-import-menu .v-list`, `.crud-dialog__card`, `.crud-create-on-the-fly-dialog .v-card`, no el overlay raiz si no se busca modificar todo el backdrop.
+- Para headers, footers y toolbar con clases heredadas de `EntityCrud` como `bg-primary`, preferir overrides dentro del bloque CRUD: `.crud-list-table__toolbar.bg-primary`, `.crud-list-table .v-data-table__th.bg-primary`, `.crud-list-table__footer.bg-primary`.
+- Para fondos grandes, evitar `position: fixed`, `inset: 0`, `height: 100vh`, `width: 100vw` o gradientes intensos en clases `crud-*` reutilizables. Si se necesita un efecto de fondo, limitarlo a un contenedor especifico y verificar que no tape sidebar, toolbar ni overlays.
+- Si se quiere una defensa global, neutralizar wrappers auxiliares de botones antes de aplicar estilos visuales:
+
+```scss
+.v-overlay[class*="crud-"][class*="button"],
+.v-tooltip[class*="crud-"][class*="button"] {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.v-btn.crud-create-button,
+.v-btn.crud-refresh-button,
+.v-btn.crud-list-table__create-button {
+  border: 1px solid rgba(var(--v-theme-primary), 0.28);
+}
+```
+
+Checklist antes de terminar un ajuste visual:
+
+- Buscar selectores peligrosos: `rg "position: fixed|inset: 0|100vh|100vw|linear-gradient|radial-gradient|\\.crud-.*button"`.
+- Inspeccionar el HTML renderizado si una pantalla queda vacia o con fondo solido. Confirmar si la clase objetivo esta en un `button.v-btn` o en un `div.v-overlay`.
+- Probar al menos un CRUD con botones estandar de Drax y otro con acciones custom, porque no siempre propagan las mismas clases.

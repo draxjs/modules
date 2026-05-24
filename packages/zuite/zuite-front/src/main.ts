@@ -7,6 +7,7 @@ import { createApp } from 'vue'
 import {setupAuth} from "./setup/SetupAuth";
 import setupSetting from "./setup/SetupSetting";
 import setupEntities from "./setup/SetupEntities";
+import setupButtons from "@/setup/SetupButtons";
 // import setupCustomIdentity from "@/setup/SetupCustomIdentity";
 
 //Setup App
@@ -20,6 +21,9 @@ setupSetting().then(() => {console.log("Setting Setup Done")})
 
 //Setup Dashboard
 setupEntities()
+
+//Setup Custom Buttons
+setupButtons()
 
 //Setup Custom Identity Cruds
 //setupCustomIdentity()

@@ -6,8 +6,10 @@ import CrudForm from "../CrudForm.vue";
 import CrudDialog from "../CrudDialog.vue";
 import {useCrudStore} from "../../stores/UseCrudStore";
 import {useCrud} from "../../composables/UseCrud";
+import {useCrudButtonConfig} from "../../config/CrudButtonConfig";
 
 const {t} = useI18n()
+const buttonConfig = useCrudButtonConfig("createOnTheFly")
 
 const dialog = ref(false)
 
@@ -42,10 +44,12 @@ const emit = defineEmits(['created'])
     <template v-slot:activator="{ props }">
       <v-btn
           v-bind="{ ...$attrs, ...props }"
-             icon="mdi-plus"
+             :icon="buttonConfig.icon"
              :id="$attrs.id || 'crud-create-on-the-fly-button'"
              class="crud-create-on-the-fly-button mr-1"
-             variant="text"
+             :variant="buttonConfig.variant"
+             :rounded="buttonConfig.rounded"
+             :color="buttonConfig.color"
              @click="openDialog"
       >
       </v-btn>

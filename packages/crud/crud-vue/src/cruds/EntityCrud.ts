@@ -287,24 +287,24 @@ class EntityCrud implements IEntityCrud {
     return false
   }
 
-  get cardDensity(): 'default' | 'comfortable' | 'compact' {
-    return 'default'
+  get cardDensity(): 'default' | 'comfortable' | 'compact' | undefined {
+    return undefined
   }
 
   get cardClass(): string {
-    return 'rounded-xl'
+    return ''
   }
 
-  get toolbarDensity(): 'default' | 'comfortable' | 'compact' {
-    return 'default'
+  get toolbarDensity(): 'default' | 'comfortable' | 'compact' | undefined  {
+    return undefined
   }
 
   get toolbarClass(): string {
     return 'bg-primary'
   }
 
-  get tableDensity(): 'default' | 'comfortable' | 'compact' {
-    return 'default'
+  get tableDensity(): 'default' | 'comfortable' | 'compact' | undefined  {
+    return undefined
   }
 
   get headerProps() {

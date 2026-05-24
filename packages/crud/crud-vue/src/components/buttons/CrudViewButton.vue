@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
+import {useCrudButtonConfig} from "../../config/CrudButtonConfig";
 const {t} = useI18n()
+const buttonConfig = useCrudButtonConfig("view")
 </script>
 
 <template>
@@ -8,11 +10,12 @@ const {t} = useI18n()
     <template v-slot:activator="{ props}">
       <v-btn
           v-bind="{ ...$attrs, ...props }"
-          icon="mdi-magnify"
+          :icon="buttonConfig.icon"
           :id="$attrs.id || 'crud-view-button'"
           class="crud-view-button mr-1"
-          variant="text"
-          color="teal"
+          :variant="buttonConfig.variant"
+          :rounded="buttonConfig.rounded"
+          :color="buttonConfig.color"
           slim
       >
       </v-btn>

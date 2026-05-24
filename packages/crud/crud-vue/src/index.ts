@@ -16,6 +16,9 @@ import CrudNotify from "./components/CrudNotify.vue";
 import CrudSearch from "./components/CrudSearch.vue";
 import CrudAutocomplete from "./components/CrudAutocomplete.vue";
 import CrudRefDisplay from "./components/CrudRefDisplay.vue";
+import CrudDialogNextButton from "./components/buttons/CrudDialogNextButton.vue";
+import CrudDialogPrevButton from "./components/buttons/CrudDialogPrevButton.vue";
+import CrudOpenRouteFormButton from "./components/buttons/CrudOpenRouteFormButton.vue";
 import CrudSavedQueriesButton from "./components/buttons/CrudSavedQueriesButton.vue";
 import CrudRefreshButton from "./components/buttons/CrudRefreshButton.vue";
 import EntityCombobox from "./components/combobox/EntityCombobox.vue";
@@ -28,6 +31,20 @@ import {useFilterIcon} from "./composables/UseFilterIcon";
 import {useFormUtils} from "./composables/UseFormUtils";
 import {useInputErrorI18n} from "./composables/UseInputErrorI18n";
 import {EntityCrud} from "./cruds/EntityCrud";
+import {
+    configureCrudButtons,
+    crudButtonDefaultStyles,
+    crudButtonsConfig,
+    getCrudButtonConfig,
+    resetCrudButtonsConfig,
+    useCrudButtonConfig,
+    type CrudButtonName,
+    type CrudButtonGlobalStyle,
+    type CrudButtonRounded,
+    type CrudButtonStyle,
+    type CrudButtonVariant,
+    type CrudButtonsConfig
+} from "./config/CrudButtonConfig";
 
 
 export {
@@ -46,6 +63,9 @@ export {
     CrudSearch,
     CrudAutocomplete,
     CrudRefDisplay,
+    CrudDialogNextButton,
+    CrudDialogPrevButton,
+    CrudOpenRouteFormButton,
     CrudSavedQueriesButton,
     CrudRefreshButton,
     CrudFilters,
@@ -58,8 +78,20 @@ export {
     useInputErrorI18n,
     useFilterIcon,
     useCrudRefDisplay,
+    configureCrudButtons,
+    resetCrudButtonsConfig,
+    getCrudButtonConfig,
+    useCrudButtonConfig,
+    crudButtonDefaultStyles,
+    crudButtonsConfig,
     EntityCrud,
     useEntityStore,
-    EntityCombobox
+    EntityCombobox,
+    type CrudButtonName,
+    type CrudButtonGlobalStyle,
+    type CrudButtonRounded,
+    type CrudButtonStyle,
+    type CrudButtonVariant,
+    type CrudButtonsConfig
 
 }

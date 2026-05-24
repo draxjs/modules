@@ -13,11 +13,21 @@ import { es,en } from 'vuetify/locale'
 
 // Composables
 import { createVuetify } from 'vuetify'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import { md } from 'vuetify/iconsets/md'
 import dark from './themes/DarkTheme'
 import light from './themes/LightTheme'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+      md,
+    },
+  },
   theme: {
     defaultTheme: 'dark',
     themes: {

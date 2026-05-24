@@ -8,10 +8,12 @@ import {useCrudColumns} from "../../composables/UseCrudColumns";
 import {CrudSavedQueryProvider} from "@drax/crud-front";
 import {useAuth, useAuthStore} from "@drax/identity-vue";
 import {createCrudFilterValue} from "../../helpers/CrudRangeFilters";
+import {useCrudButtonConfig} from "../../config/CrudButtonConfig";
 
 const {t, te} = useI18n();
 const {hasPermission} = useAuth();
 const authStore = useAuthStore();
+const buttonConfig = useCrudButtonConfig("savedQueries");
 
 const props = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
@@ -227,11 +229,13 @@ function onMenuUpdate(value: boolean) {
       <v-btn
           v-bind="activatorProps"
           id="crud-saved-queries-button"
-          class="crud-saved-queries-button"
+          class="crud-saved-queries-button mr-1"
           icon
-          variant="text"
+          :variant="buttonConfig.variant"
+          :rounded="buttonConfig.rounded"
+          :color="buttonConfig.color"
       >
-        <v-icon id="crud-saved-queries-button-icon" class="crud-saved-queries-button__icon">mdi-content-save-cog</v-icon>
+        <v-icon id="crud-saved-queries-button-icon" class="crud-saved-queries-button__icon">{{ buttonConfig.icon }}</v-icon>
         <v-tooltip activator="parent" location="bottom">
           {{ title }}
         </v-tooltip>

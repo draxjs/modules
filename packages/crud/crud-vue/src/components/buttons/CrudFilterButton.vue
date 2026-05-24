@@ -4,6 +4,7 @@ import {computed} from "vue";
 import type {PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share";
 import {useCrudStore} from "../../stores/UseCrudStore";
+import {useCrudButtonConfig} from "../../config/CrudButtonConfig";
 
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
@@ -17,6 +18,7 @@ let dynamicFiltersEnable = computed({
 })
 
 const {t} = useI18n()
+const buttonConfig = useCrudButtonConfig("filter")
 </script>
 
 <template>
@@ -25,10 +27,12 @@ const {t} = useI18n()
       <template v-slot:activator="{ props }">
         <v-btn
             v-bind="{ ...$attrs, ...props }"
-            :icon="dynamicFiltersEnable ? 'mdi-filter-off' : 'mdi-filter' "
+            :icon="dynamicFiltersEnable ? buttonConfig.activeIcon : buttonConfig.icon"
             id="crud-filter-button"
             class="crud-filter-button mr-1"
-            variant="text"
+            :variant="buttonConfig.variant"
+            :rounded="buttonConfig.rounded"
+            :color="buttonConfig.color"
             @click="dynamicFiltersEnable = !dynamicFiltersEnable"
         >
         </v-btn>

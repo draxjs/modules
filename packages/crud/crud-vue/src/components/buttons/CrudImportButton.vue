@@ -4,8 +4,10 @@ import type {PropType} from "vue";
 import type {IEntityCrud} from "@drax/crud-share"
 import {useCrud} from "../../composables/UseCrud";
 import {useI18n} from "vue-i18n";
+import {useCrudButtonConfig} from "../../config/CrudButtonConfig";
 
 const {t} = useI18n()
+const buttonConfig = useCrudButtonConfig("import")
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
 })
@@ -55,9 +57,11 @@ function onFileChange(event: Event) {
               :disabled="importLoading"
               id="crud-import-button"
               class="crud-import-button mr-1"
-              variant="text"
+              :variant="buttonConfig.variant"
+              :rounded="buttonConfig.rounded"
+              :color="buttonConfig.color"
               :loading="importLoading"
-              icon="mdi-database-import-outline"
+              :icon="buttonConfig.icon"
           ></v-btn>
         </template>
         {{ t('action.import')}}

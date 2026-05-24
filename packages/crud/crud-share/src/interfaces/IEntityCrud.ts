@@ -57,12 +57,12 @@ interface IEntityCrud {
   containerFluid?: boolean
 
   cardClass?: string
-  cardDensity?: 'default' | 'comfortable' | 'compact'
+  cardDensity?: 'default' | 'comfortable' | 'compact' | undefined
 
   toolbarClass?: string
-  toolbarDensity?: 'default' | 'comfortable' | 'compact'
+  toolbarDensity?: 'default' | 'comfortable' | 'compact' | undefined
 
-  tableDensity?: 'default' | 'comfortable' | 'compact'
+  tableDensity?: 'default' | 'comfortable' | 'compact' | undefined
   tableStriped?: null | 'odd' | 'even'
 
   headerProps?: Record<string, any>;

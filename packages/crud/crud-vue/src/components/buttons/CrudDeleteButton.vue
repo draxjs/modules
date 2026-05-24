@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
+import {useCrudButtonConfig} from "../../config/CrudButtonConfig";
 
 const {t} = useI18n()
+const buttonConfig = useCrudButtonConfig("delete")
 </script>
 
 <template>
@@ -9,11 +11,12 @@ const {t} = useI18n()
     <template v-slot:activator="{ props}">
       <v-btn
           v-bind="{ ...$attrs, ...props }"
-          icon="mdi-delete"
+          :icon="buttonConfig.icon"
           :id="$attrs.id || 'crud-delete-button'"
           class="crud-delete-button mr-1"
-          variant="text"
-          color="red"
+          :variant="buttonConfig.variant"
+          :rounded="buttonConfig.rounded"
+          :color="buttonConfig.color"
       >
       </v-btn>
     </template>
