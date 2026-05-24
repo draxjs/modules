@@ -28,7 +28,7 @@ const {
       <v-btn
         v-bind="props"
         id="crud-columns-button"
-        class="crud-columns-button"
+        class="crud-columns-button mr-1"
         icon
         :variant="buttonConfig.variant"
         :rounded="buttonConfig.rounded"
