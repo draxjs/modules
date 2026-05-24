@@ -55,10 +55,22 @@ const crudButtonDefaultStyles: Record<CrudButtonName, CrudButtonStyle> = {
     view: {icon: "mdi-magnify", variant: "text", color: "teal"},
 };
 
-const crudButtonsConfig = reactive<Required<CrudButtonsConfig>>({
-    defaults: {},
-    buttons: {},
-});
+const crudButtonsConfigGlobalKey = "__draxCrudVueCrudButtonsConfig";
+
+type CrudButtonsConfigGlobal = typeof globalThis & {
+    [crudButtonsConfigGlobalKey]?: Required<CrudButtonsConfig>;
+};
+
+function createCrudButtonsConfig(): Required<CrudButtonsConfig> {
+    return reactive<Required<CrudButtonsConfig>>({
+        defaults: {},
+        buttons: {},
+    });
+}
+
+const crudButtonsConfigGlobal = globalThis as CrudButtonsConfigGlobal;
+const crudButtonsConfig = crudButtonsConfigGlobal[crudButtonsConfigGlobalKey]
+    || (crudButtonsConfigGlobal[crudButtonsConfigGlobalKey] = createCrudButtonsConfig());
 
 export function configureCrudButtons(config: CrudButtonsConfig) {
     if (config.defaults) {
