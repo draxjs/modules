@@ -17,6 +17,8 @@ const generateT = (schema: ISchema) => {
     return content;
 }
 
+const capitalizeFirstLetter = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
 
 export const Templatei18n = (entity: IEntitySchema) => `
 const messages = {
@@ -25,7 +27,7 @@ const messages = {
     ${entity.name.toLowerCase()}: {
           entity: '${entity.name}',
           menu: '${entity.name}',
-          crud: 'Manage ${entity.name}',
+          crud: '${capitalizeFirstLetter(entity.name)}',
           field:{
             ${generateT(entity.schema)}
           }
@@ -42,7 +44,7 @@ const messages = {
      ${entity.name.toLowerCase()}: {
           entity: '${entity.name}',
           menu: '${entity.name}',
-          crud: 'Gestionar ${entity.name}',
+          crud: '${capitalizeFirstLetter(entity.name)}',
           field:{
             ${generateT(entity.schema)}
           }
