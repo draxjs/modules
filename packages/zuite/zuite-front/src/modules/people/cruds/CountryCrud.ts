@@ -209,6 +209,10 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
     return 'responsive'
   }
 
+  get isRouteFormEnable(): boolean{
+    return false
+  }
+
 }
 
 export default CountryCrud

@@ -44,6 +44,7 @@ interface IEntityCrud {
   isSavedQueriesEnabled: boolean
   isGroupable: boolean
   isAiAssistable: boolean
+  isRouteFormEnable: boolean
   navigationOperations: IEntityCrudOperation[]
   dialogFullscreen: boolean
   dialogMaxWidth?: string

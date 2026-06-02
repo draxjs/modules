@@ -244,7 +244,7 @@ watch(dialog, (value) => {
     >
       <template #toolbar-actions>
         <crud-open-route-form-button
-            v-if="canOpenRouteCrudForm"
+            v-if="entity.isRouteFormEnable && canOpenRouteCrudForm"
             id="crud-open-route-form-button"
             class="crud__open-route-form-button"
             @click="openRouteCrudForm"

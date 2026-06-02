@@ -355,6 +355,10 @@ class EntityCrud implements IEntityCrud {
     return false
   }
 
+  get isRouteFormEnable(): boolean{
+    return true
+  }
+
   get navigationOperations(): IEntityCrudOperation[] {
     return ['view']
   }
