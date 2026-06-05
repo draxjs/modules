@@ -49,6 +49,38 @@ interface IMediaGetFileResult {
     absolutePath: string;
 }
 
+interface IMediaDeleteFileParams {
+    dir: string;
+    year: string;
+    month: string;
+    filename: string;
+    deleteMetadata?: boolean;
+}
+
+interface IMediaDeleteFileResult {
+    dir: string;
+    year: string;
+    month: string;
+    filename: string;
+    fileDir: string;
+    relativePath: string;
+    absolutePath: string;
+    deleted: boolean;
+    metadataDeleted: boolean;
+}
+
+interface IMediaDeleteFileByRelativePathParams {
+    relativePath: string;
+    deleteMetadata?: boolean;
+}
+
+interface IMediaDeleteFileByRelativePathResult {
+    relativePath: string;
+    absolutePath: string;
+    deleted: boolean;
+    metadataDeleted: boolean;
+}
+
 class MediaService {
     protected getBaseFileDir(): string {
         return DraxConfig.getOrLoad(CommonConfig.FileDir) || "files";
@@ -183,6 +215,83 @@ class MediaService {
             absolutePath,
         };
     }
+
+    async deleteFile(params: IMediaDeleteFileParams): Promise<IMediaDeleteFileResult> {
+        const {dir, year, month, filename, deleteMetadata = true} = params;
+
+        this.assertDir(dir);
+        this.assertYear(year);
+        this.assertMonth(month);
+
+        const fileDir = join(this.getBaseFileDir(), dir, year, month);
+        const relativePath = join(fileDir, filename);
+        const absolutePath = resolve(process.cwd(), relativePath);
+        let metadataDeleted = false;
+
+        if (deleteMetadata && this.isMetadataEnabled()) {
+            const file = await FileServiceFactory.instance.findOneBy("relativePath", relativePath);
+            if (file) {
+                await FileServiceFactory.instance.delete(file._id);
+                metadataDeleted = true;
+
+                return {
+                    dir,
+                    year,
+                    month,
+                    filename,
+                    fileDir,
+                    relativePath,
+                    absolutePath,
+                    deleted: true,
+                    metadataDeleted,
+                };
+            }
+        }
+
+        await StoreManager.deleteFilepath(relativePath);
+
+        return {
+            dir,
+            year,
+            month,
+            filename,
+            fileDir,
+            relativePath,
+            absolutePath,
+            deleted: true,
+            metadataDeleted,
+        };
+    }
+
+    async deleteFileByRelativePath(params: IMediaDeleteFileByRelativePathParams): Promise<IMediaDeleteFileByRelativePathResult> {
+        const {relativePath, deleteMetadata = true} = params;
+        const absolutePath = resolve(process.cwd(), relativePath);
+        let metadataDeleted = false;
+
+        if (deleteMetadata && this.isMetadataEnabled()) {
+            const file = await FileServiceFactory.instance.findOneBy("relativePath", relativePath);
+            if (file) {
+                await FileServiceFactory.instance.delete(file._id);
+                metadataDeleted = true;
+
+                return {
+                    relativePath,
+                    absolutePath,
+                    deleted: true,
+                    metadataDeleted,
+                };
+            }
+        }
+
+        await StoreManager.deleteFilepath(relativePath);
+
+        return {
+            relativePath,
+            absolutePath,
+            deleted: true,
+            metadataDeleted,
+        };
+    }
 }
 
 export default MediaService;
@@ -195,4 +304,8 @@ export type {
     IMediaSaveFileResult,
     IMediaGetFileParams,
     IMediaGetFileResult,
+    IMediaDeleteFileParams,
+    IMediaDeleteFileResult,
+    IMediaDeleteFileByRelativePathParams,
+    IMediaDeleteFileByRelativePathResult,
 };

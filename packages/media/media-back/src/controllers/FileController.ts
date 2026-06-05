@@ -2,7 +2,6 @@ import FileServiceFactory from "../factory/services/FileServiceFactory.js";
 import {AbstractFastifyController, CustomRequest} from "@drax/crud-back";
 import FilePermissions from "../permissions/FilePermissions.js";
 import type {IFile, IFileBase} from "../interfaces/IFile";
-import {StoreManager} from "@drax/common-back";
 
 class FileController extends AbstractFastifyController<IFile, IFileBase, IFileBase>   {
 
@@ -32,15 +31,6 @@ class FileController extends AbstractFastifyController<IFile, IFileBase, IFileBa
         }
 
         return payload
-    }
-
-    async postDelete(request: CustomRequest, item:IFile){
-        try {
-            await StoreManager.deleteFilepath(item.relativePath)
-        } catch (error) {
-            console.error(error)
-        }
-        return item
     }
 }
 

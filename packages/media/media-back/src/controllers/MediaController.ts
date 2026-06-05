@@ -64,6 +64,32 @@ class MediaController extends CommonController {
 
     }
 
+    async deleteFile(request: any, reply: any) {
+        try {
+            request.rbac.assertPermission(MediaPermissions.DeleteFile)
+
+            const dir = request.params.dir
+            const year = request.params.year
+            const month = request.params.month
+            const filename = request.params.filename
+            const deleteMetadata = request.query?.deleteMetadata === undefined
+                ? undefined
+                : !["false", "0", "no"].includes(String(request.query.deleteMetadata).toLowerCase())
+
+            const result = await this.mediaService.deleteFile({
+                dir,
+                year,
+                month,
+                filename,
+                deleteMetadata,
+            })
+
+            return reply.send(result)
+        } catch (e) {
+            this.handleError(e, reply)
+        }
+    }
+
 
 }
 

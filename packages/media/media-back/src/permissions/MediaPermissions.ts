@@ -1,6 +1,7 @@
 enum MediaPermissions {
 
     UploadFile = "file:upload",
+    DeleteFile = "file:delete",
 
 }
 

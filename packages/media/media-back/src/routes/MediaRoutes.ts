@@ -17,6 +17,20 @@ async function MediaRoutes(fastify, options) {
         }
     }, (req,rep) =>  controller.downloadFile(req,rep) )
 
+    fastify.delete('/api/file/:dir/:year/:month/:filename', {
+        schema: {
+            tags: ['Media'],
+            querystring: {
+                type: 'object',
+                properties: {
+                    deleteMetadata: {
+                        type: 'boolean',
+                    },
+                },
+            },
+        }
+    }, (req,rep) =>  controller.deleteFile(req,rep) )
+
 
 }
 

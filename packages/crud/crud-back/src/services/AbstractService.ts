@@ -32,7 +32,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
     onCreated?: (data: T) => Promise<void>;
     onUpdated?: (data: T) => Promise<void>;
     onUpdatedPartial?: (data: T) => Promise<void>;
-    onDeleted?: (id: string) => Promise<void>;
+    onDeleted?: (id: string, item?: T | null) => Promise<void>;
 
 
     constructor(repository: IDraxCrudRepository<T, C, U>, baseSchema?: ZodObject<ZodRawShape>, fullSchema?: ZodObject<ZodRawShape>) {
@@ -178,12 +178,13 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
 
     async delete(id: string): Promise<boolean> {
         try {
+            const item = this.onDeleted ? await this.findById(id) : null;
             const result: boolean = await this._repository.delete(id);
             if (!result) {
                 throw new Error("error.deletionFailed");
             }
             if (this.onDeleted) {
-                await this.onDeleted(id)
+                await this.onDeleted(id, item)
             }
             return result;
         } catch (e) {

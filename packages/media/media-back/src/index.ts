@@ -18,6 +18,10 @@ import type {
     IMediaSaveFileResult,
     IMediaGetFileParams,
     IMediaGetFileResult,
+    IMediaDeleteFileParams,
+    IMediaDeleteFileResult,
+    IMediaDeleteFileByRelativePathParams,
+    IMediaDeleteFileByRelativePathResult,
 } from "./services/MediaService.js";
 
 export type {
@@ -29,6 +33,10 @@ export type {
     IMediaSaveFileResult,
     IMediaGetFileParams,
     IMediaGetFileResult,
+    IMediaDeleteFileParams,
+    IMediaDeleteFileResult,
+    IMediaDeleteFileByRelativePathParams,
+    IMediaDeleteFileByRelativePathResult,
 }
 
 export {
