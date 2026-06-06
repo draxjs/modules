@@ -27,6 +27,7 @@ interface IAILogBase {
     startedAt?: Date
     endedAt?: Date
     responseTime?: string
+    responseTimeMS?: number
     output?: string
     success?: boolean
     statusCode?: number
@@ -66,6 +67,7 @@ interface IAILog {
     startedAt?: Date
     endedAt?: Date
     responseTime?: string
+    responseTimeMS?: number
     output?: string
     success?: boolean
     statusCode?: number

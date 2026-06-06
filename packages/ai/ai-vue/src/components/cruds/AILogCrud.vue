@@ -12,10 +12,17 @@ import {formatDate} from "@drax/common-front"
     <template v-slot:item.endedAt="{value}">{{formatDate(value)}}</template>
     <template v-slot:item.tenant="{value}">{{value?.name}}</template>
     <template v-slot:item.user="{value}">{{value?.username}}</template>
+
+    <template v-slot:toolbar-right>
+      <v-btn
+        icon="mdi-view-dashboard-outline"
+        variant="text"
+        :to="{name: 'DraxAILogDashboardPage'}"
+      />
+    </template>
   </crud>
 </template>
 
 <style scoped>
 
 </style>
-

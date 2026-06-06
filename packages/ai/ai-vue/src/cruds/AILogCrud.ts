@@ -54,6 +54,7 @@ class AILogCrud extends EntityCrud implements IEntityCrud {
 {title: 'startedAt',key:'startedAt', align: 'start'},
 {title: 'endedAt',key:'endedAt', align: 'start'},
 {title: 'responseTime',key:'responseTime', align: 'start'},
+{title: 'responseTimeMS',key:'responseTimeMS', align: 'start'},
 {title: 'success',key:'success', align: 'start'},
 {title: 'statusCode',key:'statusCode', align: 'start'},
 {title: 'tenant',key:'tenant', align: 'start'},
@@ -121,6 +122,7 @@ inputFiles: []
 {name:'startedAt',type:'date',label:'startedAt',default:null,groupTab: 'USAGE'},
 {name:'endedAt',type:'date',label:'endedAt',default:null,groupTab: 'USAGE'},
 {name:'responseTime',type:'string',label:'responseTime',default:'',groupTab: 'USAGE'},
+{name:'responseTimeMS',type:'number',label:'responseTimeMS',default:null,groupTab: 'USAGE'},
 {name:'output',type:'longString',label:'output',default:'',groupTab: 'RESULT'},
 {name:'success',type:'boolean',label:'success',default:false,groupTab: 'RESULT'},
 {name:'statusCode',type:'number',label:'statusCode',default:null,groupTab: 'RESULT'},
@@ -212,4 +214,3 @@ inputFiles: []
 }
 
 export default AILogCrud
-

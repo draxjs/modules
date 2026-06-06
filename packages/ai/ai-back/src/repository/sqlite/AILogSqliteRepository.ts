@@ -37,6 +37,7 @@ class AILogSqliteRepository extends AbstractSqliteRepository<IAILog, IAILogBase,
 {name: "startedAt", type: "TEXT", unique: false, primary: false},
 {name: "endedAt", type: "TEXT", unique: false, primary: false},
 {name: "responseTime", type: "TEXT", unique: false, primary: false},
+{name: "responseTimeMS", type: "REAL", unique: false, primary: false},
 {name: "output", type: "TEXT", unique: false, primary: false},
 {name: "success", type: "TEXT", unique: false, primary: false},
 {name: "statusCode", type: "INTEGER", unique: false, primary: false},
@@ -50,4 +51,3 @@ class AILogSqliteRepository extends AbstractSqliteRepository<IAILog, IAILogBase,
 
 export default AILogSqliteRepository
 export {AILogSqliteRepository}
-

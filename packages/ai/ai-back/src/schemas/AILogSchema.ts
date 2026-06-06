@@ -33,6 +33,7 @@ const AILogBaseSchema = z.object({
     startedAt: z.coerce.date().nullable().optional(),
     endedAt: z.coerce.date().nullable().optional(),
     responseTime: z.string().optional(),
+    responseTimeMS: z.number().nullable().optional(),
     output: z.string().optional(),
     success: z.boolean().optional(),
     statusCode: z.number().nullable().optional(),
@@ -45,7 +46,9 @@ const AILogSchema = AILogBaseSchema
     .extend({
         _id: z.coerce.string(),
         tenant: z.object({_id: z.coerce.string(), name: z.string()}).nullable().optional(),
-        user: z.object({_id: z.coerce.string(), username: z.string()}).nullable().optional()
+        user: z.object({_id: z.coerce.string(), username: z.string()}).nullable().optional(),
+        createdAt: z.coerce.date().nullable().optional(),
+        updatedAt: z.coerce.date().nullable().optional(),
     })
 
 export default AILogSchema;

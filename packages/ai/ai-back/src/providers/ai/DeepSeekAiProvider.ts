@@ -1,6 +1,4 @@
 import OpenAI from "openai";
-import type {IAILogBase} from "@drax/ai-share";
-import type {IPromptParams} from "../../interfaces/IAIProvider.js";
 import type {AILogService} from "../../services/AILogService.js";
 import OpenAiProvider from "./OpenAiProvider.js";
 
@@ -15,7 +13,7 @@ class DeepSeekAiProvider extends OpenAiProvider{
             throw new Error("DeepSeek model required")
         }
 
-        super(apiKey, model, visionModel, aiLogService)
+        super(apiKey, model, visionModel, aiLogService, "deepseek")
 
         if (!baseUrl) {
             throw new Error("DeepSeek baseUrl required")
@@ -35,23 +33,6 @@ class DeepSeekAiProvider extends OpenAiProvider{
         return this._client
     }
 
-    protected buildLogPayload(input: IPromptParams, params: {
-        model: string,
-        systemPrompt: string,
-        startedAt: Date,
-        endedAt?: Date,
-        inputTokens?: number,
-        outputTokens?: number,
-        tokens?: number,
-        output?: unknown,
-        success: boolean,
-        errorMessage?: string,
-    }): IAILogBase {
-        return {
-            ...super.buildLogPayload(input, params),
-            provider: "deepseek",
-        }
-    }
 }
 
 export default DeepSeekAiProvider

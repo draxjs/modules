@@ -33,6 +33,7 @@ const AILogSchema = new mongoose.Schema<IAILog>({
             startedAt: {type: Date,   required: false, index: false, unique: false },
             endedAt: {type: Date,   required: false, index: false, unique: false },
             responseTime: {type: String,   required: false, index: false, unique: false },
+            responseTimeMS: {type: Number,   required: false, index: false, unique: false },
             output: {type: String,   required: false, index: false, unique: false },
             success: {type: Boolean,   required: false, index: false, unique: false },
             statusCode: {type: Number,   required: false, index: false, unique: false },
