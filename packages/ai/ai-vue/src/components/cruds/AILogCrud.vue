@@ -13,7 +13,7 @@ import {formatDate} from "@drax/common-front"
     <template v-slot:item.tenant="{value}">{{value?.name}}</template>
     <template v-slot:item.user="{value}">{{value?.username}}</template>
 
-    <template v-slot:toolbar-right>
+    <template v-slot:toolbar-left>
       <v-btn
         icon="mdi-view-dashboard-outline"
         variant="text"

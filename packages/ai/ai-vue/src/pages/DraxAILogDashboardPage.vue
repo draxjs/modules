@@ -6,10 +6,11 @@ import {useTheme} from "vuetify";
 import {AILogProvider} from "@drax/ai-front";
 
 type DateGroupFormat = Extract<IDraxGroupByDateFormat, "hour" | "day" | "month" | "year">
-type AILogMetricField = "inputTokens" | "outputTokens" | "tokens"
+type AILogMetricField = "inputTokens" | "outputTokens" | "tokens" | "responseTimeMS"
 type AILogDimensionField = "provider" | "model"
 type AILogField = "startedAt" | AILogDimensionField | AILogMetricField
-type Accent = "total" | "provider" | "model" | "input" | "output" | "tokens"
+type Accent = "total" | "provider" | "model" | "input" | "output" | "tokens" | "responseTime"
+type MetricAggregation = "sum" | "average"
 
 type AILogGroupByRow = {
   startedAt?: unknown
@@ -18,6 +19,7 @@ type AILogGroupByRow = {
   inputTokens?: number
   outputTokens?: number
   tokens?: number
+  responseTimeMS?: number
   count?: number
 }
 
@@ -27,6 +29,7 @@ type SummaryRow = {
   model?: string
   count: number
   metric?: number
+  metricTotal?: number
   percentage: number
 }
 
@@ -39,6 +42,7 @@ type CardConfig = {
   rows: SummaryRow[]
   metricField?: AILogMetricField
   metricLabel?: string
+  metricAggregation?: MetricAggregation
 }
 
 const theme = useTheme();
@@ -54,6 +58,7 @@ const modelRows = ref<SummaryRow[]>([]);
 const inputTokenRows = ref<SummaryRow[]>([]);
 const outputTokenRows = ref<SummaryRow[]>([]);
 const tokenRows = ref<SummaryRow[]>([]);
+const responseTimeRows = ref<SummaryRow[]>([]);
 const loading = ref(false);
 const error = ref("");
 let requestId = 0;
@@ -146,6 +151,17 @@ const cards = computed<CardConfig[]>(() => [
     metricField: "tokens",
     metricLabel: "Tokens",
   },
+  {
+    key: "responseTime",
+    title: `Response time promedio por ${dateGroupLabel.value}, provider y model`,
+    icon: "mdi-timer-outline",
+    accent: "responseTime",
+    fields: ["startedAt", "provider", "model", "responseTimeMS"],
+    rows: responseTimeRows.value,
+    metricField: "responseTimeMS",
+    metricLabel: "Promedio ms",
+    metricAggregation: "average",
+  },
 ]);
 
 function getStartOfDay(value: Date): Date {
@@ -225,18 +241,32 @@ function sortByStartedAtAsc(rows: AILogGroupByRow[]): AILogGroupByRow[] {
   return [...rows].sort((firstRow, secondRow) => getStartedAtTime(firstRow) - getStartedAtTime(secondRow));
 }
 
-function toSummaryRows(rows: AILogGroupByRow[], metricField?: AILogMetricField): SummaryRow[] {
+function getRowMetricValue(metricTotal: number, count: number, metricAggregation: MetricAggregation): number {
+  if (metricAggregation === "average") {
+    return count > 0 ? metricTotal / count : 0;
+  }
+
+  return metricTotal;
+}
+
+function toSummaryRows(
+  rows: AILogGroupByRow[],
+  metricField?: AILogMetricField,
+  metricAggregation: MetricAggregation = "sum",
+): SummaryRow[] {
   const totalCount = rows.reduce((sum, row) => sum + Number(row.count ?? 0), 0);
 
   return sortByStartedAtAsc(rows).map(row => {
     const count = Number(row.count ?? 0);
+    const metricTotal = metricField ? Number(row[metricField] ?? 0) : undefined;
 
     return {
       startedAt: formatDateGroup(row.startedAt),
       provider: getDisplayValue(row.provider),
       model: getDisplayValue(row.model),
       count,
-      metric: metricField ? Number(row[metricField] ?? 0) : undefined,
+      metric: metricField ? getRowMetricValue(metricTotal ?? 0, count, metricAggregation) : undefined,
+      metricTotal,
       percentage: totalCount > 0 ? (count / totalCount) * 100 : 0,
     };
   });
@@ -247,7 +277,18 @@ function getTotalCount(rows: SummaryRow[]): number {
 }
 
 function getTotalMetric(rows: SummaryRow[]): number {
-  return rows.reduce((sum, row) => sum + Number(row.metric ?? 0), 0);
+  return rows.reduce((sum, row) => sum + Number(row.metricTotal ?? row.metric ?? 0), 0);
+}
+
+function getMetricDisplayValue(card: CardConfig): number {
+  const totalMetric = getTotalMetric(card.rows);
+
+  if (card.metricAggregation === "average") {
+    const totalCount = getTotalCount(card.rows);
+    return totalCount > 0 ? totalMetric / totalCount : 0;
+  }
+
+  return totalMetric;
 }
 
 function getRowKey(row: SummaryRow, card: CardConfig): string {
@@ -279,6 +320,7 @@ function clearDashboardRows() {
   inputTokenRows.value = [];
   outputTokenRows.value = [];
   tokenRows.value = [];
+  responseTimeRows.value = [];
 }
 
 async function fetchDashboardData() {
@@ -289,13 +331,26 @@ async function fetchDashboardData() {
   try {
     const filters = buildFilters();
     const dateFormat = dateGroupFormat.value;
-    const [totalData, providerData, modelData, inputTokenData, outputTokenData, tokenData] = await Promise.all([
+    const [
+      totalData,
+      providerData,
+      modelData,
+      inputTokenData,
+      outputTokenData,
+      tokenData,
+      responseTimeData,
+    ] = await Promise.all([
       AILogProvider.instance.groupBy({fields: ["startedAt"], filters, dateFormat}),
       AILogProvider.instance.groupBy({fields: ["startedAt", "provider"], filters, dateFormat}),
       AILogProvider.instance.groupBy({fields: ["startedAt", "provider", "model"], filters, dateFormat}),
       AILogProvider.instance.groupBy({fields: ["startedAt", "provider", "model", "inputTokens"], filters, dateFormat}),
       AILogProvider.instance.groupBy({fields: ["startedAt", "provider", "model", "outputTokens"], filters, dateFormat}),
       AILogProvider.instance.groupBy({fields: ["startedAt", "provider", "model", "tokens"], filters, dateFormat}),
+      AILogProvider.instance.groupBy({
+        fields: ["startedAt", "provider", "model", "responseTimeMS"],
+        filters,
+        dateFormat,
+      }),
     ]);
 
     if (currentRequestId !== requestId) return;
@@ -306,6 +361,7 @@ async function fetchDashboardData() {
     inputTokenRows.value = toSummaryRows(inputTokenData as AILogGroupByRow[], "inputTokens");
     outputTokenRows.value = toSummaryRows(outputTokenData as AILogGroupByRow[], "outputTokens");
     tokenRows.value = toSummaryRows(tokenData as AILogGroupByRow[], "tokens");
+    responseTimeRows.value = toSummaryRows(responseTimeData as AILogGroupByRow[], "responseTimeMS", "average");
   } catch (fetchError) {
     if (currentRequestId !== requestId) return;
 
@@ -432,7 +488,7 @@ watch([fromDate, toDate, dateGroupFormat], () => {
                   <div class="ai-log-dashboard__subtitle">
                     {{ formatNumber(getTotalCount(card.rows)) }} logs registrados
                     <template v-if="card.metricLabel">
-                      · {{ formatNumber(getTotalMetric(card.rows)) }} {{ card.metricLabel.toLowerCase() }}
+                      · {{ formatNumber(getMetricDisplayValue(card)) }} {{ card.metricLabel.toLowerCase() }}
                     </template>
                   </div>
                 </div>
@@ -508,7 +564,7 @@ watch([fromDate, toDate, dateGroupFormat], () => {
                   <td v-if="hasField(card, 'provider')"></td>
                   <td v-if="hasField(card, 'model')"></td>
                   <td class="text-right">{{ formatNumber(getTotalCount(card.rows)) }}</td>
-                  <td v-if="card.metricLabel" class="text-right">{{ formatNumber(getTotalMetric(card.rows)) }}</td>
+                  <td v-if="card.metricLabel" class="text-right">{{ formatNumber(getMetricDisplayValue(card)) }}</td>
                   <td class="text-right">{{ card.rows.length ? "100,0%" : "0,0%" }}</td>
                 </tr>
               </tfoot>
@@ -595,6 +651,12 @@ watch([fromDate, toDate, dateGroupFormat], () => {
   --dashboard-accent: #2e7d32;
   --dashboard-accent-soft: #e8f5e9;
   --dashboard-accent-text: #1b5e20;
+}
+
+.ai-log-dashboard__card--responseTime {
+  --dashboard-accent: #c2185b;
+  --dashboard-accent-soft: #fce4ec;
+  --dashboard-accent-text: #880e4f;
 }
 
 .ai-log-dashboard__card--dark {

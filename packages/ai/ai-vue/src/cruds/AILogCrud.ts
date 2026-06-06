@@ -143,15 +143,15 @@ inputFiles: []
   }
 
   get isEditable(){
-    return true
+    return false
   }
 
   get isCreatable(){
-    return true
+    return false
   }
 
   get isDeletable(){
-    return true
+    return false
   }
 
   get isExportable(){
@@ -163,7 +163,31 @@ inputFiles: []
   }
 
   get exportHeaders(){
-    return ['_id']
+    return [
+      '_id',
+      'provider',
+      'model',
+      'operationTitle',
+      'operationGroup',
+      'ip',
+      'userAgent',
+      'input',
+      'inputImages',
+      'inputFiles',
+      'inputTokens',
+      'outputTokens',
+      'tokens',
+      'startedAt',
+      'endedAt',
+      'responseTime',
+      'responseTimeMS',
+      'output',
+      'success',
+      'statusCode',
+      'errorMessage',
+      'tenant',
+      'user'
+    ]
   }
 
   get isImportable(){
