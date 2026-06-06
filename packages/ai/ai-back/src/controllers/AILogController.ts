@@ -15,9 +15,9 @@ class AILogController extends AbstractFastifyController<IAILog, IAILogBase, IAIL
         this.tenantSetter = true;
         this.tenantAssert = true;
 
-        this.userFilter = true;
+        this.userFilter = false;
         this.userSetter = true;
-        this.userAssert = true;
+        this.userAssert = false;
     }
 
 }
