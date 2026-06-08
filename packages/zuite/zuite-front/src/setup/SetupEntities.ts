@@ -3,6 +3,7 @@ import {FileEntityCrud} from "@drax/media-vue"
 import PersonCrud from "../modules/people/cruds/PersonCrud"
 import CountryCrud from "../modules/people/cruds/CountryCrud"
 import LanguageCrud from "../modules/people/cruds/LanguageCrud"
+import { AILogEntityCrud } from '@drax/ai-vue'
 import { useEntityStore } from '@drax/crud-vue'
 
 function setupEntities(){
@@ -14,6 +15,7 @@ function setupEntities(){
   entityStore.addEntity(CountryCrud.instance)
   entityStore.addEntity(LanguageCrud.instance)
   entityStore.addEntity(FileEntityCrud.instance)
+  entityStore.addEntity(AILogEntityCrud.instance)
 }
 
 export default setupEntities
