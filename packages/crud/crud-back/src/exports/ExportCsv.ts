@@ -48,7 +48,7 @@ class ExportCsv extends AbstractExport {
                 if (this.isIterableAsync(this.cursor)) {
                     for await (const record of this.cursor) {
                         const csvRow = this.convertRecordToCSVrow(record);
-                        console.log("csvRow", csvRow);
+                        //console.log("csvRow", csvRow);
                         writableStream.write(csvRow + '\n');
                         rowCount++
                     }
