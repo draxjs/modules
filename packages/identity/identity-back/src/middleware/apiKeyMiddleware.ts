@@ -57,6 +57,12 @@ async function apiKeyMiddleware(request, reply) {
 
 
             if (userApiKey && userApiKey.user) {
+
+                if(userApiKey.user.active === false){
+                    reply.code(401).send({"statusCode": "401", error: "No active user was found for the provided API key.", i18nMessage: 'error.noActiveUser'});
+                    return
+                }
+
                 const authUser: IAuthUser = {
                     id: userApiKey.user._id.toString(),
                     username: userApiKey.user.username,
