@@ -387,6 +387,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         const groupFieldAliases = new Map<string, string>()
         const preGroupLookupAliases = new Map<string, string>()
         const numericInstances = new Set(['Number', 'Decimal128', 'Double', 'Int32', 'Long', 'BigInt'])
+        const defaultTimestampFields = new Set(['createdAt', 'updatedAt'])
         const totalGroupFields = fields.filter(field => {
             const schemaPath = schema.path(field)
             return !(schemaPath && numericInstances.has(schemaPath.instance))
@@ -465,6 +466,35 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             return formats[format] || formats['day']
         }
 
+        const isTimestampDateField = (field: string): boolean => {
+            if (field.includes('.')) {
+                return false
+            }
+
+            const timestamps = (schema.options as any).timestamps
+
+            if (timestamps === true) {
+                return defaultTimestampFields.has(field)
+            }
+
+            if (!timestamps || typeof timestamps !== 'object') {
+                return false
+            }
+
+            const createdAtField = timestamps.createdAt === false
+                ? null
+                : typeof timestamps.createdAt === 'string' ? timestamps.createdAt : 'createdAt'
+            const updatedAtField = timestamps.updatedAt === false
+                ? null
+                : typeof timestamps.updatedAt === 'string' ? timestamps.updatedAt : 'updatedAt'
+
+            return field === createdAtField || field === updatedAtField
+        }
+
+        const isDateField = (field: string, schemaPath: any): boolean => {
+            return (schemaPath && schemaPath.instance === 'Date') || isTimestampDateField(field)
+        }
+
         const ensureLookupForReferencedField = (field: string, refModel: string): string => {
             const existingAlias = preGroupLookupAliases.get(field)
             if (existingAlias) {
@@ -513,7 +543,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             groupFields.push(field)
 
             // Verificar si el campo es de tipo Date
-            if (schemaPath && schemaPath.instance === 'Date') {
+            if (isDateField(field, schemaPath)) {
                 dateFields.add(field)
                 groupId[fieldAlias] = getDateFormat(field, dateFormat)
             }

@@ -595,8 +595,10 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const isDateField = (field: string): boolean => {
             const tableField = this.tableFields.find(tf => tf.name === field)
+            const timestampFields = new Set(['createdAt', 'updatedAt'])
+
             return tableField
-                ? tableField.type === 'TEXT' && (field.includes('Date') || field.includes('date'))
+                ? tableField.type === 'TEXT' && (timestampFields.has(field) || field.toLowerCase().includes('date'))
                 : false
         }
 
