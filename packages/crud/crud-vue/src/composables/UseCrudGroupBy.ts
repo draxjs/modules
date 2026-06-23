@@ -29,7 +29,8 @@ export const useCrudGroupBy = (entity: IEntityCrud) => {
       if(entity?.provider?.groupBy){
         const data = await entity.provider.groupBy({
           fields: groupBystore.selectedFields.map(sf => sf.name),
-          filters: crudStore.filters
+          filters: crudStore.filters,
+          dateFormat: groupBystore.dateFormat
         })
         groupBystore.setGroupByData(data)
       }
@@ -49,6 +50,7 @@ export const useCrudGroupBy = (entity: IEntityCrud) => {
   const dateFormatOptions = computed(() => [
     { value: 'year', title: t('crud.groupBy.dateFormat.year') },
     { value: 'month', title: t('crud.groupBy.dateFormat.month') },
+    { value: 'week', title: t('crud.groupBy.dateFormat.week') },
     { value: 'day', title: t('crud.groupBy.dateFormat.day') },
     { value: 'hour', title: t('crud.groupBy.dateFormat.hour') },
     { value: 'minute', title: t('crud.groupBy.dateFormat.minute') },

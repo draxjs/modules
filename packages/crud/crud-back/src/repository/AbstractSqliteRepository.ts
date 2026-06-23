@@ -584,6 +584,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
             const formats: { [key: string]: string } = {
                 'year': `strftime('%Y', ${field})`,
                 'month': `strftime('%Y-%m', ${field})`,
+                'week': `date(${field}, '-' || ((strftime('%w', ${field}) + 6) % 7) || ' days')`,
                 'day': `strftime('%Y-%m-%d', ${field})`,
                 'hour': `strftime('%Y-%m-%d %H:00:00', ${field})`,
                 'minute': `strftime('%Y-%m-%d %H:%M:00', ${field})`,
@@ -608,6 +609,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const selectParts: string[] = []
         const groupParts: string[] = []
+        const dateGroupParts: string[] = []
 
         for (const field of fields) {
 
@@ -626,6 +628,7 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
                 const formatted = getDateFormatSQL(field, dateFormat)
                 selectParts.push(`${formatted} as ${field}`)
                 groupParts.push(formatted)
+                dateGroupParts.push(formatted)
                 continue
             }
 
@@ -635,13 +638,14 @@ class AbstractSqliteRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         const selectFields = selectParts.join(", ")
         const groupByFields = groupParts.join(", ")
+        const orderByFields = dateGroupParts.length > 0 ? dateGroupParts.join(", ") : "count DESC"
 
         const query = `
         SELECT ${selectFields}, COUNT(*) as count
         FROM ${this.tableName}
         ${where}
         ${groupByFields ? `GROUP BY ${groupByFields}` : ''}
-        ORDER BY count DESC
+        ORDER BY ${orderByFields}
     `
 
         try {

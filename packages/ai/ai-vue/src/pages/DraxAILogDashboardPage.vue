@@ -5,7 +5,7 @@ import {VDateInput} from "vuetify/labs/VDateInput";
 import {useTheme} from "vuetify";
 import {AILogProvider} from "@drax/ai-front";
 
-type DateGroupFormat = Extract<IDraxGroupByDateFormat, "hour" | "day" | "month" | "year">
+type DateGroupFormat = Extract<IDraxGroupByDateFormat, "hour" | "day" | "week" | "month" | "year">
 type AILogMetricField = "inputTokens" | "outputTokens" | "tokens" | "responseTimeMS"
 type AILogDimensionField = "provider" | "model"
 type AILogField = "startedAt" | AILogDimensionField | AILogMetricField
@@ -78,6 +78,7 @@ const percentageFormatter = new Intl.NumberFormat("es-AR", {
 const dateGroupOptions = [
   {title: "Hora", value: "hour"},
   {title: "Día", value: "day"},
+  {title: "Semana", value: "week"},
   {title: "Mes", value: "month"},
   {title: "Año", value: "year"},
 ];
@@ -85,6 +86,7 @@ const dateGroupOptions = [
 const dateGroupLabel = computed(() => {
   if (dateGroupFormat.value === "year") return "año";
   if (dateGroupFormat.value === "month") return "mes";
+  if (dateGroupFormat.value === "week") return "semana";
   if (dateGroupFormat.value === "hour") return "hora";
   return "día";
 });
@@ -92,6 +94,7 @@ const dateGroupLabel = computed(() => {
 const dateGroupHeader = computed(() => {
   if (dateGroupFormat.value === "year") return "Año";
   if (dateGroupFormat.value === "month") return "Mes";
+  if (dateGroupFormat.value === "week") return "Semana";
   if (dateGroupFormat.value === "hour") return "Hora";
   return "Día";
 });
@@ -208,9 +211,19 @@ function formatDateGroup(value: unknown): string {
   const month = String(date.getUTCMonth() + 1).padStart(2, "0");
   const day = String(date.getUTCDate()).padStart(2, "0");
   const hour = String(date.getUTCHours()).padStart(2, "0");
+  const getIsoWeek = () => {
+    const weekDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    const dayOfWeek = weekDate.getUTCDay() || 7;
+    weekDate.setUTCDate(weekDate.getUTCDate() + 4 - dayOfWeek);
+    const weekYear = weekDate.getUTCFullYear();
+    const yearStart = new Date(Date.UTC(weekYear, 0, 1));
+    const week = Math.ceil((((weekDate.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    return `${weekYear}-W${String(week).padStart(2, "0")}`;
+  };
 
   if (dateGroupFormat.value === "year") return String(year);
   if (dateGroupFormat.value === "month") return `${month}/${year}`;
+  if (dateGroupFormat.value === "week") return getIsoWeek();
   if (dateGroupFormat.value === "hour") return `${day}/${month}/${year} ${hour}:00`;
 
   return `${day}/${month}/${year}`;

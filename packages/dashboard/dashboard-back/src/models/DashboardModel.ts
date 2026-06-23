@@ -34,7 +34,7 @@ const DashboardSchema = new mongoose.Schema<IDashboard>({
             fields: [{type: String, required: true, index: false, unique: false}],
             dateFormat: {
                 type: String,
-                enum: ['year', 'month', 'day', 'hour', 'minute', 'second'],
+                enum: ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'],
                 required: false,
                 index: false,
                 unique: false

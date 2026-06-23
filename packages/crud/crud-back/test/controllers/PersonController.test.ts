@@ -561,6 +561,47 @@ describe("Person Controller Test", function () {
         expect(groupResult.length).toBeGreaterThan(0)
     })
 
+    it("should groupBy date fields by week", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const entityData = [
+            { fullname: "Week A1", race: "human", birthdate: "2026-06-22T10:00:00.000Z", address: defaultAddress },
+            { fullname: "Week A2", race: "human", birthdate: "2026-06-24T10:00:00.000Z", address: defaultAddress },
+            { fullname: "Week B1", race: "elf", birthdate: "2026-06-29T10:00:00.000Z", address: defaultAddress }
+        ]
+
+        for (const data of entityData) {
+            await testSetup.fastifyInstance.inject({
+                method: 'POST',
+                url: '/api/person',
+                payload: data,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+        }
+
+        const groupResp = await testSetup.fastifyInstance.inject({
+            method: 'GET',
+            url: '/api/person/group-by?fields=birthdate&dateFormat=week',
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        const groupResult = await groupResp.json()
+        const countsByWeekStart = Object.fromEntries(
+            groupResult.map((item: any) => [item.birthdate.slice(0, 10), item.count])
+        )
+
+        expect(groupResp.statusCode).toBe(200)
+        expect(countsByWeekStart).toMatchObject({
+            "2026-06-22": 2,
+            "2026-06-29": 1
+        })
+        expect(groupResult.map((item: any) => item.birthdate.slice(0, 10))).toEqual([
+            "2026-06-22",
+            "2026-06-29"
+        ])
+    })
+
     it("should groupBy nested reference and embedded fields together", async () => {
         const { accessToken } = await testSetup.rootUserLogin()
         await testSetup.dropCollection('Person')

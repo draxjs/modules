@@ -51,7 +51,7 @@ type CustomRequest = FastifyRequest<{
         separator?: string
         fileName?: string
         fields?: string
-        dateFormat?: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'
+        dateFormat?: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second'
     }
 }>
 

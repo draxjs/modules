@@ -36,6 +36,7 @@ const messages = {
         dateFormat: {
           year: "Year (YYYY)",
           month: "Month (YYYY-MM)",
+          week: "Week (YYYY-WW)",
           day: "Day (YYYY-MM-DD)",
           hour: "Hour (YYYY-MM-DD HH)",
           minute: "Minute (YYYY-MM-DD HH:mm)",
@@ -81,6 +82,7 @@ const messages = {
         dateFormat: {
           year: "Año (YYYY)",
           month: "Mes (YYYY-MM)",
+          week: "Semana (YYYY-WW)",
           day: "Día (YYYY-MM-DD)",
           hour: "Hora (YYYY-MM-DD HH)",
           minute: "Minuto (YYYY-MM-DD HH:mm)",

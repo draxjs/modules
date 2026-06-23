@@ -420,6 +420,13 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
                         day: 1
                     }
                 },
+                'week': {
+                    $dateFromParts: {
+                        isoWeekYear: {$isoWeekYear: `$${field}`},
+                        isoWeek: {$isoWeek: `$${field}`},
+                        isoDayOfWeek: 1
+                    }
+                },
                 'day': {
                     $dateFromParts: {
                         year: {$year: `$${field}`},
@@ -600,11 +607,21 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             pipeline.push(...postGroupStages)
         }
 
+        const sortStage = dateFields.size > 0
+            ? {
+                $sort: Object.fromEntries(
+                    groupFields
+                        .filter(field => dateFields.has(field))
+                        .map(field => [field, 1])
+                )
+            }
+            : {$sort: {count: -1}}
+
         pipeline.push(
             {
                 $project: finalProjectFields
             },
-            {$sort: {count: -1}}
+            sortStage
         )
         // console.log("pipeline", JSON.stringify(pipeline, null, 2))
         const result = await this._model.aggregate(pipeline).exec()

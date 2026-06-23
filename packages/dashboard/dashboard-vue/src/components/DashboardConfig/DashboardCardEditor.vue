@@ -12,6 +12,7 @@ import {useI18n} from "vue-i18n"
 import CrudFormField from "@drax/crud-vue/src/components/CrudFormField.vue";
 import {useFilterIcon} from "@drax/crud-vue";
 import {useDynamicFilters} from "@drax/crud-vue/src/composables/UseDynamicFilters";
+import {expandRangeFilters} from "@drax/crud-vue/src/helpers/CrudRangeFilters";
 
 const props = defineProps({
   modelValue: {type: Object as PropType<IDashboardCard>, required: true}
@@ -95,12 +96,16 @@ ensureStructure();
 
 const save = () => {
   const payload = form.value
-  payload.filters = filters.value
+  payload.filters = expandRangeFilters(filters.value
       .filter((filter: IEntityCrudFilter) => filter.name && filter.operator)
       .map((filter: IEntityCrudFilter) => ({
         field: filter.name,
         operator: filter.operator as string,
-        value: filter.value == null ? '' : String(filter.value)
+        value: filter.value
+      })))
+      .map((filter: IDraxFieldFilter) => ({
+        ...filter,
+        value: filter.value instanceof Date ? filter.value.toISOString() : (filter.value == null ? '' : String(filter.value))
       }))
   emit('update:modelValue', payload);
   emit('save');
@@ -309,7 +314,7 @@ const {
                   class="mb-3"></v-select>
             </v-col>
             <v-col cols="12" md="6">
-              <v-select v-model="form.groupBy!.dateFormat" :items="['year', 'month', 'day', 'hour', 'minute', 'second']"
+              <v-select v-model="form.groupBy!.dateFormat" :items="['year', 'month', 'week', 'day', 'hour', 'minute', 'second']"
                         label="Formato de Fecha (opcional)" variant="outlined" density="compact" hide-details="auto"
                         clearable class="mb-3"></v-select>
             </v-col>

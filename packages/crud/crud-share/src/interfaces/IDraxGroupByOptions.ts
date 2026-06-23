@@ -1,6 +1,6 @@
 import type {IDraxFieldFilter} from "./IDraxFieldFilter";
 
-type IDraxGroupByDateFormat = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'
+type IDraxGroupByDateFormat = 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second'
 
 interface IDraxGroupByOptions {
   fields?: string[];

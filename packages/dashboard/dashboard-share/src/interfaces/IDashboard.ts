@@ -17,7 +17,7 @@ interface IDashboardCard{
     }
     groupBy?: {
         fields: Array<string>
-        dateFormat?: "year" | "month" | "day" | "hour" | "minute" | "second";
+        dateFormat?: "year" | "month" | "week" | "day" | "hour" | "minute" | "second";
         render?: string
     }
     paginate?: {

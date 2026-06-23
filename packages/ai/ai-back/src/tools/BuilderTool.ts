@@ -166,7 +166,7 @@ const toolDefinitions: Record<ToolBuilderMethod, ToolDefinition> = {
         parameters: builder => builder.objectParameters(z.object({
             fields: z.array(z.string()).optional(),
             filters: filtersSchema,
-            dateFormat: z.enum(["year", "month", "day", "hour", "minute", "second"]).optional(),
+            dateFormat: z.enum(["year", "month", "week", "day", "hour", "minute", "second"]).optional(),
         })),
         execute: (service, args) => service.groupBy?.({
             fields: args.fields ?? [],
