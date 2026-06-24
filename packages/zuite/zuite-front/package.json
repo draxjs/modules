@@ -1,6 +1,6 @@
 {
   "name": "@drax/zuite-front",
-  "version": "3.54.0",
+  "version": "3.55.0",
   "private": true,
   "scripts": {
     "front": "vite",
