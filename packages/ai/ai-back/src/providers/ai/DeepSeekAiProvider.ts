@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { zodResponseFormat } from "openai/helpers/zod";
+import {toJSONSchema} from "zod";
 import type {
     IPromptContentPart,
     IPromptMessage,
@@ -132,6 +132,54 @@ class DeepSeekAiProvider extends AbstractAiProvider{
         }))
     }
 
+    protected normalizeJsonSchema(input: IPromptParams){
+        if(input.zodSchema){
+            return toJSONSchema(input.zodSchema, {
+                target: "draft-7",
+            })
+        }
+
+        if(!input.jsonSchema){
+            return undefined
+        }
+
+        const jsonSchema: any = input.jsonSchema
+
+        if(jsonSchema.type === "json_schema" && jsonSchema.json_schema?.schema){
+            return jsonSchema.json_schema.schema
+        }
+
+        if(jsonSchema.type === "json_object"){
+            return undefined
+        }
+
+        return jsonSchema
+    }
+
+    protected normalizeResponseFormat(input: IPromptParams){
+        if(input.zodSchema || input.jsonSchema){
+            return {type: "json_object" as const}
+        }
+
+        return undefined
+    }
+
+    protected buildDeepSeekSystemPrompt(input: IPromptParams){
+        const systemPrompt = this.buildSystemPrompt(input)
+        const jsonSchema = this.normalizeJsonSchema(input)
+
+        if(!jsonSchema){
+            return systemPrompt
+        }
+
+        return `${systemPrompt}
+
+Respond only with valid JSON matching this JSON Schema. Do not wrap the response in markdown or include any extra text.
+
+JSON Schema:
+${JSON.stringify(jsonSchema, null, 2)}`
+    }
+
     protected async buildToolMessages(toolCalls: any[] = [], tools: IPromptTool[] = []){
         const toolMessages: any[] = []
 
@@ -154,7 +202,7 @@ class DeepSeekAiProvider extends AbstractAiProvider{
 
     async prompt(input: IPromptParams): Promise<IPromptResponse> {
 
-        const systemPrompt = this.buildSystemPrompt(input)
+        const systemPrompt = this.buildDeepSeekSystemPrompt(input)
         const userInput = this.buildUserContent(input)
         const model = this.resolvePromptModel(input, this.model, this.visionModel)
         const startedAt = new Date()
@@ -171,14 +219,14 @@ class DeepSeekAiProvider extends AbstractAiProvider{
             ]
             const tools = input.tools ?? []
             const maxIterations = input.toolMaxIterations ?? 5
+            const responseFormat = this.normalizeResponseFormat(input)
             let output: any
 
             for(let iteration = 0; iteration < maxIterations; iteration++){
                 const chatCompletion = await this.client.chat.completions.create({
                     messages,
 
-                    ...(input.zodSchema ? {response_format: zodResponseFormat(input.zodSchema, "event")} : {}),
-                    ...(input.jsonSchema ? {response_format: input.jsonSchema} : {}),
+                    ...(responseFormat ? {response_format: responseFormat} : {}),
                     ...(tools.length > 0 ? {tools: this.mapTools(tools)} : {}),
                     model: model,
                 });

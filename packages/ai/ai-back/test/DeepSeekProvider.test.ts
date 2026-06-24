@@ -1,4 +1,5 @@
 import {describe, expect, test} from "vitest";
+import {z} from "zod";
 import {AiProviderFactory, DeepSeekAiProvider} from "../src";
 import {IPromptTool} from "../src/interfaces/IAIProvider";
 
@@ -43,6 +44,99 @@ describe("DeepSeekProvider Test", () => {
             role: "user",
             content: "What is the capital of Argentina?"
         })
+    })
+
+    test("DeepSeek prompt falls back from OpenAI json_schema to json_object with schema instructions", async () => {
+        let request: any
+
+        class MockedDeepSeekProvider extends DeepSeekAiProvider {
+            constructor() {
+                super("test-key", "deepseek-chat")
+                this._client = {
+                    chat: {
+                        completions: {
+                            create: async (payload: any) => {
+                                request = payload
+                                return {
+                                    choices: [{message: {content: "{\"name\":\"Pikachu\"}"}}],
+                                    usage: {
+                                        total_tokens: 8,
+                                        prompt_tokens: 6,
+                                        completion_tokens: 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        const jsonSchema = {
+            type: "json_schema",
+            json_schema: {
+                name: "element_description",
+                schema: {
+                    type: "object",
+                    properties: {
+                        name: {type: "string"}
+                    },
+                    required: ["name"]
+                }
+            }
+        }
+
+        const deepSeek = new MockedDeepSeekProvider()
+        await deepSeek.prompt({
+            systemPrompt: "You are an AI assistant.",
+            userInput: "What is the most famous pokemon?",
+            jsonSchema,
+        })
+
+        expect(request.response_format).toEqual({type: "json_object"})
+        expect(request.messages[0].content).toContain("Respond only with valid JSON")
+        expect(request.messages[0].content).toContain("\"required\": [")
+        expect(request.messages[0].content).toContain("\"name\"")
+    })
+
+    test("DeepSeek prompt falls back from zod schema to json_object with generated schema instructions", async () => {
+        let request: any
+
+        class MockedDeepSeekProvider extends DeepSeekAiProvider {
+            constructor() {
+                super("test-key", "deepseek-chat")
+                this._client = {
+                    chat: {
+                        completions: {
+                            create: async (payload: any) => {
+                                request = payload
+                                return {
+                                    choices: [{message: {content: "{\"name\":\"Pikachu\"}"}}],
+                                    usage: {
+                                        total_tokens: 8,
+                                        prompt_tokens: 6,
+                                        completion_tokens: 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        const deepSeek = new MockedDeepSeekProvider()
+        await deepSeek.prompt({
+            systemPrompt: "You are an AI assistant.",
+            userInput: "What is the most famous pokemon?",
+            zodSchema: z.object({
+                name: z.string(),
+            }),
+        })
+
+        expect(request.response_format).toEqual({type: "json_object"})
+        expect(request.messages[0].content).toContain("JSON Schema")
+        expect(request.messages[0].content).toContain("\"name\"")
     })
 
     test("DeepSeek prompt executes tools through OpenAI-compatible tool calls", async () => {
