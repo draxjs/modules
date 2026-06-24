@@ -19,12 +19,14 @@ async function initializeAgent(): Promise<void> {
         countryTool
     ]
     const configDefault: DraxAgentConfig = {
-        provider: AiProviderFactory.instance("DeepSeek")
+        // Definir por env AI_PROVIDER=DeepSeek
+        // provider: AiProviderFactory.instance("DeepSeek")
     }
 
     const configCountry: DraxAgentConfig = {
         toolBuilders: toolBuilders,
-        provider: AiProviderFactory.instance("DeepSeek")
+        // Definir por env AI_PROVIDER=DeepSeek
+        // provider: AiProviderFactory.instance("DeepSeek")
     }
 
     DraxAgentFactory.instance("default", "Agente default")

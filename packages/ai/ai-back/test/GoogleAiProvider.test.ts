@@ -1,5 +1,6 @@
 import {describe, expect, test} from "vitest";
-import {AiProviderFactory, GoogleAiProvider} from "../src";
+import {DraxConfig} from "@drax/common-back";
+import {AiConfig, AiProviderFactory, GoogleAiProvider} from "../src";
 import {IPromptTool} from "../src/interfaces/IAIProvider";
 
 describe("GoogleAiProvider Test", () => {
@@ -207,5 +208,20 @@ describe("GoogleAiProvider Test", () => {
 
         const googleAi = AiProviderFactory.instance("GoogleAi")
         expect(googleAi).toBeInstanceOf(GoogleAiProvider)
+    })
+
+    test("AiProviderFactory uses configured default provider", () => {
+        process.env.AI_PROVIDER = "GoogleAi"
+        process.env.GOOGLE_AI_API_KEY = "test-key"
+        process.env.GOOGLE_AI_MODEL = "gemini-2.5-flash"
+        process.env.GOOGLE_AI_VISION_MODEL = "gemini-2.5-flash"
+        process.env.DRAX_DB_ENGINE = "mongo"
+        DraxConfig.set(AiConfig.AiProvider, undefined)
+
+        const googleAi = AiProviderFactory.instance()
+        expect(googleAi).toBeInstanceOf(GoogleAiProvider)
+
+        delete process.env.AI_PROVIDER
+        DraxConfig.set(AiConfig.AiProvider, undefined)
     })
 })

@@ -1,3 +1,4 @@
+import {AiConfig} from "./config/AiConfig.js";
 import {OpenAiConfig} from "./config/OpenAiConfig.js";
 import {GoogleAiConfig} from "./config/GoogleAiConfig.js";
 import {OllamaAiConfig} from "./config/OllamaAiConfig.js";
@@ -160,6 +161,7 @@ export type {
 }
 
 export {
+    AiConfig,
     OpenAiConfig,
     GoogleAiConfig,
     OllamaAiConfig,
