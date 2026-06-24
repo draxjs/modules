@@ -168,11 +168,7 @@ class OllamaAiProvider extends AbstractAiProvider{
             function: {
                 name: tool.name,
                 description: tool.description,
-                parameters: tool.parameters ?? {
-                    type: "object",
-                    properties: {},
-                    additionalProperties: false,
-                },
+                parameters: tool.parameters ?? this.getDefaultToolParameters(),
             },
         }))
     }
@@ -197,44 +193,12 @@ class OllamaAiProvider extends AbstractAiProvider{
         return jsonSchema
     }
 
-    protected parseToolArguments(args: string | object | undefined){
-        if(!args){
-            return {}
-        }
-
-        if(typeof args === "object"){
-            return args
-        }
-
-        try{
-            return JSON.parse(args)
-        }catch(e){
-            throw new Error(`Invalid tool arguments: ${args}`)
-        }
-    }
-
-    protected serializeToolOutput(output: unknown){
-        if(typeof output === "string"){
-            return output
-        }
-
-        if(output === undefined){
-            return ""
-        }
-
-        return JSON.stringify(output)
-    }
-
     protected async buildToolMessages(toolCalls: OllamaToolCall[] = [], tools: IPromptTool[] = []){
         const toolMessages: OllamaMessage[] = []
 
         for(const toolCall of toolCalls){
             const toolName = toolCall.function?.name
-            const tool = tools.find(t => t.name === toolName)
-
-            if(!tool){
-                throw new Error(`Tool not found: ${toolName}`)
-            }
+            const tool = this.findToolOrThrow(toolName, tools)
 
             const args = this.parseToolArguments(toolCall.function?.arguments)
             const output = await tool.execute(args)
@@ -251,21 +215,8 @@ class OllamaAiProvider extends AbstractAiProvider{
 
     async prompt(input: IPromptParams): Promise<IPromptResponse> {
 
-        if(!input.systemPrompt){
-            throw new Error("systemPrompt required")
-        }
-
-        let systemPrompt = input.systemPrompt
-
-        if(input.memory && input.memory.length > 0){
-            systemPrompt += `\n\n ${input.memoryHeader ?? '[MEMORIA]'}\n ${input.memory.map(m => `${m.key}: ${m.value}`).join('\n')}`
-        }
-
-        if(input.knowledgeBase && input.knowledgeBase.length > 0){
-            systemPrompt += `\n\n${input.knowledgeBaseHeader ?? '[BASE DE CONOCIMIENTO]'}\n ${input.knowledgeBase.join('\n')}`
-        }
-
-        const model = input.model ?? (this.hasImageInput(input) ? this.visionModel ?? this.model : this.model)
+        const systemPrompt = this.buildSystemPrompt(input)
+        const model = this.resolvePromptModel(input, this.model, this.visionModel)
         const startedAt = new Date()
         const startTime = performance.now()
         let tokens = 0

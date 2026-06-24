@@ -58,7 +58,9 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
       {title: 'languages', key: 'languages', align: 'start'},
       {title: 'address', key: 'address', align: 'start'},
       {title: 'tenant', key: 'tenant', align: 'start'},
-      {title: 'user', key: 'user', align: 'start'}
+      {title: 'user', key: 'user', align: 'start'},
+      {title: 'createdAt', key: 'createdAt', align: 'start'},
+      {title: 'updatedAt', key: 'updatedAt', align: 'start'},
     ]
   }
 
@@ -212,7 +214,10 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         ref: 'Tenant',
         refDisplay: 'name'
       },
-      {name: 'user', type: 'ref', label: 'user', default: null, groupTab: 'MANAGE', ref: 'User', refDisplay: 'username'}
+      {name: 'user', type: 'ref', label: 'user', default: null, groupTab: 'MANAGE', ref: 'User', refDisplay: 'username'},
+
+      {name: 'createdAt', type: 'date', label: 'createdAt', default: null, groupTab: 'BASIC', readonly: true},
+      {name: 'updatedAt', type: 'date', label: 'createdAt', default: null, groupTab: 'BASIC', readonly: true},
     ]
   }
 

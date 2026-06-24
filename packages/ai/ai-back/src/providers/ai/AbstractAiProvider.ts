@@ -3,6 +3,7 @@ import type {
     IAIProvider,
     IPromptParams,
     IPromptResponse,
+    IPromptTool,
 } from "../../interfaces/IAIProvider.js";
 import type {AILogService} from "../../services/AILogService.js";
 
@@ -29,6 +30,74 @@ abstract class AbstractAiProvider implements IAIProvider {
     }
 
     abstract prompt(input: IPromptParams): Promise<IPromptResponse>
+
+    protected buildSystemPrompt(input: IPromptParams){
+        if(!input.systemPrompt){
+            throw new Error("systemPrompt required")
+        }
+
+        let systemPrompt = input.systemPrompt
+
+        if(input.memory && input.memory.length > 0){
+            systemPrompt += `\n\n ${input.memoryHeader ?? '[MEMORIA]'}\n ${input.memory.map(m => `${m.key}: ${m.value}`).join('\n')}`
+        }
+
+        if(input.knowledgeBase && input.knowledgeBase.length > 0){
+            systemPrompt += `\n\n${input.knowledgeBaseHeader ?? '[BASE DE CONOCIMIENTO]'}\n ${input.knowledgeBase.join('\n')}`
+        }
+
+        return systemPrompt
+    }
+
+    protected resolvePromptModel(input: IPromptParams, model: string, visionModel?: string){
+        return input.model ?? (this.hasImageInput(input) ? visionModel ?? model : model)
+    }
+
+    protected getDefaultToolParameters(){
+        return {
+            type: "object",
+            properties: {},
+            additionalProperties: false,
+        }
+    }
+
+    protected findToolOrThrow(toolName: string | undefined, tools: IPromptTool[] = []){
+        const tool = tools.find(t => t.name === toolName)
+
+        if(!tool){
+            throw new Error(`Tool not found: ${toolName}`)
+        }
+
+        return tool
+    }
+
+    protected parseToolArguments(args: string | object | undefined){
+        if(!args){
+            return {}
+        }
+
+        if(typeof args === "object"){
+            return args
+        }
+
+        try{
+            return JSON.parse(args)
+        }catch(e){
+            throw new Error(`Invalid tool arguments: ${args}`)
+        }
+    }
+
+    protected serializeToolOutput(output: unknown){
+        if(typeof output === "string"){
+            return output
+        }
+
+        if(output === undefined){
+            return ""
+        }
+
+        return JSON.stringify(output)
+    }
 
     protected hasImageInput(input: IPromptParams){
         if(input.userImages && input.userImages.length > 0){

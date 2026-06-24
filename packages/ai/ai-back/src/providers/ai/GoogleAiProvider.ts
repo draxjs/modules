@@ -185,11 +185,7 @@ class GoogleAiProvider extends AbstractAiProvider{
             functionDeclarations: tools.map(tool => ({
                 name: tool.name,
                 description: tool.description,
-                parametersJsonSchema: tool.parameters ?? {
-                    type: "object",
-                    properties: {},
-                    additionalProperties: false,
-                },
+                parametersJsonSchema: tool.parameters ?? this.getDefaultToolParameters(),
             }))
         }]
     }
@@ -238,11 +234,7 @@ class GoogleAiProvider extends AbstractAiProvider{
 
         for(const functionCall of functionCalls){
             const toolName = functionCall.name
-            const tool = tools.find(t => t.name === toolName)
-
-            if(!tool){
-                throw new Error(`Tool not found: ${toolName}`)
-            }
+            const tool = this.findToolOrThrow(toolName, tools)
 
             const output = await tool.execute(functionCall.args ?? {})
 
@@ -271,23 +263,9 @@ class GoogleAiProvider extends AbstractAiProvider{
 
     async prompt(input: IPromptParams): Promise<IPromptResponse> {
 
-        if(!input.systemPrompt){
-            throw new Error("systemPrompt required")
-        }
-
-        let systemPrompt = input.systemPrompt
-
-        if(input.memory && input.memory.length > 0){
-            systemPrompt += `\n\n ${input.memoryHeader ?? '[MEMORIA]'}\n ${input.memory.map(m => `${m.key}: ${m.value}`).join('\n')}`
-        }
-
-        if(input.knowledgeBase && input.knowledgeBase.length > 0){
-            systemPrompt += `\n\n${input.knowledgeBaseHeader ?? '[BASE DE CONOCIMIENTO]'}\n ${input.knowledgeBase.join('\n')}`
-        }
-
-
+        const systemPrompt = this.buildSystemPrompt(input)
         const userInput = this.buildUserContent(input)
-        const model = input.model ?? (this.hasImageInput(input) ? this.visionModel ?? this.model : this.model)
+        const model = this.resolvePromptModel(input, this.model, this.visionModel)
         const startedAt = new Date()
         const startTime = performance.now()
         let tokens = 0
