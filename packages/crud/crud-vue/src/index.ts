@@ -21,6 +21,7 @@ import CrudDialogPrevButton from "./components/buttons/CrudDialogPrevButton.vue"
 import CrudOpenRouteFormButton from "./components/buttons/CrudOpenRouteFormButton.vue";
 import CrudSavedQueriesButton from "./components/buttons/CrudSavedQueriesButton.vue";
 import CrudRefreshButton from "./components/buttons/CrudRefreshButton.vue";
+import CrudCreateOnTheFlyButton from "./components/buttons/CrudCreateOnTheFlyButton.vue";
 import EntityCombobox from "./components/combobox/EntityCombobox.vue";
 import {useCrudStore} from "./stores/UseCrudStore";
 import {useEntityStore} from "./stores/UseEntityStore";
@@ -68,6 +69,7 @@ export {
     CrudOpenRouteFormButton,
     CrudSavedQueriesButton,
     CrudRefreshButton,
+    CrudCreateOnTheFlyButton,
     CrudFilters,
     CrudFiltersAction,
     CrudFiltersDynamic,

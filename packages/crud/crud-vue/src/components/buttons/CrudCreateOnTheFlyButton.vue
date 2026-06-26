@@ -13,8 +13,10 @@ const buttonConfig = useCrudButtonConfig("createOnTheFly")
 
 const dialog = ref(false)
 
-const {entity} = defineProps({
+const {entity, icon, label} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
+  icon: {type: String},
+  label: {type: String},
 })
 
 const store = useCrudStore(entity?.name)
@@ -44,7 +46,7 @@ const emit = defineEmits(['created'])
     <template v-slot:activator="{ props }">
       <v-btn
           v-bind="{ ...$attrs, ...props }"
-             :icon="buttonConfig.icon"
+             :icon="label ? undefined : icon || buttonConfig.icon"
              :id="$attrs.id || 'crud-create-on-the-fly-button'"
              class="crud-create-on-the-fly-button mr-1"
              :variant="buttonConfig.variant"
@@ -52,6 +54,14 @@ const emit = defineEmits(['created'])
              :color="buttonConfig.color"
              @click="openDialog"
       >
+        <template v-if="label">
+          <v-icon
+              v-if="icon || buttonConfig.icon"
+              :icon="icon || buttonConfig.icon"
+              start
+          />
+          {{ label }}
+        </template>
       </v-btn>
     </template>
     {{ t('action.create')}}
