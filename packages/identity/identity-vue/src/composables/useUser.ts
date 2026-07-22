@@ -15,10 +15,10 @@ export function useUser() {
     let inputErrors = ref<IClientInputError>()
     let loading = ref(false);
 
-    async function paginateUser({page = 1, limit = 5, orderBy = "", order = "asc", search = ""}: IDraxPaginateOptions) {
+    async function paginateUser({page = 1, limit = 5, orderBy = "", order = "asc", search = "", filters = []}: IDraxPaginateOptions) {
         try {
             loading.value = true
-            let paginatedUser = await userSystem.paginate({page, limit, orderBy, order, search})
+            let paginatedUser = await userSystem.paginate({page, limit, orderBy, order, search, filters})
             return paginatedUser
         } catch (e) {
             console.error(e)

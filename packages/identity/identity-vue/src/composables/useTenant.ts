@@ -32,11 +32,12 @@ export function useTenant() {
                                       limit = 5,
                                       orderBy = "",
                                       order = "asc",
-                                      search = ""
+                                      search = "",
+                                      filters = []
                                   }: IDraxPaginateOptions) {
         try {
             loading.value = true
-            let paginatedtenant = await tenantSystem.paginate({page, limit, orderBy, order, search})
+            let paginatedtenant = await tenantSystem.paginate({page, limit, orderBy, order, search, filters})
             return paginatedtenant
         } catch (e) {
             console.error(e)

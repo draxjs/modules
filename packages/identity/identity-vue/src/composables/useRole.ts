@@ -34,10 +34,10 @@ export function useRole() {
         }
     }
 
-    async function paginateRole({page = 1, limit = 5, orderBy = "", order = "asc", search = ""}: IDraxPaginateOptions) {
+    async function paginateRole({page = 1, limit = 5, orderBy = "", order = "asc", search = "", filters=[]}: IDraxPaginateOptions) {
         try {
             loading.value = true
-            let paginatedrole = await roleSystem.paginate({page, limit, orderBy, order, search})
+            let paginatedrole = await roleSystem.paginate({page, limit, orderBy, order, search, filters})
             return paginatedrole
         } catch (e) {
             console.error(e)

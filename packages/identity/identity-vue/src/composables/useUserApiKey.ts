@@ -15,9 +15,9 @@ export function useUserApiKey() {
     let loading = ref(false);
 
 
-    async function paginateUserApiKey({page= 1, limit= 5, orderBy="", order="asc", search = ""}: IDraxPaginateOptions) {
+    async function paginateUserApiKey({page= 1, limit= 5, orderBy="", order="asc", search = "", filters=[]}: IDraxPaginateOptions) {
         loading.value = true
-        let paginateduserApiKey = userApiKeySystem.paginate({page, limit, orderBy, order, search})
+        let paginateduserApiKey = userApiKeySystem.paginate({page, limit, orderBy, order, search, filters})
         loading.value = false
         return paginateduserApiKey
     }
