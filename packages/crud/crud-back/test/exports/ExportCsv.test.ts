@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import * as fs from 'fs';
-import ExportCsv from '../../src/exports/ExportCsv';
+import ExportCsv from '../../src/exports/ExportCsv.js';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 
 // Simulación de un cursor para MongoDB o SQLite
 function createMockCursor(data: any[]) {
@@ -30,16 +31,19 @@ function readGeneratedCSV(filePath: string): string[] {
 
 // Eliminar el archivo de salida después de cada prueba
 function cleanUp(outputFilePath) {
-    if (fs.existsSync(outputFilePath)) {
+    if (fs.existsSync(outputFilePath) && fs.statSync(outputFilePath).isFile()) {
         fs.unlinkSync(outputFilePath);
     }
 }
 
 const mockData = [
     {
+        _id: new mongoose.Types.ObjectId('6a58de7047289095fbbffe24'),
         id: '123',
         name: 'Cristian',
         lastname: 'Incarnato',
+        createdAt: new Date('2026-07-16T13:36:48.772Z'),
+        updatedAt: '2026-07-16T13:36:48.772Z',
         age: 39,
         address: {
             street: 'Directorio',
@@ -70,18 +74,19 @@ test('Debe exportar atributos base a un archivo CSV', async () => {
     const mockCursor = createMockCursor(mockData);
     const exportCsv = new ExportCsv({
         cursor: mockCursor,
-        destinationPath: outputFilePath,
+        destinationPath: __dirname,
         headers: ['name', 'lastname', 'address','phones', 'hobbies'],
         separator: ';',
+        pretty: false,
     });
 
-    await exportCsv.process();
+    const result = await exportCsv.process();
 
-    const output = readGeneratedCSV(outputFilePath);
+    const output = readGeneratedCSV(result.relativeFilePath);
 
     // Verificar que el archivo CSV tenga las filas correctas para los arrays
     assert.strictEqual(output[0], 'name;lastname;address;phones;hobbies');
-    assert.strictEqual(output[1], 'Cristian;Incarnato;{"street":"Directorio","number":"3935","floor":"6","depto":"c"};[{"number":"1234567","type":"personal"},{"number":"87456123","type":"laboral"}];soccer,gym');
+    assert.strictEqual(output[1], 'Cristian;Incarnato;"{""street"":""Directorio"",""number"":""3935"",""floor"":""6"",""depto"":""c""}";"[{""number"":""1234567"",""type"":""personal""},{""number"":""87456123"",""type"":""laboral""}]";soccer,gym');
 
     //cleanUp(outputFilePath);
 })
@@ -94,14 +99,14 @@ test('Debe exportar atributos de objeto a un archivo CSV', async () => {
     const mockCursor = createMockCursor(mockData);
     const exportCsv = new ExportCsv({
         cursor: mockCursor,
-        destinationPath: outputFilePath,
+        destinationPath: __dirname,
         headers: ['name', 'lastname', 'address.street','address.number'],
         separator: ';',
     });
 
-    await exportCsv.process();
+    const result = await exportCsv.process();
 
-    const output = readGeneratedCSV(outputFilePath);
+    const output = readGeneratedCSV(result.relativeFilePath);
 
     // Verificar que el archivo CSV tenga las filas correctas para los arrays
     assert.strictEqual(output[0], 'name;lastname;address.street;address.number');
@@ -120,18 +125,62 @@ test('Debe exportar atributos de un array de objetos a un archivo CSV', async ()
     const mockCursor = createMockCursor(mockData);
     const exportCsv = new ExportCsv({
         cursor: mockCursor,
-        destinationPath: outputFilePath,
+        destinationPath: __dirname,
         headers: ['name', 'lastname', 'phones.number','phones.type'],
         separator: ';',
     });
 
-    await exportCsv.process();
+    const result = await exportCsv.process();
 
-    const output = readGeneratedCSV(outputFilePath);
+    const output = readGeneratedCSV(result.relativeFilePath);
 
     // Verificar que el archivo CSV tenga las filas correctas para los arrays
     assert.strictEqual(output[0], 'name;lastname;phones.number;phones.type');
     assert.strictEqual(output[1], 'Cristian;Incarnato;1234567|87456123;personal|laboral');
 
     //cleanUp(outputFilePath);
+})
+
+test('Debe exportar ObjectId y fechas como texto legible en UTC', async () => {
+    const outputFilePath = path.resolve(__dirname, 'output_object_test.csv');
+
+    cleanUp(outputFilePath);
+
+    const mockCursor = createMockCursor(mockData);
+    const exportCsv = new ExportCsv({
+        cursor: mockCursor,
+        destinationPath: __dirname,
+        headers: ['_id', 'createdAt', 'updatedAt'],
+        separator: ';',
+        pretty: true,
+    });
+
+    const result = await exportCsv.process();
+
+    const output = readGeneratedCSV(result.relativeFilePath);
+
+    assert.strictEqual(output[0], '_id;createdAt;updatedAt');
+    assert.strictEqual(output[1], '6a58de7047289095fbbffe24;16/07/2026 13:36:48;2026-07-16T13:36:48.772Z');
+})
+
+test('Debe mantener estructuras anidadas sin serializarlas como JSON', async () => {
+    const outputFilePath = path.resolve(__dirname, 'output_object_test.csv');
+
+    cleanUp(outputFilePath);
+
+    const mockCursor = createMockCursor(mockData);
+    const exportCsv = new ExportCsv({
+        cursor: mockCursor,
+        destinationPath: __dirname,
+        headers: ['hobbies', 'pets'],
+        separator: ';',
+        pretty: true,
+    });
+
+    const result = await exportCsv.process();
+
+    const output = readGeneratedCSV(result.relativeFilePath);
+
+    assert.strictEqual(output[0], 'hobbies;pets');
+    assert.strictEqual(output[1], '[soccer,gym];[name: capitan | colors: [grey] | skills: [name: jump | level: 2],name: indio | colors: [grey,white] | skills: [name: jump | level: 5,name: run | level: 4]]');
 })

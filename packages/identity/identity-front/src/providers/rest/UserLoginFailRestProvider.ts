@@ -37,6 +37,7 @@ class UserLoginFailRestProvider extends AbstractBaseRestProvider implements IUse
                  format = 'JSON',
                  headers = [],
                  separator = ';',
+                 pretty = false,
                  limit = 0,
                  orderBy = "",
                  order = false,
@@ -44,11 +45,10 @@ class UserLoginFailRestProvider extends AbstractBaseRestProvider implements IUse
                  filters = []
                }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
     const url =  '/api/user-login-fails/export'
-    const params: any = {format, headers, separator, limit, orderBy, order, search,  filters: this.prepareFilters(filters)}
+    const params: any = {format, headers, separator, pretty, limit, orderBy, order, search,  filters: this.prepareFilters(filters)}
     return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
   }
 
 }
 
 export default UserLoginFailRestProvider
-

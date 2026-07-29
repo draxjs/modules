@@ -474,6 +474,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                      headers = [],
                      headersTranslate = [],
                      separator = ';',
+                     pretty = false,
                      fileName = 'export',
                      orderBy = '',
                      order = false,
@@ -502,6 +503,7 @@ abstract class AbstractService<T, C, U> implements IDraxCrudService<T, C, U> {
                         destinationPath: destinationPath,
                         headers,
                         headersTranslate,
+                        pretty,
                         fileName,
                         separator
                     });

@@ -53,6 +53,7 @@ class TenantRestProvider extends AbstractBaseRestProvider implements ITenantProv
                      format = 'JSON',
                      headers = [],
                      separator = ';',
+                     pretty = false,
                      limit = 0,
                      orderBy = "",
                      order = false,
@@ -60,7 +61,7 @@ class TenantRestProvider extends AbstractBaseRestProvider implements ITenantProv
                      filters = []
                  }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
         const url =  '/api/tenants/export'
-        const params: any = {format, headers, separator, limit, orderBy, order, search, filters: this.prepareFilters(filters)}
+        const params: any = {format, headers, separator, pretty, limit, orderBy, order, search, filters: this.prepareFilters(filters)}
         return await this.httpClient.get(url, {params}) as IDraxCrudProviderExportResult
     }
 

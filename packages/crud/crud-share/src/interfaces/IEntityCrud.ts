@@ -54,6 +54,7 @@ interface IEntityCrud {
   exportHeaders: string[]
   exportHeadersTranslate?: string[]
   exportFileName: string
+  exportPretty: boolean
 
   containerFluid?: boolean
 

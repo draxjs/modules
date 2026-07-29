@@ -341,6 +341,10 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
     return ['_id']
   }
 
+  get exportPretty(){
+    return true
+  }
+
   get isImportable(){
     return false
   }

@@ -387,6 +387,7 @@ export function useCrud(entity: IEntityCrud) {
                 headers: headers,
                 headersTranslate: headersTranslate,
                 separator: ";",
+                pretty: entity.exportPretty,
                 fileName: fileName,
                 orderBy: store.sortBy[0]?.key,
                 order: store.sortBy[0]?.order,

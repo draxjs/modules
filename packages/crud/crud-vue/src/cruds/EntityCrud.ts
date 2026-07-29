@@ -213,6 +213,10 @@ class EntityCrud implements IEntityCrud {
     return 'export'
   }
 
+  get exportPretty() {
+    return true
+  }
+
   get isImportable() {
     return true
   }
