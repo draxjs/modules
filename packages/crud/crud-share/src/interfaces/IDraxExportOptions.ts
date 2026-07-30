@@ -5,6 +5,7 @@ interface IDraxExportOptions {
   headers?: string[] | string;
   headersTranslate?: string[] | string
   separator: string;
+  pretty?: boolean;
   fileName?: string;
   limit?: number;
   orderBy?: string;

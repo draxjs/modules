@@ -5,15 +5,18 @@ import type {ExportOptions} from "./AbstractExport";
 
 interface ExportCsvOptions extends ExportOptions {
     separator: string
+    pretty?: boolean
 }
 
 class ExportCsv extends AbstractExport {
 
     protected separator: string = ';'
+    protected pretty: boolean = false
 
     constructor(options: ExportCsvOptions) {
         super(options)
         this.separator = options.separator ? options.separator : ';';
+        this.pretty = options.pretty === true;
     }
 
     // Método principal para procesar los datos y generar el CSV
@@ -82,22 +85,7 @@ class ExportCsv extends AbstractExport {
                 value = record[header];
             }
 
-            if (value === undefined || value === null) {
-                fields.push('');
-                continue;
-            }
-
-            if (Array.isArray(value)) {
-                if (value.length > 0 && typeof value[0] === 'object') {
-                    value = JSON.stringify(value);
-                } else {
-                    value = value.join(',');
-                }
-            } else if (typeof value === 'object') {
-                value = JSON.stringify(value);
-            } else {
-                value = value.toString();
-            }
+            value = this.pretty ? this.formatValue(value) : this.formatRawValue(value);
 
             if (
                 value.includes(this.separator) ||
@@ -111,6 +99,56 @@ class ExportCsv extends AbstractExport {
             fields.push(value);
         }
         return fields.join(this.separator);
+    }
+
+    protected formatRawValue(value: any): string {
+        if (value === undefined || value === null) return '';
+
+        if (Array.isArray(value)) {
+            if (value.length > 0 && typeof value[0] === 'object') {
+                return JSON.stringify(value);
+            }
+            return value.join(',');
+        }
+
+        if (typeof value === 'object') {
+            return JSON.stringify(value);
+        }
+
+        return value.toString();
+    }
+
+  protected formatValue(value: any): string {
+        if (value === undefined || value === null) return '';
+        if (this.isObjectId(value)) return value.toHexString();
+        if (value instanceof Date) return this.formatDate(value);
+        if (typeof value === 'string') return value;
+        if (Array.isArray(value)) {
+            const items = value.map(item => this.formatValue(item)).join(',');
+            return `[${items}]`;
+        }
+        if (typeof value === 'object') {
+            const items = Object.entries(value).map(([key, item]) => `${key}: ${this.formatValue(item)}`).join(' | ');
+            return items;
+        }
+        return value.toString();
+    }
+
+    protected formatDate(value: Date): string {
+        if (Number.isNaN(value.getTime())) return '';
+
+        const day = value.getUTCDate().toString().padStart(2, '0');
+        const month = (value.getUTCMonth() + 1).toString().padStart(2, '0');
+        const year = value.getUTCFullYear().toString();
+        const hours = value.getUTCHours().toString().padStart(2, '0');
+        const minutes = value.getUTCMinutes().toString().padStart(2, '0');
+        const seconds = value.getUTCSeconds().toString().padStart(2, '0');
+
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    }
+
+    protected isObjectId(value: any): boolean {
+        return value?._bsontype === 'ObjectId' && typeof value.toHexString === 'function';
     }
 
 }

@@ -49,6 +49,7 @@ type CustomRequest = FastifyRequest<{
         headers?: string
         headersTranslate?: string
         separator?: string
+        pretty?: boolean | string
         fileName?: string
         fields?: string
         dateFormat?: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second'
@@ -738,6 +739,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const headers = request.query.headers ? request.query.headers.split(",") : []
             const headersTranslate = request.query.headersTranslate ? request.query.headersTranslate.split(",") : []
             const separator = request.query.separator || ";"
+            const pretty = request.query.pretty === true || request.query.pretty === 'true'
             const fileName = request.query.fileName || "export"
             const limit = request.query.limit
             const orderBy = request.query.orderBy
@@ -762,6 +764,7 @@ class AbstractFastifyController<T, C, U> extends CommonController {
                 format,
                 headers,
                 headersTranslate,
+                pretty,
                 limit,
                 orderBy,
                 order,

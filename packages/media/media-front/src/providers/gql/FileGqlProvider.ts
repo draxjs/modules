@@ -101,6 +101,7 @@ class FileGqlProvider implements IFileProvider {
                      headers = [],
                      headersTranslate = [],
                      separator = ';',
+                     pretty = false,
                      fileName = 'export',
                      limit = 0,
                      orderBy = "",
@@ -110,7 +111,7 @@ class FileGqlProvider implements IFileProvider {
                  }: IDraxExportOptions): Promise<IDraxCrudProviderExportResult> {
         const query = `query exportFile($options: ExportOptions) { exportFile(options: $options) { data filename mimeType } }`
         const data = await this.gqlClient.query(query, {
-            options: {format, headers, headersTranslate, separator, fileName, limit, orderBy, order, search, filters}
+            options: {format, headers, headersTranslate, separator, pretty, fileName, limit, orderBy, order, search, filters}
         })
         return data.exportFile
     }
