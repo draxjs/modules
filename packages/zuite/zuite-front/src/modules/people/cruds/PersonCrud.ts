@@ -252,7 +252,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get exportHeaders() {
-    return ['_id']
+    return ['_id', ...this.fields.map(field => field.name)]
   }
 
   get isImportable() {
@@ -316,4 +316,3 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 }
 
 export default PersonCrud
-

@@ -26,9 +26,6 @@ import {formatDate} from "@drax/common-front"
       <v-btn icon="mdi-playlist-plus"></v-btn>
     </template>
 
-    <template v-slot:export-table="{exportFiles}">
-      {{exportFiles}}
-    </template>
 
   </crud>
 </template>

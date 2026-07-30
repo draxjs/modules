@@ -118,7 +118,7 @@ class ExportCsv extends AbstractExport {
         return value.toString();
     }
 
-  protected formatValue(value: any): string {
+    protected formatValue(value: any): string {
         if (value === undefined || value === null) return '';
         if (this.isObjectId(value)) return value.toHexString();
         if (value instanceof Date) return this.formatDate(value);
@@ -128,10 +128,24 @@ class ExportCsv extends AbstractExport {
             return `[${items}]`;
         }
         if (typeof value === 'object') {
-            const items = Object.entries(value).map(([key, item]) => `${key}: ${this.formatValue(item)}`).join(' | ');
+            const plainValue = this.toPlainValue(value);
+            const items = Object.entries(plainValue).map(([key, item]) => `${key}: ${this.formatValue(item)}`).join(' | ');
             return items;
         }
         return value.toString();
+    }
+
+    protected toPlainValue(value: any): any {
+        if (value && typeof value.toObject === 'function') {
+            return value.toObject({
+                depopulate: false,
+                flattenMaps: true,
+                getters: false,
+                virtuals: false,
+            });
+        }
+
+        return value;
     }
 
     protected formatDate(value: Date): string {
@@ -148,7 +162,7 @@ class ExportCsv extends AbstractExport {
     }
 
     protected isObjectId(value: any): boolean {
-        return value?._bsontype === 'ObjectId' && typeof value.toHexString === 'function';
+        return typeof value?.toHexString === 'function' && value.constructor?.name === 'ObjectId';
     }
 
 }
