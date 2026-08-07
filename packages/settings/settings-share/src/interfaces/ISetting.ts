@@ -4,7 +4,7 @@ interface ISettingBase{
     _id?: string
     id?: string
     key: string
-    value: string
+    value: string | string[] | number | number[] | boolean
     //valueList?: string[]
     label: string
     description?: string
@@ -27,7 +27,7 @@ interface ISetting{
     _id: string
     id?: string
     key: string
-    value: string
+    value: string | string[] | number | number[] | boolean
     //valueList?: string[]
     label: string
     description?: string
