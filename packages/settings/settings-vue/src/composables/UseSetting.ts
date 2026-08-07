@@ -2,7 +2,7 @@ import {useSettingStore} from "../stores/UseSettingStore";
 import {computed} from "vue";
 import {SettingProviderFactory} from "@drax/settings-front";
 import {useAuthStore} from "@drax/identity-vue";
-import type {ISetting} from "@drax/settings-share";
+import type {ISetting, SettingValue} from "@drax/settings-share";
 
 export function useSetting() {
 
@@ -70,7 +70,7 @@ export function useSetting() {
 
 
 
-    async function updateSettingValue(id:string,value:string): Promise<ISetting> {
+    async function updateSettingValue(id:string,value: SettingValue): Promise<ISetting> {
         try {
             store.setLoading(true)
             const setting: ISetting = await provider.updateValue(id,value)

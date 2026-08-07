@@ -1,6 +1,6 @@
 import type {IHttpClient} from '@drax/common-front'
 import type {ISettingProvider} from "../../interfaces/ISettingProvider.ts";
-import type {ISetting} from "@drax/settings-share";
+import type {ISetting, SettingValue} from "@drax/settings-share";
 
 
 class SettingRestProvider implements ISettingProvider {
@@ -30,7 +30,7 @@ class SettingRestProvider implements ISettingProvider {
         return settings as ISetting
     }
 
-    async updateValue(id: string, value: string): Promise<ISetting> {
+    async updateValue(id: string, value: SettingValue): Promise<ISetting> {
         const url = '/api/settings/' + id
         let setting = await this.httpClient.patch(url, {value})
         return setting as ISetting

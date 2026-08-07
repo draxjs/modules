@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import type {ISetting} from "@drax/settings-share";
+import type {ISetting, SettingValue} from "@drax/settings-share";
 
 export const useSettingStore = defineStore('SettingStore', {
     state: () => (
@@ -14,7 +14,7 @@ export const useSettingStore = defineStore('SettingStore', {
         getSettingByKey: (state) => (key: string): ISetting | undefined => {
             return state.settings.find((setting) => setting.key === key)
         },
-        getSettingValueByKey: (state) => (key: string): string | undefined => {
+        getSettingValueByKey: (state) => (key: string): SettingValue | undefined => {
             return state.settings.find((setting) => setting.key === key)?.value
         }
     },

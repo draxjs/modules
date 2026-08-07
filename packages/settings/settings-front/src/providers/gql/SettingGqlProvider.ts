@@ -1,6 +1,6 @@
 import type {IGqlClient} from '@drax/common-front'
 import type {ISettingProvider} from "../../interfaces/ISettingProvider.ts";
-import type {ISetting} from "@drax/settings-share";
+import type {ISetting, SettingValue} from "@drax/settings-share";
 
 
 class SettingGqlProvider implements ISettingProvider {
@@ -23,7 +23,7 @@ class SettingGqlProvider implements ISettingProvider {
         throw new Error('SettingGqlProvider.findByKey Not implemented')
     }
 
-    async updateValue(id: string, value: string): Promise<ISetting> {
+    async updateValue(id: string, value: SettingValue): Promise<ISetting> {
         throw new Error('SettingGqlProvider.updateValue Not implemented')
     }
 

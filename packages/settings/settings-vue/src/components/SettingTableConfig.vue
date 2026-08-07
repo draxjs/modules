@@ -3,7 +3,7 @@ import {useSetting} from "../composables/UseSetting";
 import SettingEditor from "./SettingEditor.vue";
 import {onMounted, ref, computed} from "vue";
 import {useI18n} from "vue-i18n";
-import type {ISetting} from "@drax/settings-share";
+import type {ISetting, SettingValue} from "@drax/settings-share";
 import {CrudAutocomplete, useEntityStore} from "@drax/crud-vue";
 
 const {fetchSettings, settingsGrouped} = useSetting()
@@ -36,8 +36,18 @@ function isSecretVisible(key: string): boolean {
   return visibleSecrets.value[key] || false
 }
 
-function getObfuscatedValue(value: string): string {
-  return '•'.repeat(Math.min(value?.length || 8, 12))
+function getDisplayValue(value: SettingValue): string {
+  return Array.isArray(value) ? value.join(', ') : String(value)
+}
+
+function getObfuscatedValue(value: SettingValue): string {
+  return '•'.repeat(Math.min(getDisplayValue(value).length || 8, 12))
+}
+
+function getRefValue(value: SettingValue): string | string[] | undefined {
+  return typeof value === 'string' || Array.isArray(value) && value.every((item) => typeof item === 'string')
+      ? value
+      : undefined
 }
 
 const search = ref<string>('')
@@ -142,7 +152,7 @@ const getEntity = computed(() => {
                   <template v-else-if="['password','secret'].includes(item.type)">
                   <span class="d-inline-flex align-center">
                     <span class="mr-2">
-                      {{ isSecretVisible(item.key) ? item.value : getObfuscatedValue(item.value) }}
+                      {{ isSecretVisible(item.key) ? getDisplayValue(item.value) : getObfuscatedValue(item.value) }}
                     </span>
                     <v-btn
                         :icon="isSecretVisible(item.key) ? 'mdi-eye-off' : 'mdi-eye'"
@@ -156,7 +166,7 @@ const getEntity = computed(() => {
                       <!--ref-->
                       <crud-autocomplete
                           readonly
-                          v-model="item.value"
+                          :model-value="getRefValue(item.value)"
                           :entity="getEntity(item.entity)"
                           :field="{name: item.key, type: 'ref', label: item.label, default:null}"
                           :clearable="false"

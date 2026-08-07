@@ -1,6 +1,7 @@
-import type {ISetting, ISettingBase} from "./interfaces/ISetting";
+import type {ISetting, ISettingBase, SettingValue} from "./interfaces/ISetting";
 
 export type {
     ISetting,
     ISettingBase,
+    SettingValue,
 }

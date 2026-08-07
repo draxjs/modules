@@ -1,10 +1,11 @@
 type SettingTypes = 'string' | 'longString' | 'number' | 'enum' | 'boolean' | 'password' |'stringList' | 'numberList' | 'enumList' |'ref' |'secret'
+type SettingValue = string | string[] | number | number[] | boolean
 
 interface ISettingBase{
     _id?: string
     id?: string
     key: string
-    value: string | string[] | number | number[] | boolean
+    value: SettingValue
     //valueList?: string[]
     label: string
     description?: string
@@ -27,7 +28,7 @@ interface ISetting{
     _id: string
     id?: string
     key: string
-    value: string | string[] | number | number[] | boolean
+    value: SettingValue
     //valueList?: string[]
     label: string
     description?: string
@@ -47,4 +48,4 @@ interface ISetting{
 }
 
 
-export type { ISetting, ISettingBase, SettingTypes }
+export type { ISetting, ISettingBase, SettingTypes, SettingValue }
