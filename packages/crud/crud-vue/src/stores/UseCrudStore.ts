@@ -64,9 +64,12 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
             return (fieldListName: string) => {
                 if(state.inputErrors && typeof state.inputErrors === 'object'){
                     for(const key in state.inputErrors) {
-                        return key.startsWith(fieldListName)
+                        if (key === fieldListName || key.startsWith(`${fieldListName}.`)) {
+                            return true
+                        }
                     }
                 }
+                return false
             }
         },
         getFilterIndex(state: any) {
@@ -131,6 +134,85 @@ export const useCrudStore = (id: string = 'entity') => defineStore('CrudStore'+i
         },
         setInputErrors(inputErrors: any) {
             this.inputErrors = inputErrors
+        },
+        removeArrayItemInputErrors(fieldName: string, removedIndex: number) {
+            if (!this.inputErrors || typeof this.inputErrors !== 'object') {
+                return
+            }
+
+            const nextInputErrors: Record<string, any> = {}
+            const fieldNamePattern = fieldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            const fieldIndexPattern = new RegExp(`^${fieldNamePattern}\\.(\\d+)(\\..+)?$`)
+
+            for (const key in this.inputErrors) {
+                if (key === fieldName) {
+                    continue
+                }
+
+                const match = key.match(fieldIndexPattern)
+
+                if (!match) {
+                    nextInputErrors[key] = this.inputErrors[key]
+                    continue
+                }
+
+                const currentIndex = Number(match[1])
+
+                if (currentIndex === removedIndex) {
+                    continue
+                }
+
+                const nextIndex = currentIndex > removedIndex ? currentIndex - 1 : currentIndex
+                nextInputErrors[`${fieldName}.${nextIndex}${match[2] || ''}`] = this.inputErrors[key]
+            }
+
+            this.inputErrors = Object.keys(nextInputErrors).length > 0 ? nextInputErrors : null
+        },
+        reorderArrayItemInputErrors(fieldName: string, fromIndex: number, toIndex: number) {
+            if (!this.inputErrors || typeof this.inputErrors !== 'object' || fromIndex === toIndex) {
+                return
+            }
+
+            const nextInputErrors: Record<string, any> = {}
+            const fieldNamePattern = fieldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            const fieldIndexPattern = new RegExp(`^${fieldNamePattern}\\.(\\d+)(\\..+)?$`)
+
+            for (const key in this.inputErrors) {
+                if (key === fieldName) {
+                    continue
+                }
+
+                const match = key.match(fieldIndexPattern)
+
+                if (!match) {
+                    nextInputErrors[key] = this.inputErrors[key]
+                    continue
+                }
+
+                const currentIndex = Number(match[1])
+                let nextIndex = currentIndex
+
+                if (currentIndex === fromIndex) {
+                    nextIndex = toIndex
+                } else if (fromIndex < toIndex && currentIndex > fromIndex && currentIndex <= toIndex) {
+                    nextIndex = currentIndex - 1
+                } else if (fromIndex > toIndex && currentIndex >= toIndex && currentIndex < fromIndex) {
+                    nextIndex = currentIndex + 1
+                }
+
+                nextInputErrors[`${fieldName}.${nextIndex}${match[2] || ''}`] = this.inputErrors[key]
+            }
+
+            this.inputErrors = Object.keys(nextInputErrors).length > 0 ? nextInputErrors : null
+        },
+        clearFieldInputErrors(fieldName: string) {
+            if (!this.inputErrors || typeof this.inputErrors !== 'object') {
+                return
+            }
+
+            const nextInputErrors = {...this.inputErrors}
+            delete nextInputErrors[fieldName]
+            this.inputErrors = Object.keys(nextInputErrors).length > 0 ? nextInputErrors : null
         },
         resetErrors() {
             this.inputErrors = null
