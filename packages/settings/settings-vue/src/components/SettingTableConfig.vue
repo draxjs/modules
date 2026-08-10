@@ -56,6 +56,7 @@ const settingsGroupedFiltered = computed(() => {
   for (const groupKey of Object.keys(settingsGrouped.value)) {
     const filteredSettings = settingsGrouped.value[groupKey].filter((setting: ISetting) =>
       setting.key.toLowerCase().includes(searchLower) ||
+      setting.label.toLowerCase().includes(searchLower) ||
       (setting.description && setting.description.toLowerCase().includes(searchLower))
     )
 
