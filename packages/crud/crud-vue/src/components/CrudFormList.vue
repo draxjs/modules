@@ -25,6 +25,20 @@ const {field, entity, readonly} = defineProps({
 })
 
 const store = useCrudStore(entity?.name)
+const itemKeys = new WeakMap<object, string>()
+let itemKeySequence = 0
+
+function getItemKey(item: any) {
+  if (!item || typeof item !== 'object') {
+    return String(item)
+  }
+
+  if (!itemKeys.has(item)) {
+    itemKeys.set(item, `${field.name}-${itemKeySequence++}`)
+  }
+
+  return itemKeys.get(item)
+}
 
 function newItem() {
   return field.objectFields ? field.objectFields.reduce((acc, field) => ({
@@ -45,11 +59,13 @@ function addItem() {
   const item = newItem()
   valueModel.value.push(item);
   menuSelect(item, valueModel.value.length - 1)
+  store.clearFieldInputErrors(field.name)
   emit('updateValue')
 }
 
 function removeItem(index: number) {
   const removedItem = valueModel.value[index]
+  store.removeArrayItemInputErrors(field.name, index)
 
   if (indexSelected.value === index) {
     valueModel.value.splice(index, 1);
@@ -133,6 +149,7 @@ function reorderItems(fromIndex: number, toIndex: number) {
 
   valueModel.value.splice(fromIndex, 1)
   valueModel.value.splice(toIndex, 0, movedItem)
+  store.reorderArrayItemInputErrors(field.name, fromIndex, toIndex)
 
   syncSelectedItem(selectedItem ?? movedItem)
   emit('updateValue')
@@ -179,7 +196,7 @@ function clearDragState() {
     <!--ACCORDION-->
     <v-card-text v-if="field.arrayObjectUI === 'accordion' || xs" :id="`crud-form-list-accordion-${field.name}`" class="crud-form-list__accordion">
       <v-expansion-panels :id="`crud-form-list-accordion-panels-${field.name}`" class="crud-form-list__accordion-panels">
-        <v-expansion-panel v-for="(item,index) in valueModel" :key="index"
+        <v-expansion-panel v-for="(item,index) in valueModel" :key="getItemKey(item)"
                            :id="`crud-form-list-accordion-item-${field.name}-${index}`"
                            :class="['crud-form-list__accordion-item', {'crud-form-list--drag-over': dragOverIndex === index}]"
                            :draggable="isSortable"
@@ -260,7 +277,7 @@ function clearDragState() {
 
               >
 
-                <v-chip v-for="(item,index) in valueModel" :key="index"
+                <v-chip v-for="(item,index) in valueModel" :key="getItemKey(item)"
                         :id="`crud-form-list-chip-${field.name}-${index}`"
                         :value="index" @click="menuSelect(item, index)"
                         :draggable="isSortable"
@@ -326,7 +343,7 @@ function clearDragState() {
           <v-card variant="outlined">
             <v-card-text>
               <v-list :id="`crud-form-list-menu-list-${field.name}`" class="crud-form-list__menu-list" v-model="itemSelected" :style="{ maxHeight: menuMaxHeight, overflowY: 'auto' }">
-                <v-list-item v-for="(item,index) in valueModel" :key="index" rounded="shaped"
+                <v-list-item v-for="(item,index) in valueModel" :key="getItemKey(item)" rounded="shaped"
                              :id="`crud-form-list-menu-item-${field.name}-${index}`"
                              :class="['crud-form-list__menu-item', {'crud-form-list--drag-over': dragOverIndex === index}]"
                              :value="item" @click="menuSelect(item, index)"
