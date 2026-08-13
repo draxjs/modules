@@ -12,19 +12,16 @@
     "src"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "test:unit": "vitest",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build --force",
+    "vue-tsc": "vue-tsc --noEmit",
+    "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
   },
   "dependencies": {
     "@drax/crud-front": "^3.57.0",
     "@drax/crud-share": "^3.57.0",
-    "@drax/dashboard-front": "^3.54.0"
+    "@drax/dashboard-front": "^3.54.0",
+    "@drax/dashboard-share": "^3.54.0"
   },
   "peerDependencies": {
     "pinia": "^3.0.4",

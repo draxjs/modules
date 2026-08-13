@@ -24,7 +24,7 @@ const model = defineModel()
 import {useRole} from "../../composables/useRole";
 
 const {fetchPermissions} = useRole()
-let items = ref([])
+let items = ref<string[]>([])
 let loading = ref(false)
 
 async function sleep(ms: number) {
@@ -45,7 +45,7 @@ interface PermissionGroups {
 const permissionGroups = computed(() => {
   const groups = items.value.reduce((acc: PermissionGroups, permission: string) => {
     if (permission.includes(':')) {
-      const [entity] = permission.split(':');
+      const [entity = 'general'] = permission.split(':');
       if (!acc[entity]) {
         acc[entity] = [];
       }

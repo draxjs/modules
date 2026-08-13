@@ -22,6 +22,7 @@ const colors = [
   '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF9F40',
   '#36A2EB', '#FFCE56', '#9966FF', '#FF6384', '#4BC0C0'
 ]
+const fallbackColor = '#C9CBCF'
 
 const truncateLabel = (label: string, maxLength = 18) => {
   if (!label) return 'N/A'
@@ -90,7 +91,7 @@ const chartData = computed(() => {
       shortLabel: truncateLabel(label),
       value: item.count || 0,
       percentage,
-      color: colors[index % colors.length]
+      color: colors[index % colors.length] ?? fallbackColor
     }
   })
 })

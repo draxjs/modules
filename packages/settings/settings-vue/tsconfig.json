@@ -1,17 +1,12 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.vitest.json"
-    }
-  ],
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["env.d.ts", "src/**/*.ts", "src/**/*.vue", "*.config.ts"],
+  "exclude": ["src/**/__tests__/*", "src/**/*.spec.ts", "src/**/*.test.ts"],
   "compilerOptions": {
-    "module": "NodeNext"
+    "baseUrl": ".",
+    "types": ["vite/client", "node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

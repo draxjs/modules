@@ -83,7 +83,10 @@ class HttpGqlClient implements IGqlClient {
       if (result.errors) {
         const gqlErrors: Array<IGqlError> = result.errors
         if (result.errors.length === 1) {
-          throw new GqlError(gqlErrors[0])
+          const gqlError = gqlErrors[0]
+          if (gqlError) {
+            throw new GqlError(gqlError)
+          }
         } else if (result.errors.length > 1) {
           throw new GqlMultiError(gqlErrors.map(e => new GqlError(e)))
         }
@@ -128,7 +131,10 @@ class HttpGqlClient implements IGqlClient {
       if (result.errors) {
         const gqlErrors: Array<IGqlError> = result.errors
         if (result.errors.length === 1) {
-          throw new GqlError(gqlErrors[0])
+          const gqlError = gqlErrors[0]
+          if (gqlError) {
+            throw new GqlError(gqlError)
+          }
         } else if (result.errors.length > 1) {
           throw new GqlMultiError(gqlErrors.map(e => new GqlError(e)))
         }

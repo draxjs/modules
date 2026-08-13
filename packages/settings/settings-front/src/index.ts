@@ -1,5 +1,4 @@
-import {ISettingProvider} from './interfaces/ISettingProvider'
-export type {ISettingProvider}
+export type {ISettingProvider} from './interfaces/ISettingProvider'
 
 import {SettingRestProvider} from './providers/rest/SettingRestProvider.js'
 import {SettingGqlProvider} from './providers/gql/SettingGqlProvider.js'

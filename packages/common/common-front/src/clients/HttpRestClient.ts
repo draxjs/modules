@@ -26,7 +26,7 @@ class HttpRestClient implements IHttpClient {
   }
 
   getHeaderValue(name: string): string {
-    return this.baseHeaders[name]
+    return this.baseHeaders[name] ?? ''
   }
 
   addHeader(name: string, value: string): void {
