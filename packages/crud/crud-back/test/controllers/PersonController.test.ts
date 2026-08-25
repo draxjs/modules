@@ -466,6 +466,78 @@ describe("Person Controller Test", function () {
         expect(findByResult[0].fullname).toBe("Active Person")
     })
 
+    it("should find people with encoded special characters in filters", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        const names = [
+            "hola mundo",
+            "¿Qué?",
+            "¡Hola!",
+            "a&b",
+            "a=b",
+            "50%",
+            "C++",
+            "foo.bar",
+            "[a-z]",
+            "¿test?",
+          "hola *mundo",
+        ]
+
+        for (const fullname of names) {
+            await testSetup.fastifyInstance.inject({
+                method: 'POST',
+                url: '/api/person',
+                payload: { fullname, live: true, address: defaultAddress },
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+        }
+
+        for (const fullname of names) {
+            const filters = `fullname;like;${encodeURIComponent(fullname)}`
+            const query = new URLSearchParams({filters}).toString()
+            const findByResp = await testSetup.fastifyInstance.inject({
+                method: 'GET',
+                url: `/api/person/find?${query}`,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+
+            const findByResult = await findByResp.json()
+            expect(findByResp.statusCode).toBe(200)
+            expect(findByResult.map((item: any) => item.fullname)).toContain(fullname)
+        }
+    })
+
+    it("should search people with regex metacharacters as literal text", async () => {
+        const { accessToken } = await testSetup.rootUserLogin()
+        await testSetup.dropCollection('Person')
+
+        await testSetup.fastifyInstance.inject({
+            method: 'POST',
+            url: '/api/person',
+            payload: { fullname: "C++", live: true, address: defaultAddress },
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        await testSetup.fastifyInstance.inject({
+            method: 'POST',
+            url: '/api/person',
+            payload: { fullname: "Question?", live: true, address: defaultAddress },
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+
+        for (const search of ["C++", "?"]) {
+            const query = new URLSearchParams({search}).toString()
+            const searchResp = await testSetup.fastifyInstance.inject({
+                method: 'GET',
+                url: `/api/person?${query}`,
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+
+            expect(searchResp.statusCode).toBe(200)
+        }
+    })
+
     it("should create and find people with filters grouped by orGroup", async () => {
         const { accessToken } = await testSetup.rootUserLogin()
         await testSetup.dropCollection('Person')

@@ -116,7 +116,8 @@ class AbstractFastifyController<T, C, U> extends CommonController {
             const filterArray = stringFilters.split("|")
             const filters: IDraxFieldFilter[] = []
             filterArray.forEach((filter) => {
-                const [field, operator, value, orGroup] = filter.split(";")
+                const [field, operator, rawValue, orGroup] = filter.split(";")
+                const value = rawValue !== undefined ? this.decodeFilterValue(rawValue) : rawValue
 
                 if (field && operator && (operator === 'empty' || (value !== undefined && value !== ''))) {
                     filters.push({field, operator, value, orGroup: orGroup || undefined})
@@ -127,6 +128,14 @@ class AbstractFastifyController<T, C, U> extends CommonController {
         } catch (e) {
             console.error("parseFilters error", e)
             throw e
+        }
+    }
+
+    protected decodeFilterValue(value: string): string {
+        try {
+            return decodeURIComponent(value)
+        } catch {
+            return value
         }
     }
 

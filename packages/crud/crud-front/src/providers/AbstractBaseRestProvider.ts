@@ -19,6 +19,10 @@ class AbstractBaseRestProvider {
         this.basePath = basePath
     }
 
+    protected encodeFilterValue(value: any): string {
+        return encodeURIComponent(String(value))
+    }
+
 
     prepareFilters(filters: IDraxFieldFilter[]) {
         const isDate = (value: any): value is Date => value instanceof Date;
@@ -67,6 +71,7 @@ class AbstractBaseRestProvider {
             .filter((filter: IDraxFieldFilter) => filter.operator === 'empty' || (filter.value !== null && filter.value !== '' && filter.value !== undefined))
             .map((filter: IDraxFieldFilter) => {
                 let value = isDate(filter.value)? filter.value.toISOString() : (Array.isArray(filter.value) ? filter.value.join(',') : filter.value)
+                value = this.encodeFilterValue(value)
                 const baseFilter = `${filter.field};${filter.operator ? filter.operator : 'eq'};${value}`
                 return filter.orGroup ? `${baseFilter};${filter.orGroup}` : baseFilter
             })
