@@ -34,6 +34,10 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         return path.split('.').reduce((value, key) => value == null ? undefined : value[key], source)
     }
 
+    protected escapeRegExp(value: any): string {
+        return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    }
+
     assertId(id: string): void {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.log(`Invalid ID: ${id} is not a valid ObjectId.`)
@@ -230,7 +234,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
         if (mongoose.Types.ObjectId.isValid(value)) {
             query['_id'] = new mongoose.Types.ObjectId(value)
         } else if (value) {
-            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(value.toString(), 'i')}))
+            query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(this.escapeRegExp(value), 'i')}))
         }
 
         MongooseQueryFilter.applyFilters(query, filters, this._model)
@@ -262,7 +266,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             if (mongoose.Types.ObjectId.isValid(search)) {
                 query['_id'] = new mongoose.Types.ObjectId(search)
             } else {
-                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(this.escapeRegExp(search), 'i')}))
             }
         }
 
@@ -294,7 +298,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             if (mongoose.Types.ObjectId.isValid(search)) {
                 query['_id'] = new mongoose.Types.ObjectId(search)
             } else {
-                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(this.escapeRegExp(search), 'i')}))
             }
         }
 
@@ -323,7 +327,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
             if (mongoose.Types.ObjectId.isValid(search)) {
                 query['_id'] = new mongoose.Types.ObjectId(search)
             } else {
-                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(search.toString(), 'i')}))
+                query['$or'] = this._searchFields.map(field => ({[field]: new RegExp(this.escapeRegExp(search), 'i')}))
             }
         }
 
@@ -354,7 +358,7 @@ class AbstractMongoRepository<T, C, U> implements IDraxCrud<T, C, U> {
 
         if (search) {
             query['$or'] = [
-                {name: new RegExp(search, 'i')},
+                {name: new RegExp(this.escapeRegExp(search), 'i')},
             ]
         }
 

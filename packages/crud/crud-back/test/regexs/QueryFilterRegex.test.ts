@@ -30,6 +30,28 @@ describe("QueryFilterRegex", () => {
     });
   });
 
+  it("accepts encoded filter values", () => {
+    const values = [
+      "hola mundo",
+      "¿Qué?",
+      "¡Hola!",
+      "a&b",
+      "a=b",
+      "50%",
+      "C++",
+      "foo.bar",
+      "[a-z]",
+      "test?",
+      "a;b",
+      "a|b"
+    ];
+
+    values.forEach((value) => {
+      const filter = `text;like;${encodeURIComponent(value)}`;
+      expect(QueryFilterRegex.test(filter), filter).toBe(true);
+    });
+  });
+
   it("accepts the optional orGroup after the value", () => {
     expect(QueryFilterRegex.test("text;like;hello;group1")).toBe(true);
   });

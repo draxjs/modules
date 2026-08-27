@@ -193,17 +193,17 @@ describe('MongooseQueryFilter', () => {
         }, 'in value should remain a string for string arrays');
     });
 
-    test('Should handle like operator with regex pattern', async () => {
+    test('Should handle like operator as literal text', async () => {
         const query = {};
         const filters: IQueryFilter[] = [
-            { field: 'name', operator: 'like', value: 'john' }
+            { field: 'name', operator: 'like', value: 'C++ [test]?' }
         ];
 
         MongooseQueryFilter.applyFilters(query, filters);
 
         assert.deepEqual(query, {
-            name: { $regex: 'john', $options: 'i' }
-        }, 'The query should correctly apply like operator with case-insensitive regex pattern');
+            name: { $regex: 'C\\+\\+ \\[test\\]\\?', $options: 'i' }
+        }, 'The query should escape regex metacharacters for literal contains search');
     });
 
     test('Should convert valid MongoDB ObjectId strings to ObjectId objects', async () => {

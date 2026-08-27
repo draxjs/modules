@@ -223,7 +223,7 @@ class MongooseQueryFilter{
                     ? {[filter.field]: null}
                     : {[filter.field]: {$in: [null, ""]}}
             case 'like':
-                return {[filter.field]: {$regex: value, $options: 'i'}}
+                return {[filter.field]: {$regex: this.escapeRegExp(value), $options: 'i'}}
             case 'eq':
                 return {[filter.field]: {$eq: value}}
             case 'ne':
@@ -253,6 +253,10 @@ class MongooseQueryFilter{
         return values.map((item: string) =>
             isValidObjectId(item) ? ObjectId.createFromHexString(item) : item
         )
+    }
+
+    static escapeRegExp(value: any): string {
+        return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     }
 
     static assertQuerySchema(query : object){
