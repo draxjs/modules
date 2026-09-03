@@ -3,24 +3,18 @@ import {basename} from "node:path";
 import type {FastifyReply} from "fastify";
 import type {CustomRequest} from "@drax/crud-back";
 import RecoveryPermissions from "../permissions/RecoveryPermissions.js";
-import RecoveryService from "../services/RecoveryService.js";
+import MongoRecoveryService from "../services/MongoRecoveryService.js";
 
 type DumpBody = {
     masterPassword?: string;
-};
-
-type RestoreBody = {
-    masterPassword?: string;
-    archivePath?: string;
-    drop?: boolean;
 };
 
 type DownloadQuery = {
     archivePath?: string;
 };
 
-class RecoveryController {
-    private readonly service = new RecoveryService();
+class MongoRecoveryController {
+    private readonly service = new MongoRecoveryService();
 
     async dump(request: CustomRequest, reply: FastifyReply) {
         try {
@@ -37,28 +31,6 @@ class RecoveryController {
             });
         } catch (error: any) {
             return this.sendError(reply, error, "No se pudo generar el dump.");
-        }
-    }
-
-    async restore(request: CustomRequest, reply: FastifyReply) {
-        try {
-            request?.rbac.assertAuthenticated();
-            request?.rbac.assertPermission(RecoveryPermissions.Restore);
-
-            const body = request.body as RestoreBody;
-            const result = await this.service.restore(
-                body?.masterPassword || "",
-                body?.archivePath || "",
-                body?.drop !== false
-            );
-
-            return reply.status(200).send({
-                success: true,
-                message: "Restore ejecutado correctamente.",
-                ...result,
-            });
-        } catch (error: any) {
-            return this.sendError(reply, error, "No se pudo ejecutar el restore.");
         }
     }
 
@@ -139,5 +111,5 @@ class RecoveryController {
     }
 }
 
-export default RecoveryController;
-export {RecoveryController};
+export default MongoRecoveryController;
+export {MongoRecoveryController};

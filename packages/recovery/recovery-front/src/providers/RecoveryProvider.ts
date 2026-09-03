@@ -14,7 +14,8 @@ class RecoveryProvider {
   static singleton: RecoveryProvider
 
   httpClient: IHttpClient
-  basePath = "/api/recovery"
+  mongoBasePath = "/api/recovery/mongo"
+  fileBasePath = "/api/recovery/files"
 
   constructor() {
     this.httpClient = HttpRestClientFactory.getInstance()
@@ -29,16 +30,8 @@ class RecoveryProvider {
 
   async dump(masterPassword: string): Promise<RecoveryOperationResult> {
     return await this.httpClient.post(
-      `${this.basePath}/dump`,
+      `${this.mongoBasePath}/dump`,
       {masterPassword},
-      {timeout: 1200000}
-    ) as RecoveryOperationResult
-  }
-
-  async restore(masterPassword: string, archivePath: string, drop: boolean): Promise<RecoveryOperationResult> {
-    return await this.httpClient.post(
-      `${this.basePath}/restore`,
-      {masterPassword, archivePath, drop},
       {timeout: 1200000}
     ) as RecoveryOperationResult
   }
@@ -49,25 +42,17 @@ class RecoveryProvider {
     formData.append("drop", String(drop))
     formData.append("file", file)
 
-    return await this.postMultipart(`${this.basePath}/restore-upload`, formData)
+    return await this.postMultipart(`${this.mongoBasePath}/restore-upload`, formData)
   }
 
   async downloadDump(archivePath: string, filename: string): Promise<void> {
-    await this.download(`${this.basePath}/download`, archivePath, filename)
+    await this.download(`${this.mongoBasePath}/download`, archivePath, filename)
   }
 
   async fileBackup(masterPassword: string): Promise<RecoveryOperationResult> {
     return await this.httpClient.post(
-      `${this.basePath}/files/backup`,
+      `${this.fileBasePath}/backup`,
       {masterPassword},
-      {timeout: 1200000}
-    ) as RecoveryOperationResult
-  }
-
-  async fileRestore(masterPassword: string, archivePath: string, cleanTarget: boolean): Promise<RecoveryOperationResult> {
-    return await this.httpClient.post(
-      `${this.basePath}/files/restore`,
-      {masterPassword, archivePath, cleanTarget},
       {timeout: 1200000}
     ) as RecoveryOperationResult
   }
@@ -78,11 +63,11 @@ class RecoveryProvider {
     formData.append("cleanTarget", String(cleanTarget))
     formData.append("file", file)
 
-    return await this.postMultipart(`${this.basePath}/files/restore-upload`, formData)
+    return await this.postMultipart(`${this.fileBasePath}/restore-upload`, formData)
   }
 
   async downloadFileBackup(archivePath: string, filename: string): Promise<void> {
-    await this.download(`${this.basePath}/files/download`, archivePath, filename)
+    await this.download(`${this.fileBasePath}/download`, archivePath, filename)
   }
 
   private async postMultipart(url: string, formData: FormData): Promise<RecoveryOperationResult> {

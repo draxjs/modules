@@ -6,24 +6,25 @@ import {Writable} from "node:stream";
 import {pipeline} from "node:stream/promises";
 import {createGunzip} from "node:zlib";
 
-type RecoveryOperationResult = {
+type MongoRecoveryOperationResult = {
     archivePath: string;
     filename: string;
     command: "mongodump" | "mongorestore";
     output: string;
 };
 
-class RecoveryService {
+class MongoRecoveryService {
     private readonly backupsDirectory = resolve(process.cwd(), "recovery-dumps");
 
-    async dump(masterPassword: string): Promise<RecoveryOperationResult> {
+    async dump(masterPassword: string): Promise<MongoRecoveryOperationResult> {
         this.assertRecoveryEnabled();
         this.assertMasterPassword(masterPassword);
         const mongoUri = this.getMongoUri();
+        const recoveryName = this.getRecoveryName();
 
-        await mkdir(this.backupsDirectory, {recursive: true});
+        await this.prepareBackupsDirectory();
 
-        const filename = `mongo-dump-${this.getTimestamp()}.archive.gz`;
+        const filename = `${recoveryName}-mongo-dump-${this.getTimestamp()}.archive.gz`;
         const archivePath = resolve(this.backupsDirectory, filename);
         const output = await this.runMongoCommand("mongodump", [
             "--uri",
@@ -40,11 +41,12 @@ class RecoveryService {
         };
     }
 
-    async restore(masterPassword: string, archivePath: string, drop = true): Promise<RecoveryOperationResult> {
+    async restore(masterPassword: string, archivePath: string, drop = true): Promise<MongoRecoveryOperationResult> {
         this.assertRecoveryEnabled();
         this.assertMasterPassword(masterPassword);
         const mongoUri = this.getMongoUri();
         const resolvedArchivePath = this.resolveArchivePath(archivePath);
+        this.assertArchiveNameMatchesRecoveryName(resolvedArchivePath);
         await access(resolvedArchivePath);
         await this.assertValidGzipArchive(resolvedArchivePath);
 
@@ -74,7 +76,8 @@ class RecoveryService {
         await mkdir(this.backupsDirectory, {recursive: true});
 
         const safeFilename = basename(filename || "uploaded-mongo-dump.archive.gz");
-        const archivePath = resolve(this.backupsDirectory, `uploaded-mongo-dump-${this.getTimestamp()}-${safeFilename}`);
+        this.assertArchiveNameMatchesRecoveryName(safeFilename);
+        const archivePath = resolve(this.backupsDirectory, `${this.getRecoveryName()}-uploaded-mongo-dump-${this.getTimestamp()}-${safeFilename}`);
 
         try {
             await pipeline(fileStream, createWriteStream(archivePath));
@@ -142,6 +145,40 @@ class RecoveryService {
         return mongoUri;
     }
 
+    private getRecoveryName(): string {
+        const recoveryName = (process.env.RECOVERY_NAME || "").trim();
+
+        if (!recoveryName) {
+            const error = new Error("RECOVERY_NAME no esta configurada.");
+            (error as any).statusCode = 500;
+            throw error;
+        }
+
+        const safeRecoveryName = recoveryName
+            .toLowerCase()
+            .replace(/[^a-z0-9._-]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+
+        if (!safeRecoveryName) {
+            const error = new Error("RECOVERY_NAME debe contener al menos una letra o numero.");
+            (error as any).statusCode = 500;
+            throw error;
+        }
+
+        return safeRecoveryName;
+    }
+
+    private assertArchiveNameMatchesRecoveryName(archivePathOrFilename: string) {
+        const filename = basename(archivePathOrFilename);
+        const recoveryName = this.getRecoveryName();
+
+        if (!filename.startsWith(`${recoveryName}-`)) {
+            const error = new Error(`El archivo de restore no corresponde a RECOVERY_NAME=${recoveryName}.`);
+            (error as any).statusCode = 400;
+            throw error;
+        }
+    }
+
     private resolveArchivePath(archivePath: string): string {
         if (!archivePath) {
             const error = new Error("Debe indicar el archivo de dump a restaurar.");
@@ -163,6 +200,11 @@ class RecoveryService {
 
     private getTimestamp(): string {
         return new Date().toISOString().replace(/[:.]/g, "-");
+    }
+
+    private async prepareBackupsDirectory(): Promise<void> {
+        await rm(this.backupsDirectory, {recursive: true, force: true});
+        await mkdir(this.backupsDirectory, {recursive: true});
     }
 
     private async assertValidGzipArchive(archivePath: string): Promise<void> {
@@ -232,5 +274,6 @@ class RecoveryService {
     }
 }
 
-export default RecoveryService;
-export {RecoveryService};
+export default MongoRecoveryService;
+export {MongoRecoveryService};
+export type {MongoRecoveryOperationResult};

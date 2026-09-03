@@ -1,12 +1,12 @@
-import RecoveryController from "../controllers/RecoveryController.js";
+import MongoRecoveryController from "../controllers/MongoRecoveryController.js";
 import FileRecoveryController from "../controllers/FileRecoveryController.js";
 
 async function RecoveryFastifyRoutes(fastify, options) {
-    const controller = new RecoveryController();
+    const mongoController = new MongoRecoveryController();
     const fileController = new FileRecoveryController();
 
     fastify.post(
-        "/api/recovery/dump",
+        "/api/recovery/mongo/dump",
         {
             schema: {
                 tags: ["recovery"],
@@ -20,31 +20,11 @@ async function RecoveryFastifyRoutes(fastify, options) {
                 },
             },
         },
-        (req, rep) => controller.dump(req as any, rep)
-    );
-
-    fastify.post(
-        "/api/recovery/restore",
-        {
-            schema: {
-                tags: ["recovery"],
-                summary: "Restore a MongoDB dump",
-                body: {
-                    type: "object",
-                    required: ["masterPassword", "archivePath"],
-                    properties: {
-                        masterPassword: {type: "string"},
-                        archivePath: {type: "string"},
-                        drop: {type: "boolean"},
-                    },
-                },
-            },
-        },
-        (req, rep) => controller.restore(req as any, rep)
+        (req, rep) => mongoController.dump(req as any, rep)
     );
 
     fastify.get(
-        "/api/recovery/download",
+        "/api/recovery/mongo/download",
         {
             schema: {
                 tags: ["recovery"],
@@ -58,18 +38,18 @@ async function RecoveryFastifyRoutes(fastify, options) {
                 },
             },
         },
-        (req, rep) => controller.download(req as any, rep)
+        (req, rep) => mongoController.download(req as any, rep)
     );
 
     fastify.post(
-        "/api/recovery/restore-upload",
+        "/api/recovery/mongo/restore-upload",
         {
             schema: {
                 tags: ["recovery"],
                 summary: "Upload and restore a MongoDB dump",
             },
         },
-        (req, rep) => controller.restoreUpload(req as any, rep)
+        (req, rep) => mongoController.restoreUpload(req as any, rep)
     );
 
     fastify.post(
@@ -88,26 +68,6 @@ async function RecoveryFastifyRoutes(fastify, options) {
             },
         },
         (req, rep) => fileController.backup(req as any, rep)
-    );
-
-    fastify.post(
-        "/api/recovery/files/restore",
-        {
-            schema: {
-                tags: ["recovery"],
-                summary: "Restore a DRAX_FILE_DIR backup",
-                body: {
-                    type: "object",
-                    required: ["masterPassword", "archivePath"],
-                    properties: {
-                        masterPassword: {type: "string"},
-                        archivePath: {type: "string"},
-                        cleanTarget: {type: "boolean"},
-                    },
-                },
-            },
-        },
-        (req, rep) => fileController.restore(req as any, rep)
     );
 
     fastify.get(

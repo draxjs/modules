@@ -9,12 +9,6 @@ type BackupBody = {
     masterPassword?: string;
 };
 
-type RestoreBody = {
-    masterPassword?: string;
-    archivePath?: string;
-    cleanTarget?: boolean;
-};
-
 type DownloadQuery = {
     archivePath?: string;
 };
@@ -37,28 +31,6 @@ class FileRecoveryController {
             });
         } catch (error: any) {
             return this.sendError(reply, error, "No se pudo generar el backup de archivos.");
-        }
-    }
-
-    async restore(request: CustomRequest, reply: FastifyReply) {
-        try {
-            request?.rbac.assertAuthenticated();
-            request?.rbac.assertPermission(RecoveryPermissions.FileRestore);
-
-            const body = request.body as RestoreBody;
-            const result = await this.service.restore(
-                body?.masterPassword || "",
-                body?.archivePath || "",
-                body?.cleanTarget === true
-            );
-
-            return reply.status(200).send({
-                success: true,
-                message: "Restore de archivos ejecutado correctamente.",
-                ...result,
-            });
-        } catch (error: any) {
-            return this.sendError(reply, error, "No se pudo ejecutar el restore de archivos.");
         }
     }
 
