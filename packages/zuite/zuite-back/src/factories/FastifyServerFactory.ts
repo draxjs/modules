@@ -21,6 +21,7 @@ import {DashboardRoutes} from "@drax/dashboard-back";
 import {AuditRoutes} from "@drax/audit-back";
 import {SettingRoutes} from "@drax/settings-back";
 import {AiTestRoutes} from "../modules/base/routes/AiTestRoutes.js";
+import {RecoveryFastifyRoutes} from "@drax/recovery-back";
 
 function FastifyServerFactory(rootDir:string) {
     const server = new FastifyServer(rootDir);
@@ -41,6 +42,7 @@ function FastifyServerFactory(rootDir:string) {
     server.fastifyRegister(FileRoutes)
 
     server.fastifyRegister(SettingRoutes)
+    server.fastifyRegister(RecoveryFastifyRoutes)
 
     server.fastifyRegister(PersonFastifyRoutes)
     server.fastifyRegister(CountryFastifyRoutes)

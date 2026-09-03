@@ -20,3 +20,4 @@ lerna-debug.log
 /.idea/workspace.xml
 /.idea/
 /packages/ai/ai-back/.env
+/packages/zuite/zuite-back/files-bkp/

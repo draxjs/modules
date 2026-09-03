@@ -8,6 +8,7 @@ import {DashboardCrudRoute} from "@drax/dashboard-vue";
 import {AuditRoutes} from "@drax/audit-vue";
 import {MediaRoutes} from "@drax/media-vue";
 import {AiRoutes} from "@drax/ai-vue";
+import {RecoveryRoutes} from "@drax/recovery-vue";
 
 const routes = [
   ...baseRoutes,
@@ -19,6 +20,7 @@ const routes = [
   ...DashboardCrudRoute,
   ...AuditRoutes,
   ...MediaRoutes,
+  ...RecoveryRoutes,
   ...AiRoutes
 ]
 

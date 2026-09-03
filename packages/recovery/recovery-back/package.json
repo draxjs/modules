@@ -1,0 +1,35 @@
+{
+  "name": "@drax/recovery-back",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "3.58.0",
+  "description": "Recovery module for database dumps and file backups.",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prepublish": "tsc && npm run copygql",
+    "clean": "rm -rf dist",
+    "copygql": "copyfiles -u 1 ./**/*.graphql dist/",
+    "tsc": "tsc -b tsconfig.json",
+    "test": "node --import tsx --test test/**/*.ts"
+  },
+  "author": "Cristian Incarnato & Drax Team",
+  "license": "ISC",
+  "dependencies": {
+    "@drax/crud-back": "^3.58.0"
+  },
+  "peerDependencies": {
+    "@fastify/multipart": "^9.0.3",
+    "fastify": "^5.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "copyfiles": "^2.4.1",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^3.12.7",
+    "typescript": "^5.9.3"
+  }
+}

@@ -12,6 +12,7 @@ import {DynamicFormPermissions} from "@drax/dynamic-back";
 import {DashboardPermissions} from "@drax/dashboard-back";
 import {AuditPermissions} from "@drax/audit-back";
 import {SettingPermissions} from "@drax/settings-back";
+import {RecoveryPermissions} from "@drax/recovery-back";
 import {AILogPermissions, AIPermissions, AgentPermissions, AgentSessionPermissions, TTSPermissions, TTSVoicePermissions} from "@drax/ai-back";
 import {CrudSavedQueryPermissions} from "@drax/crud-back";
 import {PersonPermissions} from "../modules/people/permissions/PersonPermissions.js";
@@ -35,6 +36,7 @@ function InitializePermissions() {
         ...Object.values(MediaPermissions),
         ...Object.values(FilePermissions),
         ...Object.values(SettingPermissions),
+        ...Object.values(RecoveryPermissions),
         ...Object.values(PersonPermissions),
         ...Object.values(CountryPermissions),
         ...Object.values(LanguagePermissions),

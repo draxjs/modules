@@ -23,7 +23,13 @@ import {AuditRoutes} from "@drax/audit-back";
 import {SettingRoutes} from "@drax/settings-back";
 import {AILogRoutes,AIRoutes, DraxAgentRoutes, AgentSessionRoutes, TTSRoutes, TTSVoiceRoutes} from "@drax/ai-back";
 import {CrudSavedQueryFastifyRoutes} from "@drax/crud-back";
+
+import {RecoveryFastifyRoutes} from "@drax/recovery-back";
+
+
 import {AiTestRoutes} from "../modules/base/routes/AiTestRoutes.js";
+
+
 const {typeDefs, resolvers} = await ModuleMerger()
 
 function YogaFastifyServerFactory(rootDir:string) {
@@ -68,6 +74,8 @@ function YogaFastifyServerFactory(rootDir:string) {
     server.fastifyRegister(AgentSessionRoutes)
 
     server.fastifyRegister(AiTestRoutes)
+
+    server.fastifyRegister(RecoveryFastifyRoutes)
 
     return server
 }

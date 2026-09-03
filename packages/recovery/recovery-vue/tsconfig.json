@@ -1,0 +1,14 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": [
+    "src/index.ts", "src/**/*.ts", "src/**/*.vue", "*.config.ts"],
+  "exclude": ["src/**/__tests__/*", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": ["vite/client", "node"],
+    "paths": {
+      "@drax/recovery-front": ["../recovery-front/src/index.ts"],
+      "@/*": ["./src/*"]
+    }
+  }
+}
