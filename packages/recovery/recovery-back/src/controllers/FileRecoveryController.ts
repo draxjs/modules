@@ -30,7 +30,7 @@ class FileRecoveryController {
                 ...result,
             });
         } catch (error: any) {
-            return this.sendError(reply, error, "No se pudo generar el backup de archivos.");
+            return this.sendError(request, reply, error, "No se pudo generar el backup de archivos.", "files.backup");
         }
     }
 
@@ -48,7 +48,7 @@ class FileRecoveryController {
                 .header("Content-Disposition", `attachment; filename="${filename}"`)
                 .send(createReadStream(archivePath));
         } catch (error: any) {
-            return this.sendError(reply, error, "No se pudo descargar el backup de archivos.");
+            return this.sendError(request, reply, error, "No se pudo descargar el backup de archivos.", "files.download");
         }
     }
 
@@ -83,15 +83,30 @@ class FileRecoveryController {
                 ...result,
             });
         } catch (error: any) {
-            return this.sendError(reply, error, "No se pudo ejecutar el restore de archivos.");
+            return this.sendError(request, reply, error, "No se pudo ejecutar el restore de archivos.", "files.restoreUpload");
         }
     }
 
-    private sendError(reply: FastifyReply, error: any, fallbackMessage: string) {
-        return reply.status(error?.statusCode || 500).send({
+    private sendError(request: CustomRequest, reply: FastifyReply, error: any, fallbackMessage: string, operation: string) {
+        const statusCode = error?.statusCode || 500;
+        const message = error?.message || fallbackMessage;
+        const errorCode = error?.code || "FILE_RECOVERY_OPERATION_ERROR";
+        const details = error?.details;
+
+        request.log?.error({
+            err: error,
+            operation,
+            statusCode,
+            errorCode,
+            message,
+            details,
+        }, "recovery file operation failed");
+
+        return reply.status(statusCode).send({
             success: false,
-            error: "FILE_RECOVERY_OPERATION_ERROR",
-            message: error?.message || fallbackMessage,
+            error: errorCode,
+            message,
+            details,
         });
     }
 

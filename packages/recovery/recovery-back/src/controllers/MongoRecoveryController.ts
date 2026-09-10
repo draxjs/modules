@@ -30,7 +30,7 @@ class MongoRecoveryController {
                 ...result,
             });
         } catch (error: any) {
-            return this.sendError(reply, error, "No se pudo generar el dump.");
+            return this.sendError(request, reply, error, "No se pudo generar el dump.", "mongo.dump");
         }
     }
 
@@ -48,7 +48,7 @@ class MongoRecoveryController {
                 .header("Content-Disposition", `attachment; filename="${filename}"`)
                 .send(createReadStream(archivePath));
         } catch (error: any) {
-            return this.sendError(reply, error, "No se pudo descargar el dump.");
+            return this.sendError(request, reply, error, "No se pudo descargar el dump.", "mongo.download");
         }
     }
 
@@ -83,15 +83,30 @@ class MongoRecoveryController {
                 ...result,
             });
         } catch (error: any) {
-            return this.sendError(reply, error, "No se pudo ejecutar el restore.");
+            return this.sendError(request, reply, error, "No se pudo ejecutar el restore.", "mongo.restoreUpload");
         }
     }
 
-    private sendError(reply: FastifyReply, error: any, fallbackMessage: string) {
-        return reply.status(error?.statusCode || 500).send({
+    private sendError(request: CustomRequest, reply: FastifyReply, error: any, fallbackMessage: string, operation: string) {
+        const statusCode = error?.statusCode || 500;
+        const message = error?.message || fallbackMessage;
+        const errorCode = error?.code || "RECOVERY_OPERATION_ERROR";
+        const details = error?.details;
+
+        request.log?.error({
+            err: error,
+            operation,
+            statusCode,
+            errorCode,
+            message,
+            details,
+        }, "recovery mongo operation failed");
+
+        return reply.status(statusCode).send({
             success: false,
-            error: "RECOVERY_OPERATION_ERROR",
-            message: error?.message || fallbackMessage,
+            error: errorCode,
+            message,
+            details,
         });
     }
 

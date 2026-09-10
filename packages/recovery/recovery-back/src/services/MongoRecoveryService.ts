@@ -112,6 +112,7 @@ class MongoRecoveryService {
 
         if (!enabled) {
             const error = new Error("Recovery esta deshabilitado. Configure RECOVERY_ENABLED=true para habilitarlo.");
+            (error as any).code = "RECOVERY_DISABLED";
             (error as any).statusCode = 403;
             throw error;
         }
@@ -122,12 +123,14 @@ class MongoRecoveryService {
 
         if (!configuredPassword) {
             const error = new Error("RECOVERY_MASTER_PASSWORD no esta configurada.");
+            (error as any).code = "RECOVERY_MASTER_PASSWORD_MISSING";
             (error as any).statusCode = 500;
             throw error;
         }
 
         if (!masterPassword || masterPassword !== configuredPassword) {
             const error = new Error("Password maestra invalida.");
+            (error as any).code = "RECOVERY_INVALID_MASTER_PASSWORD";
             (error as any).statusCode = 403;
             throw error;
         }
@@ -138,6 +141,7 @@ class MongoRecoveryService {
 
         if (!mongoUri) {
             const error = new Error("MONGO_URI o DRAX_MONGO_URI no esta configurada.");
+            (error as any).code = "RECOVERY_MONGO_URI_MISSING";
             (error as any).statusCode = 500;
             throw error;
         }
@@ -150,6 +154,7 @@ class MongoRecoveryService {
 
         if (!recoveryName) {
             const error = new Error("RECOVERY_NAME no esta configurada.");
+            (error as any).code = "RECOVERY_NAME_MISSING";
             (error as any).statusCode = 500;
             throw error;
         }
@@ -161,6 +166,7 @@ class MongoRecoveryService {
 
         if (!safeRecoveryName) {
             const error = new Error("RECOVERY_NAME debe contener al menos una letra o numero.");
+            (error as any).code = "RECOVERY_NAME_INVALID";
             (error as any).statusCode = 500;
             throw error;
         }
@@ -174,6 +180,7 @@ class MongoRecoveryService {
 
         if (!filename.startsWith(`${recoveryName}-`)) {
             const error = new Error(`El archivo de restore no corresponde a RECOVERY_NAME=${recoveryName}.`);
+            (error as any).code = "RECOVERY_ARCHIVE_NAME_MISMATCH";
             (error as any).statusCode = 400;
             throw error;
         }
@@ -182,6 +189,7 @@ class MongoRecoveryService {
     private resolveArchivePath(archivePath: string): string {
         if (!archivePath) {
             const error = new Error("Debe indicar el archivo de dump a restaurar.");
+            (error as any).code = "RECOVERY_ARCHIVE_REQUIRED";
             (error as any).statusCode = 400;
             throw error;
         }
@@ -191,6 +199,7 @@ class MongoRecoveryService {
 
         if (!resolvedArchivePath.startsWith(backupsDirectory)) {
             const error = new Error("El archivo de restore debe estar dentro del directorio recovery-dumps.");
+            (error as any).code = "RECOVERY_ARCHIVE_OUTSIDE_BACKUP_DIR";
             (error as any).statusCode = 400;
             throw error;
         }
@@ -222,6 +231,7 @@ class MongoRecoveryService {
             const validationError = new Error(
                 `El archivo subido no es un dump .gz valido o esta incompleto. ${error?.message || ""}`.trim()
             );
+            (validationError as any).code = "RECOVERY_INVALID_GZIP_ARCHIVE";
             (validationError as any).statusCode = 400;
             throw validationError;
         }
@@ -230,6 +240,7 @@ class MongoRecoveryService {
     private throwUploadTooLargeError(): never {
         const maxUploadMb = Math.round(this.getMaxUploadBytes() / 1024 / 1024);
         const error = new Error(`El archivo subido supera el limite de ${maxUploadMb} MB.`);
+        (error as any).code = "RECOVERY_UPLOAD_TOO_LARGE";
         (error as any).statusCode = 413;
         throw error;
     }
@@ -256,6 +267,11 @@ class MongoRecoveryService {
                 if (error?.code === "ENOENT") {
                     error.message = `${command} no esta instalado o no esta disponible en PATH.`;
                 }
+                error.statusCode = 500;
+                error.details = {
+                    command,
+                    phase: "spawn",
+                };
                 rejectPromise(error);
             });
 
@@ -267,6 +283,12 @@ class MongoRecoveryService {
                 }
 
                 const error = new Error(joinedOutput || `${command} finalizo con codigo ${code}.`);
+                (error as any).code = "RECOVERY_MONGO_COMMAND_FAILED";
+                (error as any).details = {
+                    command,
+                    exitCode: code,
+                    output: joinedOutput,
+                };
                 (error as any).statusCode = 500;
                 rejectPromise(error);
             });

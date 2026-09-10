@@ -115,6 +115,7 @@ class FileRecoveryService {
 
         if (!enabled) {
             const error = new Error("Recovery esta deshabilitado. Configure RECOVERY_ENABLED=true para habilitarlo.");
+            (error as any).code = "FILE_RECOVERY_DISABLED";
             (error as any).statusCode = 403;
             throw error;
         }
@@ -125,12 +126,14 @@ class FileRecoveryService {
 
         if (!configuredPassword) {
             const error = new Error("RECOVERY_MASTER_PASSWORD no esta configurada.");
+            (error as any).code = "FILE_RECOVERY_MASTER_PASSWORD_MISSING";
             (error as any).statusCode = 500;
             throw error;
         }
 
         if (!masterPassword || masterPassword !== configuredPassword) {
             const error = new Error("Password maestra invalida.");
+            (error as any).code = "FILE_RECOVERY_INVALID_MASTER_PASSWORD";
             (error as any).statusCode = 403;
             throw error;
         }
@@ -139,6 +142,7 @@ class FileRecoveryService {
     private getFileDirectory(): string {
         if (!process.env.DRAX_FILE_DIR) {
             const error = new Error("DRAX_FILE_DIR no esta configurada.");
+            (error as any).code = "FILE_RECOVERY_FILE_DIR_MISSING";
             (error as any).statusCode = 500;
             throw error;
         }
@@ -151,6 +155,7 @@ class FileRecoveryService {
 
         if (!recoveryName) {
             const error = new Error("RECOVERY_NAME no esta configurada.");
+            (error as any).code = "FILE_RECOVERY_NAME_MISSING";
             (error as any).statusCode = 500;
             throw error;
         }
@@ -162,6 +167,7 @@ class FileRecoveryService {
 
         if (!safeRecoveryName) {
             const error = new Error("RECOVERY_NAME debe contener al menos una letra o numero.");
+            (error as any).code = "FILE_RECOVERY_NAME_INVALID";
             (error as any).statusCode = 500;
             throw error;
         }
@@ -175,6 +181,7 @@ class FileRecoveryService {
 
         if (!filename.startsWith(`${recoveryName}-`)) {
             const error = new Error(`El archivo de restore no corresponde a RECOVERY_NAME=${recoveryName}.`);
+            (error as any).code = "FILE_RECOVERY_ARCHIVE_NAME_MISMATCH";
             (error as any).statusCode = 400;
             throw error;
         }
@@ -183,6 +190,7 @@ class FileRecoveryService {
     private resolveArchivePath(archivePath: string): string {
         if (!archivePath) {
             const error = new Error("Debe indicar el archivo de backup a restaurar.");
+            (error as any).code = "FILE_RECOVERY_ARCHIVE_REQUIRED";
             (error as any).statusCode = 400;
             throw error;
         }
@@ -192,6 +200,7 @@ class FileRecoveryService {
 
         if (!resolvedArchivePath.startsWith(backupsDirectory)) {
             const error = new Error("El archivo de restore debe estar dentro del directorio recovery-file-backups.");
+            (error as any).code = "FILE_RECOVERY_ARCHIVE_OUTSIDE_BACKUP_DIR";
             (error as any).statusCode = 400;
             throw error;
         }
@@ -215,6 +224,7 @@ class FileRecoveryService {
             const validationError = new Error(
                 `El archivo subido no es un backup .tar.gz valido o esta incompleto. ${error?.message || ""}`.trim()
             );
+            (validationError as any).code = "FILE_RECOVERY_INVALID_TAR_ARCHIVE";
             (validationError as any).statusCode = 400;
             throw validationError;
         }
@@ -223,6 +233,7 @@ class FileRecoveryService {
     private throwUploadTooLargeError(): never {
         const maxUploadMb = Math.round(this.getMaxUploadBytes() / 1024 / 1024);
         const error = new Error(`El archivo subido supera el limite de ${maxUploadMb} MB.`);
+        (error as any).code = "FILE_RECOVERY_UPLOAD_TOO_LARGE";
         (error as any).statusCode = 413;
         throw error;
     }
@@ -253,6 +264,11 @@ class FileRecoveryService {
                 if (error?.code === "ENOENT") {
                     error.message = "tar no esta instalado o no esta disponible en PATH.";
                 }
+                error.statusCode = 500;
+                error.details = {
+                    command: "tar",
+                    phase: "spawn",
+                };
                 rejectPromise(error);
             });
 
@@ -264,6 +280,12 @@ class FileRecoveryService {
                 }
 
                 const error = new Error(joinedOutput || `tar finalizo con codigo ${code}.`);
+                (error as any).code = "FILE_RECOVERY_TAR_COMMAND_FAILED";
+                (error as any).details = {
+                    command: "tar",
+                    exitCode: code,
+                    output: joinedOutput,
+                };
                 (error as any).statusCode = 500;
                 rejectPromise(error);
             });

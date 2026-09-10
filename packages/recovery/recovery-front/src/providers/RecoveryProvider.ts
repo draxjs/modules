@@ -1,5 +1,7 @@
 import {HttpRestClientFactory, type IHttpClient} from "@drax/common-front";
 
+const RECOVERY_TIMEOUT_MS = 60 * 60 * 1000;
+
 export type RecoveryOperationResult = {
   success: boolean
   message: string
@@ -29,11 +31,7 @@ class RecoveryProvider {
   }
 
   async dump(masterPassword: string): Promise<RecoveryOperationResult> {
-    return await this.httpClient.post(
-      `${this.mongoBasePath}/dump`,
-      {masterPassword},
-      {timeout: 1200000}
-    ) as RecoveryOperationResult
+    return await this.postJson(`${this.mongoBasePath}/dump`, {masterPassword})
   }
 
   async restoreUpload(masterPassword: string, file: File, drop: boolean): Promise<RecoveryOperationResult> {
@@ -50,11 +48,7 @@ class RecoveryProvider {
   }
 
   async fileBackup(masterPassword: string): Promise<RecoveryOperationResult> {
-    return await this.httpClient.post(
-      `${this.fileBasePath}/backup`,
-      {masterPassword},
-      {timeout: 1200000}
-    ) as RecoveryOperationResult
+    return await this.postJson(`${this.fileBasePath}/backup`, {masterPassword})
   }
 
   async fileRestoreUpload(masterPassword: string, file: File, cleanTarget: boolean): Promise<RecoveryOperationResult> {
@@ -71,11 +65,11 @@ class RecoveryProvider {
   }
 
   private async postMultipart(url: string, formData: FormData): Promise<RecoveryOperationResult> {
-    const response = await fetch(url, {
+    const response = await this.fetchWithTimeout(url, {
       method: "POST",
       headers: this.getAuthHeaders(),
       body: formData,
-    })
+    }, RECOVERY_TIMEOUT_MS)
 
     const payload = await response.json()
 
@@ -86,11 +80,30 @@ class RecoveryProvider {
     return payload as RecoveryOperationResult
   }
 
+  private async postJson(url: string, body: Record<string, unknown>): Promise<RecoveryOperationResult> {
+    const response = await this.fetchWithTimeout(url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...this.getAuthHeaders(),
+      },
+      body: JSON.stringify(body),
+    }, RECOVERY_TIMEOUT_MS)
+
+    const payload = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new Error(payload?.message || payload?.error || "No se pudo completar la operacion.")
+    }
+
+    return payload as RecoveryOperationResult
+  }
+
   private async download(url: string, archivePath: string, filename: string): Promise<void> {
-    const response = await fetch(`${url}?archivePath=${encodeURIComponent(archivePath)}`, {
+    const response = await this.fetchWithTimeout(`${url}?archivePath=${encodeURIComponent(archivePath)}`, {
       method: "GET",
       headers: this.getAuthHeaders(),
-    })
+    }, RECOVERY_TIMEOUT_MS)
 
     if (!response.ok) {
       const payload = await response.json().catch(() => null)
@@ -115,6 +128,20 @@ class RecoveryProvider {
 
     const authStore = JSON.parse(authStoreString)
     return authStore?.accessToken ? {Authorization: `Bearer ${authStore.accessToken}`} : {}
+  }
+
+  private async fetchWithTimeout(url: string, init: RequestInit, timeout: number): Promise<Response> {
+    const controller = new AbortController()
+    const timeoutId = window.setTimeout(() => controller.abort(), timeout)
+
+    try {
+      return await fetch(url, {
+        ...init,
+        signal: controller.signal,
+      })
+    } finally {
+      window.clearTimeout(timeoutId)
+    }
   }
 }
 

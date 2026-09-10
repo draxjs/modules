@@ -1,6 +1,8 @@
 import MongoRecoveryController from "../controllers/MongoRecoveryController.js";
 import FileRecoveryController from "../controllers/FileRecoveryController.js";
 
+const RECOVERY_TIMEOUT_MS = 60 * 60 * 1000;
+
 async function RecoveryFastifyRoutes(fastify, options) {
     const mongoController = new MongoRecoveryController();
     const fileController = new FileRecoveryController();
@@ -8,6 +10,7 @@ async function RecoveryFastifyRoutes(fastify, options) {
     fastify.post(
         "/api/recovery/mongo/dump",
         {
+            handlerTimeout: RECOVERY_TIMEOUT_MS,
             schema: {
                 tags: ["recovery"],
                 summary: "Generate a MongoDB dump",
@@ -26,6 +29,7 @@ async function RecoveryFastifyRoutes(fastify, options) {
     fastify.get(
         "/api/recovery/mongo/download",
         {
+            handlerTimeout: RECOVERY_TIMEOUT_MS,
             schema: {
                 tags: ["recovery"],
                 summary: "Download a MongoDB dump",
@@ -44,6 +48,7 @@ async function RecoveryFastifyRoutes(fastify, options) {
     fastify.post(
         "/api/recovery/mongo/restore-upload",
         {
+            handlerTimeout: RECOVERY_TIMEOUT_MS,
             schema: {
                 tags: ["recovery"],
                 summary: "Upload and restore a MongoDB dump",
@@ -55,6 +60,7 @@ async function RecoveryFastifyRoutes(fastify, options) {
     fastify.post(
         "/api/recovery/files/backup",
         {
+            handlerTimeout: RECOVERY_TIMEOUT_MS,
             schema: {
                 tags: ["recovery"],
                 summary: "Generate a DRAX_FILE_DIR backup",
@@ -73,6 +79,7 @@ async function RecoveryFastifyRoutes(fastify, options) {
     fastify.get(
         "/api/recovery/files/download",
         {
+            handlerTimeout: RECOVERY_TIMEOUT_MS,
             schema: {
                 tags: ["recovery"],
                 summary: "Download a DRAX_FILE_DIR backup",
@@ -91,6 +98,7 @@ async function RecoveryFastifyRoutes(fastify, options) {
     fastify.post(
         "/api/recovery/files/restore-upload",
         {
+            handlerTimeout: RECOVERY_TIMEOUT_MS,
             schema: {
                 tags: ["recovery"],
                 summary: "Upload and restore a DRAX_FILE_DIR backup",
