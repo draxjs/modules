@@ -17,6 +17,30 @@ const generateT = (schema: ISchema) => {
     return content;
 }
 
+const generateTabs = (entity: IEntitySchema) => {
+    let content: string = ""
+    let tabs: Array<string> = []
+    const keys = new Set<string>()
+
+    const addKey = (key?: string) => {
+        if (key && !keys.has(key)) {
+            keys.add(key)
+            tabs.push(`           ${key}:'${key}'`)
+        }
+    }
+
+    entity.tabs?.forEach(addKey)
+    entity.menus?.forEach(addKey)
+
+    for (const field in entity.schema) {
+        addKey(entity.schema[field].groupTab)
+        addKey(entity.schema[field].groupMenu)
+    }
+
+    content += tabs.join(",\n")
+    return content;
+}
+
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
 
@@ -30,6 +54,9 @@ const messages = {
           crud: '${capitalizeFirstLetter(entity.name)}',
           field:{
             ${generateT(entity.schema)}
+          },
+          tabs: {
+            ${generateTabs(entity)}
           }
       },
       permission: {
@@ -47,6 +74,9 @@ const messages = {
           crud: '${capitalizeFirstLetter(entity.name)}',
           field:{
             ${generateT(entity.schema)}
+          },
+          tabs: {
+            ${generateTabs(entity)}
           }
       },
      permission: {
