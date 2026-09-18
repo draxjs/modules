@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.59.2",
+  "version": "3.60.0",
   "description": "Recovery module for database dumps and file backups.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -18,7 +18,7 @@
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
   "dependencies": {
-    "@drax/crud-back": "^3.58.0"
+    "@drax/crud-back": "^3.60.0"
   },
   "peerDependencies": {
     "@fastify/multipart": "^9.0.3",
