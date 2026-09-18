@@ -235,7 +235,7 @@ const onlyView = computed(()=> {
             <v-tabs id="crud-form-tabs" class="crud-form__tabs" v-model="tabSelected">
               <v-tab v-for="tab in entity.tabs" :id="`crud-form-tab-${tab}`" class="crud-form__tab" :value="tab" :key="tab">
                 <span :id="`crud-form-tab-label-${tab}`" :class="['crud-form__tab-label', tabInputErrors(tab) ? 'text-red' : '']">
-                {{ te(tab) ? t(tab) : tab }}
+                {{ te(entity.i18nName+".tabs."+tab) ? t(entity.i18nName+".tabs."+tab) : tab }}
                 </span>
               </v-tab>
             </v-tabs>
@@ -304,7 +304,7 @@ const onlyView = computed(()=> {
                   <v-list-item v-for="menu in entity.menus" :id="`crud-form-menu-item-${menu}`" class="crud-form__menu-item" rounded="shaped" :value="menu" @click="menuSelected = menu">
                     <v-list-item-title class="crud-form__menu-item-title">
                     <span :id="`crud-form-menu-label-${menu}`" :class="['crud-form__menu-label', menuInputErrors(menu) ? 'text-red' : '']">
-                        {{ te(menu) ? t(menu) : menu }}
+                        {{ te(entity.i18nName + ".tabs." + menu) ? t(entity.i18nName + ".tabs." + menu) : menu }}
                       </span>
 
                     </v-list-item-title>

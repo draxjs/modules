@@ -23,6 +23,10 @@ class EntityCrud implements IEntityCrud {
     return '_id'
   }
 
+  get i18nName(){
+    return this.name.toLocaleLowerCase()
+  }
+
   get headers(): IEntityCrudHeader[] {
     return [
       {title: 'ID', key: '_id'},

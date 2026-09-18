@@ -14,6 +14,7 @@ import type {IEntityCrudOperation} from "./IEntityCrudOperation";
 
 interface IEntityCrud {
   name: string
+  i18nName: string
   identifier: string
   displayField?: string
   headers: IEntityCrudHeader[]
