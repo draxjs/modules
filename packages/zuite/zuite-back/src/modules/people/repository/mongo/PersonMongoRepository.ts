@@ -11,7 +11,7 @@ class PersonMongoRepository extends AbstractMongoRepository<IPerson, IPersonBase
         super();
         this._model = PersonModel;
         this._searchFields = ['fullname', 'hobbies', 'race', 'interests'];
-        this._populateFields = ['nationality', 'languages', 'tenant', 'user'];
+        this._populateFields = ['nationality', 'languages', 'tenant', 'user', 'address.country', 'address.languages'];
         this._lean = true
     }
 
@@ -19,4 +19,3 @@ class PersonMongoRepository extends AbstractMongoRepository<IPerson, IPersonBase
 
 export default PersonMongoRepository
 export {PersonMongoRepository}
-

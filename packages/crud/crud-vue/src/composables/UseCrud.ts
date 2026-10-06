@@ -435,28 +435,42 @@ export function useCrud(entity: IEntityCrud) {
     }
 
 
-    function cast(item: any) {
-        entity.fields.filter(field => field.type === 'date')
-            .forEach(field => {
-                item[field.name] = new Date(item[field.name])
-            })
+    function castFields(fields: IEntityCrud['fields'], item: any) {
+        if (!item || typeof item !== 'object') {
+            return item
+        }
 
-        entity.fields.filter(field => field.type === 'ref')
-            .forEach(field => {
-                item[field.name] = getItemId(item[field.name]) ? getItemId(item[field.name]) : item[field.name]
-
-            })
-
-        entity.fields.filter(field => field.type === 'array.ref')
-            .forEach(field => {
-                if (item[field.name] && Array.isArray(item[field.name])) {
-                    item[field.name] = item[field.name].map(((i: any) => getItemId(i) ? getItemId(i) : i))
-                } else {
-                    item[field.name] = []
-                }
-            })
+        fields.forEach(field => {
+            switch (field.type) {
+                case 'date':
+                    item[field.name] = new Date(item[field.name])
+                    break
+                case 'ref':
+                    item[field.name] = getItemId(item[field.name]) ? getItemId(item[field.name]) : item[field.name]
+                    break
+                case 'array.ref':
+                    if (item[field.name] && Array.isArray(item[field.name])) {
+                        item[field.name] = item[field.name].map(((i: any) => getItemId(i) ? getItemId(i) : i))
+                    } else {
+                        item[field.name] = []
+                    }
+                    break
+                case 'object':
+                    castFields(field.objectFields ?? [], item[field.name])
+                    break
+                case 'array.object':
+                    if (item[field.name] && Array.isArray(item[field.name])) {
+                        item[field.name].forEach((arrayItem: any) => castFields(field.objectFields ?? [], arrayItem))
+                    }
+                    break
+            }
+        })
 
         return item
+    }
+
+    function cast(item: any) {
+        return castFields(entity.fields, item)
     }
 
     function onView(item: object) {

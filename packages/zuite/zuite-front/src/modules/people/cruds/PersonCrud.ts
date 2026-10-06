@@ -186,12 +186,31 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         label: 'address',
         default: {"country": "", "city": "", "street": "", "zip": null, "casa": false},
         groupTab: 'ADDRESS',
-        objectFields: [{name: 'country', type: 'string', label: 'country', default: ''},
+        objectFields: [
+          {
+            name: 'country',
+            type: 'ref',
+            label: 'Country',
+            default: null,
+            ref: 'Country',
+            refDisplay: 'name'
+          },
+          {
+            name: 'languages',
+            type: 'array.ref',
+            label: 'languages',
+            default: [],
+            ref: 'Language',
+            refDisplay: 'name'
+          },
           {name: 'city', type: 'string', label: 'city', default: ''},
           {name: 'street', type: 'longString', label: 'street', default: ''},
           {name: 'zip', type: 'number', label: 'zip', default: null},
-          {name: 'casa', type: 'boolean', label: 'casa', default: false}]
+          {name: 'casa', type: 'boolean', label: 'casa', default: false}
+
+        ],
       },
+
       {
         name: 'skills',
         type: 'array.object',
