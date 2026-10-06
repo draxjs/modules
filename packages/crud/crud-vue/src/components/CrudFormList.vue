@@ -5,14 +5,16 @@ import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useDisplay} from "vuetify"
+import {normalizeFieldValue} from "../helpers/NormalizeFieldValue";
 
 
 const {t, te} = useI18n()
 const valueModel = defineModel({type: Array, default: () => []});
 
-const {field, entity, readonly} = defineProps({
+const {field, fieldPath, entity, readonly} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField>, required: true},
+  fieldPath: {type: String, default: '', required: false},
   readonly: {type: Boolean, default: false},
   hideDetails: {type: Boolean, default: false},
   singleLine: {type: Boolean, default: false},
@@ -23,6 +25,10 @@ const {field, entity, readonly} = defineProps({
     default: 'filled'
   },
 })
+
+const slots = defineSlots<Record<string, (props: Record<string, any>) => any>>()
+const fieldSlotNames = computed(() => Object.keys(slots).filter(name => name.startsWith('field.')))
+const currentFieldPath = computed(() => fieldPath || field.name)
 
 const store = useCrudStore(entity?.name)
 const itemKeys = new WeakMap<object, string>()
@@ -53,6 +59,18 @@ function getField(key: string): IEntityCrudField | undefined {
 
 function hasField(key: string): boolean {
   return field.objectFields ? field.objectFields.some(field => field.name === key) : false;
+}
+
+function getItemFieldValue(item: any, key: string) {
+  return item?.[key]
+}
+
+function setItemFieldValue(item: any, key: string, value: any, notify = true) {
+  item[key] = normalizeFieldValue(getField(key), value)
+
+  if (notify) {
+    emit('updateValue')
+  }
 }
 
 function addItem() {
@@ -227,23 +245,42 @@ function clearDragState() {
             <v-row class="crud-form-list__fields-row">
               <template v-for="key in Object.keys(item as Record<string, any>)" :key="key">
                 <v-col :id="`crud-form-list-accordion-field-column-${field.name}-${index}-${key}`" class="crud-form-list__field-column" cols="12">
-                  <crud-form-field
+                  <slot
                       v-if="hasField(key)"
-                      :id="`crud-form-list-accordion-field-${field.name}-${index}-${key}`"
-                      class="crud-form-list__field"
-                      :entity="entity"
-                      :field="getField(key)"
-                      v-model="(valueModel[index] as any)[key]"
-                      :readonly="readonly"
-                      :parentField="field.name"
-                      :index="index"
-                      :density="density"
-                      :variant="variant"
-                      :clearable="clearable"
-                      :hide-details="hideDetails"
-                      :single-line="singleLine"
-                      @updateValue="$emit('updateValue')"
-                  />
+                      :name="`field.${currentFieldPath}.${key}`"
+                      v-bind="{
+                        field: getField(key),
+                        parentField: field,
+                        fieldPath: `${currentFieldPath}.${key}`,
+                        form: item,
+                        modelValue: getItemFieldValue(item, key),
+                        setValue: (value: any) => setItemFieldValue(item, key, value),
+                        index
+                      }"
+                  >
+                    <crud-form-field
+                        :id="`crud-form-list-accordion-field-${field.name}-${index}-${key}`"
+                        class="crud-form-list__field"
+                        :entity="entity"
+                        :field="getField(key)"
+                        :field-path="`${currentFieldPath}.${key}`"
+                        :model-value="getItemFieldValue(item, key)"
+                        @update:model-value="value => setItemFieldValue(item, key, value, false)"
+                        :readonly="readonly"
+                        :parentField="field.name"
+                        :index="index"
+                        :density="density"
+                        :variant="variant"
+                        :clearable="clearable"
+                        :hide-details="hideDetails"
+                        :single-line="singleLine"
+                        @updateValue="$emit('updateValue')"
+                    >
+                      <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+                        <slot :name="slotName" v-bind="slotProps" />
+                      </template>
+                    </crud-form-field>
+                  </slot>
                 </v-col>
               </template>
             </v-row>
@@ -310,23 +347,42 @@ function clearDragState() {
               <v-row>
                 <template v-for="key in Object.keys(itemSelected as Record<string, any>)" :key="key">
                   <v-col :id="`crud-form-list-chips-field-column-${field.name}-${key}`" class="crud-form-list__field-column" cols="12">
-                    <crud-form-field
+                    <slot
                         v-if="hasField(key)"
-                        :id="`crud-form-list-chips-field-${field.name}-${key}`"
-                        class="crud-form-list__field"
-                        :entity="entity"
-                        :field="getField(key)"
-                        v-model="(itemSelected as any)[key]"
-                        :readonly="readonly"
-                        :parentField="field.name"
-                        :index="indexSelected"
-                        :density="density"
-                        :variant="variant"
-                        :clearable="clearable"
-                        :hide-details="hideDetails"
-                        :single-line="singleLine"
-                        @updateValue="$emit('updateValue')"
-                    />
+                        :name="`field.${currentFieldPath}.${key}`"
+                        v-bind="{
+                          field: getField(key),
+                          parentField: field,
+                          fieldPath: `${currentFieldPath}.${key}`,
+                          form: itemSelected,
+                          modelValue: getItemFieldValue(itemSelected, key),
+                          setValue: (value: any) => setItemFieldValue(itemSelected, key, value),
+                          index: indexSelected
+                        }"
+                    >
+                      <crud-form-field
+                          :id="`crud-form-list-chips-field-${field.name}-${key}`"
+                          class="crud-form-list__field"
+                          :entity="entity"
+                          :field="getField(key)"
+                          :field-path="`${currentFieldPath}.${key}`"
+                          :model-value="getItemFieldValue(itemSelected, key)"
+                          @update:model-value="value => setItemFieldValue(itemSelected, key, value, false)"
+                          :readonly="readonly"
+                          :parentField="field.name"
+                          :index="indexSelected"
+                          :density="density"
+                          :variant="variant"
+                          :clearable="clearable"
+                          :hide-details="hideDetails"
+                          :single-line="singleLine"
+                          @updateValue="$emit('updateValue')"
+                      >
+                        <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+                          <slot :name="slotName" v-bind="slotProps" />
+                        </template>
+                      </crud-form-field>
+                    </slot>
                   </v-col>
                 </template>
               </v-row>
@@ -383,23 +439,42 @@ function clearDragState() {
               <v-row>
                 <template v-for="key in Object.keys(itemSelected as Record<string, any>)" :key="key">
                   <v-col :id="`crud-form-list-menu-field-column-${field.name}-${key}`" class="crud-form-list__field-column" cols="12">
-                    <crud-form-field
+                    <slot
                         v-if="hasField(key)"
-                        :id="`crud-form-list-menu-field-${field.name}-${key}`"
-                        class="crud-form-list__field"
-                        :entity="entity"
-                        :field="getField(key)"
-                        v-model="(itemSelected as any)[key]"
-                        :readonly="readonly"
-                        :parentField="field.name"
-                        :index="indexSelected"
-                        :density="density"
-                        :variant="variant"
-                        :clearable="clearable"
-                        :hide-details="hideDetails"
-                        :single-line="singleLine"
-                        @updateValue="$emit('updateValue')"
-                    />
+                        :name="`field.${currentFieldPath}.${key}`"
+                        v-bind="{
+                          field: getField(key),
+                          parentField: field,
+                          fieldPath: `${currentFieldPath}.${key}`,
+                          form: itemSelected,
+                          modelValue: getItemFieldValue(itemSelected, key),
+                          setValue: (value: any) => setItemFieldValue(itemSelected, key, value),
+                          index: indexSelected
+                        }"
+                    >
+                      <crud-form-field
+                          :id="`crud-form-list-menu-field-${field.name}-${key}`"
+                          class="crud-form-list__field"
+                          :entity="entity"
+                          :field="getField(key)"
+                          :field-path="`${currentFieldPath}.${key}`"
+                          :model-value="getItemFieldValue(itemSelected, key)"
+                          @update:model-value="value => setItemFieldValue(itemSelected, key, value, false)"
+                          :readonly="readonly"
+                          :parentField="field.name"
+                          :index="indexSelected"
+                          :density="density"
+                          :variant="variant"
+                          :clearable="clearable"
+                          :hide-details="hideDetails"
+                          :single-line="singleLine"
+                          @updateValue="$emit('updateValue')"
+                      >
+                        <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+                          <slot :name="slotName" v-bind="slotProps" />
+                        </template>
+                      </crud-form-field>
+                    </slot>
                   </v-col>
                 </template>
               </v-row>

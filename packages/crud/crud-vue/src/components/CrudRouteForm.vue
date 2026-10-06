@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onBeforeMount, watch, type PropType} from "vue";
+import {computed, onBeforeMount, useSlots, watch, type PropType} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import type {IEntityCrud} from "@drax/crud-share";
@@ -14,6 +14,9 @@ type RouteCrudMode = 'create' | 'edit' | 'view'
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
 })
+
+const slots = useSlots()
+const fieldSlotNames = computed(() => Object.keys(slots).filter(name => name.startsWith('field.')))
 
 const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled'])
 
@@ -192,9 +195,8 @@ async function prepareRouteForm() {
           @canceled="cancel"
           @saved-and-return="goToList"
       >
-        <template v-for="ifield in entity.fields" :key="ifield.name" v-slot:[`field.${ifield.name}`]="{field, form, modelValue, setValue}">
-          <slot :name="`field.${ifield.name}`" v-bind="{field, form, modelValue, setValue}">
-          </slot>
+        <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+          <slot :name="slotName" v-bind="slotProps" />
         </template>
       </crud-form>
     </v-card>

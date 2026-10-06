@@ -14,6 +14,25 @@ import {formatDate} from "@drax/common-front"
       refDisplay: <crud-ref-display :entity="CountryCrud.instance" :value="modelValue" display-field="name" />
     </template>
 
+    <template v-slot:field.address.street="{modelValue, setValue}">
+      <v-text-field
+        :model-value="modelValue"
+                    @update:model-value="setValue"
+                    color="green"
+                    label="calliesita"
+      />
+    </template>
+
+    <template v-slot:field.skills.level="{field, modelValue, setValue, index}">
+      {{index}} {{modelValue}}
+      <v-text-field type="number"
+                    :model-value="modelValue"
+                    @update:model-value="setValue"
+                    color="green"
+                    :label="`${field.label} ${index + 1}`"
+      />
+    </template>
+
     <template v-slot:item.birthdate="{value}">{{formatDate(value)}}</template>
     <template v-slot:item.nationality="{value}">{{value?.name}}</template>
     <template v-slot:item.hobbies="{value}"><v-chip v-for="v in value">{{v}}</v-chip></template>

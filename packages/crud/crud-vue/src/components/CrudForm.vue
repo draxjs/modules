@@ -3,12 +3,13 @@ import {useI18n} from "vue-i18n";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 import {getItemId} from "../helpers/getItemId";
 import CrudFormField from "./CrudFormField.vue";
-import {computed, ref} from "vue";
+import {computed, ref, useSlots} from "vue";
 import type {PropType} from "vue";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useCrud} from "../composables/UseCrud";
 import {useAuth} from '@drax/identity-vue'
 import type {ValidationRule} from "vuetify";
+import {normalizeFieldValue} from "../helpers/NormalizeFieldValue";
 
 const {hasPermission} = useAuth()
 const {t, te} = useI18n()
@@ -18,6 +19,9 @@ const {entity, showSubmitAndReturn} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   showSubmitAndReturn: {type: Boolean, default: false},
 })
+
+const slots = useSlots()
+const fieldSlotNames = computed(() => Object.keys(slots).filter(name => name.startsWith('field.')))
 
 const {onSubmit, onCancel, operation, error, form} = useCrud(entity)
 
@@ -68,8 +72,8 @@ function getFieldModelValue(fieldName: string) {
   return form.value[fieldName]
 }
 
-function setFieldModelValue(fieldName: string, value: any) {
-  form.value[fieldName] = value
+function setFieldModelValue(field: IEntityCrudField, value: any) {
+  form.value[field.name] = normalizeFieldValue(field, value)
 }
 
 async function submitForm(returnAfterSubmit = false) {
@@ -198,7 +202,7 @@ const onlyView = computed(()=> {
                   field,
                   form,
                   modelValue: getFieldModelValue(field.name),
-                  setValue: (value: any) => setFieldModelValue(field.name, value)
+                  setValue: (value: any) => setFieldModelValue(field, value)
                 }"
             >
 
@@ -223,7 +227,11 @@ const onlyView = computed(()=> {
                   :persistent-hint="field.persistentHint"
                   :placeholder="field.placeholder"
                   :persistent-placeholder="field.persistentPlaceholder"
-              />
+              >
+                <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+                  <slot :name="slotName" v-bind="slotProps" />
+                </template>
+              </crud-form-field>
             </slot>
 
           </v-col>
@@ -260,7 +268,7 @@ const onlyView = computed(()=> {
                           field,
                           form,
                           modelValue: getFieldModelValue(field.name),
-                          setValue: (value: any) => setFieldModelValue(field.name, value)
+                          setValue: (value: any) => setFieldModelValue(field, value)
                         }"
                     >
 
@@ -285,7 +293,11 @@ const onlyView = computed(()=> {
                           :persistent-hint="field.persistentHint"
                           :placeholder="field.placeholder"
                           :persistent-placeholder="field.persistentPlaceholder"
-                      />
+                      >
+                        <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+                          <slot :name="slotName" v-bind="slotProps" />
+                        </template>
+                      </crud-form-field>
                     </slot>
 
                   </v-col>
@@ -334,7 +346,7 @@ const onlyView = computed(()=> {
                           field,
                           form,
                           modelValue: getFieldModelValue(field.name),
-                          setValue: (value: any) => setFieldModelValue(field.name, value)
+                          setValue: (value: any) => setFieldModelValue(field, value)
                         }"
                     >
                       <crud-form-field
@@ -356,7 +368,11 @@ const onlyView = computed(()=> {
                           :persistent-hint="field.persistentHint"
                           :placeholder="field.placeholder"
                           :persistent-placeholder="field.persistentPlaceholder"
-                      />
+                      >
+                        <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+                          <slot :name="slotName" v-bind="slotProps" />
+                        </template>
+                      </crud-form-field>
                     </slot>
 
                   </v-col>

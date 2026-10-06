@@ -10,6 +10,7 @@ import {useCrudStore} from "../stores/UseCrudStore";
 import {VDateInput} from 'vuetify/labs/VDateInput'
 import type {IEntityCrud, IEntityCrudField, IEntityCrudFilter} from "@drax/crud-share";
 import {useAuth} from "@drax/identity-vue";
+import {normalizeFieldValue} from "../helpers/NormalizeFieldValue";
 
 //TODO: Ver si esto no puede traer problemas...
 import MediaField from "@drax/media-vue/src/components/MediaField.vue";
@@ -22,7 +23,7 @@ const {hasPermission} = useAuth()
 
 const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
 
-const {index, entity, field, parentField, errorMessages, rules, onInput, readonly, hideDetails} = defineProps({
+const {index, entity, field, fieldPath, parentField, errorMessages, rules, onInput, readonly, hideDetails} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
   field: {type: Object as PropType<IEntityCrudField | IEntityCrudFilter | undefined>, required: true},
   prependIcon: {type: String, default: ''},
@@ -41,6 +42,7 @@ const {index, entity, field, parentField, errorMessages, rules, onInput, readonl
   preview: {type: Boolean, default: true},
   previewHeight: {type: String, default: '100px'},
   parentField: {type: String, default: null, required: false},
+  fieldPath: {type: String, default: '', required: false},
   errorMessages: {type: Array as PropType<string[]>, default: null, required: false},
   onInput: {type: Function as PropType<Function>, required: false},
   rules: {type: Array as PropType<ValidationRule[]>, required: false},
@@ -53,6 +55,9 @@ const {index, entity, field, parentField, errorMessages, rules, onInput, readonl
 })
 
 const store = useCrudStore(entity?.name)
+const slots = defineSlots<Record<string, (props: Record<string, any>) => any>>()
+const emit = defineEmits(['updateValue'])
+const fieldSlotNames = computed(() => Object.keys(slots).filter(name => name.startsWith('field.')))
 
 
 if (!field) {
@@ -60,6 +65,27 @@ if (!field) {
 }
 
 const show = ref(false)
+const currentFieldPath = computed(() => fieldPath || field.name)
+
+function getObjectFieldValue(fieldName: string) {
+  return valueModel.value?.[fieldName]
+}
+
+function getObjectField(fieldName: string) {
+  return field?.objectFields?.find(oField => oField.name === fieldName)
+}
+
+function setObjectFieldValue(fieldName: string, value: any, notify = true) {
+  if (!valueModel.value || typeof valueModel.value !== 'object' || Array.isArray(valueModel.value)) {
+    valueModel.value = {}
+  }
+
+  valueModel.value[fieldName] = normalizeFieldValue(getObjectField(fieldName), value)
+
+  if (notify) {
+    emit('updateValue')
+  }
+}
 
 const name = computed(() => index >= 0 ? `${parentField ? parentField + "_" : ""}${field.name}_${index}` : `${parentField ? parentField + "_" : ""}${field.name}`)
 
@@ -79,8 +105,6 @@ const storeErrorMessages = computed(() => {
 const inputErrors = computed(() => {
   return errorMessages ?? storeErrorMessages.value
 })
-
-defineEmits(['updateValue'])
 
 const hasHideDetails = computed(() => {
   if (readonly) {
@@ -488,26 +512,44 @@ const hasHideDetails = computed(() => {
 
         <v-row :id="`crud-form-field-object-row-${name}`" class="crud-form-field__object-row" dense>
           <v-col :id="`crud-form-field-object-column-${name}-${oField.name}`" class="crud-form-field__object-column" cols="12" v-for="oField in field.objectFields">
-            <crud-form-field
-                :id="`crud-form-field-object-field-${name}-${oField.name}`"
-                class="crud-form-field__object-field"
-
-                :entity="entity"
-                :field="oField"
-                :parent-field="field.name"
-                :readonly="readonly"
-                v-model="valueModel[oField.name]"
-                :density="density"
-                :variant="variant"
-                :clearable="clearable"
-                :hide-details="hasHideDetails"
-                :single-line="singleLine"
-                @updateValue="$emit('updateValue')"
-                :prepend-icon="prependIcon"
-                :append-icon="appendIcon"
-                :prepend-inner-icon="prependInnerIcon"
-                :append-inner-icon="appendInnerIcon"
-            ></crud-form-field>
+            <slot
+                :name="`field.${currentFieldPath}.${oField.name}`"
+                v-bind="{
+                  field: oField,
+                  parentField: field,
+                  fieldPath: `${currentFieldPath}.${oField.name}`,
+                  form: valueModel,
+                  modelValue: getObjectFieldValue(oField.name),
+                  setValue: (value: any) => setObjectFieldValue(oField.name, value),
+                  index
+                }"
+            >
+              <crud-form-field
+                  :id="`crud-form-field-object-field-${name}-${oField.name}`"
+                  class="crud-form-field__object-field"
+                  :entity="entity"
+                  :field="oField"
+                  :field-path="`${currentFieldPath}.${oField.name}`"
+                  :parent-field="field.name"
+                  :readonly="readonly"
+                  :model-value="getObjectFieldValue(oField.name)"
+                  @update:model-value="value => setObjectFieldValue(oField.name, value, false)"
+                  :density="density"
+                  :variant="variant"
+                  :clearable="clearable"
+                  :hide-details="hasHideDetails"
+                  :single-line="singleLine"
+                  @updateValue="$emit('updateValue')"
+                  :prepend-icon="prependIcon"
+                  :append-icon="appendIcon"
+                  :prepend-inner-icon="prependInnerIcon"
+                  :append-inner-icon="appendInnerIcon"
+              >
+                <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+                  <slot :name="slotName" v-bind="slotProps" />
+                </template>
+              </crud-form-field>
+            </slot>
           </v-col>
 
         </v-row>
@@ -668,6 +710,7 @@ const hasHideDetails = computed(() => {
         class="crud-form-field__array-object-list"
         :entity="entity"
         :field="field"
+        :field-path="currentFieldPath"
         v-model="valueModel"
         :readonly="readonly"
         :density="density"
@@ -676,7 +719,11 @@ const hasHideDetails = computed(() => {
         :hide-details="hasHideDetails"
         :single-line="singleLine"
         @updateValue="$emit('updateValue')"
-    />
+    >
+      <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+        <slot :name="slotName" v-bind="slotProps" />
+      </template>
+    </crud-form-list>
 
     <crud-form-record
         v-if="field.type === 'record'"

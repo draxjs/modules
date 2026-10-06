@@ -393,7 +393,8 @@ Available slots in `Crud.vue`:
 - `export-table`: customizes the export files list UI. Props: `{ exportFiles }`.
 - `tools`: renders inside the dialog, before the form content. Props: none.
 - `form`: replaces the entire default dialog form content. Props: `{ form, operation}`. Prop form is an object with all fields form values like {field1: value, field2: value}, and operation is either "view" | "create" | "edit" | "delete" | null
-- `field.<fieldName>`: custom renderer for one form field declared in `entity.fields`, `createFields`, `updateFields`, `viewFields`, or `deleteFields`. Props: `{ field, form, modelValue, setValue }`. It is suggested to use movelValue to read the current value and setValue(newValue) to update it
+- `field.<fieldName>`: custom renderer for one form field declared in `entity.fields`, `createFields`, `updateFields`, `viewFields`, or `deleteFields`. Props: `{ field, form, modelValue, setValue }`. Prefer `modelValue` to read the current value and `setValue(newValue)` to update it.
+- `field.<objectField>.<nestedField>`: custom renderer for a field nested inside an `object` or `array.object`. Paths can continue recursively (for example, `field.profile.address.city`). It receives `{ field, parentField, fieldPath, form, modelValue, setValue, index }`. For `object`, `form` is the containing object. For `array.object`, `form` is the current array item and `index` is its current position.
 
 How to choose the right slot:
 
@@ -439,6 +440,20 @@ import {Crud} from "@drax/crud-vue";
     <template #field.status="{ field, modelValue, setValue }">
       <StatusSelector
         :label="field.label"
+        :model-value="modelValue"
+        @update:model-value="setValue"
+      />
+    </template>
+
+    <!-- `profile` is an object; form is the profile object. -->
+    <template #field.profile.nickname="{ field, form }">
+      <NicknameInput v-model="form[field.name]" :label="field.label" />
+    </template>
+
+    <!-- `contacts` is an array.object; form is one contact and index identifies it. -->
+    <template #field.contacts.email="{ field, modelValue, setValue, index }">
+      <ContactEmailInput
+        :label="`${field.label} ${index + 1}`"
         :model-value="modelValue"
         @update:model-value="setValue"
       />

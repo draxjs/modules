@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onBeforeMount, ref, watch, type PropType} from "vue";
+import {computed, onBeforeMount, ref, useSlots, watch, type PropType} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import type {IEntityCrud} from "@drax/crud-share";
 import CrudListTable from "./CrudListTable.vue";
@@ -22,6 +22,9 @@ import getItemId from "../helpers/getItemId";
 const {entity} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},
 })
+
+const slots = useSlots()
+const fieldSlotNames = computed(() => Object.keys(slots).filter(name => name.startsWith('field.')))
 
 const {
   onCreate, onEditAt, onDeleteAt, resetCrudStore,
@@ -149,9 +152,8 @@ watch(dialog, (value) => {
       @viewed="emit('viewed')"
       @canceled="emit('canceled')"
   >
-    <template v-for="ifield in entity.fields" :key="ifield.name" v-slot:[`field.${ifield.name}`]="{field, form, modelValue, setValue}">
-      <slot :name="`field.${ifield.name}`" v-bind="{field, form, modelValue, setValue}">
-      </slot>
+    <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+      <slot :name="slotName" v-bind="slotProps" />
     </template>
   </crud-route-form>
 
@@ -300,9 +302,8 @@ watch(dialog, (value) => {
             @canceled="emit('canceled')"
         >
 
-          <template v-for="ifield in entity.fields" :key="ifield.name" v-slot:[`field.${ifield.name}`]="{field, form, modelValue, setValue}">
-            <slot :name="`field.${ifield.name}`" v-bind="{field, form, modelValue, setValue}">
-            </slot>
+          <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+            <slot :name="slotName" v-bind="slotProps" />
           </template>
 
         </crud-form>
