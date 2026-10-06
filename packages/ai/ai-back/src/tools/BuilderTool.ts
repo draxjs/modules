@@ -262,39 +262,48 @@ class BuilderTool<T = any, C = any, U = any> {
         return field?.constructor?.name;
     }
 
+    protected getDefType(field: any): string | undefined {
+        return field?.def?.type;
+    }
+
     protected fieldAdapter(field: unknown): ZodTypeAny {
         const f: any = field;
         const typeName = this.getTypeName(f);
+        const defType = this.getDefType(f);
 
-        if (typeof f?.unwrap === "function" && typeName === "ZodOptional") {
+        if (typeof f?.unwrap === "function" && (typeName === "ZodOptional" || defType === "optional")) {
             return this.fieldAdapter(f.unwrap()).optional();
         }
 
-        if (typeof f?.unwrap === "function" && typeName === "ZodNullable") {
+        if (typeof f?.unwrap === "function" && (typeName === "ZodNullable" || defType === "nullable")) {
             return this.fieldAdapter(f.unwrap()).nullable();
         }
 
-        if (typeof f?.unwrap === "function" && typeName === "ZodDefault") {
+        if (typeof f?.unwrap === "function" && (typeName === "ZodDefault" || defType === "default")) {
             return this.fieldAdapter(f.unwrap()).default(f.def.defaultValue);
         }
 
-        if (typeof f?.unwrap === "function" && typeName === "ZodCatch") {
+        if (typeof f?.unwrap === "function" && (typeName === "ZodCatch" || defType === "catch")) {
             return this.fieldAdapter(f.unwrap()).catch(f.def.catchValue);
         }
 
-        if (typeof f?.unwrap === "function" && typeName === "ZodReadonly") {
+        if (typeof f?.unwrap === "function" && (typeName === "ZodReadonly" || defType === "readonly")) {
             return this.fieldAdapter(f.unwrap()).readonly();
         }
 
-        if (typeName === "ZodArray" && f?.element) {
+        if ((typeName === "ZodPipe" || defType === "pipe") && f?.def?.out) {
+            return this.fieldAdapter(f.def.out);
+        }
+
+        if ((typeName === "ZodArray" || defType === "array") && f?.element) {
             return z.array(this.fieldAdapter(f.element));
         }
 
-        if (typeName === "ZodObject" && f?.shape) {
+        if ((typeName === "ZodObject" || defType === "object") && f?.shape) {
             return this.schemaAdapter(f);
         }
 
-        if (typeName === "ZodDate") {
+        if (typeName === "ZodDate" || defType === "date") {
             return z.iso.datetime();
         }
 

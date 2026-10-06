@@ -125,6 +125,51 @@ describe("ToolBuilder", () => {
         expect(() => builder.getSystemPromptSection()).not.toThrow();
     });
 
+    test("adapts preprocessed date schemas to OpenAI-compatible JSON schema", () => {
+        const service: any = {
+            async create(data: any) {
+                return data;
+            },
+        };
+
+        const optionalNullableDateSchema = z.preprocess(value => {
+            if (value === "" || value === 0 || value === "0") {
+                return null;
+            }
+
+            return value;
+        }, z.coerce.date().nullable().optional());
+
+        const schema = z.object({
+            name: z.string().min(1),
+            timezone: z.string()
+                .default("America/Argentina/Buenos_Aires")
+                .refine(value => value.length > 0, "validation.timezone.invalid"),
+            runAt: optionalNullableDateSchema,
+        });
+
+        const builder = new BuilderTool({
+            entityName: "taskSchedule",
+            schema,
+            service,
+            methods: ["create"],
+        });
+
+        expect(() => builder.getTools()).not.toThrow();
+        expect(() => builder.getSystemPromptSection()).not.toThrow();
+
+        const tools = builder.getTools();
+        const createParameters: any = tools[0].parameters;
+        const dataSchema = createParameters.properties.data;
+
+        expect(dataSchema.properties.runAt).toMatchObject({
+            anyOf: [
+                {type: "string", format: "date-time"},
+                {type: "null"},
+            ],
+        });
+    });
+
     test("fails when a requested service method is not available", () => {
         const builder = new BuilderTool({
             entityName: "person",
