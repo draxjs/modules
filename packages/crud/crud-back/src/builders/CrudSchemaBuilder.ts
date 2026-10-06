@@ -39,35 +39,44 @@ export class CrudSchemaBuilder<
     return field?.constructor?.name;
   }
 
+  private getDefType(field: any): string | undefined {
+    return field?.def?.type;
+  }
+
   fieldAdapter(field: unknown): ZodTypeAny {
     const f: any = field;
 
     const typeName = this.getTypeName(f);
+    const defType = this.getDefType(f);
 
     // 1) Desenrollar wrappers por "duck typing" (evita líos de tipos en Zod 4)
-    if (typeof f?.unwrap === 'function' && typeName === 'ZodOptional') {
+    if (typeof f?.unwrap === 'function' && (typeName === 'ZodOptional' || defType === 'optional')) {
       return this.fieldAdapter(f.unwrap()).optional();
     }
 
-    if (typeof f?.unwrap === 'function' && typeName === 'ZodNullable') {
+    if (typeof f?.unwrap === 'function' && (typeName === 'ZodNullable' || defType === 'nullable')) {
       return this.fieldAdapter(f.unwrap()).nullable();
     }
 
-    if (typeof f?.unwrap === 'function' && typeName === 'ZodDefault') {
+    if (typeof f?.unwrap === 'function' && (typeName === 'ZodDefault' || defType === 'default')) {
       return this.fieldAdapter(f.unwrap()).default(f.def.defaultValue);
     }
 
+    if ((typeName === 'ZodPipe' || defType === 'pipe') && f?.def?.out) {
+      return this.fieldAdapter(f.def.out);
+    }
+
     // 2) Tipos compuestos
-    if (typeName === 'ZodArray' && f?.element) {
+    if ((typeName === 'ZodArray' || defType === 'array') && f?.element) {
       return z.array(this.fieldAdapter(f.element));
     }
 
-    if (typeName === 'ZodObject' && f?.shape) {
+    if ((typeName === 'ZodObject' || defType === 'object') && f?.shape) {
       return this.schemaAdapter(f);
     }
 
     // 3) Date -> ISO datetime (string)
-    if (typeName === 'ZodDate') {
+    if (typeName === 'ZodDate' || defType === 'date') {
       return z.iso.datetime();
     }
 

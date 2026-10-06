@@ -35,4 +35,53 @@ describe("CrudSchemaBuilder", () => {
       }
     });
   });
+
+  it("adapts preprocessed optional nullable date fields", () => {
+    const optionalNullableDateSchema = z.preprocess(value => {
+      if (value === "" || value === 0 || value === "0") {
+        return null;
+      }
+
+      return value;
+    }, z.coerce.date().nullable().optional());
+
+    const TaskScheduleBaseSchema = z.object({
+      name: z.string().min(1, "validation.required"),
+      schedule: z.object({
+        timezone: z.string()
+          .default("America/Argentina/Buenos_Aires")
+          .refine(value => value.length > 0, "validation.timezone.invalid"),
+        runAt: optionalNullableDateSchema
+      }),
+      startAt: optionalNullableDateSchema,
+      endAt: optionalNullableDateSchema
+    });
+
+    const builder = new CrudSchemaBuilder(
+      TaskScheduleBaseSchema,
+      TaskScheduleBaseSchema,
+      TaskScheduleBaseSchema,
+      "TaskSchedule"
+    );
+
+    expect(() => builder.jsonEntityCreateSchema).not.toThrow();
+    expect(builder.jsonEntityCreateSchema).toMatchObject({
+      properties: {
+        schedule: {
+          properties: {
+            runAt: {
+              type: "string",
+              format: "date-time",
+              nullable: true
+            }
+          }
+        },
+        startAt: {
+          type: "string",
+          format: "date-time",
+          nullable: true
+        }
+      }
+    });
+  });
 });
