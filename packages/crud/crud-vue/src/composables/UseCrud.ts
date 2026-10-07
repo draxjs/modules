@@ -11,6 +11,7 @@ import getItemId from "../helpers/getItemId";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
 import {createCrudFilterValue, expandRangeFilters} from "../helpers/CrudRangeFilters";
+import {castDateValue} from "../helpers/CastDateValue";
 
 
 export function useCrud(entity: IEntityCrud) {
@@ -443,7 +444,7 @@ export function useCrud(entity: IEntityCrud) {
         fields.forEach(field => {
             switch (field.type) {
                 case 'date':
-                    item[field.name] = new Date(item[field.name])
+                    item[field.name] = castDateValue(item[field.name])
                     break
                 case 'ref':
                     item[field.name] = getItemId(item[field.name]) ? getItemId(item[field.name]) : item[field.name]
