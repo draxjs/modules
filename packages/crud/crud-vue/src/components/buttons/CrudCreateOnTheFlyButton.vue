@@ -54,14 +54,12 @@ const emit = defineEmits(['created'])
              :color="buttonConfig.color"
              @click="openDialog"
       >
-        <template v-if="label">
-          <v-icon
-              v-if="icon || buttonConfig.icon"
-              :icon="icon || buttonConfig.icon"
-              start
-          />
-          {{ label }}
-        </template>
+        <v-icon
+            v-if="icon || buttonConfig.icon"
+            :icon="icon || buttonConfig.icon"
+            :start="!!label"
+        />
+        <template v-if="label">{{ label }}</template>
       </v-btn>
     </template>
     {{ t('action.create')}}

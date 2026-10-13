@@ -33,6 +33,7 @@ const title = computed(() => {
 
 <template>
   <v-dialog id="crud-dialog" class="crud-dialog" v-model="dialog"
+            :class="{'crud-dialog--fixed-actions': entity.formActionsFixed}"
             :z-index="entity.dialogZindex"
             :fullscreen="fullscreen === undefined ?  entity.dialogFullscreen : fullscreen"
             :max-width="maxWidth === undefined ? entity.dialogMaxWidth : maxWidth"
@@ -53,5 +54,32 @@ const title = computed(() => {
 </template>
 
 <style scoped>
+.crud-dialog--fixed-actions .crud-dialog__card {
+  height: calc(100dvh - 48px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.crud-dialog--fixed-actions.v-dialog--fullscreen .crud-dialog__card {
+  height: 100dvh;
+}
+
+.crud-dialog--fixed-actions .crud-dialog__toolbar {
+  flex: 0 0 auto;
+}
+
+.crud-dialog--fixed-actions .crud-dialog__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.crud-dialog--fixed-actions .crud-dialog__content :deep(.crud-form--fixed-actions) {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+}
 
 </style>

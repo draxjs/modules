@@ -343,6 +343,10 @@ class EntityCrud implements IEntityCrud {
     return 'text-grey'
   }
 
+  get formActionsFixed(): boolean {
+    return true
+  }
+
   get inputVariantCreate(): IEntityCrudFieldVariant {
     return 'outlined'
   }

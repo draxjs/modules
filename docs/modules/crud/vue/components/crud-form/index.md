@@ -42,6 +42,7 @@ El subconjunto inicial depende de la operación actual:
 
 ## Acciones
 
+- `entity.formActionsFixed`: con `true`, mantiene los botones visibles abajo y agrega scroll al cuerpo del formulario (campos, ID y errores). Usa el alto disponible de la pantalla y se adapta al redimensionamiento. Con `false` o sin configurar, conserva el scroll habitual.
 - `submit()`: delega en `onSubmit(form.value)` y reemite el resultado.
 - `cancel()`: llama `onCancel()` y reemite `canceled`.
 

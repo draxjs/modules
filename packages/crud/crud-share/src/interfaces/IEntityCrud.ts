@@ -84,6 +84,7 @@ interface IEntityCrud {
 
   cancelBtnFormClass?: string
   submitBtnFormClass?: string
+  formActionsFixed?: boolean
 
   tabs?: string[]
   menus?: string[]

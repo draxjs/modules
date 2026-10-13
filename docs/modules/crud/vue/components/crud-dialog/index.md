@@ -17,6 +17,8 @@
 
 Si `fullscreen` o `maxWidth` no se envían, el componente usa la configuración de la entidad (`dialogFullscreen`, `dialogMaxWidth`).
 
+Con `entity.formActionsFixed = true`, el diálogo aprovecha el alto de la pantalla (respetando sus márgenes o el modo fullscreen). La barra superior y las acciones de `CrudForm` permanecen visibles mientras el cuerpo del formulario tiene scroll propio.
+
 ## Eventos
 
 - `submit`

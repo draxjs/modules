@@ -26,7 +26,12 @@ vi.mock('vuetify', () => ({
 }))
 
 vi.mock('vuetify/labs/VDateInput', () => ({
-  VDateInput: {name: 'VDateInput', render: () => null},
+  VDateInput: {
+    name: 'VDateInput',
+    props: ['modelValue'],
+    emits: ['update:modelValue', 'click:clear'],
+    render: () => null,
+  },
 }))
 
 vi.mock('../stores/UseCrudStore', () => ({
@@ -77,6 +82,79 @@ const entity = {
 
 beforeEach(() => {
   clearFieldInputErrors.mockClear()
+})
+
+describe('CRUD date fields', () => {
+  it.each([undefined, null, {}, false, 'invalid-date'])('passes an empty date to the picker for %s', (modelValue) => {
+    const wrapper = mount(CrudFormField, {
+      props: {
+        entity,
+        field: {name: 'date', type: 'date', label: 'Date', default: null},
+        modelValue,
+      },
+      global,
+    })
+
+    expect(wrapper.findComponent({name: 'VDateInput'}).props('modelValue')).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('passes an empty date for a missing nested object field', () => {
+    const wrapper = mount(CrudFormField, {
+      props: {
+        entity,
+        field: {
+          name: 'test', type: 'object', label: 'Test', default: {},
+          objectFields: [{name: 'date', type: 'date', label: 'Date', default: null}],
+        },
+        modelValue: {},
+      },
+      global,
+    })
+
+    expect(wrapper.findComponent({name: 'VDateInput'}).props('modelValue')).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('keeps a cleared end-of-day field empty', async () => {
+    const wrapper = mount(CrudFormField, {
+      props: {
+        entity,
+        field: {name: 'date', type: 'date', label: 'Date', default: null, endOfDay: true},
+        modelValue: new Date('2026-10-01T03:00:00.000Z'),
+      },
+      global,
+    })
+
+    wrapper.findComponent({name: 'VDateInput'}).vm.$emit('update:modelValue', null)
+
+    expect(wrapper.emitted('update:modelValue')?.every(([value]) => value === null)).toBe(true)
+    expect(wrapper.emitted('updateValue')).toHaveLength(1)
+    wrapper.unmount()
+  })
+
+  it('casts saved date strings and applies end-of-day when selecting a date', () => {
+    const wrapper = mount(CrudFormField, {
+      props: {
+        entity,
+        field: {name: 'date', type: 'date', label: 'Date', default: null, endOfDay: true},
+        modelValue: '2026-10-01T03:00:00.000Z',
+      },
+      global,
+    })
+    const picker = wrapper.findComponent({name: 'VDateInput'})
+
+    expect(picker.props('modelValue')).toEqual(new Date('2026-10-01T03:00:00.000Z'))
+
+    const selectedDate = new Date('2026-10-02T03:00:00.000Z')
+    const expectedDate = new Date(selectedDate)
+    expectedDate.setHours(23, 59, 59, 0)
+    picker.vm.$emit('update:modelValue', selectedDate)
+
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([expectedDate])
+    expect(wrapper.emitted('updateValue')).toHaveLength(1)
+    wrapper.unmount()
+  })
 })
 
 describe('nested CRUD field slots', () => {

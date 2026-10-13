@@ -158,7 +158,8 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         default: null,
         groupTab: 'BASIC',
         ref: 'Country',
-        refDisplay: 'name'
+        refDisplay: 'name',
+        addOnTheFly: true
       },
       {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
       {name: 'fullfile', type: 'fullFile', label: 'fullfile', default: {}, groupTab: 'BASIC'},
@@ -178,7 +179,8 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         default: [],
         groupTab: 'BASIC',
         ref: 'Language',
-        refDisplay: 'name'
+        refDisplay: 'name',
+        addOnTheFly: true
       },
       {
         name: 'address',
@@ -329,6 +331,10 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
   }
 
   get isSavedQueriesEnabled(){
+    return true
+  }
+
+  get formActionsFixed(): boolean {
     return true
   }
 

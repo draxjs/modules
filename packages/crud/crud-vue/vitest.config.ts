@@ -7,6 +7,11 @@ export default defineConfig({
     plugins: [vue()],
     test: {
         environment: 'jsdom',
+        server: {
+            deps: {
+                inline: ['vuetify'],
+            },
+        },
         exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
         include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         globals: true,

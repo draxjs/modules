@@ -94,7 +94,7 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
     return [
       {name: 'name', type: 'string', label: 'name', default: ''},
       {name: 'icon', type: 'fullFile', label: 'icon', default: {}, prependInnerIcon: 'mdi mdi-attachment'},
-      {name: 'archivedAt', type: 'date', label: 'date', default: {}},
+      {name: 'archivedAt', type: 'date', label: 'date', default: null},
       {
         name: 'test',
         type: 'object',
@@ -187,4 +187,3 @@ class LanguageCrud extends EntityCrud implements IEntityCrud {
 }
 
 export default LanguageCrud
-

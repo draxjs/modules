@@ -400,6 +400,10 @@ class ${entity.name}Crud extends EntityCrud implements IEntityCrud {
   get isSavedQueriesEnabled(){
     return true
   }
+  
+  get formActionsFixed(): boolean {
+    return true
+  }
 
 }
 

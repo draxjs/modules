@@ -160,6 +160,7 @@ Esto da una base mínima para que `CrudExportButton` y el flujo de export tengan
 
 ### Agrupación visual del form
 
+- `formActionsFixed`: `false`. Con `true`, las acciones permanecen visibles abajo y el contenido del formulario tiene scroll propio, aprovechando el alto disponible de la pantalla. Aplica tanto en diálogo como en formulario por ruta.
 - `tabs`: `[]`
 - `menus`: `[]`
 - `menuMaxHeight`: `'300px'`
@@ -169,6 +170,16 @@ Estas opciones resuelven cómo `CrudForm` distribuye los fields:
 - sin tabs ni menus: formulario plano
 - con `groupTab`: formulario por pestañas
 - con `groupMenu`: formulario por menú lateral
+
+Para activar las acciones siempre visibles en una entidad:
+
+```ts
+get formActionsFixed(): boolean {
+  return true
+}
+```
+
+Con `false` (valor por defecto), las acciones siguen al contenido y hay que hacer scroll para alcanzarlas en formularios largos.
 
 ## Configuración de listados y filtros
 

@@ -3,7 +3,7 @@ import {useI18n} from "vue-i18n";
 import type {IEntityCrud, IEntityCrudField} from "@drax/crud-share";
 import {getItemId} from "../helpers/getItemId";
 import CrudFormField from "./CrudFormField.vue";
-import {computed, ref, useSlots} from "vue";
+import {computed, onBeforeUnmount, onMounted, ref, useSlots, watch} from "vue";
 import type {PropType} from "vue";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useCrud} from "../composables/UseCrud";
@@ -30,6 +30,54 @@ const emit = defineEmits(['created', 'updated', 'deleted', 'viewed', 'canceled',
 const store = useCrudStore(entity?.name)
 
 const formRef = ref()
+const availableHeight = ref<string>()
+let resizeObserver: ResizeObserver | undefined
+let resizeFrame: number | undefined
+
+function updateAvailableHeight() {
+  const element = formRef.value?.$el as HTMLElement | undefined
+  if (!entity.formActionsFixed || !element || element.closest('.crud-dialog--fixed-actions')) {
+    availableHeight.value = undefined
+    return
+  }
+
+  const viewport = window.visualViewport
+  const viewportBottom = viewport ? viewport.height + viewport.offsetTop : window.innerHeight
+  const top = element.getBoundingClientRect().top
+  availableHeight.value = `${Math.max(0, viewportBottom - top - 16)}px`
+}
+
+function scheduleHeightUpdate() {
+  if (resizeFrame !== undefined) {
+    cancelAnimationFrame(resizeFrame)
+  }
+  resizeFrame = requestAnimationFrame(() => {
+    resizeFrame = undefined
+    updateAvailableHeight()
+  })
+}
+
+onMounted(() => {
+  updateAvailableHeight()
+  const parent = formRef.value?.$el?.parentElement
+  if (parent && typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver(scheduleHeightUpdate)
+    resizeObserver.observe(parent)
+  }
+  window.addEventListener('resize', scheduleHeightUpdate)
+  window.visualViewport?.addEventListener('resize', scheduleHeightUpdate)
+})
+
+watch(() => entity.formActionsFixed, updateAvailableHeight, {flush: 'post'})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  window.removeEventListener('resize', scheduleHeightUpdate)
+  window.visualViewport?.removeEventListener('resize', scheduleHeightUpdate)
+  if (resizeFrame !== undefined) {
+    cancelAnimationFrame(resizeFrame)
+  }
+})
 
 const tabSelected = ref()
 const menuSelected = ref<string>()
@@ -172,9 +220,11 @@ const onlyView = computed(()=> {
 </script>
 
 <template>
-  <v-form id="crud-form" class="crud-form" ref="formRef" @submit.prevent>
+  <v-form id="crud-form" class="crud-form" :class="{'crud-form--fixed-actions': entity.formActionsFixed}"
+          :style="{'--crud-form-available-height': availableHeight}" ref="formRef" @submit.prevent>
     <v-card id="crud-form-card" class="crud-form__card" flat>
 
+      <div class="crud-form__body">
       <v-card-subtitle v-if="getItemId(form)" id="crud-form-id" class="crud-form__id">ID: {{ getItemId(form) }}</v-card-subtitle>
 
       <v-card-text v-if="error" id="crud-form-error-content" class="crud-form__error-content">
@@ -384,6 +434,8 @@ const onlyView = computed(()=> {
 
       </v-card-text>
 
+      </div>
+
       <v-card-actions id="crud-form-actions" class="crud-form__actions">
         <v-spacer></v-spacer>
         <v-btn id="crud-form-cancel-button" variant="text" :class="['crud-form__cancel-button', entity.cancelBtnFormClass]" @click="cancel">
@@ -408,5 +460,31 @@ const onlyView = computed(()=> {
 </template>
 
 <style scoped>
+.crud-form--fixed-actions {
+  display: flex;
+  flex-direction: column;
+  height: var(--crud-form-available-height, 100dvh);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.crud-form--fixed-actions > .crud-form__card {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.crud-form--fixed-actions .crud-form__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.crud-form--fixed-actions .crud-form__actions {
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
 
 </style>

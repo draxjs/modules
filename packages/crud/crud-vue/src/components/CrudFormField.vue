@@ -11,6 +11,7 @@ import {VDateInput} from 'vuetify/labs/VDateInput'
 import type {IEntityCrud, IEntityCrudField, IEntityCrudFilter} from "@drax/crud-share";
 import {useAuth} from "@drax/identity-vue";
 import {normalizeFieldValue} from "../helpers/NormalizeFieldValue";
+import {castDateValue} from "../helpers/CastDateValue";
 
 //TODO: Ver si esto no puede traer problemas...
 import MediaField from "@drax/media-vue/src/components/MediaField.vue";
@@ -66,6 +67,12 @@ if (!field) {
 
 const show = ref(false)
 const currentFieldPath = computed(() => fieldPath || field.name)
+const dateModel = computed({
+  get: () => castDateValue(valueModel.value),
+  set: value => {
+    valueModel.value = value
+  },
+})
 
 function getObjectFieldValue(fieldName: string) {
   return valueModel.value?.[fieldName]
@@ -441,7 +448,7 @@ const hasHideDetails = computed(() => {
         :hint="hint ?? field.hint"
         :persistent-hint="persistentHint ?? field.persistentHint" :placeholder="placeholder ?? field.placeholder"
         :persistent-placeholder="persistentPlaceholder ?? field.persistentPlaceholder"
-        v-model="valueModel"
+        v-model="dateModel"
         :readonly="readonly"
         :error-messages="inputErrors"
         :rules="rules"
@@ -451,7 +458,7 @@ const hasHideDetails = computed(() => {
         :hide-details="hasHideDetails"
         :single-line="singleLine"
         @update:modelValue="(v) => {
-          if(field.endOfDay){
+          if(field.endOfDay && v != null){
             const date = new Date(v)
             date.setHours(23, 59, 59, 0)
             valueModel = date
