@@ -163,13 +163,15 @@ Esto da una base mínima para que `CrudExportButton` y el flujo de export tengan
 - `formActionsFixed`: `false`. Con `true`, las acciones permanecen visibles abajo y el contenido del formulario tiene scroll propio, aprovechando el alto disponible de la pantalla. Aplica tanto en diálogo como en formulario por ruta.
 - `tabs`: `[]`
 - `menus`: `[]`
+- `sections`: `[]`
 - `menuMaxHeight`: `'300px'`
 
 Estas opciones resuelven cómo `CrudForm` distribuye los fields:
 
-- sin tabs ni menus: formulario plano
+- sin tabs, menus ni sections: formulario plano
 - con `groupTab`: formulario por pestañas
 - con `groupMenu`: formulario por menú lateral
+- con `sections` y `groupSection`: tarjetas consecutivas que se recorren haciendo scroll
 
 Para activar las acciones siempre visibles en una entidad:
 
@@ -239,7 +241,7 @@ Aunque la implementación base siempre retorna `true`, estos métodos existen ju
 ## Relación con el resto del módulo
 
 - `Crud` usa `listMode`, `fields`, `filters`, `headers`, estilos y flags
-- `CrudForm` consume `createFields`, `updateFields`, `viewFields`, `deleteFields`, `getRule`, `getOnInput`, `tabs`, `menus`
+- `CrudForm` consume `createFields`, `updateFields`, `viewFields`, `deleteFields`, `getRule`, `getOnInput`, `tabs`, `menus`, `sections`
 - `CrudFormField` consume `refs`, `getRef`, variants y metadata de field
 - `CrudListTable` y `CrudListGallery` usan `headers`, `selectedHeaders`, flags y estilos
 - `CrudFilters` y `CrudFiltersDynamic` usan `filters`, `formFilters` y `isFilterable`

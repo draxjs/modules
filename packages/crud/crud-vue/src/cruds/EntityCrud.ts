@@ -267,6 +267,10 @@ class EntityCrud implements IEntityCrud {
     return []
   }
 
+  get sections(): string[] {
+    return []
+  }
+
   get menuMaxHeight() {
     return '300px'
   }

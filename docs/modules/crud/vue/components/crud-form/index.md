@@ -22,9 +22,27 @@
 
 ## Cómo organiza los campos
 
-- `generalFields`: fields sin `groupTab` ni `groupMenu`.
+- `generalFields`: fields sin `groupTab`, `groupMenu` ni `groupSection`.
 - `tabFields(tab)`: fields agrupados por tabs.
 - `menuFields(menu)`: fields agrupados por menú lateral.
+- `sectionFields(section)`: fields agrupados en tarjetas consecutivas, visibles al hacer scroll sin seleccionar tabs ni menús.
+
+Para usar secciones, declaralas en `entity.sections` en el orden deseado y asigná `groupSection` a cada campo:
+
+```ts
+get sections(): string[] {
+  return ['BASIC', 'ADDRESS']
+}
+
+get fields(): IEntityCrudField[] {
+  return [
+    {name: 'fullname', type: 'string', label: 'Nombre', default: '', groupSection: 'BASIC'},
+    {name: 'address', type: 'string', label: 'Dirección', default: '', groupSection: 'ADDRESS'},
+  ]
+}
+```
+
+Los títulos usan la traducción `<entity.i18nName>.sections.<section>` cuando existe, o el nombre de la sección como alternativa. Las tarjetas conservan permisos, validaciones, layout responsive y slots de campos.
 
 El subconjunto inicial depende de la operación actual:
 
@@ -38,7 +56,7 @@ El subconjunto inicial depende de la operación actual:
 - Antes de `create` o `edit` ejecuta `formRef.validate()`.
 - Limpia errores con `store.resetErrors()`.
 - Muestra errores de backend a través de `CrudFormField`, que consulta `useCrudStore(entity.name)`.
-- Marca tabs y menús con texto rojo cuando alguno de sus fields tiene `inputErrors`.
+- Marca tabs, menús y títulos de secciones con texto rojo cuando alguno de sus fields tiene `inputErrors`.
 
 ## Acciones
 

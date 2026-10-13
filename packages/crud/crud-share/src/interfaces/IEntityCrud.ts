@@ -88,6 +88,7 @@ interface IEntityCrud {
 
   tabs?: string[]
   menus?: string[]
+  sections?: string[]
   menuMaxHeight?: string
 
   refs: IEntityCrudRefs

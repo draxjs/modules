@@ -145,31 +145,31 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
 
   get fields(): IEntityCrudField[] {
     return [
-      {name: 'fullname', type: 'string', label: 'fullname', default: '', groupTab: 'BASIC',
+      {name: 'fullname', type: 'string', label: 'fullname', default: '', groupSection: 'BASIC',
         placeholder:'El nombre viste', persistentPlaceholder:true},
-      {name: 'live', type: 'boolean', label: 'live', default: false, groupTab: 'BASIC'},
-      {name: 'birthdate', type: 'date', label: 'birthdate', default: null, groupTab: 'BASIC'},
-      {name:'money',type:'number',label:'money',default:null,groupTab: 'BASIC'},
-      {name: 'secret', type: 'password', label: 'secret', default: '', groupTab: 'BASIC'},
+      {name: 'live', type: 'boolean', label: 'live', default: false, groupSection: 'BASIC'},
+      {name: 'birthdate', type: 'date', label: 'birthdate', default: null, groupSection: 'BASIC'},
+      {name:'money',type:'number',label:'money',default:null,groupSection: 'BASIC'},
+      {name: 'secret', type: 'password', label: 'secret', default: '', groupSection: 'BASIC'},
       {
         name: 'nationality',
         type: 'ref',
         label: 'nationality',
         default: null,
-        groupTab: 'BASIC',
+        groupSection: 'BASIC',
         ref: 'Country',
         refDisplay: 'name',
         addOnTheFly: true
       },
-      {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupTab: 'BASIC'},
-      {name: 'fullfile', type: 'fullFile', label: 'fullfile', default: {}, groupTab: 'BASIC'},
-      {name: 'race', type: 'enum', label: 'race', default: null, groupTab: 'BASIC', enum: ['human', 'elf', 'orc']},
+      {name: 'hobbies', type: 'array.string', label: 'hobbies', default: [], groupSection: 'BASIC'},
+      {name: 'fullfile', type: 'fullFile', label: 'fullfile', default: {}, groupSection: 'BASIC'},
+      {name: 'race', type: 'enum', label: 'race', default: null, groupSection: 'BASIC', enum: ['human', 'elf', 'orc']},
       {
         name: 'interests',
         type: 'array.enum',
         label: 'interests',
         default: ["sports", "music"],
-        groupTab: 'BASIC',
+        groupSection: 'BASIC',
         enum: ['sports', 'music', 'reading', 'travel', 'cooking', 'technology']
       },
       {
@@ -177,7 +177,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         type: 'array.ref',
         label: 'languages',
         default: [],
-        groupTab: 'BASIC',
+        groupSection: 'BASIC',
         ref: 'Language',
         refDisplay: 'name',
         addOnTheFly: true
@@ -187,7 +187,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         type: 'object',
         label: 'address',
         default: {"country": "", "city": "", "street": "", "zip": null, "casa": false},
-        groupTab: 'ADDRESS',
+        groupSection: 'ADDRESS',
         objectFields: [
           {
             name: 'country',
@@ -218,7 +218,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         type: 'array.object',
         label: 'skills',
         default: [],
-        groupTab: 'SKILLS',
+        groupSection: 'SKILLS',
         arrayObjectShowField: 'name',
         arrayObjectUI:'accordion',
         objectFields: [
@@ -231,14 +231,14 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         type: 'ref',
         label: 'tenant',
         default: null,
-        groupTab: 'MANAGE',
+        groupSection: 'MANAGE',
         ref: 'Tenant',
         refDisplay: 'name'
       },
-      {name: 'user', type: 'ref', label: 'user', default: null, groupTab: 'MANAGE', ref: 'User', refDisplay: 'username'},
+      {name: 'user', type: 'ref', label: 'user', default: null, groupSection: 'MANAGE', ref: 'User', refDisplay: 'username'},
 
-      {name: 'createdAt', type: 'date', label: 'createdAt', default: null, groupTab: 'BASIC', readonly: true},
-      {name: 'updatedAt', type: 'date', label: 'createdAt', default: null, groupTab: 'BASIC', readonly: true},
+      {name: 'createdAt', type: 'date', label: 'createdAt', default: null, groupSection: 'BASIC', readonly: true},
+      {name: 'updatedAt', type: 'date', label: 'createdAt', default: null, groupSection: 'BASIC', readonly: true},
     ]
   }
 
@@ -296,7 +296,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
-  get tabs() {
+  get sections() {
     return [
       'BASIC', 'ADDRESS', 'SKILLS', 'MANAGE'
     ]

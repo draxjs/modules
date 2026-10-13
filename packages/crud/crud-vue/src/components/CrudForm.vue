@@ -101,7 +101,7 @@ const aFields = computed(() => {
 })
 
 const generalFields = computed(() => {
-  return aFields.value.filter((field: IEntityCrudField) => !field.groupTab && !field.groupMenu)
+  return aFields.value.filter((field: IEntityCrudField) => !field.groupTab && !field.groupMenu && !field.groupSection)
 })
 
 const tabFields = computed(() => {
@@ -110,6 +110,10 @@ const tabFields = computed(() => {
 
 const menuFields = computed(() => {
   return (menu: string | null): IEntityCrudField[] => aFields.value.filter((field: IEntityCrudField) => field.groupMenu === menu)
+})
+
+const sectionFields = computed(() => {
+  return (section: string): IEntityCrudField[] => aFields.value.filter((field: IEntityCrudField) => field.groupSection === section)
 })
 
 const menuMaxHeight = computed(() => {
@@ -200,6 +204,12 @@ const menuInputErrors = computed(() => {
       }
     }
 )
+
+const sectionInputErrors = computed(() => {
+  return (section: string) => {
+    return sectionFields.value(section).some((field: IEntityCrudField) => store.getFieldInputErrors(field.name).length > 0)
+  }
+})
 
 const rules = computed(() => {
   return (fieldName: string) => {
@@ -431,6 +441,73 @@ const onlyView = computed(()=> {
             </v-card>
           </v-col>
         </v-row>
+
+        <v-card
+            v-for="section in entity.sections"
+            :key="section"
+            :id="`crud-form-section-card-${section}`"
+            class="crud-form__section-card mt-4"
+            variant="outlined"
+        >
+          <v-card-title
+              :id="`crud-form-section-title-${section}`"
+              :class="['crud-form__section-title', sectionInputErrors(section) ? 'text-red' : '']"
+          >
+            {{ te(entity.i18nName + '.sections.' + section) ? t(entity.i18nName + '.sections.' + section) : section }}
+          </v-card-title>
+          <v-card-text :id="`crud-form-section-content-${section}`" class="crud-form__section-content">
+            <v-row :id="`crud-form-section-fields-${section}`" class="crud-form__section-fields">
+              <v-col
+                  v-for="field in sectionFields(section)"
+                  :key="field.name"
+                  :id="`crud-form-section-field-column-${section}-${field.name}`"
+                  class="crud-form__section-field-column"
+                  :cols="field.cols ? field.cols : 12"
+                  :sm="field.sm ? field.sm : undefined"
+                  :md="field.md ? field.md : undefined"
+                  :lg="field.lg ? field.lg : undefined"
+                  :xl="field.xl ? field.xl : undefined"
+              >
+                <slot
+                    :name="`field.${field.name}`"
+                    v-bind="{
+                      field,
+                      form,
+                      modelValue: getFieldModelValue(field.name),
+                      setValue: (value: any) => setFieldModelValue(field, value)
+                    }"
+                >
+                  <crud-form-field
+                      :id="`crud-form-section-field-${section}-${field.name}`"
+                      class="crud-form__section-field"
+                      :field="field"
+                      :entity="entity"
+                      v-model="form[field.name]"
+                      :clearable="false"
+                      :readonly="onlyView || field.readonly"
+                      :variant="variant"
+                      :prepend-inner-icon="field?.prependInnerIcon"
+                      :prepend-icon="field?.prependIcon"
+                      :append-icon="field?.appendIcon"
+                      :append-inner-icon="field?.appendInnerIcon"
+                      :preview="field?.preview"
+                      :previewHeight="field?.previewHeight"
+                      :rules="rules(field.name)"
+                      :on-input="onInput(field.name)"
+                      :hint="field.hint"
+                      :persistent-hint="field.persistentHint"
+                      :placeholder="field.placeholder"
+                      :persistent-placeholder="field.persistentPlaceholder"
+                  >
+                    <template v-for="slotName in fieldSlotNames" :key="slotName" v-slot:[slotName]="slotProps">
+                      <slot :name="slotName" v-bind="slotProps" />
+                    </template>
+                  </crud-form-field>
+                </slot>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
 
       </v-card-text>
 
