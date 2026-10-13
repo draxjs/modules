@@ -2,3 +2,13 @@
 media/*
 files/*
 src/files/*
+/recovery-dumps/mongo-dump-2026-09-03T11-59-10-765Z.archive.gz
+/recovery-dumps/mongo-dump-2026-09-03T12-01-11-598Z.archive.gz
+/recovery-dumps/mongo-dump-2026-09-03T12-02-51-472Z.archive.gz
+/recovery-dumps/mongo-dump-2026-09-03T12-19-14-461Z.archive.gz
+/recovery-dumps/uploaded-mongo-dump-2026-09-03T12-07-43-910Z-mongo-dump-2026-09-03T11-59-10-765Z.archive.gz
+/recovery-file-backups/file-backup-2026-09-03T11-58-59-576Z.tar.gz
+/recovery-file-backups/file-backup-2026-09-03T12-08-11-347Z.tar.gz
+/recovery-file-backups/file-backup-2026-09-03T12-19-10-347Z.tar.gz
+/recovery-file-backups/uploaded-file-backup-2026-09-03T12-09-43-424Z-file-backup-2026-09-03T12-08-11-347Z.tar.gz
+/recovery-file-backups/uploaded-file-backup-2026-09-03T12-19-52-800Z-file-backup-2026-09-03T12-08-11-347Z.tar.gz
