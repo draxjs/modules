@@ -18,6 +18,7 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 fields.push(`    ${field}: z.coerce.string()${schema[field].required? ".min(1,'validation.required')" : ".optional()"}`)
                 break;
             case "string":
+            case "refvalue":
             case "password":
             case "file":
             case "longString":

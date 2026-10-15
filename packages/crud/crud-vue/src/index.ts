@@ -3,6 +3,8 @@ import CrudDialog from "./components/CrudDialog.vue";
 import CrudForm from "./components/CrudForm.vue";
 import CrudRouteForm from "./components/CrudRouteForm.vue";
 import CrudFormField from "./components/CrudFormField.vue";
+import HtmlEditor from "./components/HtmlEditor.vue";
+import MarkdownEditor from "./components/MarkdownEditor.vue";
 import CrudFieldRange from "./components/CrudFieldRange.vue";
 import CrudFormList from "./components/CrudFormList.vue";
 import CrudList from "./components/CrudList.vue";
@@ -54,6 +56,8 @@ export {
     CrudForm,
     CrudRouteForm,
     CrudFormField,
+    HtmlEditor,
+    MarkdownEditor,
     CrudFieldRange,
     CrudFormList,
     CrudList,

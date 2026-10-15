@@ -173,6 +173,17 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
         enum: ['sports', 'music', 'reading', 'travel', 'cooking', 'technology']
       },
       {
+        name: 'mainLanguage',
+        type: 'refvalue',
+        label: 'language',
+        default: [],
+        groupSection: 'BASIC',
+        ref: 'Language',
+        refDisplay: 'name',
+        refValue: 'name',
+        addOnTheFly: true
+      },
+      {
         name: 'languages',
         type: 'array.ref',
         label: 'languages',

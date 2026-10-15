@@ -8,7 +8,8 @@ interface IPersonBase {
     nationality?: any
     hobbies?: Array<string>
     race?: string
-    interests?: Array<string>
+  interests?: Array<string>
+  mainLanguage?: string
     languages?: Array<any>
     address?: {    country?: string
     city?: string
@@ -35,7 +36,8 @@ interface IPerson {
     nationality?: any
     hobbies?: Array<string>
     race?: string
-    interests?: Array<string>
+  interests?: Array<string>
+    mainLanguage?: string
     languages?: Array<any>
     address?: {    country?: string
     city?: string

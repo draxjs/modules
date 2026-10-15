@@ -94,7 +94,7 @@ class CountryCrud extends EntityCrud implements IEntityCrud {
   get fields(): IEntityCrudField[] {
     return [
       {name: 'name', type: 'string', label: 'name', default: ''},
-      {name: 'description', type: 'longString', label: 'description', default: ''},
+      {name: 'description', type: 'longString', label: 'description', default: '', editor: 'html'},
       {name: 'flag', type: 'file', label: 'flag', default: '', prependInnerIcon: 'mdi mdi-attachment'},
       {name: 'metadata', type: 'record', label: 'metadata', default: null},
       {

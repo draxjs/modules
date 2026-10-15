@@ -1,4 +1,4 @@
-type IType = 'id' | 'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'record' | 'ref' | 'enum' | 'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.record' | 'array.ref' | 'array.enum' | 'array.file' | 'array.fullFile'
+type IType = 'id' | 'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'record' | 'ref' | 'refvalue' | 'enum' | 'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.record' | 'array.ref' | 'array.enum' | 'array.file' | 'array.fullFile'
 
 interface IFieldSchema{
     type: IType
@@ -10,6 +10,7 @@ interface IFieldSchema{
     enum?: string[]
     ref?: string
     refDisplay?: string
+    refValue?: string
     schema?: ISchema
     header?: boolean
     smCol?: number

@@ -8,6 +8,7 @@ const generateModelSchema = (schema: ISchema) => {
     function mapType(type: IType){
         switch (type) {
             case "string":
+            case "refvalue":
             case "password":
             case "longString":
             case "file":

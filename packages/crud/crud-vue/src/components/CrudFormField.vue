@@ -3,6 +3,8 @@ import {computed, ref} from "vue";
 import type {ValidationRule} from "vuetify"
 import type {PropType} from "vue";
 import CrudFormList from "./CrudFormList.vue";
+import HtmlEditor from "./HtmlEditor.vue";
+import MarkdownEditor from "./MarkdownEditor.vue";
 import CrudAutocomplete from "./CrudAutocomplete.vue";
 import CrudFormRecord from "./CrudFormRecord.vue";
 import {useI18n} from "vue-i18n";
@@ -155,7 +157,8 @@ const hasHideDetails = computed(() => {
         @update:modelValue="$emit('updateValue')"
     />
 
-    <v-textarea
+    <component
+        :is="field.editor === 'html' ? HtmlEditor : field.editor === 'markdown' ? MarkdownEditor : 'v-textarea'"
         v-if="field.type === 'longString'"
         :id="`crud-form-field-long-string-${name}`"
         class="crud-form-field__long-string-input"
@@ -180,8 +183,11 @@ const hasHideDetails = computed(() => {
         :append-icon="appendIcon"
         :prepend-inner-icon="prependInnerIcon"
         :append-inner-icon="appendInnerIcon"
-        @update:modelValue="$emit('updateValue')"
-        @input="onInput"
+        @update:modelValue="(value: string | null) => {
+          $emit('updateValue')
+          if (field.editor && onInput) onInput(value)
+        }"
+        @input="field.editor ? undefined : onInput"
     />
 
     <v-text-field
@@ -482,14 +488,15 @@ const hasHideDetails = computed(() => {
     </v-date-input>
 
     <crud-autocomplete
-        v-if="field.type === 'ref'"
-        :id="`crud-form-field-ref-${name}`"
-        class="crud-form-field__ref-autocomplete"
+        v-if="field.type === 'ref' || field.type === 'refvalue'"
+        :id="`crud-form-field-${field.type}-${name}`"
+        :class="`crud-form-field__${field.type}-autocomplete`"
         :entity="entity.getRef(field.ref)"
         :field="field"
         v-model="valueModel"
         @updateValue="$emit('updateValue')"
-        :item-title="field?.refDisplay"
+        :item-title="field.refDisplay ?? 'name'"
+        :item-value="field.type === 'refvalue' ? (field.refValue ?? 'name') : '_id'"
         :label="label"
         :hint="hint ?? field.hint"
         :persistent-hint="persistentHint ?? field.persistentHint"

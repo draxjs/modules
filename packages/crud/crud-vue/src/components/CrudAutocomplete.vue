@@ -98,7 +98,7 @@ onBeforeMount(async () => {
 
 function onCreated(item: any) {
   items.value.push(item)
-  valueModel.value = item._id
+  valueModel.value = item[itemValue]
 }
 
 defineEmits(['updateValue'])
@@ -168,7 +168,7 @@ defineEmits(['updateValue'])
               :color="item.raw?.color"
               :prepend-icon="typeof item.raw?.icon=== 'string' ? item.raw?.icon : null"
       >
-        {{ item.raw[itemTitle] }}
+        {{ item.title }}
       </v-chip>
     </template>
 
@@ -237,7 +237,7 @@ defineEmits(['updateValue'])
               :color="item.raw?.color"
               :prepend-icon="typeof item.raw?.icon=== 'string' ? item.raw?.icon : null"
       >
-        {{ item.raw[itemTitle] }}
+        {{ item.title }}
       </v-chip>
     </template>
 

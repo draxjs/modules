@@ -1,36 +1,30 @@
 import {IEntitySchema, IFieldSchema, ISchema} from "../../../interfaces/IEntitySchema";
 
-const generateRefs = (schema: ISchema) => {
-    let content: string = ""
-    let refs: Array<string> = []
-
+const collectRefs = (schema: ISchema, refs = new Set<string>()): Set<string> => {
     for (const field in schema) {
-        if (['ref', 'array.ref'].includes(schema[field].type) && schema[field].ref) {
-            refs.push(`${schema[field].ref}: ${schema[field].ref}Crud.instance `)
+        const fieldSchema = schema[field]
+        if (['ref', 'array.ref', 'refvalue'].includes(fieldSchema.type) && fieldSchema.ref) {
+            refs.add(fieldSchema.ref)
+        }
+        if (['object', 'array.object'].includes(fieldSchema.type) && fieldSchema.schema) {
+            collectRefs(fieldSchema.schema, refs)
         }
     }
-    content += refs.join(",\n")
-    return content;
+    return refs;
+}
+
+const generateRefs = (schema: ISchema) => {
+    return [...collectRefs(schema)]
+        .map(ref => `${ref}: ${ref}Crud.instance `)
+        .join(",\n");
 }
 
 const generateImportRefs = (schema: ISchema) => {
-    let content: string = ""
-    let refs: Array<string> = []
-
-    for (const field in schema) {
-        if (['ref', 'array.ref'].includes(schema[field].type) && schema[field].ref) {
-
-            if (['Tenant', 'User', 'Role'].includes(schema[field].ref as string)) {
-                refs.push(`import {${schema[field].ref}Crud} from "@drax/identity-vue"`)
-            } else {
-                refs.push(`import ${schema[field].ref}Crud from "./${schema[field].ref}Crud";`)
-            }
-
-
-        }
-    }
-    content += refs.join("\n")
-    return content;
+    return [...collectRefs(schema)]
+        .map(ref => ['Tenant', 'User', 'Role'].includes(ref)
+            ? `import {${ref}Crud} from "@drax/identity-vue"`
+            : `import ${ref}Crud from "./${ref}Crud";`)
+        .join("\n");
 }
 
 const generateRules = (schema: ISchema) => {
@@ -72,6 +66,7 @@ const generateHeaders = (schema: ISchema) => {
 const generateDefault = (field: string, fieldSchema: IFieldSchema) => {
         switch (fieldSchema.type) {
             case "string":
+            case "refvalue":
             case "longString":
             case "password":
             case "file":
@@ -181,8 +176,12 @@ const generateFields = (schema: ISchema | undefined) => {
         switch (schema[field].type) {
             case "ref":
             case "array.ref":
+            case "refvalue":
                 compositionField.push(`ref: '${schema[field].ref}'`)
-                compositionField.push(`refDisplay: '${schema[field].refDisplay}'`)
+                compositionField.push(`refDisplay: '${schema[field].refDisplay ?? 'name'}'`)
+                if (schema[field].type === 'refvalue') {
+                    compositionField.push(`refValue: '${schema[field].refValue ?? 'name'}'`)
+                }
                 break;
             case "enum":
             case "array.enum":

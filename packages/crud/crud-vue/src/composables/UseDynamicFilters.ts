@@ -99,6 +99,7 @@ export function useDynamicFilters(
 
         if (field.ref) filter.ref = field.ref
         if (field.refDisplay) filter.refDisplay = field.refDisplay
+        filter.refValue = field.refValue
         if (field.enum) filter.enum = field.enum
 
         if (field.type) {
@@ -119,7 +120,7 @@ export function useDynamicFilters(
                 filter.type = 'array.ref'
             }
 
-            if (['string', 'longString', 'array.string'].includes(field.type)) {
+            if (['string', 'longString', 'array.string', 'refvalue'].includes(field.type)) {
                 filter.type = 'array.string'
             }
 

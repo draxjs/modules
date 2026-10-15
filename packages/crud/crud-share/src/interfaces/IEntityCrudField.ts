@@ -1,12 +1,13 @@
 import {IEntityCrudFieldSelectItem} from "./IEntityCrudFieldSelectItem";
 
-type IEntityCrudFieldTypes =  'id' |'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'record' | 'ref' | 'enum' | 'select' |'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.record' | 'array.ref' | 'array.enum' | 'array.fullFile'
+type IEntityCrudFieldTypes =  'id' |'string' | 'longString' | 'number' | 'boolean' | 'date' | 'object' | 'record' | 'ref' | 'refvalue' | 'enum' | 'select' |'password' | 'file' | 'fullFile' |'array.string' | 'array.number' | 'array.object' | 'array.record' | 'array.ref' | 'array.enum' | 'array.fullFile'
 
 interface IEntityCrudField {
     name: string
     type: IEntityCrudFieldTypes
     ref?: string
     refDisplay?: string
+    refValue?: string
     enum?: string[]
     items?: IEntityCrudFieldSelectItem[]
     objectFields?: IEntityCrudField[]
@@ -30,6 +31,7 @@ interface IEntityCrudField {
     groupTab?:string //Group Tabs
     groupMenu?: string //Group Menu
     groupSection?: string
+    editor?: 'html' | 'markdown'
     rows?:number //longString > textarea
     cols?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
     sm?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12

@@ -19,7 +19,8 @@ const PersonSchema = new mongoose.Schema<IPerson>({
         required: false,
         index: false,
         unique: false
-    }],
+  }],
+    mainLanguage: {type: String, required: false, index: false, unique: false},
     languages: [{type: mongoose.Schema.Types.ObjectId, ref: 'Language', required: false, index: false, unique: false}],
     address: {
         country: {type: mongoose.Schema.Types.ObjectId, ref: 'Country', required: false, index: false, unique: false},
