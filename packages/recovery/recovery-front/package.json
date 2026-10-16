@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.59.2",
+  "version": "3.65.0",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -19,7 +19,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@drax/common-front": "^3.57.4"
+    "@drax/common-front": "^3.65.0"
   },
   "devDependencies": {
     "@types/node": "^25.2.3",

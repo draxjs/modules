@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.64.0",
+  "version": "3.65.0",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -19,8 +19,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@drax/identity-vue": "^3.64.0",
-    "@drax/recovery-front": "^3.59.2"
+    "@drax/identity-vue": "^3.65.0",
+    "@drax/recovery-front": "^3.65.0"
   },
   "peerDependencies": {
     "vue": "^3.5.28",
