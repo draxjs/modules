@@ -1,0 +1,4 @@
+[submodule ".agent"]
+	path = .agent
+	url = https://github.com/draxjs/ai-skills.git
+	branch = main
