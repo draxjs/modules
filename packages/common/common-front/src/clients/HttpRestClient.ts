@@ -10,6 +10,11 @@ class HttpRestClient implements IHttpClient {
   baseUrl: string;
   baseHeaders: IHttpHeader;
   private timeout: number;
+  private beforeRequest?: (url: string) => Promise<void>;
+
+  setBeforeRequest(handler: (url: string) => Promise<void>): void {
+    this.beforeRequest = handler;
+  }
 
   constructor(baseUrl: string = '',  baseHeaders: IHttpHeader = {'content-type': 'application/json'}, timeout : number = 60000) {
     this.baseUrl = baseUrl;
@@ -76,7 +81,8 @@ class HttpRestClient implements IHttpClient {
   }
 
 
-  async get(url: string, options: IHttpOptions): Promise<object> {
+  async get(url: string, options?: IHttpOptions): Promise<object> {
+    if (this.beforeRequest) await this.beforeRequest(url);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -107,7 +113,8 @@ class HttpRestClient implements IHttpClient {
     }
   }
 
-  async post(url: string, data: any, options: IHttpOptions): Promise<object> {
+  async post(url: string, data: any, options?: IHttpOptions): Promise<object> {
+    if (this.beforeRequest) await this.beforeRequest(url);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -140,7 +147,8 @@ class HttpRestClient implements IHttpClient {
 
   }
 
-  async put(url: string, data: any, options: IHttpOptions): Promise<object> {
+  async put(url: string, data: any, options?: IHttpOptions): Promise<object> {
+    if (this.beforeRequest) await this.beforeRequest(url);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -172,7 +180,8 @@ class HttpRestClient implements IHttpClient {
     }
   }
 
-  async delete(url: string, data: any, options: IHttpOptions): Promise<object> {
+  async delete(url: string, data?: any, options?: IHttpOptions): Promise<object> {
+    if (this.beforeRequest) await this.beforeRequest(url);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -205,7 +214,8 @@ class HttpRestClient implements IHttpClient {
     }
   }
 
-  async patch(url: string, data: any, options: IHttpOptions): Promise<object> {
+  async patch(url: string, data: any, options?: IHttpOptions): Promise<object> {
+    if (this.beforeRequest) await this.beforeRequest(url);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);

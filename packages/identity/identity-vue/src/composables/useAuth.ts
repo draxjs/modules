@@ -2,6 +2,7 @@ import {useAuthStore} from "../stores/AuthStore";
 import {AuthHelper, AuthSystemFactory} from "@drax/identity-front";
 import type {AuthSystem} from "@drax/identity-front";
 import {useRouter} from 'vue-router'
+import {authSessionRevision, clearAuthSession, isCurrentAuthOperation, isCurrentAuthSession, isRememberMeEnabled, rereadSession, revokeSessionToken, syncAuthHeaders} from './setupAuthSession'
 
 export function useAuth() {
 
@@ -10,26 +11,56 @@ export function useAuth() {
 
     const authSystem: AuthSystem = AuthSystemFactory.getInstance()
 
-    const login = async (username: string, password: string) => {
-        const {accessToken} = await authSystem.login(username, password)
-        authStore.setAccessToken(accessToken)
-        const authUser = await authSystem.me()
-        authStore.setAuthUser(authUser)
+    const login = async (username: string, password: string, rememberMe = false) => {
+        clearAuthSession(authStore)
+        const revision = authSessionRevision(authStore)
+        const version = authStore.sessionVersion
+        const remembered = isRememberMeEnabled() && rememberMe
+        const result = remembered
+            ? await authSystem.login(username, password, true)
+            : await authSystem.login(username, password)
+        if (authSessionRevision(authStore) !== revision || !isCurrentAuthOperation(authStore, version)) {
+            syncAuthHeaders(authStore)
+            if (result.refreshToken) await revokeSessionToken(result.refreshToken).catch(() => {})
+            throw new Error('Authentication cancelled')
+        }
+        if (remembered) authStore.setSession(result)
+        else authStore.setAccessToken(result.accessToken)
+        syncAuthHeaders(authStore)
+        try {
+            await fetchAuthUser()
+            if (authSessionRevision(authStore) !== revision || !isCurrentAuthOperation(authStore, version)) throw new Error('Authentication cancelled')
+        } catch (error) {
+            if (authSessionRevision(authStore) === revision && isCurrentAuthOperation(authStore, version)) {
+                const token = authStore.refreshToken
+                clearAuthSession(authStore)
+                if (token) await revokeSessionToken(token).catch(() => {})
+            }
+            throw error
+        }
     }
 
 
     const switchTenant = async (tenantId: string) => {
         const {accessToken} = await authSystem.switchTenant(tenantId)
-        authStore.setAccessToken(accessToken)
-        const authUser = await authSystem.me()
-        authStore.setAuthUser(authUser)
+        // Switching tenant replaces the JWT, but must not turn an ordinary session into a remembered one.
+        authStore.setSession({accessToken, refreshToken: authStore.refreshToken ?? undefined,
+            refreshExpiresAt: authStore.refreshExpiresAt ?? undefined})
+        syncAuthHeaders(authStore)
+        await fetchAuthUser()
     }
 
     const loginWithToken = async (token: string) => {
+        clearAuthSession(authStore)
         authStore.setAccessToken(token)
-        if(tokenIsValid()){
-            const authUser = await authSystem.me()
-            authStore.setAuthUser(authUser)
+        const version = authStore.sessionVersion
+        syncAuthHeaders(authStore)
+        try {
+            if(tokenIsValid()) await fetchAuthUser()
+            else clearAuthSession(authStore)
+        } catch (error) {
+            if (isCurrentAuthSession(authStore, token, version)) clearAuthSession(authStore)
+            throw error
         }
 
     }
@@ -64,19 +95,30 @@ export function useAuth() {
     }
 
     async function fetchAuthUser() {
+        const revision = authSessionRevision(authStore)
+        const token = authStore.accessToken
+        const version = authStore.sessionVersion
         const authUser = await authSystem.me()
-        authStore.setAuthUser(authUser)
+        if (authSessionRevision(authStore) === revision && isCurrentAuthSession(authStore, token, version)) {
+            authStore.setAuthUser(authUser)
+        }
         return authUser
     }
 
-    function logout() {
-        clearAuth()
-        router.push({name: 'Login'})
-    }
-
-    function clearAuth(){
+    async function logout() {
+        rereadSession(authStore)
+        const token = authStore.refreshToken
+        clearAuthSession(authStore)
         authSystem.logout()
-        authStore.clearAuth()
+        // Clear and navigate immediately, even offline or with a refresh in flight.
+        const navigation = router.push({name: 'Login'})
+        try {
+            if (token) await revokeSessionToken(token)
+        } catch {
+            // Local logout must succeed even when server revocation is unavailable.
+        } finally {
+            await navigation
+        }
     }
 
     function hasPermission(permission: string | undefined) {

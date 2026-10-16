@@ -16,26 +16,30 @@ const app = createApp(App)
 //Setup Pinia
 app.use(pinia)
 
-//Setup Settings
-setupSetting().then(() => {console.log("Setting Setup Done")})
+async function bootstrap() {
+  // Restore remembered sessions before settings requests or initial router navigation.
+  await setupAuth()
 
-//Setup Dashboard
-setupEntities()
+  //Setup Settings
+  setupSetting().then(() => {console.log("Setting Setup Done")})
 
-//Setup Custom Buttons
-setupButtons()
+  //Setup Dashboard
+  setupEntities()
 
-//Setup Custom Identity Cruds
-//setupCustomIdentity()
+  //Setup Custom Buttons
+  setupButtons()
 
-//Setup Router, I18n and Vuetify
-app
-  .use(vuetify)
-  .use(router)
-  .use(i18n)
+  //Setup Custom Identity Cruds
+  //setupCustomIdentity()
 
-//Setup Auth
-setupAuth()
+  //Setup Router, I18n and Vuetify
+  app
+    .use(vuetify)
+    .use(router)
+    .use(i18n)
 
-//Mount App
-app.mount('#app')
+  //Mount App
+  app.mount('#app')
+}
+
+void bootstrap()

@@ -1,3 +1,4 @@
+export type {ILoginRequest, IAuthTokens, IRefreshTokenRequest} from "./interfaces/IAuthTokens";
 import type {IJwtUser} from "./interfaces/IJwtUser";
 import type {IAuthUser} from "./interfaces/IAuthUser";
 import type {IRbac} from "./interfaces/IRbac";

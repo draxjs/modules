@@ -11,12 +11,14 @@ class UserSessionSqliteRepository extends AbstractSqliteRepository<IUserSession,
     protected tableName: string = 'user_sessions';
     protected dataBaseFile: string;
     protected searchFields: string[] = [];
-    protected booleanFields: string[] = [];
+    protected booleanFields: string[] = ['rememberMe'];
     protected identifier: string = '_id';
     protected populateFields = [
         {field: 'user', table: 'users', identifier: '_id'}
     ]
     protected tableFields: SqliteTableField[] = [
+        {name: "rememberMe", type: "INTEGER", unique: false, primary: false},
+        {name: "refreshExpiresAt", type: "TEXT", unique: false, primary: false},
         {name: "uuid", type: "TEXT", unique: false, primary: false},
         {name: "user", type: "TEXT", unique: false, primary: false},
         {name: "userAgent", type: "TEXT", unique: false, primary: false},

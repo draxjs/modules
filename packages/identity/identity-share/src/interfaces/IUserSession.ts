@@ -6,6 +6,8 @@ interface IUserSession{
     user: IUser
     userAgent?: string
     ip?: string
+    rememberMe?: boolean
+    refreshExpiresAt?: string
     createdAt?: string
     updatedAt?: string
 }
@@ -15,6 +17,8 @@ interface IUserSessionBase{
     user: IUser
     userAgent?: string
     ip?: string
+    rememberMe?: boolean
+    refreshExpiresAt?: string
 }
 
 export {IUserSession, IUserSessionBase}

@@ -1,5 +1,8 @@
 enum IdentityConfig {
 
+    RememberMeEnabled = "DRAX_REMEMBER_ME_ENABLED",
+    RefreshTokenTTLSeconds = "DRAX_REFRESH_TOKEN_TTL_SECONDS",
+
     JwtSecret = "DRAX_JWT_SECRET",
     JwtExpiration = "DRAX_JWT_EXPIRATION",
     JwtIssuer = "DRAX_JWT_ISSUER",

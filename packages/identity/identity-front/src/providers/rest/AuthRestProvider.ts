@@ -23,12 +23,20 @@ class AuthRestProvider implements IAuthProvider {
         this.httpClient.removeHeader('Authorization')
     }
 
-    async login(username: string, password: string): Promise<ILoginResponse> {
-            const url = '/api/auth/login'
-            const data = {username, password}
-            let {accessToken} = await this.httpClient.post(url, data) as ILoginResponse
-            this.setHttpClientToken(accessToken)
-            return {accessToken}
+    async login(username: string, password: string, rememberMe?: boolean): Promise<ILoginResponse> {
+        const data = {username, password, ...(rememberMe === true ? {rememberMe: true} : {})}
+        const result = await this.httpClient.post('/api/auth/login', data) as ILoginResponse
+        this.setHttpClientToken(result.accessToken)
+        return result
+    }
+
+    async refresh(refreshToken: string): Promise<ILoginResponse> {
+        // The session owner commits credentials only if no logout/new login intervened.
+        return await this.httpClient.post('/api/auth/refresh', {refreshToken}, {removeHeaders: ['Authorization']}) as ILoginResponse
+    }
+
+    async revokeSession(refreshToken: string): Promise<void> {
+        await this.httpClient.post('/api/auth/logout', {refreshToken}, {removeHeaders: ['Authorization']})
     }
 
     async switchTenant(tenantId: string): Promise<ILoginResponse> {

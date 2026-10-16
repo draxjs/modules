@@ -1,6 +1,6 @@
 import UserController from "../controllers/UserController.js";
 import {CrudSchemaBuilder} from "@drax/crud-back";
-import {LoginBodyRequestSchema, LoginBodyResponseSchema} from "../schemas/LoginSchema.js"
+import {LoginBodyRequestSchema, LoginBodyResponseSchema, RefreshTokenBodyRequestSchema} from "../schemas/LoginSchema.js"
 import {UserSchema, UserCreateSchema, UserUpdateSchema} from "../schemas/UserSchema.js";
 import {RegisterBodyRequestSchema, RegisterBodyResponseSchema} from "../schemas/RegisterSchema.js";
 import {
@@ -44,6 +44,26 @@ async function UserRoutes(fastify, options) {
             },
         },
         (req, rep) => controller.auth(req, rep))
+
+    fastify.post('/api/auth/refresh', {
+        schema: {
+            tags: ['Auth'],
+            body: zod.toJSONSchema(RefreshTokenBodyRequestSchema),
+            response: {
+                200: zod.toJSONSchema(LoginBodyResponseSchema.required()),
+                400: schemas.jsonErrorBodyResponse,
+                401: schemas.jsonErrorBodyResponse,
+            },
+        },
+    }, (req, rep) => controller.refresh(req, rep))
+
+    fastify.post('/api/auth/logout', {
+        schema: {
+            tags: ['Auth'],
+            body: zod.toJSONSchema(RefreshTokenBodyRequestSchema),
+            response: {200: zod.toJSONSchema(zod.object({success: zod.boolean()}))},
+        },
+    }, (req, rep) => controller.logout(req, rep))
 
     fastify.get('/api/auth/password-policy', {
         schema: {

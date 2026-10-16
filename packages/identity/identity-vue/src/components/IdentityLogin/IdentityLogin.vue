@@ -3,6 +3,8 @@ import {computed, ref} from 'vue'
 import {useAuth} from '../../composables/useAuth.js'
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 import {useI18n} from "vue-i18n";
+import IdentityRememberMe from '../IdentityRememberMe.vue'
+import {isRememberMeEnabled} from '../../composables/setupAuthSession'
 const {t, te} = useI18n()
 
 const {login, isAuthenticated} = useAuth()
@@ -18,6 +20,7 @@ const username = ref('')
 const password = ref('')
 const authError = ref('')
 const loading = ref(false)
+const rememberMe = ref(false)
 
 const isFormValid = computed(() => username.value.trim() !== '' && password.value.trim() !== '')
 
@@ -26,7 +29,9 @@ const emit = defineEmits(['loginSuccess'])
 async function submitLogin() {
   try {
     loading.value = true
-    await login(username.value, password.value)
+    authError.value = ''
+    if (isRememberMeEnabled() && rememberMe.value) await login(username.value, password.value, true)
+    else await login(username.value, password.value)
     emit('loginSuccess')
   } catch (e) {
     const error = e as Error
@@ -87,6 +92,7 @@ function togglePasswordVisibility() {
                   @click:append-inner="togglePasswordVisibility"
                   autocomplete="new-password"
               ></v-text-field>
+              <identity-remember-me v-model="rememberMe" :disabled="loading" />
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>

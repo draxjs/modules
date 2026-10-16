@@ -4,7 +4,9 @@ import type {IPasswordPolicy} from "./IPasswordPolicy";
 import type {IUserRegistration} from "./IUserRegistration";
 
 interface IAuthProvider {
-    login(username: string, password: string): Promise<ILoginResponse>
+    login(username: string, password: string, rememberMe?: boolean): Promise<ILoginResponse>
+    refresh?(refreshToken: string): Promise<ILoginResponse>
+    revokeSession?(refreshToken: string): Promise<void>
     me(): Promise<IAuthFullUser>
     switchTenant(tenantId: string): Promise<ILoginResponse>
     logout(): void

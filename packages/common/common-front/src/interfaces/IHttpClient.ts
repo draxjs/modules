@@ -14,6 +14,8 @@ interface IHttpOptions {
 }
 
 interface IHttpClient {
+  setBeforeRequest?(handler: (url: string) => Promise<void>): void
+
   get(url: string, options?: IHttpOptions): Promise<object|string>
 
   post(url: string, data: any, options?: IHttpOptions): Promise<object|string>

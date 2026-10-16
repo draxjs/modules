@@ -2,6 +2,25 @@
 
 This is the official scaffolding tool for Vuetify, designed to give you a head start in building your new Vuetify application. It sets up a base template with all the necessary configurations and standard directory structure, enabling you to begin development without the hassle of setting up the project from scratch.
 
+## Remember-me
+
+Enable opt-in remembered login by defining `VITE_DRAX_REMEMBER_ME_ENABLED=true`
+in the Vite build environment (unset/any other value disables it). No environment
+files are required or changed by this integration. `main.ts` awaits `setupAuth()`
+after installing Pinia, before settings requests and router installation, so an
+expired remembered access token can be renewed before the initial route guard.
+The router also awaits renewal on later navigation, before auth/permission checks.
+If renewal fails transiently, or the profile is temporarily unavailable after a
+successful renewal, protected navigation is cancelled without clearing credentials
+or redirecting to login. A missing profile is retried on the next navigation/API
+preflight even with a fresh JWT, without another token rotation. Public routes
+remain reachable; a rejected refresh credential follows the normal login redirect.
+
+This requires the identity-front refresh/revoke contract and, for renewal before
+all subsequent REST requests, the optional `setBeforeRequest` hook on the shared
+common-front REST client. See the identity-vue README for browser coordination,
+offline behavior, and token-storage security caveats.
+
 ## ❗️ Important Links
 
 - 📄 [Docs](https://vuetifyjs.com/)

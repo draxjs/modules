@@ -4,6 +4,8 @@ import PasswordPolicyConfig from "../config/PasswordPolicyConfig.js";
 
 function LoadIdentityConfigFromEnv() {
 
+    DraxConfig.set(IdentityConfig.RememberMeEnabled, process.env[IdentityConfig.RememberMeEnabled])
+    DraxConfig.set(IdentityConfig.RefreshTokenTTLSeconds, process.env[IdentityConfig.RefreshTokenTTLSeconds])
     DraxConfig.set(IdentityConfig.JwtSecret, process.env[IdentityConfig.JwtSecret])
     DraxConfig.set(IdentityConfig.JwtExpiration, process.env[IdentityConfig.JwtExpiration])
     DraxConfig.set(IdentityConfig.JwtIssuer, process.env[IdentityConfig.JwtIssuer])

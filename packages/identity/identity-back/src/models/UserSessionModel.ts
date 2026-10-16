@@ -6,6 +6,8 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 import type {IUserSession} from '@drax/identity-share'
 
 const UserSessionMongoSchema = new mongoose.Schema<IUserSession>({
+            rememberMe: {type: Boolean, required: false},
+            refreshExpiresAt: {type: String, required: false},
             uuid: {type: String,   required: true, index: true, unique: false },
             user: {type: mongoose.Schema.Types.ObjectId, ref: 'User',  required: true, index: true, unique: false },
             userAgent: {type: String,   required: false, index: false, unique: false },

@@ -21,6 +21,7 @@ import {IDraxCrudEvent, IDraxFieldFilter} from "@drax/crud-share";
 import TenantServiceFactory from "../factory/TenantServiceFactory.js";
 import {CustomRequest} from "@drax/crud-back";
 import PasswordPolicyServiceFactory from "../factory/PasswordPolicyServiceFactory.js";
+import {LoginBodyRequestSchema, RefreshTokenBodyRequestSchema} from "../schemas/LoginSchema.js";
 
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const AVATAR_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatar';
@@ -73,22 +74,45 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
     async auth(request, reply) {
         try {
-            const username = request.body.username
-            const password = request.body.password
+            const parsed = LoginBodyRequestSchema.safeParse(request.body);
+            if (!parsed.success) return reply.code(400).send({error: 'error.validation'});
+            const {username, password, rememberMe} = parsed.data;
             const userAgent = request.headers['user-agent'];
             const ip = request.ip;
             const userService = UserServiceFactory()
-            const {user, accessToken, session} = await userService.auth(username, password, {userAgent, ip})
+            const {user, session, ...tokens} = await userService.auth(username, password, {userAgent, ip}, rememberMe)
             this.onUserLoggedIn(request, user, session)
-            return {accessToken}
+            return tokens
         } catch (e) {
             console.error('/api/auth error', e)
             if (e instanceof BadCredentialsError) {
                 reply.code(e.statusCode)
-                reply.send(e.body)
+                return reply.send(e.body)
             }
             reply.code(500)
             reply.send({error: 'error.server'})
+        }
+    }
+
+    async refresh(request, reply) {
+        const parsed = RefreshTokenBodyRequestSchema.safeParse(request.body);
+        if (!parsed.success) return reply.code(400).send({error: 'error.validation'});
+        try {
+            return await this.service.refresh(parsed.data.refreshToken);
+        } catch (e) {
+            if (e instanceof BadCredentialsError) return reply.code(e.statusCode).send(e.body);
+            this.handleError(e, reply);
+        }
+    }
+
+    async logout(request, reply) {
+        const parsed = RefreshTokenBodyRequestSchema.safeParse(request.body);
+        if (!parsed.success) return reply.code(400).send({error: 'error.validation'});
+        try {
+            await this.service.logout(parsed.data.refreshToken);
+            return {success: true};
+        } catch (e) {
+            this.handleError(e, reply);
         }
     }
 

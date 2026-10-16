@@ -13,9 +13,19 @@ class AuthSystem implements IAuthProvider {
         this.prototype = 'AuthSystem'
     }
 
-    async login(username:string, password:string):Promise<ILoginResponse> {
-        const r = await this._provider.login(username, password)
-        return r
+    async login(username:string, password:string, rememberMe?:boolean):Promise<ILoginResponse> {
+        return rememberMe === undefined
+            ? this._provider.login(username, password)
+            : this._provider.login(username, password, rememberMe)
+    }
+
+    async refresh(refreshToken: string): Promise<ILoginResponse> {
+        if (!this._provider.refresh) throw new Error('Remember-me requires a provider supporting refresh')
+        return this._provider.refresh(refreshToken)
+    }
+
+    async revokeSession(refreshToken: string): Promise<void> {
+        await this._provider.revokeSession?.(refreshToken)
     }
 
     async switchTenant(tenantId:string):Promise<ILoginResponse> {

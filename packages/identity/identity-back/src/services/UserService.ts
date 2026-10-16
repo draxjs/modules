@@ -16,6 +16,9 @@ import PasswordPolicyServiceFactory from "../factory/PasswordPolicyServiceFactor
 import type UserPasswordHistoryService from "./UserPasswordHistoryService.js";
 import UserPasswordHistoryServiceFactory from "../factory/UserPasswordHistoryServiceFactory.js";
 
+import RefreshTokenService from "./RefreshTokenService.js";
+import RefreshTokenServiceFactory from "../factory/RefreshTokenServiceFactory.js";
+
 class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
     _repository: IUserRepository
@@ -23,18 +26,32 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     constructor(
         userRepository: IUserRepository,
         private readonly passwordPolicyService: PasswordPolicyService = PasswordPolicyServiceFactory(),
-        private readonly userPasswordHistoryService: UserPasswordHistoryService = UserPasswordHistoryServiceFactory()
+        private readonly userPasswordHistoryService: UserPasswordHistoryService = UserPasswordHistoryServiceFactory(),
+        private refreshTokenService?: RefreshTokenService
     ) {
         super(userRepository, UserBaseSchema);
         this._repository = userRepository;
     }
 
-    async auth(username: string, password: string, {userAgent, ip}) {
+    private get refreshTokens(): RefreshTokenService {
+        return this.refreshTokenService ??= RefreshTokenServiceFactory(this._repository);
+    }
+
+    async refresh(refreshToken: string) {
+        if (!RefreshTokenService.enabled()) throw new BadCredentialsError();
+        return this.refreshTokens.refresh(refreshToken);
+    }
+
+    async logout(refreshToken: string): Promise<void> {
+        await this.refreshTokens.logout(refreshToken);
+    }
+
+    async auth(username: string, password: string, {userAgent, ip}, rememberMe: boolean = false) {
         let user = null
         user = await this.findByUsernameWithPassword(username)
         if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
 
-            const sessionUUID = await this.generateSession(user, userAgent, ip);
+            const {sessionUUID, ...refresh} = await this.generateSession(user, userAgent, ip, rememberMe);
 
             const tokenPayload: IAuthUser = {
                 id: user._id.toString(),
@@ -47,8 +64,9 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             }
 
             const accessToken = AuthUtils.generateToken(tokenPayload)
+
             delete user.password
-            return {accessToken: accessToken, user: user, session: sessionUUID}
+            return {accessToken: accessToken, user: user, session: sessionUUID, ...refresh}
         } else {
             const userLoginFailService = UserLoginFailServiceFactory()
             await userLoginFailService.create({
@@ -60,16 +78,19 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
     }
 
-    private async generateSession(user, userAgent, ip) {
+    private async generateSession(user, userAgent, ip, rememberMe: boolean = false) {
         const sessionUUID = randomUUID()
+        const refresh: {refreshToken?: string, refreshExpiresAt?: string} = rememberMe === true && RefreshTokenService.enabled()
+            ? await this.refreshTokens.issue(user, sessionUUID) : {};
         const sessionService = UserSessionServiceFactory()
         await sessionService.create({
             user: user._id.toString(),
             uuid: sessionUUID,
             userAgent: userAgent,
-            ip: ip
+            ip: ip,
+            ...(refresh.refreshExpiresAt ? {rememberMe: true, refreshExpiresAt: refresh.refreshExpiresAt} : {})
         })
-        return sessionUUID;
+        return {sessionUUID, ...refresh};
     }
 
     async switchTenant(accessToken: string, tenantId: string, tenantName: string) {
@@ -89,7 +110,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
 
         if (user && user.active) {
-            const sessionUUID = await this.generateSession(user, userAgent, ip);
+            const {sessionUUID} = await this.generateSession(user, userAgent, ip);
 
 
             const tokenPayload: IAuthUser = {

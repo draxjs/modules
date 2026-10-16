@@ -1,3 +1,6 @@
+export {setupAuthSession, refreshAuthSession, isRememberMeEnabled} from './composables/setupAuthSession'
+export {default as IdentityRememberMe} from './components/IdentityRememberMe.vue'
+
 import IdentityLogin from "./components/IdentityLogin/IdentityLogin.vue";
 import IdentityProfileAvatar from "./components/IdentityProfileAvatar/IdentityProfileAvatar.vue";
 import IdentityProfileDrawer from "./components/IdentityProfileDrawer/IdentityProfileDrawer.vue";

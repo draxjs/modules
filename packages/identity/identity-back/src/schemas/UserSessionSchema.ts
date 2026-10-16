@@ -6,6 +6,8 @@ const UserSessionBaseSchema = z.object({
     user: z.string().min(1, 'validation.required'),
     userAgent: z.string().optional(),
     ip: z.string().optional(),
+    rememberMe: z.boolean().nullable().optional(),
+    refreshExpiresAt: z.iso.datetime().nullable().optional(),
 
 });
 

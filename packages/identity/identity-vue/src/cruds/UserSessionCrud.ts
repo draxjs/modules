@@ -46,7 +46,9 @@ class UserSessionCrud extends EntityCrud implements IEntityCrud {
             {title: 'user', key: 'user', align: 'start'},
             {title: 'userAgent', key: 'userAgent', align: 'start'},
             {title: 'ip', key: 'ip', align: 'start'},
-            {title: 'createdAt', key: 'createdAt', align: 'start'}
+            {title: 'createdAt', key: 'createdAt', align: 'start'},
+            {title: 'rememberMe', key: 'rememberMe', align: 'start'},
+            {title: 'refreshExpiresAt', key: 'refreshExpiresAt', align: 'start'}
         ]
     }
 
@@ -92,7 +94,9 @@ class UserSessionCrud extends EntityCrud implements IEntityCrud {
             {name: 'user', type: 'ref', label: 'user', default: null, ref: 'User', refDisplay: 'username'},
             {name: 'userAgent', type: 'string', label: 'userAgent', default: ''},
             {name: 'ip', type: 'string', label: 'ip', default: ''},
-            {name: 'createdAt', type: 'date', label: 'createdAt', default: null}
+            {name: 'createdAt', type: 'date', label: 'createdAt', default: null},
+            {name: 'rememberMe', type: 'boolean', label: 'rememberMe', default: null},
+            {name: 'refreshExpiresAt', type: 'date', label: 'refreshExpiresAt', default: null}
         ]
     }
 
@@ -136,7 +140,7 @@ class UserSessionCrud extends EntityCrud implements IEntityCrud {
     }
 
     get exportHeaders() {
-        return ['_id','user','createdAt','userAgent','ip']
+        return ['_id','user','createdAt','userAgent','ip','rememberMe','refreshExpiresAt']
     }
 
     get isImportable() {

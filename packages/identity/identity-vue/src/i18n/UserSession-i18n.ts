@@ -11,7 +11,9 @@ const messages = {
            user:'user',
            agent:'agent',
            ip:'ip',
-           createdAt:'createdAt'
+           createdAt:'createdAt',
+           rememberMe: 'Remember me',
+           refreshExpiresAt: 'Remembered session expires at'
           }
       },
       permission: {
@@ -32,7 +34,9 @@ const messages = {
            user:'user',
            agent:'agent',
            ip:'ip',
-           createdAt:'createdAt'
+           createdAt:'createdAt',
+           rememberMe: 'Recordarme',
+           refreshExpiresAt: 'Vencimiento de sesión recordada'
           }
       },
      permission: {

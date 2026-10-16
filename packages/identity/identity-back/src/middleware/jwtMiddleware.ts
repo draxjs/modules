@@ -13,7 +13,8 @@ function jwtMiddleware (request, reply, done) {
 
             const routerPath = request.url
 
-            if(routerPath != '/api/auth/login' && token){
+            const publicAuthPaths = ['/api/auth/login', '/api/auth/refresh', '/api/auth/logout'];
+            if(!publicAuthPaths.includes(routerPath.split('?')[0]) && token){
                 const authUser: IAuthUser = AuthUtils.verifyToken(token)
                 if(authUser){
                     request.authUser = authUser
