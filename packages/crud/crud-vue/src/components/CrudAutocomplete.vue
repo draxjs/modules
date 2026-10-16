@@ -8,7 +8,7 @@ import CrudCreateOnTheFlyButton from "./buttons/CrudCreateOnTheFlyButton.vue";
 
 const valueModel = defineModel<string | string[]>({type: [String, Array], required: false})
 
-const {entity, multiple, itemValue} = defineProps({
+const {entity, multiple, itemValue, onInput} = defineProps({
   entity: {type: Object as PropType<IEntityCrud|undefined>, required: true},
   field: {type: Object as PropType<IEntityCrudField>, required: true},
   label: {type: String},
@@ -98,10 +98,15 @@ onBeforeMount(async () => {
 
 function onCreated(item: any) {
   items.value.push(item)
-  valueModel.value = item[itemValue]
+  const value = multiple
+    ? [...new Set([...(Array.isArray(valueModel.value) ? valueModel.value : []), item[itemValue]])]
+    : item[itemValue]
+  valueModel.value = value
+  onInput?.(value)
+  emit('updateValue')
 }
 
-defineEmits(['updateValue'])
+const emit = defineEmits(['updateValue'])
 
 </script>
 

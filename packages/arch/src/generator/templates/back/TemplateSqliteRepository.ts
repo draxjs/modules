@@ -33,7 +33,7 @@ function generateBooleanFields(schema: ISchema) {
 function generateJsonFields(schema: ISchema) {
     let fields = [];
     for(const field in schema){
-        if(['object', 'record', 'array.string', 'array.number', 'array.object', 'array.record', 'array.enum', 'array.file', 'array.fullFile'].includes(schema[field].type)){
+        if(['object', 'record', 'array.string', 'array.refvalue', 'array.number', 'array.object', 'array.record', 'array.enum', 'array.file', 'array.fullFile'].includes(schema[field].type)){
             fields.push(`'${field}'`);
         }
     }

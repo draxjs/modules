@@ -9,6 +9,7 @@ import {TemplateMongoRepository} from '../src/generator/templates/back/TemplateM
 import {TemplateSqliteRepository} from '../src/generator/templates/back/TemplateSqliteRepository';
 import {TemplateSchema} from '../src/generator/templates/back/TemplateSchema';
 import {TemplateEntityInterface} from '../src/generator/templates/share/TemplateEntityInterface';
+import {TemplateCrudComponent} from '../src/generator/templates/front/TemplateCrudComponent';
 
 const entity = (schema: ISchema): IEntitySchema => ({name: 'Example', module: 'test', schema});
 
@@ -59,6 +60,76 @@ test('refvalue generates string defaults and configurable reference metadata', (
     }));
     assert.equal(source.match(/import CategoryCrud/g)?.length, 1);
     assert.equal(source.match(/Category: CategoryCrud.instance/g)?.length, 1);
+});
+
+test('array.refvalue generates array defaults and configurable reference metadata', () => {
+    const defaults = ['initial', "O'Reilly", 'quoted "value"'];
+    const schema: ISchema = {
+        categories: {type: 'array.refvalue', ref: 'Category'},
+        codes: {type: 'array.refvalue', ref: 'Category', refDisplay: 'title', refValue: 'code', default: defaults},
+        empty: {type: 'array.refvalue', ref: 'Category', default: []},
+        invalidDefault: {type: 'array.refvalue', ref: 'Category', default: 'not an array'},
+        owner: {type: 'ref', ref: 'User'},
+        owners: {type: 'array.ref', ref: 'User'},
+    };
+    const crud = loadCrud(schema);
+    const [categories, codes, empty, invalidDefault, owner, owners] = crud.fields;
+    assert.equal(categories.type, 'array.refvalue');
+    assert.equal(categories.ref, 'Category');
+    assert.equal(categories.refDisplay, 'name');
+    assert.equal(categories.refValue, 'name');
+    assert.equal(JSON.stringify(categories.default), '[]');
+    assert.equal(codes.refDisplay, 'title');
+    assert.equal(codes.refValue, 'code');
+    assert.equal(JSON.stringify(codes.default), JSON.stringify(defaults));
+    assert.equal(JSON.stringify(empty.default), '[]');
+    assert.equal(JSON.stringify(invalidDefault.default), '[]');
+    assert.equal(owner.default, null);
+    assert.equal(JSON.stringify(owners.default), '[]');
+    assert.equal('refValue' in owner, false);
+    assert.equal('refValue' in owners, false);
+    const source = TemplateEntityCrud(entity(schema));
+    assert.equal(source.match(/import CategoryCrud/g)?.length, 1);
+    assert.equal(source.match(/Category: CategoryCrud.instance/g)?.length, 1);
+});
+
+test('nested array.refvalue references collect imports recursively without duplicates', () => {
+    const schema: ISchema = {
+        details: {type: 'object', schema: {
+            categories: {type: 'array.refvalue', ref: 'Category'},
+            deeper: {type: 'object', schema: {
+                tenants: {type: 'array.refvalue', ref: 'Tenant', default: ['main']},
+            }},
+        }},
+        rows: {type: 'array.object', schema: {
+            groups: {type: 'array.object', schema: {
+                codes: {type: 'array.refvalue', ref: 'Category', refDisplay: 'title', refValue: 'code', default: ['a', 'b']},
+                roles: {type: 'array.refvalue', ref: 'Role'},
+            }},
+        }},
+    };
+    const crud = loadCrud(schema);
+    assert.deepEqual(Object.keys(crud.refs), ['Category', 'Tenant', 'Role']);
+    assert.equal(crud.refs.Category, './CategoryCrud');
+    assert.equal(crud.refs.Tenant, 'Tenant');
+    assert.equal(crud.refs.Role, 'Role');
+    const categories = crud.fields[0].objectFields[0];
+    assert.equal(categories.refValue, 'name');
+    assert.equal(categories.refDisplay, 'name');
+    assert.equal(JSON.stringify(categories.default), '[]');
+    const tenants = crud.fields[0].objectFields[1].objectFields[0];
+    assert.equal(JSON.stringify(tenants.default), '["main"]');
+    const [codes, roles] = crud.fields[1].objectFields[0].objectFields;
+    assert.equal(codes.type, 'array.refvalue');
+    assert.equal(codes.refValue, 'code');
+    assert.equal(codes.refDisplay, 'title');
+    assert.equal(JSON.stringify(codes.default), '["a","b"]');
+    assert.equal(JSON.stringify(roles.default), '[]');
+    const source = TemplateEntityCrud(entity(schema));
+    assert.equal(source.match(/import CategoryCrud/g)?.length, 1);
+    assert.equal(source.match(/Category: CategoryCrud.instance/g)?.length, 1);
+    assert.match(source, /import \{TenantCrud\} from "@drax\/identity-vue"/);
+    assert.match(source, /import \{RoleCrud\} from "@drax\/identity-vue"/);
 });
 
 test('nested object and array.object references share recursive imports and registry', () => {
@@ -126,6 +197,100 @@ test('SQLite uses TEXT without a relation and keeps nested values in JSON contai
     const mixed = TemplateSqliteRepository(entity({...schema, relation: {type: 'ref', ref: 'Category'}}));
     assert.match(mixed, /\{ field: 'relation', table: 'relation', identifier: '_id' \}/);
     assert.doesNotMatch(mixed, /\{ field: 'value'/);
+});
+
+test('Mongo persists array.refvalue as String arrays recursively without ref or populate', () => {
+    const schema: ISchema = {
+        values: {type: 'array.refvalue', ref: 'Category', required: true, index: true, unique: true},
+        details: {type: 'object', schema: {nestedValues: {type: 'array.refvalue', ref: 'Category'}}},
+        rows: {type: 'array.object', schema: {
+            rowValues: {type: 'array.refvalue', ref: 'Category'},
+            deeper: {type: 'object', schema: {deepValues: {type: 'array.refvalue', ref: 'Category'}}},
+        }},
+    };
+    const source = TemplateMongoModel(entity(schema));
+    assert.match(source, /values: \[\{type: String,\s+required: true, index: true, unique: true/);
+    for (const field of ['nestedValues', 'rowValues', 'deepValues']) {
+        assert.match(source, new RegExp(`${field}: \\[\\{type: String,\\s+required: false`));
+    }
+    assert.doesNotMatch(source, /ref:|ObjectId/);
+    assert.match(TemplateMongoRepository(entity(schema)), /this\._populateFields = \[\]/);
+    const mixed = entity({...schema, relation: {type: 'ref', ref: 'Category'}, relations: {type: 'array.ref', ref: 'Category'}});
+    const model = TemplateMongoModel(mixed);
+    assert.match(model, /relation: \{type: mongoose.Schema.Types.ObjectId, ref: 'Category'/);
+    assert.match(model, /relations: \[\{type: mongoose.Schema.Types.ObjectId, ref: 'Category'/);
+    assert.match(TemplateMongoRepository(mixed), /this\._populateFields = \['relation', 'relations'\]/);
+});
+
+test('SQLite persists array.refvalue as JSON arrays without relations', () => {
+    const schema: ISchema = {
+        values: {type: 'array.refvalue', ref: 'Category', unique: true},
+        details: {type: 'object', schema: {nestedValues: {type: 'array.refvalue', ref: 'Category'}}},
+        rows: {type: 'array.object', schema: {rowValues: {type: 'array.refvalue', ref: 'Category'}}},
+    };
+    const repository = loadTemplate(TemplateSqliteRepository(entity(schema)), () => ({AbstractSqliteRepository: class {}})).default;
+    const instance = new repository();
+    const field = instance.tableFields.find((field: any) => field.name === 'values');
+    assert.equal(field.type, 'TEXT');
+    assert.equal(field.unique, true);
+    assert.equal(instance.populateFields.length, 0);
+    assert.equal(instance.jsonFields.join(','), 'values,details,rows');
+    const mixed = TemplateSqliteRepository(entity({...schema,
+        relation: {type: 'ref', ref: 'Category'},
+        relations: {type: 'array.ref', ref: 'Category'},
+    }));
+    assert.match(mixed, /\{ field: 'relation', table: 'relation', identifier: '_id' \}/);
+    assert.match(mixed, /\{ field: 'relations', table: 'relations', identifier: '_id' \}/);
+    assert.doesNotMatch(mixed, /\{ field: '(values|details|rows)'/);
+});
+
+test('array.refvalue uses string arrays in Zod schemas and both entity interfaces', () => {
+    const schema: ISchema = {
+        requiredValues: {type: 'array.refvalue', ref: 'Category', required: true},
+        optionalValues: {type: 'array.refvalue', ref: 'Category'},
+        defaultValues: {type: 'array.refvalue', ref: 'Category', default: ["O'Reilly", 'code']},
+        emptyValues: {type: 'array.refvalue', ref: 'Category', default: []},
+        details: {type: 'object', schema: {nestedValues: {type: 'array.refvalue', ref: 'Category'}}},
+        rows: {type: 'array.object', schema: {rowValues: {type: 'array.refvalue', ref: 'Category', required: true, default: ['row']}}},
+    };
+    const source = TemplateSchema(entity(schema));
+    assert.match(source, /requiredValues: z.array\(z.string\(\)\)(?=,)/);
+    assert.match(source, /optionalValues: z.array\(z.string\(\)\).optional\(\)(?=,)/);
+    assert.ok(source.includes(`defaultValues: z.array(z.string()).optional().default(["O'Reilly","code"])`));
+    assert.match(source, /emptyValues: z.array\(z.string\(\)\).optional\(\).default\(\[\]\)/);
+    assert.match(source, /nestedValues: z.array\(z.string\(\)\).optional\(\)/);
+    assert.match(source, /rowValues: z.array\(z.string\(\)\).default\(\["row"\]\)/);
+    assert.match(source, /const ExampleSchema = ExampleBaseSchema\s+\.extend\(\{\s+_id: z.coerce.string\(\),\s+\}\)/);
+    assert.doesNotMatch(source, /CategorySchema|z.object\(\{_id|z.array\(z.coerce.string/);
+    const interfaces = TemplateEntityInterface(entity(schema));
+    for (const declaration of [
+        'requiredValues: Array<string>', 'optionalValues?: Array<string>',
+        'defaultValues?: Array<string>', 'emptyValues?: Array<string>',
+        'nestedValues?: Array<string>', 'rowValues: Array<string>',
+    ]) {
+        assert.equal(interfaces.split(declaration).length - 1, 2);
+    }
+    assert.doesNotMatch(interfaces, /Array<any>|: any/);
+    const mixed = TemplateSchema(entity({
+        ...schema,
+        relation: {type: 'ref', ref: 'Category', refDisplay: 'title'},
+        relations: {type: 'array.ref', ref: 'Category', refDisplay: 'title'},
+    }));
+    assert.match(mixed, /relation: z.coerce.string\(\).optional\(\).nullable\(\)/);
+    assert.match(mixed, /relations: z.array\(z.coerce.string\(\)\).optional\(\)/);
+    assert.match(mixed, /relations: z.array\(z.object\(\{_id: z.coerce.string\(\), title: z.string\(\)\}\)\)/);
+});
+
+test('array.refvalue table slots render stored strings like array.string, not populated refs', () => {
+    const source = TemplateCrudComponent(entity({
+        values: {type: 'array.refvalue', ref: 'Category', refDisplay: 'title'},
+        strings: {type: 'array.string'},
+        relations: {type: 'array.ref', ref: 'Category', refDisplay: 'title'},
+    }));
+    for (const field of ['values', 'strings']) {
+        assert.ok(source.includes(`<template v-slot:item.${field}="{value}"><v-chip v-for="v in value">{{v}}</v-chip></template>`));
+    }
+    assert.match(source, /value.map\(v => v.title\).join/);
 });
 
 test('Zod base and output schemas and both interfaces retain singular strings, including nested values', () => {

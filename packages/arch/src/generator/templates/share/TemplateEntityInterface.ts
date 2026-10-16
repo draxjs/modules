@@ -47,6 +47,7 @@ const generateEntityInterface = (schema: ISchema) => {
                 fields.push(`    ${field}${!schema[field].required ? "?" : ""}: {${generateEntityInterface(schema[field].schema)}}`)
                 break;
             case "array.string":
+            case "array.refvalue":
             case "array.enum":
                 fields.push(`    ${field}${!schema[field].required ? "?" : ""}: Array<string>`)
                 break;

@@ -649,12 +649,13 @@ const hasHideDetails = computed(() => {
 
 
     <crud-autocomplete
-        v-if="field.type === 'array.ref'"
-        :id="`crud-form-field-array-ref-${name}`"
-        class="crud-form-field__array-ref-autocomplete"
+        v-if="field.type === 'array.ref' || field.type === 'array.refvalue'"
+        :id="`crud-form-field-${field.type.replace('.', '-')}-${name}`"
+        :class="`crud-form-field__${field.type.replace('.', '-')}-autocomplete`"
         :entity="entity.getRef(field.ref)"
         :field="field"
-        :item-title="field?.refDisplay"
+        :item-title="field.refDisplay ?? 'name'"
+        :item-value="field.type === 'array.refvalue' ? (field.refValue ?? 'name') : '_id'"
         v-model="valueModel"
         :multiple="true"
         :chips="true"

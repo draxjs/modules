@@ -76,6 +76,7 @@ export function useDynamicFilters(
 
     function normalizeFieldType(type: string): IEntityCrudFieldTypes {
         if (type === 'array.ref') return 'ref'
+        if (type === 'array.refvalue') return 'refvalue'
         if (type === 'array.string') return 'string'
         if (type === 'longString') return 'string'
         if (type === 'array.number') return 'number'
@@ -120,7 +121,11 @@ export function useDynamicFilters(
                 filter.type = 'array.ref'
             }
 
-            if (['string', 'longString', 'array.string', 'refvalue'].includes(field.type)) {
+            if (['refvalue', 'array.refvalue'].includes(field.type)) {
+                filter.type = 'array.refvalue'
+            }
+
+            if (['string', 'longString', 'array.string'].includes(field.type)) {
                 filter.type = 'array.string'
             }
 

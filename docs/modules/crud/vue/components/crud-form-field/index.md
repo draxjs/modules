@@ -65,6 +65,7 @@ Se emite cada vez que cambia el valor visible y sirve para que el padre aplique 
   - `array.number`
   - `array.enum`
   - `array.ref`
+  - `array.refvalue`
   - `array.object`
 
 ## Integraciones relevantes
@@ -169,7 +170,16 @@ Arch genera el registro de la entidad de opciones en el CRUD y persiste el campo
 
 La selección no admite valores libres: las opciones se cargan con el provider de la entidad. `noFilter` y `addOnTheFly` funcionan como en `ref`; la creación al vuelo guarda `refValue`, no el ID.
 
-El texto guardado es una copia: renombrar o eliminar la opción no modifica los registros existentes. Los valores históricos se siguen mostrando aunque la opción ya no aparezca en la lista. Este tipo es singular; no se agrega `array.refvalue`.
+El texto guardado es una copia: renombrar o eliminar la opción no modifica los registros existentes. Los valores históricos se siguen mostrando aunque la opción ya no aparezca en la lista. Para selección múltiple usá `array.refvalue`:
+
+```ts
+{
+  name: 'statuses', type: 'array.refvalue', ref: 'Status',
+  refValue: 'code', refDisplay: 'name', label: 'Statuses', default: []
+}
+```
+
+Se guardará, por ejemplo, `['active', 'pending']`, nunca los IDs. Si omitís `refValue`, guarda los nombres. En Arch se declara igual, sin `name` ni `label` y usando la clave del campo en el schema. Se generan arrays de strings en interfaces y Zod, arrays de `String` en Mongo y JSON en `TEXT` en SQLite, sin relaciones ni `populate`. La creación al vuelo agrega el valor nuevo sin perder la selección actual.
 
 ## Cuándo usarlo
 

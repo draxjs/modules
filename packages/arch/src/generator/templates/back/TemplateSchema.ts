@@ -61,6 +61,7 @@ const generateEntityBaseSchema = (schema: ISchema) => {
                 fields.push(`    ${field}: z.object({${generateEntityBaseSchema(schema[field].schema)}})`)
                 break;
             case "array.string":
+            case "array.refvalue":
                 fields.push(`    ${field}: z.array(z.string())${schema[field].required ? "" : ".optional()"}${schema[field].default? ".default("+JSON.stringify(schema[field].default)+")" : ""}`)
                 break;
             case "array.enum":

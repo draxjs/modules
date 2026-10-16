@@ -3,7 +3,7 @@ import {IEntitySchema, IFieldSchema, ISchema} from "../../../interfaces/IEntityS
 const collectRefs = (schema: ISchema, refs = new Set<string>()): Set<string> => {
     for (const field in schema) {
         const fieldSchema = schema[field]
-        if (['ref', 'array.ref', 'refvalue'].includes(fieldSchema.type) && fieldSchema.ref) {
+        if (['ref', 'array.ref', 'refvalue', 'array.refvalue'].includes(fieldSchema.type) && fieldSchema.ref) {
             refs.add(fieldSchema.ref)
         }
         if (['object', 'array.object'].includes(fieldSchema.type) && fieldSchema.schema) {
@@ -82,6 +82,7 @@ const generateDefault = (field: string, fieldSchema: IFieldSchema) => {
             case "enum":
                 return fieldSchema.default != undefined ? `'${fieldSchema.default}'` : null
             case "array.string":
+            case "array.refvalue":
             case "array.number":
             case "array.file":
             case "array.ref":
@@ -177,9 +178,10 @@ const generateFields = (schema: ISchema | undefined) => {
             case "ref":
             case "array.ref":
             case "refvalue":
+            case "array.refvalue":
                 compositionField.push(`ref: '${schema[field].ref}'`)
                 compositionField.push(`refDisplay: '${schema[field].refDisplay ?? 'name'}'`)
-                if (schema[field].type === 'refvalue') {
+                if (['refvalue', 'array.refvalue'].includes(schema[field].type)) {
                     compositionField.push(`refValue: '${schema[field].refValue ?? 'name'}'`)
                 }
                 break;
