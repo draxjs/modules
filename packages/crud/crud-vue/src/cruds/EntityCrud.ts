@@ -5,6 +5,7 @@ import type {
   IEntityCrudOnInput, IEntityCrudOperation
 } from "@drax/crud-share";
 import {createCrudFilterValue} from "../helpers/CrudRangeFilters";
+import {createFormDefaults} from "../helpers/CrudFormDefaults";
 
 
 
@@ -99,44 +100,11 @@ class EntityCrud implements IEntityCrud {
   }
 
   objectFields(field: IEntityCrudField) {
-    let value: any = {}
-    if (field.objectFields) {
-      field.objectFields.forEach(subField => {
-
-        if (subField.default != undefined) {
-          value[subField.name] = field.default
-        } else if (subField.type === 'object') {
-          value[subField.name] = this.objectFields(field)
-        } else if (/array/.test(field.type)) {
-          value[subField.name] = []
-        } else {
-          value = null
-        }
-
-      })
-    }
-    return value
+    return createFormDefaults(field.objectFields ?? [])
   }
 
   get form(): IEntityCrudForm {
-
-    return this.fields.reduce((acc, field) => {
-      let value = null
-      if (field.default != undefined) {
-        value = field.default
-      } else if (field.type === 'object') {
-        value = this.objectFields(field)
-      } else if (field.type === 'record') {
-        value = {}
-      } else if (/array/.test(field.type)) {
-        value = []
-      } else {
-        value = null
-      }
-
-      return {...acc, [field.name]: value}
-    }, {})
-
+    return createFormDefaults(this.fields)
   }
 
 

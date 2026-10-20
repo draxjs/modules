@@ -24,7 +24,7 @@ const {t, te} = useI18n()
 
 const {hasPermission} = useAuth()
 
-const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: false})
+const valueModel = defineModel<any>({type: [String, Number, Boolean, Object, Array], default: undefined})
 
 const {index, entity, field, fieldPath, parentField, errorMessages, rules, onInput, readonly, hideDetails} = defineProps({
   entity: {type: Object as PropType<IEntityCrud>, required: true},

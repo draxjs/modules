@@ -12,6 +12,7 @@ import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
 import {createCrudFilterValue, expandRangeFilters} from "../helpers/CrudRangeFilters";
 import {castDateValue} from "../helpers/CastDateValue";
+import {initializeFormDefaults} from "../helpers/CrudFormDefaults";
 
 
 export function useCrud(entity: IEntityCrud) {
@@ -452,8 +453,6 @@ export function useCrud(entity: IEntityCrud) {
                 case 'array.ref':
                     if (item[field.name] && Array.isArray(item[field.name])) {
                         item[field.name] = item[field.name].map(((i: any) => getItemId(i) ? getItemId(i) : i))
-                    } else {
-                        item[field.name] = []
                     }
                     break
                 case 'object':
@@ -471,12 +470,12 @@ export function useCrud(entity: IEntityCrud) {
     }
 
     function cast(item: any) {
-        return castFields(entity.fields, item)
+        return castFields(entity.fields, initializeFormDefaults(entity.fields, item))
     }
 
     function onView(item: object) {
         store.setOperation("view")
-        store.setForm(cast({...item}))
+        store.setForm(cast(cloneItem(item)))
         openDialog()
     }
 
@@ -509,7 +508,7 @@ export function useCrud(entity: IEntityCrud) {
     }
 
     function onDelete(item: object) {
-        store.setForm(cast({...item}))
+        store.setForm(cast(cloneItem(item)))
         store.setOperation("delete")
         openDialog()
     }

@@ -6,6 +6,7 @@ import {useI18n} from "vue-i18n";
 import {useCrudStore} from "../stores/UseCrudStore";
 import {useDisplay} from "vuetify"
 import {normalizeFieldValue} from "../helpers/NormalizeFieldValue";
+import {createFormDefaults} from "../helpers/CrudFormDefaults";
 
 
 const {t, te} = useI18n()
@@ -47,10 +48,7 @@ function getItemKey(item: any) {
 }
 
 function newItem() {
-  return field.objectFields ? field.objectFields.reduce((acc, field) => ({
-    ...acc,
-    [field.name]: field.default
-  }), {}) : []
+  return createFormDefaults(field.objectFields ?? [])
 }
 
 function getField(key: string): IEntityCrudField | undefined {
