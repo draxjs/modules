@@ -21,6 +21,8 @@ interface IUser{
     emailVerified?: boolean
     phoneVerified?: boolean
     emailCode?: string
+    emailCodeExpiresAt?: number
+    emailVerificationLastAttemptAt?: number
     phoneCode?: string
     recoveryCode?: string
 }

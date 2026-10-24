@@ -7,14 +7,18 @@ const RegisterBodyRequestSchema = z.object({
         .min(1, "validation.required"),
     email: email("validation.email.invalid"),
     phone: string({ error: "validation.required" }).optional(),
+    tenantName: string({ error: "validation.required" }).optional(),
     password: string({ error: "validation.required" })
         .min(1, "validation.required"),
 });
 
 const RegisterBodyResponseSchema = z.object({
     success: z.boolean(),
+    verificationEmailSent: z.boolean().optional(),
     message: z.string().optional(),
 
 });
 
-export {RegisterBodyRequestSchema, RegisterBodyResponseSchema}
+const RegistrationOptionsResponseSchema = z.object({tenantRequired: z.boolean()});
+
+export {RegisterBodyRequestSchema, RegisterBodyResponseSchema, RegistrationOptionsResponseSchema}

@@ -6,7 +6,7 @@ import {
     DraxConfig,
     StoreManager,
     ValidationError,
-    UnauthorizedError, SecuritySensitiveError, BadRequestError,
+    UnauthorizedError, SecuritySensitiveError, BadRequestError, ZodErrorToValidationError,
 } from "@drax/common-back";
 
 import UserServiceFactory from "../factory/UserServiceFactory.js";
@@ -22,6 +22,11 @@ import TenantServiceFactory from "../factory/TenantServiceFactory.js";
 import {CustomRequest} from "@drax/crud-back";
 import PasswordPolicyServiceFactory from "../factory/PasswordPolicyServiceFactory.js";
 import {LoginBodyRequestSchema, RefreshTokenBodyRequestSchema} from "../schemas/LoginSchema.js";
+import {RegisterBodyRequestSchema} from "../schemas/RegisterSchema.js";
+import UserVerificationServiceFactory from '../factory/UserVerificationServiceFactory.js';
+import VerificationResendRateLimiter from '../middleware/VerificationResendRateLimiter.js';
+import {z} from 'zod';
+
 
 const BASE_FILE_DIR = DraxConfig.getOrLoad(CommonConfig.FileDir) || 'files';
 const AVATAR_DIR = DraxConfig.getOrLoad(IdentityConfig.AvatarDir) || 'avatar';
@@ -31,6 +36,7 @@ const BASE_URL = DraxConfig.getOrLoad(CommonConfig.BaseUrl) ? DraxConfig.get(Com
 class UserController extends AbstractFastifyController<IUser, IUserCreate, IUserUpdate> {
 
     protected service: UserService
+    private readonly verificationResendLimiter = new VerificationResendRateLimiter()
 
     constructor() {
         super(UserServiceFactory(), UserPermissions)
@@ -243,13 +249,36 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
         }
     }
 
+    async registrationOptions(request, reply) {
+        return {
+            tenantRequired: DraxConfig.getOrLoad(IdentityConfig.RegistrationTenantEnabled, 'boolean', false)
+        }
+    }
+
     async register(request, reply) {
         try {
-            if (request.rbac.getAuthUser) {
+            if (request.authUser || request.rbac.userId) {
                 throw new UnauthorizedError()
             }
 
-            const payload = request.body
+            const parsed = RegisterBodyRequestSchema.safeParse(request.body)
+            if (!parsed.success) {
+                throw ZodErrorToValidationError(parsed.error, request.body)
+            }
+            const {tenantName, ...registration} = parsed.data
+            const tenantRequired = DraxConfig.getOrLoad(IdentityConfig.RegistrationTenantEnabled, 'boolean', false)
+            if (tenantRequired && !tenantName?.trim()) {
+                throw new ValidationError([{field: 'tenantName', reason: 'validation.required'}])
+            }
+            // Only public registration fields are accepted; role and tenant IDs are server-owned.
+            const payload: IUserCreate = {
+                ...registration,
+                phone: registration.phone ?? '',
+                role: '',
+                origin: 'Registry',
+                active: false,
+                tenant: null,
+            }
 
             const defaultRole = DraxConfig.getOrLoad(IdentityConfig.defaultRole)
 
@@ -262,26 +291,23 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
 
             if (!role) {
                 throw new ValidationError([{field: 'role', reason: 'Role not found'}])
-            } else if (role.name === 'Admin') {
-                payload.tenant = null
             }
 
             payload.role = role._id.toString()
-            payload.origin ??= 'Registry'
 
             const userService = UserServiceFactory()
-            let user = await userService.register(payload)
+            let user = await userService.register(payload, tenantRequired ? tenantName?.trim() : undefined)
 
             if (user) {
                 const detail = `User ${user?.username} registered successfully.`;
                 this.onUserEvent(request, 'register', user?._id, detail)
 
-                //SEND EMAIL FOR EMAIL VERIFICATION
-                await UserEmailService.emailVerifyCode(user.emailCode, user.email)
+                const verificationEmailSent = await UserVerificationServiceFactory().send(user.email)
 
                 return {
                     success: true,
-                    message: 'User registered successfully.'
+                    message: 'User registered successfully.',
+                    verificationEmailSent,
                 }
             }
 
@@ -289,6 +315,15 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
         } catch (e) {
             this.handleError(e, reply)
         }
+    }
+
+    async resendVerification(request, reply) {
+        const allowed = this.verificationResendLimiter.allow(request.ip)
+        const parsed = z.object({email: z.email()}).safeParse(request.body)
+        if (allowed && parsed.success) {
+            await UserVerificationServiceFactory().send(parsed.data.email)
+        }
+        return {success: true, message: 'If an account is pending verification, activation instructions will be sent.'}
     }
 
     async verifyEmail(request, reply) {

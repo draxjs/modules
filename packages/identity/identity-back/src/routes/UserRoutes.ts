@@ -2,7 +2,7 @@ import UserController from "../controllers/UserController.js";
 import {CrudSchemaBuilder} from "@drax/crud-back";
 import {LoginBodyRequestSchema, LoginBodyResponseSchema, RefreshTokenBodyRequestSchema} from "../schemas/LoginSchema.js"
 import {UserSchema, UserCreateSchema, UserUpdateSchema} from "../schemas/UserSchema.js";
-import {RegisterBodyRequestSchema, RegisterBodyResponseSchema} from "../schemas/RegisterSchema.js";
+import {RegisterBodyRequestSchema, RegisterBodyResponseSchema, RegistrationOptionsResponseSchema} from "../schemas/RegisterSchema.js";
 import {
     MyPasswordBodyRequestSchema,
     PasswordBodyRequestSchema,
@@ -100,6 +100,13 @@ async function UserRoutes(fastify, options) {
         (req, rep) => controller.switchTenant(req, rep))
 
 
+    fastify.get('/api/auth/registration-options', {
+        schema: {
+            tags: ['Auth'],
+            response: {200: zod.toJSONSchema(RegistrationOptionsResponseSchema)},
+        },
+    }, (req, rep) => controller.registrationOptions(req, rep))
+
     fastify.post('/api/users/register', {
         schema: {
             tags: ['Auth'],
@@ -112,7 +119,16 @@ async function UserRoutes(fastify, options) {
         },
     }, (req, rep) => controller.register(req, rep))
 
+    fastify.post('/api/users/verification/resend', {
+        schema: {
+            tags: ['Auth'],
+            response: {200: zod.toJSONSchema(zod.object({success: zod.boolean(), message: zod.string()}))},
+        },
+    }, (req, rep) => controller.resendVerification(req, rep))
+
     fastify.get('/api/users/verify-email/:code', {
+        // Activation codes are URL credentials; exclude this route from automatic request logging.
+        logLevel: 'silent',
         schema: {
             tags: ['Auth'],
         }

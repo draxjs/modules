@@ -1,18 +1,42 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
+import type {IRegistrationOptions} from '@drax/identity-front'
 import {useAuth} from "../../composables/useAuth.js";
 import {ClientError} from "@drax/common-front";
 import type {IClientInputError} from "@drax/common-front";
 import {useI18nValidation} from "@drax/common-vue";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router"
+import IdentityVerificationResend from '../IdentityVerificationResend/IdentityVerificationResend.vue'
 
 const {t,te} = useI18n()
 const {$ta} = useI18nValidation()
 
 const router = useRouter()
 
-const {register} = useAuth()
+const {register, registrationOptions} = useAuth()
+const options = ref<IRegistrationOptions | null>(null)
+const optionsLoading = ref(true)
+const optionsError = ref(false)
+const tenantName = ref('')
+const rform = ref<{validate: () => Promise<{valid: boolean}>} | null>(null)
+
+async function loadRegistrationOptions() {
+  optionsLoading.value = true
+  optionsError.value = false
+  options.value = null
+  try {
+    const result = await registrationOptions()
+    if (typeof result?.tenantRequired !== 'boolean') throw new Error('Invalid registration options')
+    options.value = result
+  } catch {
+    optionsError.value = true
+  } finally {
+    optionsLoading.value = false
+  }
+}
+
+onMounted(loadRegistrationOptions)
 
 const variant = ref<"outlined" | "plain" | "filled" | "underlined" | "solo" | "solo-inverted" | "solo-filled" | undefined>('filled')
 
@@ -29,6 +53,8 @@ const inputErrors = ref<IClientInputError|undefined>({currentPassword: [], newPa
 const errorMsg = ref('')
 const loading = ref(false)
 const success = ref(false)
+const verificationEmailSent = ref<boolean>()
+const showVerificationResend = ref(false)
 
 let passwordVisibility = ref(false)
 let confirmPasswordVisibility = ref(false)
@@ -39,10 +65,23 @@ function confirmPasswordRule(value: string) {
 }
 
 async function submitRegistration() {
+  if (!options.value || optionsLoading.value || loading.value) return
+  loading.value = true
+  errorMsg.value = ''
+  inputErrors.value = undefined
   try {
-    loading.value = true
-    const result = await register(form.value)
+    if (options.value.tenantRequired && !tenantName.value.trim()) {
+      inputErrors.value = {tenantName: ['validation.required']}
+      return
+    }
+    if (!(await rform.value?.validate())?.valid) return
+    const payload = {
+      ...form.value,
+      ...(options.value.tenantRequired ? {tenantName: tenantName.value.trim()} : {})
+    }
+    const result = await register(payload)
     success.value = result.success
+    verificationEmailSent.value = result.verificationEmailSent
   } catch (err) {
     if (err instanceof ClientError) {
       inputErrors.value = err.inputErrors
@@ -61,12 +100,18 @@ async function submitRegistration() {
 
 <template>
   <v-sheet>
+    <identity-verification-resend
+        v-if="showVerificationResend"
+        :email="form.email"
+        :back-label="t('auth.backToRegistration')"
+        @back="showVerificationResend = false"
+    />
 
-    <template v-if="success">
+    <template v-else-if="success">
       <v-card>
         <v-card-text>
-          <v-alert type="success">
-            {{ t('user.events.registrationComplete') }}
+          <v-alert :type="verificationEmailSent === false ? 'warning' : 'success'">
+            {{ verificationEmailSent === false ? t('auth.registrationVerificationPending') : t('user.events.registrationComplete') }}
           </v-alert>
         </v-card-text>
         <v-card-text class="text-center">
@@ -81,12 +126,29 @@ async function submitRegistration() {
           <v-form ref="rform" @submit.prevent="submitRegistration">
             <v-card variant="elevated">
               <v-card-title class="pa-4">{{ t('user.action.register') }}</v-card-title>
+              <v-card-text v-if="optionsLoading">
+                <v-alert type="info">{{ t('auth.registrationOptionsLoading') }}</v-alert>
+              </v-card-text>
+              <v-card-text v-if="optionsError">
+                <v-alert type="error">{{ t('auth.registrationOptionsError') }}</v-alert>
+                <v-btn @click="loadRegistrationOptions">{{ t('auth.registrationOptionsRetry') }}</v-btn>
+              </v-card-text>
               <v-card-text v-if="errorMsg">
                 <v-alert type="error">
                   {{ te(errorMsg) ?t(errorMsg) : errorMsg }}
                 </v-alert>
               </v-card-text>
               <v-card-text>
+                <v-text-field
+                    v-if="options?.tenantRequired"
+                    id="tenant-name-input"
+                    v-model="tenantName"
+                    :label="t('auth.registrationTenantName')"
+                    :variant="variant"
+                    required
+                    :rules="[(v: string) => !!v?.trim() || t('validation.required')]"
+                    :error-messages="$ta(inputErrors?.tenantName)"
+                ></v-text-field>
                 <v-text-field
                     id="name-input"
                     :label="t('user.field.name')"
@@ -167,7 +229,7 @@ async function submitRegistration() {
                     color="grey"
                     variant="text"
                     id="submit-button"
-                    type="submit"
+                    type="button"
                     href="/login"
                 >
                   {{ t('auth.login') }}
@@ -179,6 +241,7 @@ async function submitRegistration() {
                     id="submit-button"
                     type="submit"
                     :loading="loading"
+                    :disabled="!options || optionsLoading || loading"
                 >
                   {{ t('action.sent') }}
                 </v-btn>
@@ -186,7 +249,20 @@ async function submitRegistration() {
             </v-card>
           </v-form>
     </template>
+
+    
   </v-sheet>
+
+  <div v-if="!showVerificationResend" class="mt-2 text-center">
+    <v-btn
+        type="button"
+        variant="text"
+        color="secondary"
+        @click="showVerificationResend = true"
+    >
+      {{ t('auth.verificationResendTitle') }}
+    </v-btn>
+  </div>
 </template>
 
 <style scoped lang="sass">

@@ -4,6 +4,7 @@ import {useAuth} from '../../composables/useAuth.js'
 import IdentityProfileView from "../IdentityProfileView/IdentityProfileView.vue";
 import {useI18n} from "vue-i18n";
 import IdentityRememberMe from '../IdentityRememberMe.vue'
+
 import {isRememberMeEnabled} from '../../composables/setupAuthSession'
 const {t, te} = useI18n()
 
@@ -21,6 +22,7 @@ const password = ref('')
 const authError = ref('')
 const loading = ref(false)
 const rememberMe = ref(false)
+
 
 const isFormValid = computed(() => username.value.trim() !== '' && password.value.trim() !== '')
 
@@ -59,6 +61,7 @@ function togglePasswordVisibility() {
           </v-card-text>
         </v-card>
   </template>
+
 
   <template v-else>
 
@@ -123,6 +126,7 @@ function togglePasswordVisibility() {
             </v-card-actions>
           </v-card>
         </v-form>
+
 
   </template>
 </template>

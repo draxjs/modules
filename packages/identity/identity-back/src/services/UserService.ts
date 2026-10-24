@@ -6,7 +6,7 @@ import {SecuritySensitiveError, ValidationError, ZodErrorToValidationError} from
 import AuthUtils from "../utils/AuthUtils.js";
 import {UserCreateSchema, UserUpdateSchema, UserBaseSchema} from "../schemas/UserSchema.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
-import {IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
+import {IDraxGroupByOptions, IDraxPaginateOptions, IDraxPaginateResult} from "@drax/crud-share";
 import {AbstractService} from "@drax/crud-back";
 import {randomUUID} from "crypto"
 import UserLoginFailServiceFactory from "../factory/UserLoginFailServiceFactory.js";
@@ -18,6 +18,9 @@ import UserPasswordHistoryServiceFactory from "../factory/UserPasswordHistorySer
 
 import RefreshTokenService from "./RefreshTokenService.js";
 import RefreshTokenServiceFactory from "../factory/RefreshTokenServiceFactory.js";
+import TenantServiceFactory from "../factory/TenantServiceFactory.js";
+import UserVerificationService from './UserVerificationService.js';
+import {userSecretFields} from '../utils/UserSecrets.js';
 
 class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
@@ -227,22 +230,56 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
     }
 
-    async register(userData: IUserCreate): Promise<IUser> {
+    async register(userData: IUserCreate, tenantName?: string): Promise<IUser> {
+        let createdTenantId: string | undefined
         try {
 
             userData.emailVerified = false
             userData.phoneVerified = false
             userData.active = false
 
-            userData.emailCode = randomUUID()
+            // Email codes are issued by the persistent verification claim, never by create().
+            delete userData.emailCode
             userData.phoneCode = randomUUID()
 
 
-            let user = await this.create(userData)
+            if (tenantName !== undefined) {
+                const name = tenantName.trim()
+                if (!name) throw new ValidationError([{field: 'tenantName', reason: 'validation.required'}])
+                // Validate before reserving a tenant name; create() still performs its normal checks.
+                await UserCreateSchema.parseAsync(userData)
+                await this.passwordPolicyService.validatePassword(userData.password)
+                const tenants = TenantServiceFactory()
+                if (await tenants.findByName(name)) {
+                    throw new ValidationError([{field: 'tenantName', reason: 'validation.unique'}])
+                }
+                try {
+                    const tenant = await tenants.create({name})
+                    createdTenantId = tenant._id.toString()
+                    userData.tenant = createdTenantId
+                } catch (error) {
+                    // The database unique index is authoritative, including competing registrations.
+                    if (error instanceof ValidationError) {
+                        throw new ValidationError(error.errors.map(field => ({
+                            ...field, field: field.field === 'name' ? 'tenantName' : field.field
+                        })))
+                    }
+                    throw error
+                }
+            }
 
-            return user
+            return await this.create(userData)
         } catch (e) {
-            console.error("Error registry user", e)
+            if (createdTenantId) {
+                // Never remove a tenant if persistence succeeded but a later step (e.g. history) failed.
+                const persisted = await this.findByUsername(userData.username)
+                const tenant = persisted?.tenant
+                const persistedTenantId = typeof tenant === 'string' ? tenant : tenant?._id?.toString()
+                if (persistedTenantId !== createdTenantId) {
+                    await TenantServiceFactory().delete(createdTenantId)
+                }
+            }
+            console.error("Error registering user")
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, userData)
             }
@@ -251,16 +288,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     }
 
     async verifyEmail(emailCode: string): Promise<boolean> {
-        const user = await this._repository.findByEmailCode(emailCode)
-        if (user && user.emailVerified === false) {
-            await this._repository.updatePartial(user._id, {
-                emailVerified: true,
-                active: true
-            })
-            return true
-        } else {
-            throw new ValidationError([{field: 'emailCode', reason: 'validation.notFound'}])
-        }
+        return new UserVerificationService(this._repository).verify(emailCode)
     }
 
     async verifyPhone(phoneCode: string): Promise<boolean> {
@@ -293,7 +321,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             await this.userPasswordHistoryService.create(user._id.toString(), passwordHash)
             return user
         } catch (e) {
-            console.error("Error creating user", e)
+            console.error("Error creating user")
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, userData)
             }
@@ -314,7 +342,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             const user: IUser = await this._repository.update(id, userData)
             return user
         } catch (e) {
-            console.error("Error updating user", e)
+            console.error("Error updating user")
             if (e instanceof ZodError) {
                 throw ZodErrorToValidationError(e, userData)
             }
@@ -395,6 +423,14 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             throw e;
         }
 
+    }
+
+    override async groupBy(options: IDraxGroupByOptions): Promise<any[]> {
+        // Aggregations bypass normal entity projections and serialization.
+        if (options.fields?.some(field => userSecretFields.some(secret => field.split('.')[0] === secret))) {
+            throw new ValidationError([{field: 'fields', reason: 'validation.invalid'}])
+        }
+        return super.groupBy(options)
     }
 
     async search(value: any, limit: number = 1000, filters = []): Promise<IUser[]> {

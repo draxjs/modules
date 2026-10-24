@@ -1,9 +1,15 @@
 import {DraxConfig} from "@drax/common-back";
 import IdentityConfig from "../config/IdentityConfig.js";
 import PasswordPolicyConfig from "../config/PasswordPolicyConfig.js";
+import {positiveVerificationSeconds} from '../config/EmailVerificationConfig.js';
 
 function LoadIdentityConfigFromEnv() {
 
+    DraxConfig.set(IdentityConfig.EmailVerificationTTLSeconds, positiveVerificationSeconds(
+        process.env[IdentityConfig.EmailVerificationTTLSeconds], 86400, IdentityConfig.EmailVerificationTTLSeconds))
+    DraxConfig.set(IdentityConfig.EmailVerificationResendCooldownSeconds, positiveVerificationSeconds(
+        process.env[IdentityConfig.EmailVerificationResendCooldownSeconds], 60, IdentityConfig.EmailVerificationResendCooldownSeconds))
+    DraxConfig.set(IdentityConfig.RegistrationTenantEnabled, process.env[IdentityConfig.RegistrationTenantEnabled])
     DraxConfig.set(IdentityConfig.RememberMeEnabled, process.env[IdentityConfig.RememberMeEnabled])
     DraxConfig.set(IdentityConfig.RefreshTokenTTLSeconds, process.env[IdentityConfig.RefreshTokenTTLSeconds])
     DraxConfig.set(IdentityConfig.JwtSecret, process.env[IdentityConfig.JwtSecret])

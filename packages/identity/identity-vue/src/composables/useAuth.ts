@@ -81,6 +81,14 @@ export function useAuth() {
         return await authSystem.recoveryPasswordComplete(recoveryCode, newPassword)
     }
 
+    const registrationOptions = async () => {
+        return await authSystem.registrationOptions()
+    }
+
+    const resendVerificationEmail = async (email: string) => {
+        return await authSystem.resendVerificationEmail(email)
+    }
+
     const register = async (form: any) => {
         return await authSystem.register(form)
     }
@@ -147,7 +155,7 @@ export function useAuth() {
         isAuthenticated, fetchAuthUser,
         changeOwnPassword, changeAvatar, passwordPolicy,
         recoveryPasswordRequest, recoveryPasswordComplete,
-        register, switchTenant
+        register, registrationOptions, resendVerificationEmail, switchTenant
     }
 
 }

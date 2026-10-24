@@ -4,6 +4,9 @@ import type {IAuthFullUser} from "../../interfaces/IAuthFullUser";
 import type {ILoginResponse} from "../../interfaces/ILoginResponse";
 import type {IPasswordPolicy} from "../../interfaces/IPasswordPolicy";
 import type {IUserRegistration} from "../../interfaces/IUserRegistration";
+import type {IRegistrationOptions} from "../../interfaces/IRegistrationOptions";
+import type {IRegistrationResponse} from "../../interfaces/IRegistrationResponse";
+import type {IVerificationResendResponse} from "../../interfaces/IVerificationResendResponse";
 
 class AuthGqlProvider implements IAuthProvider {
 
@@ -50,6 +53,11 @@ class AuthGqlProvider implements IAuthProvider {
         return data.me
     }
 
+    async registrationOptions(): Promise<IRegistrationOptions> {
+        // Registration options are REST-only; this provider has no REST client and registration is unsupported.
+        return {tenantRequired: false}
+    }
+
     passwordPolicy(): Promise<IPasswordPolicy> {
         throw new Error('Not implemented')
     }
@@ -90,7 +98,11 @@ class AuthGqlProvider implements IAuthProvider {
         throw new Error('Not implemented')
     }
 
-    register(form: IUserRegistration): Promise<{success: boolean; message: string}> {
+    async resendVerificationEmail(email: string): Promise<IVerificationResendResponse> {
+        throw new Error('resendVerificationEmail is not implemented for GraphQL')
+    }
+
+    register(form: IUserRegistration): Promise<IRegistrationResponse> {
         throw new Error('Not implemented')
     }
 }

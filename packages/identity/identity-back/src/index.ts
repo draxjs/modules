@@ -1,5 +1,6 @@
 import GraphqlMerge from "./graphql/index.js"
 import UserServiceFactory from "./factory/UserServiceFactory.js";
+import UserVerificationServiceFactory from './factory/UserVerificationServiceFactory.js';
 import RoleServiceFactory from "./factory/RoleServiceFactory.js";
 import TenantServiceFactory from "./factory/TenantServiceFactory.js";
 import UserApiKeyServiceFactory from "./factory/UserApiKeyServiceFactory.js";
@@ -10,6 +11,7 @@ import UserPasswordHistoryServiceFactory from "./factory/UserPasswordHistoryServ
 
 import RoleService from "./services/RoleService.js";
 import UserService from "./services/UserService.js";
+import UserVerificationService from './services/UserVerificationService.js';
 import TenantService from "./services/TenantService.js";
 import PermissionService from "./services/PermissionService.js";
 import UserApiKeyService from "./services/UserApiKeyService.js";
@@ -47,7 +49,7 @@ import SetProjectPasswordPolicy from "./setup/SetProjectPasswordPolicy.js";
 
 import type {IRoleRepository} from "./interfaces/IRoleRepository";
 import type {ITenantRepository} from "./interfaces/ITenantRepository";
-import type {IUserRepository} from "./interfaces/IUserRepository";
+import type {IUserRepository, IEmailVerificationClaim} from "./interfaces/IUserRepository";
 import type {IUserApiKeyRepository} from "./interfaces/IUserApiKeyRepository";
 import type {IUserLoginFailRepository} from "./interfaces/IUserLoginFailRepository";
 import type {IUserSessionRepository} from "./interfaces/IUserSessionRepository";
@@ -105,6 +107,7 @@ export type {
     IRoleRepository,
     ITenantRepository,
     IUserRepository,
+    IEmailVerificationClaim,
     IUserApiKeyRepository,
     IUserLoginFailRepository,
     IUserSessionRepository,
@@ -127,6 +130,7 @@ export {
 
     //Service
     UserService,
+    UserVerificationService,
     RoleService,
     TenantService,
     UserApiKeyService,
@@ -140,6 +144,7 @@ export {
 
     //Factories
     UserServiceFactory,
+    UserVerificationServiceFactory,
     RoleServiceFactory,
     TenantServiceFactory,
     UserApiKeyServiceFactory,

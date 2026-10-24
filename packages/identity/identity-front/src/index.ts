@@ -52,6 +52,9 @@ import type {IUserPassword} from "./interfaces/IUserPassword"
 import type {ILoginResponse} from "./interfaces/ILoginResponse"
 import type {IPasswordPolicy} from "./interfaces/IPasswordPolicy"
 import type {IUserRegistration} from "./interfaces/IUserRegistration"
+import type {IRegistrationOptions} from "./interfaces/IRegistrationOptions"
+import type {IRegistrationResponse} from "./interfaces/IRegistrationResponse"
+import type {IVerificationResendResponse} from "./interfaces/IVerificationResendResponse"
 
 export type {
     IAuthProvider,
@@ -63,7 +66,10 @@ export type {
     IUserPassword,
     ILoginResponse,
     IPasswordPolicy,
-    IUserRegistration
+    IUserRegistration,
+    IRegistrationOptions,
+    IRegistrationResponse,
+    IVerificationResendResponse
 }
 
 export {

@@ -3,6 +3,10 @@ import type {IAuthFullUser} from "../interfaces/IAuthFullUser";
 import type {ILoginResponse} from "../interfaces/ILoginResponse";
 import type {IPasswordPolicy} from "../interfaces/IPasswordPolicy";
 import type {IUserRegistration} from "../interfaces/IUserRegistration";
+import type {IRegistrationResponse} from "../interfaces/IRegistrationResponse";
+import type {IVerificationResendResponse} from "../interfaces/IVerificationResendResponse";
+
+import type {IRegistrationOptions} from "../interfaces/IRegistrationOptions";
 
 class AuthSystem implements IAuthProvider {
 
@@ -42,6 +46,10 @@ class AuthSystem implements IAuthProvider {
         return authUser
     }
 
+    async registrationOptions():Promise<IRegistrationOptions> {
+        return await this._provider.registrationOptions()
+    }
+
     async passwordPolicy():Promise<IPasswordPolicy> {
         const result: IPasswordPolicy = await this._provider.passwordPolicy()
         return result
@@ -62,7 +70,12 @@ class AuthSystem implements IAuthProvider {
         return result
     }
 
-    async register(form: IUserRegistration):Promise<{success:boolean, message: string}> {
+    async resendVerificationEmail(email: string):Promise<IVerificationResendResponse> {
+        if (!this._provider.resendVerificationEmail) throw new Error('resendVerificationEmail is not implemented by this provider')
+        return await this._provider.resendVerificationEmail(email)
+    }
+
+    async register(form: IUserRegistration):Promise<IRegistrationResponse> {
         const result = await this._provider.register(form)
         return result
     }

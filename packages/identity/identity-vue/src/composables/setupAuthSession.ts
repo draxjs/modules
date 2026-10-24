@@ -162,7 +162,8 @@ export async function setupAuthSession(): Promise<void> {
     }
     syncAuthHeaders(store)
     client.setBeforeRequest?.(async (url) => {
-        if (/\/api\/auth\/(login|refresh|logout)\/?(?:[?#]|$)/.test(url)) return
+        if (/\/api\/auth\/(login|refresh|logout|registration-options)\/?(?:[?#]|$)/.test(url)) return
+        if (/\/api\/users\/(register|verification\/resend)\/?(?:[?#]|$)/.test(url)) return
         // The profile fetch uses the fresh JWT and must not await its own refresh promise.
         if (fetchingUser.has(store) && /\/api\/auth\/me\/?(?:[?#]|$)/.test(url)) return
         await refreshAuthSession(store)

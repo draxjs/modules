@@ -1,5 +1,5 @@
 import {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
-import {IUserRepository} from "../../interfaces/IUserRepository";
+import {IUserRepository, IEmailVerificationClaim} from "../../interfaces/IUserRepository";
 import {
 
     ValidationError
@@ -8,6 +8,7 @@ import type {SqliteTableField} from "@drax/common-back";
 import RoleSqliteRepository from "./RoleSqliteRepository.js";
 import TenantSqliteRepository from "./TenantSqliteRepository.js";
 import {AbstractSqliteRepository} from "@drax/crud-back";
+import {hideUserSecrets} from '../../utils/UserSecrets.js';
 
 class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, IUserUpdate> implements IUserRepository {
     private roleRepository: RoleSqliteRepository;
@@ -17,7 +18,7 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
     protected tableName: string = 'users';
     protected dataBaseFile: string;
     protected searchFields: string[] = [];
-    protected booleanFields: string[] = ['active'];
+    protected booleanFields: string[] = ['active', 'emailVerified', 'phoneVerified'];
     protected jsonFields: string[] = [];
     protected identifier: string = '_id';
     protected populateFields = [
@@ -41,12 +42,15 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
         {name: "emailVerified", type: "INTEGER", unique: false, primary: false},
         {name: "phoneVerified", type: "INTEGER", unique: false, primary: false},
         {name: "emailCode", type: "TEXT", unique: false, primary: false},
+        {name: "emailCodeExpiresAt", type: "INTEGER", unique: false, primary: false},
+        {name: "emailVerificationLastAttemptAt", type: "INTEGER", unique: false, primary: false},
         {name: "phoneCode", type: "TEXT", unique: false, primary: false},
     ]
     protected verbose: boolean;
 
     constructor(dataBaseFile: string, verbose: boolean = false) {
-        super(dataBaseFile, verbose);
+        // Expanded SQL tracing would expose passwords and activation codes.
+        super(dataBaseFile, false);
         this.roleRepository = new RoleSqliteRepository(dataBaseFile, verbose);
         this.tenantRepository = new TenantSqliteRepository(dataBaseFile, verbose);
     }
@@ -73,6 +77,8 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
     }
 
     async prepareItem(user: any) {
+        if (!user) return
+        hideUserSecrets(user)
         if (user && user.role && typeof user.role === 'string') {
             user.role = await this.findRoleById(user.role)
         }
@@ -106,7 +112,9 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
         if (!user) {
             return null
         }
+        const password = user.password
         await this.decorate(user)
+        user.password = password
         return user
     }
 
@@ -115,7 +123,9 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
         if (!user) {
             return null
         }
+        const password = user.password
         await this.decorate(user)
+        user.password = password
         return user
     }
 
@@ -128,8 +138,28 @@ class UserSqliteRepository extends AbstractSqliteRepository<IUser, IUserCreate, 
         return user
     }
 
+    async claimEmailVerification(claim: IEmailVerificationClaim): Promise<{email: string, emailCode: string} | null> {
+        // Both CASE expressions observe the old row, so code and expiry always rotate together.
+        return this.db.prepare(`UPDATE users SET
+            emailCode = CASE WHEN emailCode IS NOT NULL AND emailCode != '' AND emailCodeExpiresAt > @now
+                THEN emailCode ELSE @code END,
+            emailCodeExpiresAt = CASE WHEN emailCode IS NOT NULL AND emailCode != '' AND emailCodeExpiresAt > @now
+                THEN emailCodeExpiresAt ELSE @expiresAt END,
+            emailVerificationLastAttemptAt = @now
+            WHERE email = @email AND origin = 'Registry' AND emailVerified = 0
+                AND (emailVerificationLastAttemptAt IS NULL OR emailVerificationLastAttemptAt <= @cooldownBefore)
+            RETURNING email, emailCode`).get(claim) ?? null;
+    }
+
+    async consumeEmailVerification(code: string, now: number): Promise<boolean> {
+        return this.db.prepare(`UPDATE users SET emailVerified = 1, active = 1,
+            emailCode = NULL, emailCodeExpiresAt = NULL
+            WHERE emailCode = ? AND origin = 'Registry' AND emailVerified = 0 AND emailCodeExpiresAt > ?`)
+            .run(code, now).changes === 1;
+    }
+
     async findByEmailCode(code: string): Promise<IUser> {
-        const user = this.db.prepare('SELECT * FROM users WHERE emailVerifyCode = ? AND emailVerified = 0').get(code);
+        const user = this.db.prepare('SELECT * FROM users WHERE emailCode = ? AND emailVerified = 0').get(code);
         if (!user) {
             return null
         }

@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, it} from "vitest"
 import UserService from "../../src/services/UserService";
-import type {IUserRepository} from "../../src/interfaces/IUserRepository";
+import type {IUserRepository, IEmailVerificationClaim} from "../../src/interfaces/IUserRepository";
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
 import {ValidationError} from "@drax/common-back";
 import PasswordPolicyResolver from "../../src/resolver/PasswordPolicyResolver";
@@ -80,6 +80,29 @@ class InMemoryUserRepository implements IUserRepository {
     async changeAvatar(id: string, avatarUrl: string): Promise<Boolean> {
         const current = this.items.get(id)
         this.items.set(id, {...current, avatar: avatarUrl} as IUser)
+        return true
+    }
+
+    async claimEmailVerification(claim: IEmailVerificationClaim): Promise<{email: string, emailCode: string} | null> {
+        const user = [...this.items.values()].find(item => item.email === claim.email && item.origin === 'Registry' &&
+            item.emailVerified === false && (item.emailVerificationLastAttemptAt == null || item.emailVerificationLastAttemptAt <= claim.cooldownBefore))
+        if (!user) return null
+        if (!user.emailCode || !(user.emailCodeExpiresAt > claim.now)) {
+            user.emailCode = claim.code
+            user.emailCodeExpiresAt = claim.expiresAt
+        }
+        user.emailVerificationLastAttemptAt = claim.now
+        return {email: user.email, emailCode: user.emailCode}
+    }
+
+    async consumeEmailVerification(code: string, now: number): Promise<boolean> {
+        const user = [...this.items.values()].find(item => item.emailCode === code && item.origin === 'Registry' &&
+            item.emailVerified === false && item.emailCodeExpiresAt > now)
+        if (!user) return false
+        user.emailVerified = true
+        user.active = true
+        delete user.emailCode
+        delete user.emailCodeExpiresAt
         return true
     }
 

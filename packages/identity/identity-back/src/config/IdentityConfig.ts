@@ -1,5 +1,9 @@
 enum IdentityConfig {
 
+    RegistrationTenantEnabled = "DRAX_REGISTRATION_TENANT_ENABLED",
+    EmailVerificationTTLSeconds = "DRAX_EMAIL_VERIFICATION_TTL_SECONDS",
+    EmailVerificationResendCooldownSeconds = "DRAX_EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS",
+
     RememberMeEnabled = "DRAX_REMEMBER_ME_ENABLED",
     RefreshTokenTTLSeconds = "DRAX_REFRESH_TOKEN_TTL_SECONDS",
 

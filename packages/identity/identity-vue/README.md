@@ -72,6 +72,137 @@ Focused tests:
 npm exec --workspace @drax/identity-vue -- vitest run test/auth-session.spec.ts test/auth-session.integration.spec.ts test/components/__tests__/IdentityLogin.spec.ts
 ```
 
+## Registro con creación de tenant (opcional, REST)
+
+En el **backend**:
+
+```dotenv
+DRAX_REGISTRATION_TENANT_ENABLED=true
+DRAX_DEFAULT_ROLE=Member
+```
+
+Cargá `LoadIdentityConfigFromEnv()`, registrá `UserRoutes` y creá previamente el rol
+configurado. Sin la flag, o con `false`, el registro no crea tenants. No se necesita
+una variable Vite: `IdentityRegistration`, usado por `RegistrationPage`, consulta
+`GET /api/auth/registration-options` → `{tenantRequired: boolean}`. Mientras no pueda
+cargar estas opciones, bloquea el envío y permite reintentar.
+
+Si está activo, el formulario exige un nombre de organización y envía
+`tenantName` en `POST /api/users/register`. El backend crea un tenant **nuevo** y
+asigna el usuario a ese tenant; rechaza nombres existentes con HTTP 422,
+`tenantName: validation.unique`. No vincula visitantes a tenants existentes. Los
+nombres se recortan y la unicidad es exacta y sensible a mayúsculas, igual que el
+índice MongoDB existente. SQLite también aplica un índice único, incluyendo bases
+ya creadas; si hay duplicados previos, hay que resolverlos manualmente antes de
+inicializar. No se borran ni renombran datos automáticamente.
+
+Para formularios propios, usá `useAuth().registrationOptions()` y
+`useAuth().register({...datos, tenantName})`. El rol y el ID de tenant los determina
+el servidor; enviar `role`, `tenant` o `active` no los sobreescribe. El usuario
+continúa inactivo hasta la verificación existente por email/teléfono; no hay
+login automático. Si falla la creación del usuario antes de persistir, se elimina
+el tenant recién creado; si ya se persistió o falla después el email, se conserva
+la asociación. No es una transacción distribuida entre bases/servicios.
+
+Desplegá backend y frontend compatibles: el formulario actualizado requiere el
+nuevo endpoint incluso cuando la flag está apagada. El registro GraphQL no está
+implementado; su provider devuelve `tenantRequired: false` para las opciones.
+
+## Verificación de email y reenvío (REST)
+
+`register(form)` conserva `{success, message}` y ahora devuelve el tipo público
+`IRegistrationResponse` de `@drax/identity-front`, con
+`verificationEmailSent?: boolean`. `true` indica aceptación por SMTP, **no entrega**;
+`false` indica que la cuenta se creó pero el correo quedó pendiente. La ausencia
+mantiene el comportamiento anterior. Un fallo SMTP ya no implica un error de
+registro ni habilita la cuenta: no hay login automático.
+
+`IdentityRegistration` muestra una advertencia si el valor es `false` y mantiene
+el mensaje de éxito existente para `true` o ausente. Ofrece un botón de acceso al
+reenvío (`auth.verificationResendTitle`), con el email prellenado, tanto desde el
+formulario como después del éxito/advertencia o de un error (duplicado o red).
+Al abrirlo, el reenvío **reemplaza** el formulario o el resultado del registro y
+oculta el botón de acceso. «Volver al registro» (`auth.backToRegistration`) restaura
+el estado anterior, conservando inputs, email, tenant y resultado de éxito/advertencia.
+No es necesario crear otra cuenta ni agregar rutas.
+
+El acceso al reenvío está **solo en registro**, separado del formulario principal
+con un margen superior. `IdentityLogin` conserva los enlaces de registro y de
+recuperación de contraseña según sus props, pero no muestra el acceso a verificación.
+El reenvío solicita email explícitamente. Hay un único formulario visible, sin
+formularios simultáneos ni anidados, y un único título de reenvío:
+`auth.verificationFormTitle` («Account verification» / «Verificación de cuenta»).
+
+El componente reutilizable está exportado:
+
+```vue
+<script setup lang="ts">
+import {IdentityVerificationResend} from '@drax/identity-vue'
+</script>
+
+<template>
+  <IdentityVerificationResend email="persona@example.com" />
+</template>
+```
+
+La prop `email` es opcional y editable. La prop opcional `backLabel?: string`
+muestra un botón de vuelta de tipo `button` que emite `back`; está deshabilitado
+mientras se procesa la solicitud. El componente padre decide qué restaurar al
+recibir ese evento. Sin `backLabel`, el uso standalone conserva un único botón de
+envío. El botón submit queda alineado a la derecha mediante un `v-spacer` anterior.
+Formularios propios pueden usar `useAuth().resendVerificationEmail(email)` o
+`AuthSystem.resendVerificationEmail(email)`.
+REST hace `POST /api/users/verification/resend` con `{email}`. Tanto este endpoint
+como el registro son anónimos: no envían `Authorization`, no disparan el preflight
+de refresh y no borran las cabeceras del cliente compartido.
+
+El resultado de reenvío es siempre neutral para cuentas inexistentes, verificadas,
+limitadas o con fallo SMTP: `{success: true, message: 'If an account is pending
+verification, activation instructions will be sent.'}`. La UI usa traducciones
+es/en neutrales, sin confirmar existencia de la cuenta ni envío o entrega del
+correo. Valida el email, muestra errores de red/`ClientError` y bloquea el envío
+durante la solicitud. No impone una cuenta regresiva fija: el cooldown lo decide
+el servidor (60 segundos por defecto, configurable). GraphQL rechaza esta operación
+explícitamente como no implementada; no se crea una query ni mutación ficticia.
+Los providers personalizados anteriores pueden omitir el método opcional de
+`IAuthProvider`; sus APIs previas siguen funcionando y `AuthSystem` rechaza el
+reenvío con un error explícito si el provider no lo soporta.
+
+### Backend: vencimiento, límites y recuperación de cuentas anteriores
+
+Configuración opcional, cargada con `LoadIdentityConfigFromEnv()`:
+
+```dotenv
+DRAX_EMAIL_VERIFICATION_TTL_SECONDS=86400
+DRAX_EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS=60
+```
+
+Ambos valores deben ser segundos enteros positivos. El código es de un solo uso y
+vence a las 24 horas por defecto. Reenviar reutiliza un código vigente sin extender
+su vencimiento; rota el código únicamente si venció o si el registro anterior no
+tenía vencimiento. Los enlaces antiguos sin vencimiento ya no activan cuentas:
+para recuperarlas, solicitá un reenvío con el email original desde login/registro.
+No hace falta borrar ni volver a crear usuario o tenant. Solo son elegibles cuentas
+con `origin: 'Registry'` y email sin verificar; el reenvío no altera sus datos ni
+reactiva cuentas verificadas que hayan sido desactivadas administrativamente.
+
+El cooldown por email se reclama atómicamente en la base de datos, también cuando
+SMTP falla. Se admiten 10 intentos de reenvío por IP cada 15 minutos por proceso,
+con memoria acotada; incluso los emails inexistentes consumen ese límite. En un
+despliegue multiinstancia, agregá un rate limiter compartido/gateway y configurá
+correctamente la IP de cliente detrás del proxy. No hay cola ni reintentos
+automáticos de correo: el usuario solicita el reenvío. La persistencia SQLite se
+actualiza de forma aditiva al inicializar el repositorio; no se borran registros.
+
+Actualizá backend, `identity-share`, `identity-front` e `identity-vue` de forma
+coherente y desplegá backend antes de la UI nueva. En el monorepo compilá primero
+`identity-share` para que los tipos utilizados por los demás paquetes estén al día.
+
+Pruebas enfocadas: `test/verification-resend.spec.ts`, `test/registration.spec.ts`,
+`test/components/__tests__/IdentityLogin.spec.ts`,
+`test/auth-session.integration.spec.ts` y
+`../identity-front/test/verification-resend.test.ts`.
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).

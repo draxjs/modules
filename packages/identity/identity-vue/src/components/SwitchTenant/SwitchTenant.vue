@@ -6,7 +6,7 @@ import {useAuthStore} from "../../stores/AuthStore"
 import {useI18n} from "vue-i18n"
 
 const authStore = useAuthStore()
-const {switchTenant, hasPermission} = useAuth()
+const {switchTenant, hasPermission, isAuthenticated} = useAuth()
 
 const {t} = useI18n()
 const tenant = ref();
@@ -19,7 +19,7 @@ async function changeTenant() {
 </script>
 
 <template>
-  <v-toolbar v-if="hasPermission('user:switchTenant')">
+  <v-toolbar v-if="isAuthenticated() && hasPermission('user:switchTenant')">
     <v-toolbar-title>
       <b>{{t('tenant.current')}}:</b> {{authStore.authUser?.tenant ? authStore.authUser?.tenant?.name : '-'}}
     </v-toolbar-title>

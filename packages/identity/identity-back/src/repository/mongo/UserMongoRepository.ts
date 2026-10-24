@@ -7,7 +7,7 @@ import {
     ValidationError, MongooseCastErrorToValidationError
 } from "@drax/common-back"
 import type {IUser, IUserCreate, IUserUpdate} from "@drax/identity-share";
-import type {IUserRepository} from "../../interfaces/IUserRepository";
+import type {IUserRepository, IEmailVerificationClaim} from "../../interfaces/IUserRepository";
 import {Cursor} from "mongoose";
 import RoleMongoRepository from "./RoleMongoRepository.js";
 import {IDraxFindOptions} from "@drax/crud-share";
@@ -39,7 +39,7 @@ class UserMongoRepository extends AbstractMongoRepository<IUser,IUserCreate,IUse
             const user: mongoose.HydratedDocument<IUser> = new UserModel(userData)
             await user.save()
             await user.populate(this._populateFields)
-            return user
+            return user.toObject()
         }catch (e){
             if(e instanceof mongoose.Error.ValidationError){
                 throw MongooseValidationErrorToValidationError(e)
@@ -87,6 +87,32 @@ class UserMongoRepository extends AbstractMongoRepository<IUser,IUserCreate,IUse
             .lean(this._lean)
             .exec()
         return user as IUser
+    }
+
+    async claimEmailVerification(claim: IEmailVerificationClaim): Promise<{email: string, emailCode: string} | null> {
+        const reusable = {$and: [
+            {$ne: [{$ifNull: ['$emailCode', '']}, '']},
+            {$gt: [{$ifNull: ['$emailCodeExpiresAt', 0]}, claim.now]},
+        ]};
+        return await UserModel.findOneAndUpdate({
+            email: {$eq: claim.email}, origin: 'Registry', emailVerified: false,
+            $or: [
+                {emailVerificationLastAttemptAt: null},
+                {emailVerificationLastAttemptAt: {$lte: claim.cooldownBefore}},
+            ],
+        }, [{$set: {
+            emailCode: {$cond: [reusable, '$emailCode', {$literal: claim.code}]},
+            emailCodeExpiresAt: {$cond: [reusable, '$emailCodeExpiresAt', claim.expiresAt]},
+            emailVerificationLastAttemptAt: claim.now,
+        }}], {new: true, timestamps: false})
+            .select('email +emailCode -_id').lean().exec() as {email: string, emailCode: string} | null;
+    }
+
+    async consumeEmailVerification(code: string, now: number): Promise<boolean> {
+        const result = await UserModel.updateOne({
+            emailCode: {$eq: code}, origin: 'Registry', emailVerified: false, emailCodeExpiresAt: {$gt: now},
+        }, {$set: {emailVerified: true, active: true}, $unset: {emailCode: '', emailCodeExpiresAt: ''}}).exec();
+        return result.modifiedCount === 1;
     }
 
     async findByEmailCode(code: string): Promise<IUser> {

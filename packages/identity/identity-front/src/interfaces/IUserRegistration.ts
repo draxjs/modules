@@ -4,6 +4,7 @@ interface IUserRegistration {
     email: string
     phone: string
     avatar: string
+    tenantName?: string
 }
 
 export type {IUserRegistration}

@@ -64,6 +64,57 @@ afterEach(() => {
 })
 
 describe('real REST session integration', () => {
+    it('loads public registration options through useAuth without renewing a stale session', async () => {
+        useAuthStore().setSession({accessToken: jwt(-60), refreshToken: 'stale', refreshExpiresAt: expiresAt()})
+        fetchMock.mockResolvedValue(json({tenantRequired: true}))
+        const auth = app.runWithContext(() => useAuth())
+        expect(await auth.registrationOptions()).toEqual({tenantRequired: true})
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        const [url, init] = fetchMock.mock.calls[0]
+        expect(String(url)).toBe('https://api.example.test/api/auth/registration-options')
+        expect(new Headers(init?.headers).has('Authorization')).toBe(false)
+    })
+    it.each([false, true])('registers anonymously without refreshing a stale session (remembered=%s)', async remembered => {
+        const token = jwt(-60)
+        const store = useAuthStore()
+        store.setSession({accessToken: token,
+            ...(remembered ? {refreshToken: 'stale', refreshExpiresAt: expiresAt()} : {})})
+        client.addHeader('Authorization', `Bearer ${token}`)
+        fetchMock.mockResolvedValue(json({success: true, message: 'ok'}))
+        const auth = app.runWithContext(() => useAuth())
+        const form = {name: 'Name', username: 'user', email: 'user@example.test', password: 'Password42!', tenantName: 'Company'}
+        expect(await auth.register(form)).toEqual({success: true, message: 'ok'})
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        const [url, init] = fetchMock.mock.calls[0]
+        expect(String(url)).toBe('https://api.example.test/api/users/register')
+        expect(new Headers(init?.headers).has('Authorization')).toBe(false)
+        expect(JSON.parse(String(init?.body))).toEqual(form)
+        expect(store.accessToken).toBe(token)
+        expect(store.refreshToken).toBe(remembered ? 'stale' : null)
+        expect(client.getBaseHeaders().Authorization).toBe(`Bearer ${token}`)
+    })
+    it.each([false, true])('resends anonymously without refreshing or erasing shared headers (remembered=%s)', async remembered => {
+        const token = jwt(-60)
+        const store = useAuthStore()
+        store.setSession({accessToken: token,
+            ...(remembered ? {refreshToken: 'stale', refreshExpiresAt: expiresAt()} : {})})
+        client.addHeader('Authorization', `Bearer ${token}`)
+        client.addHeader('X-Tenant', 'tenant')
+        const response = {success: true, message: 'If an account is pending verification, activation instructions will be sent.'}
+        fetchMock.mockResolvedValue(json(response))
+        const auth = app.runWithContext(() => useAuth())
+        expect(await auth.resendVerificationEmail('pending@example.test')).toEqual(response)
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        const [url, init] = fetchMock.mock.calls[0]
+        expect(String(url)).toBe('https://api.example.test/api/users/verification/resend')
+        expect(init?.method).toBe('POST')
+        expect(JSON.parse(String(init?.body))).toEqual({email: 'pending@example.test'})
+        expect(new Headers(init?.headers).has('Authorization')).toBe(false)
+        expect(new Headers(init?.headers).get('X-Tenant')).toBe('tenant')
+        expect(client.getBaseHeaders().Authorization).toBe(`Bearer ${token}`)
+        expect(store.accessToken).toBe(token)
+        expect(store.refreshToken).toBe(remembered ? 'stale' : null)
+    })
     it('single-flights guard + concurrent CRUD preflights, refreshes me internally without deadlock and sends fresh headers', async () => {
         const freshToken = jwt(600)
         const refresh = deferred<Response>()

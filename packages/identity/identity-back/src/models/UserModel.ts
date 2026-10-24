@@ -3,7 +3,7 @@ import {IUser} from "@drax/identity-share";
 import uniqueValidator from 'mongoose-unique-validator';
 import mongoosePaginate from 'mongoose-paginate-v2'
 import {PaginateModel} from "mongoose";
-
+import {hideUserSecrets} from '../utils/UserSecrets.js';
 
 // Defining user Mongoose Schema
 const UserMongoSchema = new mongoose.Schema<IUser>({
@@ -72,9 +72,12 @@ const UserMongoSchema = new mongoose.Schema<IUser>({
     emailVerified: {type: Boolean, required: true, default: false,  index: false},
     phoneVerified: {type: Boolean, required: true, default: false,  index: false},
     emailCode: {type: String, required: false, index: false, select: false},
+    emailCodeExpiresAt: {type: Number, required: false, select: false},
+    emailVerificationLastAttemptAt: {type: Number, required: false, select: false},
     phoneCode: {type: String, required: false, index: false, select: false},
     recoveryCode: {type: String, required: false, index: false, select: false},
-}, {timestamps: true, toJSON: {  virtuals: true}, toObject: { virtuals: true} });
+}, {timestamps: true, toJSON: {virtuals: true, transform: (_doc, result) => hideUserSecrets(result)},
+    toObject: {virtuals: true, transform: (_doc, result) => hideUserSecrets(result)}});
 
 UserMongoSchema.virtual("id").get(function () {
     return this._id.toString();

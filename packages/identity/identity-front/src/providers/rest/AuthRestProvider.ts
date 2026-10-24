@@ -5,6 +5,9 @@ import type {IAuthFullUser} from "../../interfaces/IAuthFullUser";
 import type {ILoginResponse} from "../../interfaces/ILoginResponse";
 import type {IPasswordPolicy} from "../../interfaces/IPasswordPolicy";
 import type {IUserRegistration} from "../../interfaces/IUserRegistration";
+import type {IRegistrationOptions} from "../../interfaces/IRegistrationOptions";
+import type {IRegistrationResponse} from "../../interfaces/IRegistrationResponse";
+import type {IVerificationResendResponse} from "../../interfaces/IVerificationResendResponse";
 
 
 class AuthRestProvider implements IAuthProvider {
@@ -57,6 +60,10 @@ class AuthRestProvider implements IAuthProvider {
             return r
     }
 
+    async registrationOptions(): Promise<IRegistrationOptions> {
+        return await this.httpClient.get('/api/auth/registration-options', {removeHeaders: ['Authorization']}) as IRegistrationOptions
+    }
+
     async passwordPolicy(): Promise<IPasswordPolicy> {
         const url = '/api/auth/password-policy'
         return await this.httpClient.get(url) as IPasswordPolicy
@@ -84,10 +91,14 @@ class AuthRestProvider implements IAuthProvider {
         return /true/i.test(r as string)
     }
 
-    async register(form: IUserRegistration): Promise<{success: boolean; message: string}> {
+    async resendVerificationEmail(email: string): Promise<IVerificationResendResponse> {
+        return await this.httpClient.post('/api/users/verification/resend', {email}, {removeHeaders: ['Authorization']}) as IVerificationResendResponse
+    }
+
+    async register(form: IUserRegistration): Promise<IRegistrationResponse> {
         const url = '/api/users/register'
-        let r = await this.httpClient.post(url, form)
-        return r as {success: boolean; message: string}
+        let r = await this.httpClient.post(url, form, {removeHeaders: ['Authorization']})
+        return r as IRegistrationResponse
     }
 
     async changeAvatar(file: File): Promise<boolean> {

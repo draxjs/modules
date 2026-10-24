@@ -24,6 +24,7 @@ npm run prepublish --workspace @drax/settings-back
 npm run prepublish --workspace @drax/ai-back
 npm run prepublish --workspace @drax/dynamic-back
 npm run prepublish --workspace @drax/audit-back
+npm run prepublish --workspace @drax/recovery-back
 echo "Dependencias back inicializadas."
 
 
