@@ -1,47 +1,41 @@
-// Import statements for Vitest functions and any necessary types
-import { describe, it, expect, vi } from 'vitest';
-import { AuthSystem } from '../../../src/core/system/AuthSystem';
-import { IAuthProvider } from '../../../src/core/interfaces/IAuthProvider';
+import {describe, it, expect, vi} from 'vitest'
+import {AuthSystem} from '@drax/identity-front'
+import type {IAuthProvider} from '@drax/identity-front'
 
-// Enhanced Mock implementation of AuthRestProvider to handle bad credentials
-class MockAuthRestProvider implements IAuthProvider {
-  async login(username: string, password: string): Promise<string> {
-    // Simulate bad credentials by checking for a specific username and password
-    if (username === 'baduser' || password === 'badpassword') {
-      throw new Error('BadCredentials');
-    }
-    // Otherwise, return a mocked token string
-    return 'mocked-token';
-  }
-
-  async me(){
-    return {id: '1', username: 'testuser', email: 'testemail', role: {id: 1, name: 'testrole' }}
-  }
+function createProvider() {
+  return {
+    login: vi.fn<IAuthProvider['login']>(),
+    me: vi.fn<IAuthProvider['me']>(),
+    switchTenant: vi.fn<IAuthProvider['switchTenant']>(),
+    logout: vi.fn<IAuthProvider['logout']>(),
+    passwordPolicy: vi.fn<IAuthProvider['passwordPolicy']>(),
+    registrationOptions: vi.fn<IAuthProvider['registrationOptions']>(),
+    changeOwnPassword: vi.fn<IAuthProvider['changeOwnPassword']>(),
+    recoveryPasswordRequest: vi.fn<IAuthProvider['recoveryPasswordRequest']>(),
+    recoveryPasswordComplete: vi.fn<IAuthProvider['recoveryPasswordComplete']>(),
+    register: vi.fn<IAuthProvider['register']>(),
+    changeAvatar: vi.fn<IAuthProvider['changeAvatar']>(),
+  } satisfies IAuthProvider
 }
 
 describe('AuthSystem', () => {
-  it('should successfully login and return a token', async () => {
-    // Setup
-    const mockProvider = new MockAuthRestProvider();
-    const authSystem = new AuthSystem(mockProvider);
+  it('returns the login response and forwards credentials without an implicit opt-in', async () => {
+    const provider = createProvider()
+    const response = {accessToken: 'mocked-token'}
+    provider.login.mockResolvedValue(response)
+    const authSystem = new AuthSystem(provider)
 
-    // Execute
-    const token = await authSystem.login('testuser', 'testpassword');
+    expect(await authSystem.login('testuser', 'testpassword')).toEqual(response)
+    expect(provider.login).toHaveBeenCalledExactlyOnceWith('testuser', 'testpassword')
+  })
 
-    // Assert
-    expect(token).toBe('mocked-token');
-  });
+  it('propagates rejected credentials', async () => {
+    const provider = createProvider()
+    const error = new Error('BadCredentials')
+    provider.login.mockRejectedValue(error)
+    const authSystem = new AuthSystem(provider)
 
-  it('should fail to login with bad credentials', async () => {
-    // Setup
-    const mockProvider = new MockAuthRestProvider();
-    const authSystem = new AuthSystem(mockProvider);
-
-    // Execute and Assert
-    await expect(authSystem.login('baduser', 'testpassword'))
-      .rejects.toThrow('BadCredentials');
-    // Alternatively, if you're checking for a specific error message
-    // await expect(authSystem.login('baduser', 'testpassword'))
-    //   .rejects.toThrowError(new Error('BadCredentials'));
-  });
-});
+    await expect(authSystem.login('baduser', 'testpassword')).rejects.toBe(error)
+    expect(provider.login).toHaveBeenCalledExactlyOnceWith('baduser', 'testpassword')
+  })
+})

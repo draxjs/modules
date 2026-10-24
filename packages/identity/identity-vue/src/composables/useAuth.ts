@@ -1,6 +1,6 @@
 import {useAuthStore} from "../stores/AuthStore";
 import {AuthHelper, AuthSystemFactory} from "@drax/identity-front";
-import type {AuthSystem} from "@drax/identity-front";
+import type {AuthSystem, ILoginResponse} from "@drax/identity-front";
 import {useRouter} from 'vue-router'
 import {authSessionRevision, clearAuthSession, isCurrentAuthOperation, isCurrentAuthSession, isRememberMeEnabled, rereadSession, revokeSessionToken, syncAuthHeaders} from './setupAuthSession'
 
@@ -11,14 +11,13 @@ export function useAuth() {
 
     const authSystem: AuthSystem = AuthSystemFactory.getInstance()
 
-    const login = async (username: string, password: string, rememberMe = false) => {
+    /** Start the external credential exchange inside operation so logout/new login can cancel its result. */
+    const loginWithSession = async (operation: (rememberMe: boolean) => Promise<ILoginResponse>, rememberMe = false) => {
         clearAuthSession(authStore)
         const revision = authSessionRevision(authStore)
         const version = authStore.sessionVersion
         const remembered = isRememberMeEnabled() && rememberMe
-        const result = remembered
-            ? await authSystem.login(username, password, true)
-            : await authSystem.login(username, password)
+        const result = await operation(remembered)
         if (authSessionRevision(authStore) !== revision || !isCurrentAuthOperation(authStore, version)) {
             syncAuthHeaders(authStore)
             if (result.refreshToken) await revokeSessionToken(result.refreshToken).catch(() => {})
@@ -26,6 +25,8 @@ export function useAuth() {
         }
         if (remembered) authStore.setSession(result)
         else authStore.setAccessToken(result.accessToken)
+        // A server returning refresh credentials without opt-in must not leave an orphan session.
+        if (!remembered && result.refreshToken) void revokeSessionToken(result.refreshToken).catch(() => {})
         syncAuthHeaders(authStore)
         try {
             await fetchAuthUser()
@@ -35,11 +36,18 @@ export function useAuth() {
                 const token = authStore.refreshToken
                 clearAuthSession(authStore)
                 if (token) await revokeSessionToken(token).catch(() => {})
+            } else if (result.refreshToken) {
+                await revokeSessionToken(result.refreshToken).catch(() => {})
             }
             throw error
         }
     }
 
+    const login = async (username: string, password: string, rememberMe = false) => {
+        await loginWithSession(remembered => remembered
+            ? authSystem.login(username, password, true)
+            : authSystem.login(username, password), rememberMe)
+    }
 
     const switchTenant = async (tenantId: string) => {
         const {accessToken} = await authSystem.switchTenant(tenantId)
@@ -150,7 +158,7 @@ export function useAuth() {
     }
 
     return {
-        login, logout, loginWithToken,
+        login, logout, loginWithToken, loginWithSession,
         tokenIsValid, hasPermission,
         isAuthenticated, fetchAuthUser,
         changeOwnPassword, changeAvatar, passwordPolicy,

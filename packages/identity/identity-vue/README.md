@@ -89,29 +89,89 @@ Removing a header directly is only a transport operation and intentionally does 
 clear the store: use session/store actions for credential changes. Direct `$patch` is
 not a session API; normal request maintenance re-reads persisted state.
 
-External providers must mark the credential exchange as independent using the existing
-HTTP option, even if the old Drax session is recoverable:
+External login should use the public workflow:
 
 ```ts
-const response = await this.httpClient.post('/api/google/login', {credential}, {
-  timeout: 120000,
-  removeHeaders: ['Authorization'],
-})
-await loginWithToken(response.accessToken)
+useAuth().loginWithSession(
+  operation: (rememberMe: boolean) => Promise<ILoginResponse>,
+  rememberMe = false,
+): Promise<void>
 ```
 
-Do not remove/restore global headers or set the returned token manually before
-`loginWithToken`. The request option excludes Authorization case-insensitively and
-skips the session preflight without changing shared state. Its 401 is the external
-credential's rejection, not a reason to clear the existing Drax session. No global
-response interceptor performs logout. This does not disable browser CORS preflight.
+`ILoginResponse` is the existing exported type from `@drax/identity-front`:
+`{accessToken: string, refreshToken?: string, refreshExpiresAt?: string}`.
+The workflow clears the previous credentials/profile, captures the operation epoch,
+then calls `operation` with the effective frontend flag + explicit opt-in. It confirms
+the session, synchronizes headers and loads the profile using the same path as standard
+login. Failures reject the promise; only navigate after successful completion.
+Discarded or unwanted refresh credentials are revoked best-effort. A profile failure
+clears the current attempted login; offline revocation cannot be guaranteed.
+
+**Start the entire async exchange inside the callback.** Passing a promise started
+before the workflow, or awaiting the response then calling `loginWithToken`, cannot
+protect against logout/new login while that request is pending. Legacy
+`loginWithToken(string)` remains available for access-token-only callers; it does not
+accept or persist refresh credentials.
+
+Example consumer component (the consumer's Google integration supplies
+`obtainGoogleCredential`; no Google SDK is added to Drax):
+
+```vue
+<script setup lang="ts">
+import {ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {HttpRestClientFactory} from '@drax/common-front'
+import type {ILoginResponse} from '@drax/identity-front'
+import {IdentityRememberMe, useAuth} from '@drax/identity-vue'
+import {obtainGoogleCredential} from './googleCredential'
+
+const rememberMe = ref(false)
+const loading = ref(false)
+const {loginWithSession} = useAuth()
+const router = useRouter()
+
+async function loginGoogle() {
+  loading.value = true
+  try {
+    await loginWithSession(async effectiveRememberMe => {
+      const credential = await obtainGoogleCredential()
+      return await HttpRestClientFactory.getInstance().post('/api/google/login', {
+        credential, rememberMe: effectiveRememberMe,
+      }, {removeHeaders: ['Authorization']}) as ILoginResponse
+    }, rememberMe.value)
+    await router.push('/') // Adapt to the consumer's authorized destination.
+  } catch {
+    // Show the consumer's localized error; never log credentials or headers.
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
+<template>
+  <IdentityRememberMe v-model="rememberMe" />
+  <v-btn :loading="loading" :disabled="loading" @click="loginGoogle">Google</v-btn>
+</template>
+```
+
+This checkbox starts unchecked and hides itself when the feature is disabled. It is
+independent from the private checkbox inside `IdentityLogin`; an external button must
+supply its own explicit opt-in. The callback receives a snapshot, not a later checkbox
+value. Do not write tokens to Pinia/localStorage or manipulate Authorization manually.
+
+Use `removeHeaders: ['Authorization']` on the external exchange: it excludes stale
+bearer credentials and skips Drax session preflight for that request, without mutating
+global headers or disabling browser CORS preflight. There is no second refresh/retry
+mechanism. The backend must verify the external identity before issuing any Drax
+session; see `identity-back/docs/remember-me.md`.
 
 Consumer changes:
 
 - **GoogleProvider:** add `removeHeaders: ['Authorization']` to the login POST and
-  remove the redundant `setHttpClientToken(response.accessToken)` call; keep
-  `await loginWithToken(response.accessToken)` after a successful exchange. See
-  Zuite's `src/modules/base/providers/GoogleProvider.ts`.
+  remove redundant `setHttpClientToken` calls and return the full `ILoginResponse`.
+  Invoke that provider inside `loginWithSession(effectiveRememberMe =>
+  provider.login(credential, effectiveRememberMe), rememberMe)`; obtain the credential
+  inside the callback too if that step is asynchronous. Do not start the request first.
 - **LoginPage:** delete the workaround that checks invalid access tokens and calls
   `logout()`. Session cleanup belongs to maintenance, not a page (logout also navigates).
 - **Bootstrap:** retain `app.use(pinia); await setupAuthSession(); app.use(router)`;
@@ -131,6 +191,35 @@ and declaring the external route policy. Google SDK/signature verification itsel
 consumer-owned; Drax tests use a deterministic external verifier, not Google's service.
 REST request-time maintenance requires the shared client's optional `setBeforeRequest`;
 GraphQL and custom clients without that hook do not get automatic preflight renewal.
+
+### External remember-me rollout and security
+
+This change requires new releases of **`@drax/identity-back` and
+`@drax/identity-vue`**. No new type or runtime changes are needed in identity-front,
+identity-share or common-front for this extension, but consumers must retain compatible
+remember-me APIs and the shared REST preflight (avoid duplicate singleton packages).
+No publication/version is implied by this source change. Deploy the compatible backend
+and its verified external endpoint first, then update/rebuild the frontend coherently.
+The user must log in again and explicitly check the option; existing ordinary sessions
+are not upgraded.
+
+Keep `DRAX_REMEMBER_ME_ENABLED=true`, optional
+`DRAX_REFRESH_TOKEN_TTL_SECONDS=2592000` on the backend and
+`VITE_DRAX_REMEMBER_ME_ENABLED=true` at frontend build time. Refresh has an absolute
+TTL, uses the user's **currently assigned database tenant**, and does not extend JWT
+lifetime. A tenant selected with switchTenant must be selected again after renewal.
+
+Storage contains sensitive credentials in **localStorage**, not HttpOnly cookies.
+Use HTTPS and XSS protections. Web Locks coordinates refresh across tabs when available;
+without it, single-flight is per tab only. Disabling the backend flag blocks new
+remembered sessions/refresh; disabling the frontend flag prevents opt-in and maintenance
+strips legacy local refresh credentials. Neither flag revokes already-issued JWTs or
+all server refresh records. Re-enabling can make unexpired, non-revoked refresh tokens
+usable again. Logout revokes the latest known Drax refresh token best-effort.
+
+Drax refresh tokens renew **Drax sessions only**. They are not Google's OAuth refresh
+or access tokens and do not grant Gmail/Calendar access or offline Google API consent.
+Keep Google API authorization and its token storage separate.
 
 ## Registro con creación de tenant (opcional, REST)
 

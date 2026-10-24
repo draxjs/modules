@@ -42,7 +42,12 @@ class PasswordPolicyService {
         } catch (e) {
             if (e instanceof ZodError) {
                 const validationError = ZodErrorToValidationError(e, {[field]: password})
-                validationError.errors = validationError.errors.map((error) => ({...error, field}))
+                validationError.errors = validationError.errors.map((error) => ({
+                    ...error,
+                    field,
+                    ...(error.reason === 'validation.password.requireSpecialChar'
+                        ? {allowedSpecialChars: policy.allowedSpecialChars} : {})
+                }))
                 throw validationError
             }
             throw e

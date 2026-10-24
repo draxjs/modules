@@ -3,6 +3,7 @@ import {createApp} from 'vue'
 import {createPinia, setActivePinia} from 'pinia'
 import {createMemoryHistory, createRouter, isNavigationFailure, NavigationFailureType} from 'vue-router'
 import {AuthRestProvider, AuthSystem, AuthSystemFactory} from '@drax/identity-front'
+import type {ILoginResponse} from '@drax/identity-front'
 import {HttpClientFactory, HttpRestClient, HttpRestClientFactory} from '@drax/common-front'
 import {setupAuthSession} from '../src/composables/setupAuthSession'
 import {useAuthStore} from '../src/stores/AuthStore'
@@ -64,6 +65,274 @@ afterEach(() => {
 })
 
 describe('real REST session integration', () => {
+    const externalSession = (rememberMe: boolean) => client.post('/api/google/login', {rememberMe},
+        {removeHeaders: ['Authorization']}) as Promise<ILoginResponse>
+
+    it.each([
+        {flag: 'true', requested: undefined, remembered: false},
+        {flag: 'true', requested: false, remembered: false},
+        {flag: 'true', requested: true, remembered: true},
+        {flag: 'false', requested: true, remembered: false},
+        {flag: undefined, requested: true, remembered: false},
+    ])('external session honors opt-in ($flag / $requested), clears synchronously and never mixes prior credentials', async ({flag, requested, remembered}) => {
+        vi.stubEnv('VITE_DRAX_REMEMBER_ME_ENABLED', flag)
+        const store = useAuthStore()
+        const otherClient = new HttpRestClient()
+        HttpClientFactory.instance = otherClient
+        store.setSession({accessToken: jwt(-60), refreshToken: 'previous-refresh', refreshExpiresAt: expiresAt()})
+        store.setAuthUser({...user, username: 'previous'} as any)
+        const response = {accessToken: jwt(600), refreshToken: 'external-refresh', refreshExpiresAt: expiresAt()}
+        const requests: {path: string, authorization: string | null, body: unknown}[] = []
+        fetchMock.mockImplementation(async (input, init) => {
+            const path = new URL(String(input)).pathname
+            requests.push({path, authorization: new Headers(init?.headers).get('Authorization'),
+                body: init?.body ? JSON.parse(String(init.body)) : undefined})
+            if (path === '/api/google/login') return json(response)
+            if (path === '/api/auth/me') return json(user)
+            if (path === '/api/auth/logout') throw new TypeError('offline')
+            throw new Error(`Unexpected request: ${path}`)
+        })
+        let invoked = false
+        const pending = app.runWithContext(() => useAuth()).loginWithSession(effective => {
+            invoked = true
+            expect(effective).toBe(remembered)
+            expect(store.$state).toMatchObject({accessToken: null, refreshToken: null, refreshExpiresAt: null, authUser: null})
+            expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({accessToken: null, refreshToken: null, authUser: null})
+            for (const shared of [client, otherClient]) expect(new Headers(shared.getBaseHeaders()).has('Authorization')).toBe(false)
+            return externalSession(effective)
+        }, requested)
+        expect(invoked).toBe(true)
+        await pending
+        expect(requests[0]).toEqual({path: '/api/google/login', authorization: null, body: {rememberMe: remembered}})
+        expect(requests.find(r => r.path === '/api/auth/me')?.authorization).toBe(`Bearer ${response.accessToken}`)
+        expect(requests.some(r => r.path === '/api/auth/refresh')).toBe(false)
+        const confirmed = {accessToken: response.accessToken, refreshToken: remembered ? response.refreshToken : null,
+            refreshExpiresAt: remembered ? response.refreshExpiresAt : null, authUser: user}
+        expect(store.$state).toMatchObject(confirmed)
+        expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject(confirmed)
+        for (const shared of [client, otherClient]) expect(shared.getHeaderValue('Authorization')).toBe(`Bearer ${response.accessToken}`)
+        await vi.waitFor(() => expect(requests.filter(r => r.path === '/api/auth/logout')).toHaveLength(remembered ? 0 : 1))
+        if (!remembered) expect(requests.find(r => r.path === '/api/auth/logout')).toMatchObject({authorization: null, body: {refreshToken: response.refreshToken}})
+    })
+
+    it('ordinary external response authenticates without refresh credentials by default', async () => {
+        const response = {accessToken: jwt(600)}
+        fetchMock.mockImplementation(async input => {
+            const path = new URL(String(input)).pathname
+            if (path === '/api/google/login') return json(response)
+            if (path === '/api/auth/me') return json(user)
+            throw new Error(`Unexpected request: ${path}`)
+        })
+        const auth = app.runWithContext(() => useAuth())
+        await auth.loginWithSession(externalSession)
+        expect(auth.isAuthenticated()).toBe(true)
+        expect(useAuthStore().refreshToken).toBeNull()
+        expect(useAuthStore().refreshExpiresAt).toBeNull()
+        expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+
+    it.each(['request', 'profile', 'inside operation'] as const)('logout during external %s cancels late results even if revocation fails', async stage => {
+        const response = deferred<Response>()
+        const profile = deferred<Response>()
+        let profiles = 0
+        const revoked: unknown[] = []
+        fetchMock.mockImplementation(async (input, init) => {
+            const path = new URL(String(input)).pathname
+            if (path === '/api/google/login') return response.promise
+            if (path === '/api/auth/me') return ++profiles === 1 ? json(user) : profile.promise
+            if (path === '/api/auth/logout') {
+                revoked.push(JSON.parse(String(init?.body)))
+                expect(new Headers(init?.headers).has('Authorization')).toBe(false)
+                throw new TypeError('offline')
+            }
+            throw new Error(`Unexpected request: ${path}`)
+        })
+        const auth = app.runWithContext(() => useAuth())
+        let logout: Promise<void> | undefined
+        const pending = auth.loginWithSession(remembered => {
+            if (stage === 'inside operation') logout = auth.logout()
+            return externalSession(remembered)
+        }, true)
+        const result = expect(pending).rejects.toThrow('cancelled')
+        await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+        if (stage === 'profile') {
+            response.resolve(json({accessToken: jwt(600), refreshToken: 'late-refresh', refreshExpiresAt: expiresAt()}))
+            await vi.waitFor(() => expect(profiles).toBe(2))
+        }
+        await (logout ?? auth.logout())
+        expect(router.currentRoute.value.name).toBe('Login')
+        expect(useAuthStore().accessToken).toBeNull()
+        expect(useAuthStore().authUser).toBeNull()
+        if (stage === 'profile') profile.resolve(json(user))
+        else response.resolve(json({accessToken: jwt(600), refreshToken: 'late-refresh', refreshExpiresAt: expiresAt()}))
+        await result
+        expect(revoked).toContainEqual({refreshToken: 'late-refresh'})
+        expect(useAuthStore().$state).toMatchObject({accessToken: null, refreshToken: null, authUser: null})
+        expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({accessToken: null, refreshToken: null, authUser: null})
+        expect(new Headers(client.getBaseHeaders()).has('Authorization')).toBe(false)
+        expect(fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/api/auth/me'))).toHaveLength(stage === 'profile' ? 2 : 0)
+    })
+
+    it.each(['standard', 'external'] as const)('older external login cannot replace a newer %s login', async kind => {
+        const old = deferred<Response>()
+        const current = {accessToken: jwt(1200), refreshToken: 'current-refresh', refreshExpiresAt: expiresAt()}
+        const currentUser = {...user, username: 'current'}
+        let externalRequests = 0
+        const revoked: unknown[] = []
+        fetchMock.mockImplementation(async (input, init) => {
+            const path = new URL(String(input)).pathname
+            if (path === '/api/google/login' && ++externalRequests === 1) return old.promise
+            if (path === '/api/google/login' || path === '/api/auth/login') return json(current)
+            if (path === '/api/auth/me') return json(currentUser)
+            if (path === '/api/auth/logout') {
+                revoked.push(JSON.parse(String(init?.body)))
+                return json({success: true})
+            }
+            throw new Error(`Unexpected request: ${path}`)
+        })
+        const auth = app.runWithContext(() => useAuth())
+        const pending = auth.loginWithSession(externalSession, true)
+        const result = expect(pending).rejects.toThrow('cancelled')
+        await vi.waitFor(() => expect(externalRequests).toBe(1))
+        if (kind === 'standard') await auth.login('current', 'password', true)
+        else await auth.loginWithSession(externalSession, true)
+        old.resolve(json({accessToken: jwt(600), refreshToken: 'old-refresh', refreshExpiresAt: expiresAt()}))
+        await result
+        expect(useAuthStore().$state).toMatchObject({...current, authUser: currentUser})
+        expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({...current, authUser: currentUser})
+        expect(client.getHeaderValue('Authorization')).toBe(`Bearer ${current.accessToken}`)
+        expect(revoked).toEqual([{refreshToken: 'old-refresh'}])
+    })
+
+    it.each([
+        {stage: 'request', action: 'logout'}, {stage: 'profile', action: 'logout'},
+        {stage: 'request', action: 'login'}, {stage: 'profile', action: 'login'},
+    ])('cross-tab $action invalidates an external $stage without overwriting persisted state', async ({stage, action}) => {
+        const response = deferred<Response>()
+        const profile = deferred<Response>()
+        let profiles = 0
+        const revoked: unknown[] = []
+        fetchMock.mockImplementation(async (input, init) => {
+            const path = new URL(String(input)).pathname
+            if (path === '/api/google/login') return response.promise
+            if (path === '/api/auth/me') return ++profiles === 1 ? json(user) : profile.promise
+            if (path === '/api/auth/logout') {
+                revoked.push(JSON.parse(String(init?.body)))
+                return json({success: true})
+            }
+            throw new Error(`Unexpected request: ${path}`)
+        })
+        const store = useAuthStore()
+        const pending = app.runWithContext(() => useAuth()).loginWithSession(externalSession, true)
+        const result = expect(pending).rejects.toThrow('cancelled')
+        await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+        if (stage === 'profile') {
+            response.resolve(json({accessToken: jwt(600), refreshToken: 'discarded-refresh', refreshExpiresAt: expiresAt()}))
+            await vi.waitFor(() => expect(profiles).toBe(2))
+        }
+        const otherTab = useAuthStore(createPinia())
+        otherTab.clearAuth()
+        if (action === 'login') {
+            otherTab.setSession({accessToken: jwt(1200), refreshToken: 'other-tab-refresh', refreshExpiresAt: expiresAt()})
+            otherTab.setAuthUser({...user, username: 'other-tab'} as any)
+        }
+        const persisted = localStorage.getItem('AuthStore')
+        if (stage === 'profile') profile.resolve(json(user))
+        else response.resolve(json({accessToken: jwt(600), refreshToken: 'discarded-refresh', refreshExpiresAt: expiresAt()}))
+        await result
+        expect(localStorage.getItem('AuthStore')).toBe(persisted)
+        expect(store.$state).toEqual(otherTab.$state)
+        expect(client.getHeaderValue('Authorization')).toBe(action === 'login' ? `Bearer ${otherTab.accessToken}` : '')
+        expect(revoked).toEqual([{refreshToken: 'discarded-refresh'}])
+    })
+
+    it('external request rejection clears the previous session and profile failure revokes the newly confirmed session', async () => {
+        const store = useAuthStore()
+        store.setSession({accessToken: jwt(600), refreshToken: 'previous-refresh', refreshExpiresAt: expiresAt()})
+        store.setAuthUser(user as any)
+        const auth = app.runWithContext(() => useAuth())
+        fetchMock.mockResolvedValueOnce(json({message: 'Invalid credential'}, 401))
+        await expect(auth.loginWithSession(externalSession, true)).rejects.toBeDefined()
+        expect(store.$state).toMatchObject({accessToken: null, refreshToken: null, authUser: null})
+        const revoked: unknown[] = []
+        fetchMock.mockImplementation(async (input, init) => {
+            const path = new URL(String(input)).pathname
+            if (path === '/api/google/login') return json({accessToken: jwt(600), refreshToken: 'failed-profile-refresh', refreshExpiresAt: expiresAt()})
+            if (path === '/api/auth/me') return json({message: 'Profile unavailable'}, 503)
+            if (path === '/api/auth/logout') {
+                revoked.push(JSON.parse(String(init?.body)))
+                throw new TypeError('offline')
+            }
+            throw new Error(`Unexpected request: ${path}`)
+        })
+        await expect(auth.loginWithSession(externalSession, true)).rejects.toBeDefined()
+        expect(revoked).toEqual([{refreshToken: 'failed-profile-refresh'}])
+        expect(store.$state).toMatchObject({accessToken: null, refreshToken: null, authUser: null})
+        expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({accessToken: null, refreshToken: null, authUser: null})
+        expect(client.getHeaderValue('Authorization')).toBe('')
+    })
+    it.each(['after restore', 'during refresh', 'during profile'] as const)('restores a persisted expired external session with single-flight setup/guard/CRUD and logs out %s', async logoutStage => {
+        const initial = {accessToken: jwt(600), refreshToken: 'external-refresh', refreshExpiresAt: expiresAt()}
+        const rotated = {accessToken: jwt(1200), refreshToken: 'rotated-refresh', refreshExpiresAt: initial.refreshExpiresAt}
+        const refresh = deferred<Response>()
+        const profile = deferred<Response>()
+        const requests: {path: string, authorization: string | null, body: unknown}[] = []
+        let restoring = false
+        fetchMock.mockImplementation(async (input, init) => {
+            const path = new URL(String(input)).pathname
+            requests.push({path, authorization: new Headers(init?.headers).get('Authorization'),
+                body: init?.body ? JSON.parse(String(init.body)) : undefined})
+            if (path === '/api/google/login') return json(initial)
+            if (path === '/api/auth/refresh') return refresh.promise
+            if (path === '/api/auth/me') return restoring ? profile.promise : json(user)
+            if (path === '/api/auth/logout') return json({success: true})
+            if (path.startsWith('/api/users')) return json([])
+            throw new Error(`Unexpected request: ${path}`)
+        })
+        const auth = app.runWithContext(() => useAuth())
+        await auth.loginWithSession(externalSession, true)
+        const store = useAuthStore()
+        const persisted = JSON.parse(localStorage.getItem('AuthStore')!)
+        expect(persisted).toMatchObject({...initial, authUser: user})
+        // Simulate a reload after expiry: only persisted credentials survive startup.
+        localStorage.setItem('AuthStore', JSON.stringify({...persisted, accessToken: jwt(-60), authUser: null}))
+        store.$reset()
+        expect(store.accessToken).toBeNull()
+        restoring = true
+        requests.length = 0
+        const pending = Promise.all([setupAuthSession(), router.push('/users'), client.get('/api/users'), client.get('/api/users/1')])
+        await vi.waitFor(() => expect(requests).toHaveLength(1))
+        expect(requests[0]).toEqual({path: '/api/auth/refresh', authorization: null, body: {refreshToken: initial.refreshToken}})
+        let logout: Promise<void> | undefined
+        if (logoutStage === 'during refresh') logout = auth.logout()
+        refresh.resolve(json(rotated))
+        if (logoutStage !== 'during refresh') {
+            await vi.waitFor(() => expect(requests.filter(r => r.path === '/api/auth/me')).toHaveLength(1))
+            expect(requests.find(r => r.path === '/api/auth/me')?.authorization).toBe(`Bearer ${rotated.accessToken}`)
+            expect(requests.some(r => r.path.startsWith('/api/users'))).toBe(false)
+            if (logoutStage === 'during profile') logout = auth.logout()
+            profile.resolve(json(user))
+        }
+        await pending
+        await logout
+        expect(requests.filter(r => r.path === '/api/auth/refresh')).toHaveLength(1)
+        expect(requests.filter(r => r.path === '/api/auth/me')).toHaveLength(logoutStage === 'during refresh' ? 0 : 1)
+        if (logoutStage === 'after restore') {
+            expect(router.currentRoute.value.name).toBe('Users')
+            expect(store.$state).toMatchObject({...rotated, authUser: user})
+            expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({...rotated, authUser: user})
+            for (const request of requests.filter(r => r.path.startsWith('/api/users'))) expect(request.authorization).toBe(`Bearer ${rotated.accessToken}`)
+            await auth.logout()
+        }
+        expect(router.currentRoute.value.name).toBe('Login')
+        const revocations = requests.filter(r => r.path === '/api/auth/logout')
+        expect(revocations).toContainEqual({path: '/api/auth/logout', authorization: null, body: {refreshToken: rotated.refreshToken}})
+        if (logoutStage === 'during refresh') expect(revocations).toContainEqual({path: '/api/auth/logout', authorization: null, body: {refreshToken: initial.refreshToken}})
+        expect(store.$state).toMatchObject({accessToken: null, refreshToken: null, refreshExpiresAt: null, authUser: null})
+        expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({accessToken: null, refreshToken: null, refreshExpiresAt: null, authUser: null})
+        expect(client.getHeaderValue('Authorization')).toBe('')
+    }, 4000)
+
     it('cleans an ordinary session that expires while the application stays open', async () => {
         const store = useAuthStore()
         store.setAccessToken(jwt(60))

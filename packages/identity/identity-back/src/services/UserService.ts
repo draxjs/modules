@@ -101,10 +101,9 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         return {accessToken: newAccessToken}
     }
 
-    async authByEmail(email: string, createIfNotFound: boolean = false, userData: IUserCreate, {userAgent, ip}) {
-        let user = null
-        console.log("auth email", email)
-        user = await this.findByEmail(email)
+    /** Server-only: call only after verifying a trusted external identity, never an unverified email. */
+    async authByEmail(email: string, createIfNotFound: boolean = false, userData: IUserCreate, {userAgent, ip}, rememberMe: boolean = false) {
+        let user = await this.findByEmail(email)
 
         if (!user && createIfNotFound) {
             userData.password = userData.password ? userData.password : await this.passwordPolicyService.generateCompatiblePassword()
@@ -112,8 +111,13 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             user = await this.create(userData)
         }
 
+        // Email lookup and creation hide secrets; bind remembered sessions to the persisted hash.
+        if (user && rememberMe === true && RefreshTokenService.enabled()) {
+            user = await this._repository.findByIdWithPassword(user._id.toString())
+        }
+
         if (user && user.active) {
-            const {sessionUUID} = await this.generateSession(user, userAgent, ip);
+            const {sessionUUID, ...refresh} = await this.generateSession(user, userAgent, ip, rememberMe);
 
 
             const tokenPayload: IAuthUser = {
@@ -127,7 +131,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
             }
 
             const accessToken = AuthUtils.generateToken(tokenPayload)
-            return {accessToken: accessToken}
+            return {accessToken: accessToken, ...refresh}
         } else {
             throw new BadCredentialsError()
         }

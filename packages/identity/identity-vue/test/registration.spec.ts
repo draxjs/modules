@@ -90,7 +90,7 @@ describe('verification after registration', () => {
         await flushPromises()
         await fillRegistration(wrapper)
         expect(button(wrapper, 'auth.verificationResendTitle').attributes('type')).toBe('button')
-        expect(button(wrapper, 'auth.verificationResendTitle').element.parentElement?.classList.contains('mt-8')).toBe(true)
+        expect(button(wrapper, 'auth.verificationResendTitle').element.parentElement?.classList.contains('mt-2')).toBe(true)
         await button(wrapper, 'auth.verificationResendTitle').trigger('click')
         const resend = expectResendOnly(wrapper)
         await resend.get('input[type="email"]').setValue('other@example.test')

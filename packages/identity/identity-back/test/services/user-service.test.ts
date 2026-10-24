@@ -282,16 +282,16 @@ describe("UserServiceTest", function () {
         });
     })
 
-    it("validatePassword returns allowedSpecialChars when required special char is invalid", async function () {
+    it.each(['password', 'newPassword'])("validatePassword returns allowedSpecialChars for %s when required special char is invalid", async function (field) {
         const resolver = new PasswordPolicyResolver()
         resolver.setProjectPolicy({requireSpecialChar: true, allowedSpecialChars: "%"})
         const passwordPolicyService = new PasswordPolicyService(resolver, userRepository)
 
         await expect(async () => {
-            await passwordPolicyService.validatePassword("Password1ñ")
+            await passwordPolicyService.validatePassword("Password1ñ", {field})
         }).rejects.toSatisfy((err) => {
             expect(err).toBeInstanceOf(ValidationError)
-            expect(err.errors[0].field).toBe('password')
+            expect(err.errors[0].field).toBe(field)
             expect(err.errors[0].reason).toBe('validation.password.requireSpecialChar')
             expect(err.errors[0].allowedSpecialChars).toBe("%")
             return true;
