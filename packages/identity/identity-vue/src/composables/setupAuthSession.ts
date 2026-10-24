@@ -1,5 +1,5 @@
-import {HttpClientFactory, HttpRestClientFactory} from '@drax/common-front'
-import {AuthSystemFactory} from '@drax/identity-front'
+import {HttpRestClientFactory} from '@drax/common-front'
+import {AuthHelper, AuthSystemFactory} from '@drax/identity-front'
 import {useAuthStore} from '../stores/AuthStore'
 
 export const isRememberMeEnabled = () => import.meta.env.VITE_DRAX_REMEMBER_ME_ENABLED === 'true'
@@ -12,11 +12,7 @@ const revisions = new WeakMap<AuthStore, number>()
 export const authSessionRevision = (store = useAuthStore()) => revisions.get(store) ?? 0
 
 export function syncAuthHeaders(store = useAuthStore()) {
-    const clients = new Set([HttpClientFactory.getInstance(), HttpRestClientFactory.getInstance()])
-    for (const client of clients) {
-        if (store.accessToken) client.addHeader('Authorization', `Bearer ${store.accessToken}`)
-        else client.removeHeader('Authorization')
-    }
+    store.syncAuthHeaders()
 }
 
 export function clearAuthSession(store = useAuthStore()) {
@@ -28,7 +24,7 @@ export function clearAuthSession(store = useAuthStore()) {
 export function isRejectedCredential(error: unknown): boolean {
     const e = error as {statusCode?: number, status?: number, response?: {status?: number}, cause?: unknown, error?: unknown}
     const status = e?.statusCode ?? e?.status ?? e?.response?.status
-    return status === 401 || status === 403 ||
+    return status === 401 || status === 403 || status === 498 ||
         (!!e?.error && e.error !== error && isRejectedCredential(e.error)) ||
         (!!e?.cause && e.cause !== error && isRejectedCredential(e.cause))
 }
@@ -76,11 +72,7 @@ export function isCurrentAuthSession(store: AuthStore, token: string | null, ver
 }
 
 function needsRefresh(token: string | null) {
-    try {
-        const payload = (token?.split('.')[1] ?? '').replace(/-/g, '+').replace(/_/g, '/')
-        const {exp} = JSON.parse(atob(payload))
-        return typeof exp !== 'number' || exp * 1000 <= Date.now() + 30_000
-    } catch { return true }
+    return !AuthHelper.isJWTValid(token ?? '', 30)
 }
 
 async function withSessionLock(action: () => Promise<void>) {
@@ -115,12 +107,25 @@ async function fetchSessionUser(store: AuthStore) {
 }
 
 export function refreshAuthSession(store = useAuthStore()): Promise<void> {
-    if (!isRememberMeEnabled()) return Promise.resolve()
+
     const running = flights.get(store)
     if (running) return running
     const flight = withSessionLock(async () => {
         rereadSession(store)
-        if (!store.refreshToken) return
+        const valid = AuthHelper.isJWTValid(store.accessToken ?? '')
+        if (!isRememberMeEnabled() || !store.refreshToken) {
+            if (!valid) {
+                if (store.accessToken || store.refreshToken || store.refreshExpiresAt || store.authUser) clearAuthSession(store)
+                else syncAuthHeaders(store)
+            } else {
+                // Disabling remember-me must not invalidate an otherwise live ordinary JWT.
+                if (!isRememberMeEnabled() && (store.refreshToken || store.refreshExpiresAt)) {
+                    store.setAccessToken(store.accessToken!)
+                }
+                syncAuthHeaders(store)
+            }
+            return
+        }
         if (!needsRefresh(store.accessToken)) {
             if (!store.authUser) await fetchSessionUser(store)
             return

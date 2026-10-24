@@ -64,6 +64,89 @@ afterEach(() => {
 })
 
 describe('real REST session integration', () => {
+    it('cleans an ordinary session that expires while the application stays open', async () => {
+        const store = useAuthStore()
+        store.setAccessToken(jwt(60))
+        store.setAuthUser(user as any)
+        expect(client.getHeaderValue('Authorization')).not.toBe('')
+        const now = vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 120_000)
+        fetchMock.mockResolvedValue(json({ok: true}))
+        try {
+            await client.get('/api/users')
+            expect(new Headers(fetchMock.mock.calls[0][1]?.headers).has('Authorization')).toBe(false)
+            expect(store.accessToken).toBeNull()
+            expect(store.authUser).toBeNull()
+            expect(JSON.parse(localStorage.getItem('AuthStore')!).accessToken).toBeNull()
+            expect(client.getHeaderValue('Authorization')).toBe('')
+        } finally {
+            now.mockRestore()
+        }
+    })
+
+    it('direct store clearing synchronizes persisted state and both shared clients', () => {
+        const other = new HttpRestClient()
+        HttpClientFactory.instance = other
+        const store = useAuthStore()
+        const token = jwt(600)
+        store.setSession({accessToken: token, refreshToken: 'r1', refreshExpiresAt: expiresAt()})
+        store.setAuthUser(user as any)
+        expect(other.getHeaderValue('Authorization')).toBe(`Bearer ${token}`)
+        other.addHeader('authorization', 'Bearer legacy')
+        store.clearAuth()
+        expect(store.isAuth).toBe(false)
+        expect(store.authUser).toBeNull()
+        expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({accessToken: null, refreshToken: null, authUser: null})
+        expect(new Headers(other.getBaseHeaders()).has('Authorization')).toBe(false)
+        expect(new Headers(client.getBaseHeaders()).has('Authorization')).toBe(false)
+    })
+
+    it('external login bypasses stale Bearer and refresh without disturbing concurrent authenticated work', async () => {
+        const store = useAuthStore()
+        const stale = jwt(-60)
+        store.setSession({accessToken: stale, refreshToken: 'r1', refreshExpiresAt: expiresAt()})
+        client.addHeader('Authorization', `Bearer ${stale}`)
+        const refresh = deferred<Response>()
+        const fresh = jwt(600)
+        const requests: {path: string, authorization: string | null}[] = []
+        fetchMock.mockImplementation(async (input, init) => {
+            const path = new URL(String(input)).pathname
+            requests.push({path, authorization: new Headers(init?.headers).get('Authorization')})
+            if (path === '/api/auth/refresh') return refresh.promise
+            if (path === '/api/auth/me') return json(user)
+            if (path === '/api/google/login') return json({error: 'Invalid Google credential'}, 401)
+            return json({ok: true})
+        })
+        const protectedRequest = client.get('/api/users')
+        await vi.waitFor(() => expect(requests).toHaveLength(1))
+        await expect(client.post('/api/google/login', {credential: 'invalid'}, {removeHeaders: ['Authorization']})).rejects.toBeDefined()
+        expect(requests[1]).toEqual({path: '/api/google/login', authorization: null})
+        // The external credential rejection is not rejection of the recoverable Drax session.
+        expect(store.refreshToken).toBe('r1')
+        expect(store.accessToken).toBe(stale)
+        refresh.resolve(json({accessToken: fresh, refreshToken: 'r2', refreshExpiresAt: expiresAt()}))
+        await protectedRequest
+        expect(requests.filter(r => r.path === '/api/auth/refresh')).toHaveLength(1)
+        expect(requests.find(r => r.path === '/api/users')?.authorization).toBe(`Bearer ${fresh}`)
+        expect(client.getHeaderValue('Authorization')).toBe(`Bearer ${fresh}`)
+    })
+
+    it.each([401, 403, 498, 503, 'offline'] as const)('blocks stale authenticated fetch on refresh failure %s', async status => {
+        const store = useAuthStore()
+        const token = jwt(-60)
+        store.setSession({accessToken: token, refreshToken: 'r1', refreshExpiresAt: expiresAt()})
+        fetchMock.mockImplementation(async () => {
+            if (status === 'offline') throw new TypeError('offline')
+            return json({error: 'refresh failed'}, status)
+        })
+        await expect(client.get('/api/users')).rejects.toBeDefined()
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(String(fetchMock.mock.calls[0][0])).toContain('/api/auth/refresh')
+        const transient = status === 503 || status === 'offline'
+        expect(store.refreshToken).toBe(transient ? 'r1' : null)
+        expect(store.accessToken).toBe(transient ? token : null)
+        expect(JSON.parse(localStorage.getItem('AuthStore')!).refreshToken).toBe(transient ? 'r1' : null)
+        expect(client.getHeaderValue('Authorization')).toBe('')
+    })
     it('loads public registration options through useAuth without renewing a stale session', async () => {
         useAuthStore().setSession({accessToken: jwt(-60), refreshToken: 'stale', refreshExpiresAt: expiresAt()})
         fetchMock.mockResolvedValue(json({tenantRequired: true}))
@@ -201,10 +284,13 @@ describe('real REST session integration', () => {
         const expired = jwt(-60)
         useAuthStore().setAccessToken(expired)
         await client.get('/api/users')
-        expect(requests[requests.length - 1].authorization).toBe(`Bearer ${expired}`)
+        expect(requests[requests.length - 1].authorization).toBeNull()
         await router.push('/users')
         expect(router.currentRoute.value.name).toBe('Login')
-        expect(useAuthStore().accessToken).toBe(expired)
+        expect(useAuthStore().accessToken).toBeNull()
+        expect(useAuthStore().authUser).toBeNull()
+        expect(JSON.parse(localStorage.getItem('AuthStore')!).accessToken).toBeNull()
+        expect(client.getHeaderValue('Authorization')).toBe('')
         expect(requests.some(r => r.path === '/api/auth/refresh')).toBe(false)
     })
 

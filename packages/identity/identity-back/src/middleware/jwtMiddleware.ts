@@ -1,8 +1,19 @@
 import AuthUtils from "../utils/AuthUtils.js";
 import {IAuthUser} from "@drax/identity-share";
 
+declare module 'fastify' {
+    interface FastifyContextConfig {
+        /** optional (default): validate a supplied Drax Bearer; ignore: leave it to the route. */
+        identityJwt?: 'optional' | 'ignore';
+    }
+}
+
 function jwtMiddleware (request, reply, done) {
         try{
+            if (request.routeOptions?.config?.identityJwt === 'ignore') {
+                done()
+                return
+            }
 
             let token: string
 
@@ -25,9 +36,9 @@ function jwtMiddleware (request, reply, done) {
         }catch (e) {
             console.error(e)
             if (e.name === 'TokenExpiredError') {
-                reply.code(498).send({ error: 'JWT expirado' });
+                return reply.code(498).send({ error: 'JWT expirado' });
             }
-            reply.code(401).send({ error: 'Token JWT inválido' });
+            return reply.code(401).send({ error: 'Token JWT inválido' });
         }
 }
 

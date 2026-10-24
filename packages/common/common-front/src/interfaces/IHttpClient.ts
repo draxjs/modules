@@ -8,12 +8,14 @@ interface IHttpParam {
 
 interface IHttpOptions {
   headers?: IHttpHeader;
+  /** Case-insensitive, request-local removal. Removing Authorization also skips the before-request hook. */
   removeHeaders?: string[]
   params?: IHttpParam,
   timeout?: number
 }
 
 interface IHttpClient {
+  /** Awaited before copying headers, except for requests explicitly removing Authorization. */
   setBeforeRequest?(handler: (url: string) => Promise<void>): void
 
   get(url: string, options?: IHttpOptions): Promise<object|string>

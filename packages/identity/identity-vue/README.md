@@ -58,7 +58,7 @@ Integration contracts:
   null-to-null logout. Legacy stores without the field use the initial null epoch.
   Late returned refresh credentials are revoked best-effort.
 - Transient refresh/profile errors retain recoverable credentials; rejected
-  credentials (HTTP 401/403, including common-front wrapped errors) clear auth.
+  credentials (HTTP 401/403/498, including common-front wrapped errors) clear auth.
   Logout clears local state immediately, with best-effort server revocation even
   when the feature has subsequently been disabled. Offline revocation cannot be
   guaranteed; the backend expiration/revocation policy remains authoritative.
@@ -71,6 +71,66 @@ Focused tests:
 ```sh
 npm exec --workspace @drax/identity-vue -- vitest run test/auth-session.spec.ts test/auth-session.integration.spec.ts test/components/__tests__/IdentityLogin.spec.ts
 ```
+
+## Expired sessions and external login migration
+
+Session maintenance runs even with remember-me disabled or without a refresh token.
+Expired/malformed access tokens without renewal are cleared together with the profile,
+refresh credentials, persisted state and shared authorization headers. With remember-me
+disabled, a live access token remains usable, but legacy refresh credentials are discarded.
+`AuthStore.isAuth` checks local JWT validity, not mere token presence. This check is not
+signature verification: the backend remains authoritative.
+
+Store token/clear actions synchronize both shared clients. `syncAuthHeaders()` never
+installs an expired/malformed JWT; transient refresh errors preserve recoverable tokens
+in storage, remove expired authorization from the clients and reject the authenticated
+REST preflight before fetch. There is no navigation or automatic request replay.
+Removing a header directly is only a transport operation and intentionally does **not**
+clear the store: use session/store actions for credential changes. Direct `$patch` is
+not a session API; normal request maintenance re-reads persisted state.
+
+External providers must mark the credential exchange as independent using the existing
+HTTP option, even if the old Drax session is recoverable:
+
+```ts
+const response = await this.httpClient.post('/api/google/login', {credential}, {
+  timeout: 120000,
+  removeHeaders: ['Authorization'],
+})
+await loginWithToken(response.accessToken)
+```
+
+Do not remove/restore global headers or set the returned token manually before
+`loginWithToken`. The request option excludes Authorization case-insensitively and
+skips the session preflight without changing shared state. Its 401 is the external
+credential's rejection, not a reason to clear the existing Drax session. No global
+response interceptor performs logout. This does not disable browser CORS preflight.
+
+Consumer changes:
+
+- **GoogleProvider:** add `removeHeaders: ['Authorization']` to the login POST and
+  remove the redundant `setHttpClientToken(response.accessToken)` call; keep
+  `await loginWithToken(response.accessToken)` after a successful exchange. See
+  Zuite's `src/modules/base/providers/GoogleProvider.ts`.
+- **LoginPage:** delete the workaround that checks invalid access tokens and calls
+  `logout()`. Session cleanup belongs to maintenance, not a page (logout also navigates).
+- **Bootstrap:** retain `app.use(pinia); await setupAuthSession(); app.use(router)`;
+  install Pinia's persisted-state plugin before these calls. No extra cleanup needed.
+- **Router:** retain the existing `await refreshAuthSession()` plus catch and cancel
+  protected navigation while `!isAuthenticated() && isRememberMeEnabled() &&
+  authStore.refreshToken`. Do not convert transient failures into logout or redirects.
+- **Backend external route:** replace the Google-specific middleware wrapper with
+  the supported Fastify route option `{config: {identityJwt: 'ignore'}}` on the POST
+  route. Keep its external credential verifier and normal authorization checks.
+  A public route with optional JWT authentication still rejects a supplied invalid
+  Bearer; only this explicit option ignores it. See identity-back's
+  `docs/jwt-route-policy.md`.
+
+The two local workarounds can therefore be removed after upgrading compatible packages
+and declaring the external route policy. Google SDK/signature verification itself is
+consumer-owned; Drax tests use a deterministic external verifier, not Google's service.
+REST request-time maintenance requires the shared client's optional `setBeforeRequest`;
+GraphQL and custom clients without that hook do not get automatic preflight renewal.
 
 ## Registro con creación de tenant (opcional, REST)
 

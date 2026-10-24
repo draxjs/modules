@@ -4,6 +4,7 @@ import type {IAuthFullUser} from "@drax/identity-front";
 //@ts-ignore
 import type from 'pinia-plugin-persistedstate'
 import {AuthHelper} from "@drax/identity-front";
+import {HttpClientFactory, HttpRestClientFactory} from '@drax/common-front'
 
 export const useAuthStore = defineStore('AuthStore', {
   state: () => ({
@@ -15,8 +16,7 @@ export const useAuthStore = defineStore('AuthStore', {
   }),
   getters:{
     isAuth: (state): boolean => {
-      //TODO verify token
-      return !!state.accessToken
+      return !!state.accessToken && AuthHelper.isJWTValid(state.accessToken)
     },
     hasPermission: (state) => (permission:string) => {
       return state.authUser && state.authUser.role && state.authUser.role.permissions ? state.authUser.role.permissions.includes(permission) : false
@@ -26,6 +26,16 @@ export const useAuthStore = defineStore('AuthStore', {
     },
   },
   actions:{
+    syncAuthHeaders(){
+      const clients = new Set([HttpClientFactory.getInstance(), HttpRestClientFactory.getInstance()])
+      for (const client of clients) {
+        for (const header of Object.keys(client.baseHeaders ?? {})) {
+          if (header.toLowerCase() === 'authorization' && header !== 'Authorization') client.removeHeader(header)
+        }
+        if (this.accessToken && AuthHelper.isJWTValid(this.accessToken)) client.addHeader('Authorization', `Bearer ${this.accessToken}`)
+        else client.removeHeader('Authorization')
+      }
+    },
     persistSession(){
       // Persist synchronously so another tab holding the refresh lock sees rotation immediately.
       try {
@@ -35,6 +45,7 @@ export const useAuthStore = defineStore('AuthStore', {
     setAccessToken(accessToken:string){
       this.$patch({accessToken, refreshToken: null, refreshExpiresAt: null})
       this.persistSession()
+      this.syncAuthHeaders()
     },
     setSession(session: {accessToken: string, refreshToken?: string, refreshExpiresAt?: string}){
       this.$patch({
@@ -43,6 +54,7 @@ export const useAuthStore = defineStore('AuthStore', {
         refreshExpiresAt: session.refreshExpiresAt ?? null,
       })
       this.persistSession()
+      this.syncAuthHeaders()
     },
     setAuthUser(authUser:IAuthFullUser){
       this.authUser = authUser
@@ -55,6 +67,7 @@ export const useAuthStore = defineStore('AuthStore', {
         sessionVersion: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
       })
       this.persistSession()
+      this.syncAuthHeaders()
     }
   },
 

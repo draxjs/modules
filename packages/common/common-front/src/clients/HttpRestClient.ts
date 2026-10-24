@@ -46,6 +46,20 @@ class HttpRestClient implements IHttpClient {
     return error.name === 'AbortError';
   }
 
+  private async prepareRequest(url: string, options?: IHttpOptions): Promise<void> {
+    if (options?.removeHeaders?.some(header => header.toLowerCase() === 'authorization')) return;
+    if (this.beforeRequest) await this.beforeRequest(url);
+  }
+
+  private resolveHeaders(options?: IHttpOptions): IHttpHeader {
+    const headers = {...this.baseHeaders, ...options?.headers};
+    const removed = new Set(options?.removeHeaders?.map(header => header.toLowerCase()));
+    for (const header of Object.keys(headers)) {
+      if (removed.has(header.toLowerCase())) delete headers[header];
+    }
+    return headers;
+  }
+
   private resolveTimeout(options?: IHttpOptions): number {
     return options?.timeout ?? this.timeout;
   }
@@ -82,7 +96,7 @@ class HttpRestClient implements IHttpClient {
 
 
   async get(url: string, options?: IHttpOptions): Promise<object> {
-    if (this.beforeRequest) await this.beforeRequest(url);
+    await this.prepareRequest(url, options);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -90,10 +104,7 @@ class HttpRestClient implements IHttpClient {
     try {
       const queryParams = new URLSearchParams(options?.params as any).toString();
       url = this.baseUrl + url + (queryParams ? `?${queryParams}` : '');
-      const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
-      if(options?.removeHeaders){
-        options?.removeHeaders.forEach(header => delete headers[header]);
-      }
+      const headers = this.resolveHeaders(options);
       const response = await fetch(url, {
         method: 'GET',
         headers: headers,
@@ -114,17 +125,14 @@ class HttpRestClient implements IHttpClient {
   }
 
   async post(url: string, data: any, options?: IHttpOptions): Promise<object> {
-    if (this.beforeRequest) await this.beforeRequest(url);
+    await this.prepareRequest(url, options);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
       url = this.baseUrl + url;
-      const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
-      if(options?.removeHeaders){
-        options?.removeHeaders.forEach(header => delete headers[header]);
-      }
+      const headers = this.resolveHeaders(options);
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'POST',
@@ -148,17 +156,14 @@ class HttpRestClient implements IHttpClient {
   }
 
   async put(url: string, data: any, options?: IHttpOptions): Promise<object> {
-    if (this.beforeRequest) await this.beforeRequest(url);
+    await this.prepareRequest(url, options);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
       url = this.baseUrl + url;
-      const headers = {...this.baseHeaders, ...options?.headers};
-      if(options?.removeHeaders){
-        options?.removeHeaders.forEach(header => delete headers[header]);
-      }
+      const headers = this.resolveHeaders(options);
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'PUT',
@@ -181,7 +186,7 @@ class HttpRestClient implements IHttpClient {
   }
 
   async delete(url: string, data?: any, options?: IHttpOptions): Promise<object> {
-    if (this.beforeRequest) await this.beforeRequest(url);
+    await this.prepareRequest(url, options);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -189,10 +194,7 @@ class HttpRestClient implements IHttpClient {
     try {
       url = this.baseUrl + url;
       data = data ? data : {}
-      const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
-      if(options?.removeHeaders){
-        options?.removeHeaders.forEach(header => delete headers[header]);
-      }
+      const headers = this.resolveHeaders(options);
       data = data instanceof FormData ? data : JSON.stringify(data);
       const response = await fetch(url, {
         method: 'DELETE',
@@ -215,17 +217,14 @@ class HttpRestClient implements IHttpClient {
   }
 
   async patch(url: string, data: any, options?: IHttpOptions): Promise<object> {
-    if (this.beforeRequest) await this.beforeRequest(url);
+    await this.prepareRequest(url, options);
     const controller = new AbortController();
     const timeout = this.resolveTimeout(options);
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
       url = this.baseUrl + url;
-      const headers: IHttpHeader = {...this.baseHeaders, ...options?.headers};
-      if(options?.removeHeaders){
-        options?.removeHeaders.forEach(header => delete headers[header]);
-      }
+      const headers = this.resolveHeaders(options);
       const response = await fetch(url, {
         method: 'PATCH',
         headers: headers,

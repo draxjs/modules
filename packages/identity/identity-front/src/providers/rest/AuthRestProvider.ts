@@ -28,7 +28,7 @@ class AuthRestProvider implements IAuthProvider {
 
     async login(username: string, password: string, rememberMe?: boolean): Promise<ILoginResponse> {
         const data = {username, password, ...(rememberMe === true ? {rememberMe: true} : {})}
-        const result = await this.httpClient.post('/api/auth/login', data) as ILoginResponse
+        const result = await this.httpClient.post('/api/auth/login', data, {removeHeaders: ['Authorization']}) as ILoginResponse
         this.setHttpClientToken(result.accessToken)
         return result
     }
@@ -66,7 +66,7 @@ class AuthRestProvider implements IAuthProvider {
 
     async passwordPolicy(): Promise<IPasswordPolicy> {
         const url = '/api/auth/password-policy'
-        return await this.httpClient.get(url) as IPasswordPolicy
+        return await this.httpClient.get(url, {removeHeaders: ['Authorization']}) as IPasswordPolicy
     }
 
     async changeOwnPassword(currentPassword: string, newPassword: string): Promise<boolean> {
@@ -79,7 +79,7 @@ class AuthRestProvider implements IAuthProvider {
     async recoveryPasswordRequest(email: string): Promise<boolean> {
         const url = '/api/users/password/recovery/request'
         const data = {email}
-        let r = await this.httpClient.post(url, data)
+        let r = await this.httpClient.post(url, data, {removeHeaders: ['Authorization']})
         return /true/i.test(r as string)
     }
 
@@ -87,7 +87,7 @@ class AuthRestProvider implements IAuthProvider {
     async recoveryPasswordComplete(recoveryCode: string, newPassword: string): Promise<boolean> {
         const url = '/api/users/password/recovery/complete'
         const data = {recoveryCode, newPassword}
-        let r = await this.httpClient.post(url, data)
+        let r = await this.httpClient.post(url, data, {removeHeaders: ['Authorization']})
         return /true/i.test(r as string)
     }
 

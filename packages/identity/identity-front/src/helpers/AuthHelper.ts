@@ -3,27 +3,22 @@ import type {JwtPayload} from './JwtDecodeHelper'
 
 class AuthHelper {
 
-    static isJWTValid(accessToken: string) {
+    /** Local structure/expiration check only; does not verify the signature or authorize a request. */
+    static isJWTValid(accessToken: string, marginSeconds: number = 0): boolean {
         try {
+            if (typeof accessToken !== 'string' || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(accessToken)) return false
+            if (!Number.isFinite(marginSeconds) || marginSeconds < 0) return false
 
-            if (!accessToken) return false
+            const header = jwtDecodeHelper(accessToken, {header: true})
+            const payload = jwtDecodeHelper(accessToken) as JwtPayload
+            if (!header || typeof header !== 'object' || Array.isArray(header)) return false
+            if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return false
+            if (typeof payload.exp !== 'number' || !Number.isFinite(payload.exp)) return false
 
-            let payload = jwtDecodeHelper(accessToken) as JwtPayload
-
-            if (!payload.exp) return false
-
-            let dateToken = new Date(payload.exp * 1000)
-
-            let now = new Date()
-            if (now > dateToken) return false
-
-            return true
-
-        } catch (err) {
-            console.error("isJWTValid", err)
+            return payload.exp > Date.now() / 1000 + marginSeconds
+        } catch {
             return false
         }
-
     }
 
 }

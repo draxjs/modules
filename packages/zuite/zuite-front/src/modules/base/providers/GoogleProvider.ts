@@ -30,9 +30,11 @@ class GoogleProvider {
 
   async login(credential: string): Promise<any> {
     const url = this.basePath + '/login'
-    const response:any = await this.httpClient.post(url, {credential}, {timeout: 120000})
+    const response:any = await this.httpClient.post(url, {credential}, {
+      timeout: 120000,
+      removeHeaders: ['Authorization'],
+    })
     const {loginWithToken} = useAuth()
-    this.setHttpClientToken(response.accessToken)
     await loginWithToken(response.accessToken)
     return response
   }

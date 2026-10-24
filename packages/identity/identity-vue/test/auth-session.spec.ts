@@ -13,9 +13,9 @@ vi.mock('@drax/common-front', () => ({
     HttpClientFactory: {getInstance: () => mocks.client},
     HttpRestClientFactory: {getInstance: () => mocks.client},
 }))
-vi.mock('@drax/identity-front', () => ({
+vi.mock('@drax/identity-front', async importOriginal => ({
+    ...await importOriginal<typeof import('@drax/identity-front')>(),
     AuthSystemFactory: {getInstance: () => mocks.auth},
-    AuthHelper: {isJWTValid: (token: string) => JSON.parse(atob(token.split('.')[1])).exp * 1000 > Date.now()},
 }))
 vi.mock('vue-router', () => ({useRouter: () => ({push: mocks.push})}))
 
@@ -83,6 +83,9 @@ describe('setup / refresh', () => {
         useAuthStore().setSession(remembered())
         await refreshAuthSession()
         expect(mocks.auth.refresh).not.toHaveBeenCalled()
+        expect(useAuthStore().$state).toMatchObject({accessToken: null, refreshToken: null, authUser: null, refreshExpiresAt: null})
+        expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({accessToken: null, refreshToken: null})
+        expect(mocks.client.removeHeader).toHaveBeenCalledWith('Authorization')
     })
 
     it('does not extend ordinary sessions', async () => {
@@ -90,6 +93,33 @@ describe('setup / refresh', () => {
         await setupAuthSession()
         expect(mocks.auth.refresh).not.toHaveBeenCalled()
         expect(mocks.auth.me).not.toHaveBeenCalled()
+        expect(useAuthStore().accessToken).toBeNull()
+    })
+
+    it.each(['expired', 'malformed'])('clears a persisted %s JWT without refresh on startup', async kind => {
+        const store = useAuthStore()
+        localStorage.setItem('AuthStore', JSON.stringify({accessToken: kind === 'expired' ? jwt(-1) : 'bad', authUser: user}))
+        await setupAuthSession()
+        expect(store.$state).toMatchObject({accessToken: null, authUser: null, refreshToken: null, refreshExpiresAt: null})
+        expect(JSON.parse(localStorage.getItem('AuthStore')!)).toMatchObject({accessToken: null, authUser: null})
+        expect(mocks.client.removeHeader).toHaveBeenCalledWith('Authorization')
+        expect(mocks.auth.refresh).not.toHaveBeenCalled()
+        expect(store.isAuth).toBe(false)
+    })
+
+    it('strips legacy refresh credentials when disabled but keeps a live access token', async () => {
+        vi.stubEnv('VITE_DRAX_REMEMBER_ME_ENABLED', 'false')
+        const store = useAuthStore()
+        const token = jwt(600)
+        store.setSession({...remembered(), accessToken: token})
+        store.setAuthUser(user as any)
+        await setupAuthSession()
+        expect(store.accessToken).toBe(token)
+        expect(store.refreshToken).toBeNull()
+        expect(store.refreshExpiresAt).toBeNull()
+        expect(store.authUser).toEqual(user)
+        expect(mocks.auth.refresh).not.toHaveBeenCalled()
+        expect(mocks.client.addHeader).toHaveBeenLastCalledWith('Authorization', `Bearer ${token}`)
     })
 
     it('renews near expiration, but not a fresh JWT', async () => {
