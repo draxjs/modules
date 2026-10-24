@@ -222,7 +222,7 @@ function onKeydown(event: KeyboardEvent) {
         :name="name"
         :label="label"
         :rows="rows"
-        :readonly="readonly"
+        :readonly="props.readonly"
         :disabled="disabled"
         :rules="rules"
         :error-messages="errorMessages"
