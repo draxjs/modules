@@ -214,6 +214,49 @@ Si TTS falla después de un turno exitoso, se conservan texto, navegación, resp
 
 Reutiliza los providers/voces/configuración TTS existentes y las opciones de voz/navegador en la UI. Registrar el router no configura TTS ni demuestra compatibilidad de audio. Una falla de audio no indica rollback de una operación de negocio.
 
+## Diagnóstico backend de errores
+
+Los errores controlados conservan la excepción original en `DraxAgentError.cause`, como propiedad no enumerable. Los wrappers conservan la cadena de causas; la respuesta HTTP sigue usando únicamente los campos públicos seguros. No se agrega el mensaje crudo del SDK, el stack ni la causa al JSON del cliente o al historial conversacional.
+
+Los fallos capturados por el agente/router registran automáticamente un evento estructurado mediante `console.error("[drax-agent] error", diagnostic)`. Buscá en los logs del **proceso backend** el `correlationId` recibido por el cliente. No requiere habilitar `logToolExecution`, no realiza otra llamada al proveedor y no necesita que funcione la persistencia de `AILog`.
+
+Ejemplo orientativo de una clave rechazada:
+
+```json
+{
+  "event": "drax.agent.error",
+  "correlationId": "0a811f0f-79c5-4963-8b29-b3ac44997553",
+  "agentIdentifier": "default",
+  "agentType": "specialist",
+  "code": "AGENT_TURN_FAILED",
+  "stage": "provider",
+  "provider": "openai",
+  "diagnostic": {
+    "category": "authentication",
+    "hint": "Check that the provider API key is configured, valid and active.",
+    "errorName": "AuthenticationError",
+    "upstreamStatus": 401,
+    "upstreamCode": "invalid_api_key",
+    "requestId": "req_example"
+  }
+}
+```
+
+La proyección usa allowlists, no un volcado de la excepción con reemplazos heurísticos. No incluye valores de configuración, claves, modelos libres, headers completos, URLs, prompts, mensajes, historial, adjuntos, argumentos de tools ni cuerpo de respuesta. Solo conserva nombres/códigos/parámetros e IDs del proveedor reconocidos y acotados. Los mensajes originales se leen únicamente para clasificar patrones conocidos; no se imprimen. Las causas cíclicas/profundas se recorren de forma acotada, sin ejecutar getters ni serializadores personalizados.
+
+| Categoría | Qué revisar |
+| --- | --- |
+| `configuration` | `configurationKeys` indica una variable faltante, como `OPENAI_MODEL` o `DEEPSEEK_API_KEY`; `AI_PROVIDER` también se señala si su valor no es soportado |
+| `authentication` / `permission` | Credencial rechazada o permisos del proveedor; contrastar estado HTTP y código reconocido |
+| `model` | Código/patrón de modelo inexistente/no soportado o recurso no encontrado; verificar también endpoint/base URL y acceso de la cuenta |
+| `quota` / `rate_limit` | Saldo, cuota y límites; no confundir `insufficient_quota` con un simple límite de frecuencia |
+| `network` / `upstream` | DNS, conexión, timeout o disponibilidad del servicio |
+| `unknown` | No hay suficiente información reconocida; inspeccionar la cadena `cause` en un debugger backend confiable, sin volcarla en logs compartidos |
+
+`provider` identifica el proveedor configurado del agente/clasificador cuando se reconoce, no garantiza qué servicio remoto originó el fallo. Por ejemplo, `stage: provider` también cubre la inicialización local, y el acceso manual puede generar TTS dentro de `prompt()`. Los fallos de audio separados del router se registran con etapa `audio`, sin atribuirlos al LLM. Un provider personalizado se identifica como `custom` o `unknown`; no se inspecciona su configuración privada.
+
+La misma causa/correlación se registra una sola vez al pasar por `executeTurn`, `sendMessage` y delegación; fallos independientes de routing/audio en un turno generan eventos distintos. Si la misma excepción vuelve a ocurrir en otro turno, se registra con su nueva correlación. El diagnóstico es best-effort: una falla del logger no reemplaza la excepción ni altera la respuesta. Estos logs no habilitan reintentos automáticos ni prueban rollback. La política de logs existente de providers/`AILog` y el modo explícito de logs de tools son mecanismos separados; no compartir esos registros completos ni habilitar dumps para diagnosticar credenciales.
+
 ## Build y validación
 
 Desde la raíz, los scripts reales disponibles para actualizar artefactos y verificar son:

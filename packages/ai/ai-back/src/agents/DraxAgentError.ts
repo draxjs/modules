@@ -8,6 +8,8 @@ interface DraxAgentErrorOptions {
     sessionId?: string;
     stage?: string;
     operationMayHaveCompleted?: boolean;
+    /** Original backend failure. Kept non-enumerable and never included in HTTP responses. */
+    cause?: unknown;
 }
 
 class DraxAgentError extends Error {
@@ -17,6 +19,7 @@ class DraxAgentError extends Error {
     readonly sessionId?: string;
     readonly stage?: string;
     readonly operationMayHaveCompleted?: boolean;
+    declare readonly cause?: unknown;
 
     constructor(options: DraxAgentErrorOptions) {
         super(options.message);
@@ -27,6 +30,9 @@ class DraxAgentError extends Error {
         this.sessionId = options.sessionId;
         this.stage = options.stage;
         this.operationMayHaveCompleted = options.operationMayHaveCompleted;
+        if (Object.prototype.hasOwnProperty.call(options, "cause")) {
+            Object.defineProperty(this, "cause", {value: options.cause, configurable: true, writable: true});
+        }
     }
 }
 

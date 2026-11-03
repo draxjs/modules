@@ -1,4 +1,6 @@
 import {randomUUID} from "node:crypto";
+import {DraxConfig} from "@drax/common-back";
+import AiConfig from "../config/AiConfig.js";
 import type {IPromptContentPart, IPromptImage, IPromptTool, IPromptToolNavigation} from "../interfaces/IAIProvider.js";
 import type {
     DraxAgentAccessContext,
@@ -23,6 +25,7 @@ import AiProviderFactory from "../factory/ai/AiProviderFactory.js";
 import AgentSessionServiceFactory from "../factory/services/AgentSessionServiceFactory.js";
 import type {AgentSessionService} from "../services/AgentSessionService.js";
 import {DraxAgentError} from "./DraxAgentError.js";
+import {DraxAgentDiagnostics} from "./DraxAgentDiagnostics.js";
 
 type SessionOwnership = Pick<DraxAgentSession, "ownerAgentIdentifier" | "conversationType" | "lastResolvedAgentIdentifier">;
 type StoredAgentSession = IAgentSession & SessionOwnership;
@@ -215,14 +218,14 @@ class DraxAgent {
                         lastMessageAt: now, tokens: turn.tokens,
                         inputTokens: turn.inputTokens, outputTokens: turn.outputTokens,
                     });
-                } catch {
+                } catch (error) {
                     // The provider/tools have already run: neither rollback nor replay is safe.
                     DraxAgent.indeterminateSessions.add(session.id);
                     this.sessions.delete(this.getSessionKey(session.userId, session.tenantId, session.id));
                     throw new DraxAgentError({
                         code: "SESSION_PERSISTENCE_INDETERMINATE", statusCode: 500,
                         correlationId: snapshot.correlationId, sessionId: resolvedSessionId,
-                        stage: "persistence", operationMayHaveCompleted: true,
+                        stage: "persistence", operationMayHaveCompleted: true, cause: error,
                         message: "The turn ran but its persistence could not be confirmed. Do not retry this operation.",
                     });
                 }
@@ -626,20 +629,39 @@ class DraxAgent {
         });
     }
 
-    private controlledError(error: unknown, code: string, message: string, stage: string, correlationId?: string, sessionId?: string): DraxAgentError {
+    protected controlledError(error: unknown, code: string, message: string, stage: string, correlationId?: string, sessionId?: string, diagnosticProvider?: unknown): DraxAgentError {
+        let controlled: DraxAgentError;
         if (error instanceof DraxAgentError) {
             const denied = error.code === "AGENT_ACCESS_DENIED" || error.code === "SESSION_ACCESS_DENIED";
             // A claim-based indeterminate failure has already checked owner/scope, even before hydration.
             const safeSessionId = denied ? undefined : sessionId ?? (
                 error.code === "SESSION_PERSISTENCE_INDETERMINATE" ? error.sessionId : undefined
             );
-            return new DraxAgentError({
+            controlled = new DraxAgentError({
                 code: error.code, message: error.message, statusCode: error.statusCode,
-                stage: error.stage ?? stage, correlationId: correlationId ?? error.correlationId,
-                sessionId: safeSessionId, operationMayHaveCompleted: error.operationMayHaveCompleted,
+                stage: error.stage ?? stage, correlationId: correlationId ?? error.correlationId ?? randomUUID(),
+                sessionId: safeSessionId, operationMayHaveCompleted: error.operationMayHaveCompleted, cause: error,
             });
+        } else {
+            controlled = new DraxAgentError({code, message, statusCode: 500, stage, correlationId: correlationId ?? randomUUID(), sessionId, cause: error});
         }
-        return new DraxAgentError({code, message, statusCode: 500, stage, correlationId, sessionId});
+        this.reportError(controlled, diagnosticProvider);
+        return controlled;
+    }
+
+    protected reportError(error: DraxAgentError, diagnosticProvider?: unknown): void {
+        DraxAgentDiagnostics.report(error, {
+            agentIdentifier: this.identifier,
+            agentType: this.type,
+            code: error.code,
+            stage: error.stage,
+            correlationId: error.correlationId,
+            // Diagnostics must not initialize another provider, or mistake a TTS failure for an LLM failure.
+            ...(error.stage === "audio" ? {} : {
+                provider: diagnosticProvider === undefined ? this.config.provider : diagnosticProvider,
+                providerName: DraxConfig.get(AiConfig.AiProvider) ?? process.env.AI_PROVIDER ?? "OpenAi",
+            }),
+        });
     }
 
     protected async buildSystemPrompt(context: DraxAgentPromptContext, toolBuilders: DraxAgentToolBuilder[]): Promise<string> {

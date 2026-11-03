@@ -111,7 +111,8 @@ class DraxAgentRouter extends DraxAgent {
                     operationTitle: `drax-agent-router:${input.correlationId}:audio`, operationGroup: "drax-agent-router",
                     ip: input.ip, userAgent: input.userAgent, user: input.userId, tenant: input.tenantId,
                 }, result.message);
-            } catch {
+            } catch (error) {
+                this.controlledError(error, "ROUTER_AUDIO_FAILED", "Unable to generate the final audio.", "audio", input.correlationId);
                 result.error = result.error
                     ? {...result.error, audioFailed: true}
                     : {code: "ROUTER_AUDIO_FAILED", stage: "audio", statusCode: 502, message: "No se pudo generar el audio de la respuesta. El texto y el resultado de la operación se conservan.", operationMayHaveCompleted: false, audioFailed: true};
@@ -166,7 +167,8 @@ class DraxAgentRouter extends DraxAgent {
                 operationTitle: `drax-agent-router:${input.correlationId}:routing`, operationGroup: "drax-agent-router",
                 ip: input.ip, userAgent: input.userAgent, user: input.userId, tenant: input.tenantId,
             });
-        } catch {
+        } catch (error) {
+            this.controlledError(error, "ROUTING_PROVIDER_FAILED", "Unable to classify the request.", "routing", input.correlationId, undefined, options.routingProvider);
             routingTime = Date.now() - routingStarted;
             return respond("No pude determinar qué especialista debe atenderte. No ejecuté ninguna operación.", {
                 code: "ROUTING_PROVIDER_FAILED", stage: "routing", statusCode: 502,
@@ -182,7 +184,8 @@ class DraxAgentRouter extends DraxAgent {
                 (!decision.message || decision.agentIdentifier !== null)) {
                 throw new Error("Inconsistent routing action");
             }
-        } catch {
+        } catch (error) {
+            this.controlledError(error, "ROUTING_DECISION_INVALID", "Unable to validate the routing decision.", "routing", input.correlationId, undefined, options.routingProvider);
             return respond("No pude validar la selección del especialista. No ejecuté ninguna operación.", {
                 code: "ROUTING_DECISION_INVALID", stage: "routing", statusCode: 502,
                 message: "La clasificación devolvió una decisión inválida.",
@@ -224,6 +227,8 @@ class DraxAgentRouter extends DraxAgent {
         } catch (error) {
             executionTime = Date.now() - executionStarted;
             const denied = error instanceof DraxAgentError && error.code === "AGENT_ACCESS_DENIED";
+            this.controlledError(error, denied ? "ROUTING_TARGET_DENIED" : "SPECIALIST_EXECUTION_FAILED",
+                "Unable to complete the specialist execution.", denied ? "access" : "execution", input.correlationId, undefined, null);
             const message = denied
                 ? "El especialista dejó de estar autorizado. No se ejecutó su turno."
                 : "No pude confirmar el resultado del especialista. Una operación podría haberse completado; verificá su estado antes de volver a solicitarla.";
