@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, ref} from "vue";
 import type {ValidationRule} from "vuetify"
+import {VTextarea} from "vuetify/components"
 import type {PropType} from "vue";
 import CrudFormList from "./CrudFormList.vue";
 import HtmlEditor from "./HtmlEditor.vue";
@@ -158,7 +159,7 @@ const hasHideDetails = computed(() => {
     />
 
     <component
-        :is="field.editor === 'html' ? HtmlEditor : field.editor === 'markdown' ? MarkdownEditor : 'v-textarea'"
+        :is="field.editor === 'html' ? HtmlEditor : field.editor === 'markdown' ? MarkdownEditor : VTextarea"
         v-if="field.type === 'longString'"
         :id="`crud-form-field-long-string-${name}`"
         class="crud-form-field__long-string-input"
