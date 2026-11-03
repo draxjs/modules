@@ -1,6 +1,11 @@
 import {randomUUID} from "node:crypto";
-import type {IPromptTool, IPromptToolNavigation} from "../interfaces/IAIProvider.js";
+import type {IPromptContentPart, IPromptImage, IPromptTool, IPromptToolNavigation} from "../interfaces/IAIProvider.js";
 import type {
+    DraxAgentAccessContext,
+    DraxAgentKind,
+    DraxAgentRoutingConfig,
+    DraxAgentTurnOutput,
+    DraxAgentSessionMessage,
     DraxAgentConfig,
     DraxAgentMessageInput,
     DraxAgentMessageOutput,
@@ -17,8 +22,23 @@ import type {IAgentSession, IAgentSessionBase} from "../interfaces/IAgentSession
 import AiProviderFactory from "../factory/ai/AiProviderFactory.js";
 import AgentSessionServiceFactory from "../factory/services/AgentSessionServiceFactory.js";
 import type {AgentSessionService} from "../services/AgentSessionService.js";
+import {DraxAgentError} from "./DraxAgentError.js";
+
+type SessionOwnership = Pick<DraxAgentSession, "ownerAgentIdentifier" | "conversationType" | "lastResolvedAgentIdentifier">;
+type StoredAgentSession = IAgentSession & SessionOwnership;
+type SessionClaim = {
+    ownerAgentIdentifier: string;
+    conversationType: DraxAgentKind;
+    userId: string | null;
+    tenantId: string | null;
+};
 
 class DraxAgent {
+    // Process-local protection only; distributed deployments need a shared lock/unique sessionId.
+    private static inFlightSessions = new Set<string>();
+    private static crudReservations = new Set<string>();
+    private static sessionClaims = new Map<string, SessionClaim>();
+    private static indeterminateSessions = new Set<string>();
     protected sessions: Map<string, DraxAgentSession> = new Map();
     protected config: DraxAgentConfig = {
         systemPrompt: "Sos un asistente del sistema. Respondé siempre en texto plano. No uses emojis, markdown, asteriscos, ni símbolos decorativos.",
@@ -55,88 +75,232 @@ class DraxAgent {
         return this.configure({tools});
     }
 
+    get type(): DraxAgentKind {
+        return "specialist";
+    }
+
+    get routing(): DraxAgentRoutingConfig | undefined {
+        return this.cloneData(this.config.routing);
+    }
+
+    async canAccess(context?: DraxAgentAccessContext): Promise<boolean> {
+        if (this.config.routing?.enabled === false) {
+            return false;
+        }
+        const access = this.config.access;
+        if (!access) {
+            return true;
+        }
+        const restricted = access.requireUser || access.requireTenant || access.permissions?.length || access.authorize;
+        if (!context) {
+            return !restricted;
+        }
+        const trusted = this.cloneData(context);
+        if (access.requireUser && (!trusted.userId || trusted.authenticated === false)) {
+            return false;
+        }
+        if (access.requireTenant && !trusted.tenantId) {
+            return false;
+        }
+        if (access.permissions?.some(permission => !trusted.permissions?.includes(permission))) {
+            return false;
+        }
+        try {
+            return access.authorize ? await access.authorize(trusted) === true : true;
+        } catch {
+            return false;
+        }
+    }
+
+    async assertAgentAccess(context?: DraxAgentAccessContext): Promise<void> {
+        if (!await this.canAccess(context)) {
+            throw new DraxAgentError({
+                code: "AGENT_ACCESS_DENIED", statusCode: 403, stage: "access",
+                message: "Access to this agent is denied.",
+            });
+        }
+    }
+
+    /** HTTP mutation guards must also protect legacy sessions already claimed or currently resolving. */
+    static isSessionProtected(sessionId: string): boolean {
+        return DraxAgent.sessionClaims.has(sessionId)
+            || DraxAgent.inFlightSessions.has(sessionId)
+            || DraxAgent.indeterminateSessions.has(sessionId);
+    }
+
+    /** Process-local, fail-fast exclusion with core operations and other HTTP mutations.
+     * The action must revalidate ownership/identity under the reservation and await the actual write.
+     * Reservations are not claims and intentionally do not count in isSessionProtected.
+     */
+    static async withSessionReservation<T>(sessionId: string, action: () => T | Promise<T>): Promise<T> {
+        DraxAgent.assertSessionAvailable(sessionId);
+        DraxAgent.crudReservations.add(sessionId);
+        try {
+            return await action();
+        } finally {
+            DraxAgent.crudReservations.delete(sessionId);
+        }
+    }
+
+    /** Clears local history only, never the process-wide ownership or uncertain-operation claims. */
     clearSessions(): this {
         this.sessions.clear();
         return this;
     }
 
     async startSession(input: DraxAgentSessionInput = {}): Promise<DraxAgentSession> {
-        if (input.sessionId) {
-            const existingSession = await this.resolveSession(input);
-            if (existingSession) {
-                return existingSession;
+        const snapshot = this.cloneData({...input, sessionId: input.sessionId ?? randomUUID()});
+        return this.withSessionLock(snapshot.sessionId, undefined, async () => {
+            await this.assertAgentAccess(snapshot.accessContext);
+            try {
+                return await this.resolveSession(snapshot);
+            } catch (error) {
+                throw this.controlledError(error, "SESSION_RESOLUTION_FAILED", "Unable to resolve the session.", "session");
             }
-        }
-
-        return this.createSession(input);
+        });
     }
 
     getSession(input: DraxAgentSessionInput): DraxAgentSession | null {
         if (!input.sessionId) {
             return null;
         }
-
-        return this.sessions.get(this.getSessionKey(input.userId, input.tenantId, input.sessionId)) ?? null;
+        this.assertSessionClaim(input);
+        const session = this.sessions.get(this.getSessionKey(input.userId, input.tenantId, input.sessionId)) ?? null;
+        if (session) {
+            this.assertSessionOwnership(session, input);
+        }
+        return session;
     }
 
     async sendMessage(input: DraxAgentMessageInput): Promise<DraxAgentMessageOutput> {
-        const session = await this.resolveSession(input);
-        const context: DraxAgentPromptContext = {session, input};
-        const toolBuilders = await this.resolveToolBuilders(context);
-        const navigationState: {path: string | null} = {path: null};
-        const tools = this.prepareTools([
-            ...toolBuilders.flatMap(builder => builder.getTools()),
-            ...await this.resolveTools(context),
-        ], session.id, navigationState);
-
-        const systemPrompt = await this.buildSystemPrompt(context, toolBuilders);
-        const response = await this.getProvider().prompt({
-            systemPrompt,
-            userInput: input.message,
-            userImages: input.userImages,
-            userContent: input.userContent,
-            inputFiles: input.inputFiles,
-            history: session.messages.slice(-(this.config.historyLimit ?? 20)),
-            memory: input.memory,
-            memoryHeader: input.memoryHeader,
-            knowledgeBase: input.knowledgeBase,
-            knowledgeBaseHeader: input.knowledgeBaseHeader,
-            tools,
-            toolMaxIterations: input.toolMaxIterations ?? this.config.toolMaxIterations,
-            model: input.model,
-            operationTitle: input.operationTitle ?? this.config.operationTitle ?? "drax-agent-message",
-            operationGroup: input.operationGroup ?? this.config.operationGroup ?? "drax-agent",
-            ip: input.ip,
-            userAgent: input.userAgent,
-            tenant: input.tenantId ?? session.tenantId ?? null,
-            user: input.userId ?? session.userId ?? null,
-            audioResponse: input.audioResponse,
+        const started = Date.now();
+        const snapshot = this.cloneData({
+            ...input,
+            sessionId: input.sessionId ?? randomUUID(),
+            correlationId: randomUUID(),
         });
-
-        const assistantMessage = this.normalizeOutput(response.output);
-        const now = new Date();
-        session.messages.push({role: "user", content: input.message});
-        session.messages.push({role: "assistant", content: assistantMessage});
-        session.updatedAt = new Date();
-        await this.persistSessionUpdate(session, {
-            lastMessageAt: now,
-            tokens: response.tokens,
-            inputTokens: response.inputTokens,
-            outputTokens: response.outputTokens,
+        return this.withSessionLock(snapshot.sessionId, snapshot.correlationId, async () => {
+            let stage = "access";
+            let resolvedSessionId: string | undefined;
+            try {
+                await this.assertAgentAccess(snapshot.accessContext);
+                stage = "session";
+                const session = await this.resolveSession(snapshot);
+                resolvedSessionId = session.id;
+                stage = "turn";
+                const turn = this.cloneData(await this.executeTurn(this.cloneData(snapshot), {
+                    session: this.cloneData(session), input: this.cloneData(snapshot),
+                }));
+                const now = new Date();
+                const updated = this.cloneData(session);
+                const metadata = {
+                    correlationId: snapshot.correlationId,
+                    ...(turn.resolvedAgentIdentifier !== undefined ? {resolvedAgentIdentifier: turn.resolvedAgentIdentifier} : {}),
+                };
+                const userContent = snapshot.userContent || snapshot.userImages?.length
+                    ? this.combineHistoryUserContent(snapshot.message, snapshot.userContent, snapshot.userImages)
+                    : undefined;
+                updated.messages.push({
+                    role: "user", content: snapshot.message, createdAt: now, ...metadata,
+                    ...(userContent ? {userContent} : {}),
+                    ...(snapshot.inputFiles ? {inputFiles: this.cloneData(snapshot.inputFiles)} : {}),
+                });
+                updated.messages.push({role: "assistant", content: turn.message, createdAt: now, ...metadata});
+                updated.updatedAt = now;
+                if (turn.resolvedAgentIdentifier !== undefined) {
+                    updated.lastResolvedAgentIdentifier = turn.resolvedAgentIdentifier;
+                }
+                try {
+                    await this.persistSessionUpdate(updated, {
+                        lastMessageAt: now, tokens: turn.tokens,
+                        inputTokens: turn.inputTokens, outputTokens: turn.outputTokens,
+                    });
+                } catch {
+                    // The provider/tools have already run: neither rollback nor replay is safe.
+                    DraxAgent.indeterminateSessions.add(session.id);
+                    this.sessions.delete(this.getSessionKey(session.userId, session.tenantId, session.id));
+                    throw new DraxAgentError({
+                        code: "SESSION_PERSISTENCE_INDETERMINATE", statusCode: 500,
+                        correlationId: snapshot.correlationId, sessionId: resolvedSessionId,
+                        stage: "persistence", operationMayHaveCompleted: true,
+                        message: "The turn ran but its persistence could not be confirmed. Do not retry this operation.",
+                    });
+                }
+                Object.assign(session, updated);
+                const totalTime = Date.now() - started;
+                return {
+                    ...turn,
+                    ...(this.type === "router" ? {time: totalTime, metrics: {...turn.metrics, totalTime}} : {}),
+                    agentIdentifier: this.identifier, sessionId: session.id, correlationId: snapshot.correlationId,
+                };
+            } catch (error) {
+                throw this.controlledError(error, "AGENT_MESSAGE_FAILED", "Unable to complete the agent message.", stage, snapshot.correlationId, resolvedSessionId);
+            }
         });
+    }
 
-        return {
-            agentIdentifier: this.identifier,
-            sessionId: session.id,
-            message: assistantMessage,
-            navigationPath: navigationState.path,
-            output: response.output,
-            tokens: response.tokens,
-            inputTokens: response.inputTokens,
-            outputTokens: response.outputTokens,
-            time: response.time,
-            ...(response.audio ? {audio: response.audio} : {}),
-        };
+    /** Executes one authorized turn on detached data; never resolves, caches or persists a session. */
+    public async executeTurn(input: DraxAgentMessageInput, context: DraxAgentPromptContext): Promise<DraxAgentTurnOutput> {
+        input = this.cloneData(input);
+        context = this.cloneData({...context, input});
+        let stage = "access";
+        try {
+            await this.assertAgentAccess(input.accessContext);
+            const session = context.session;
+            stage = "prompt";
+            const toolBuilders = await this.resolveToolBuilders(this.cloneData(context));
+            const navigationState: {path: string | null} = {path: null};
+            const tools = this.prepareTools([
+                ...toolBuilders.flatMap(builder => builder.getTools()),
+                ...await this.resolveTools(this.cloneData(context)),
+            ], session.id, navigationState);
+
+            const systemPrompt = await this.buildSystemPrompt(this.cloneData(context), toolBuilders);
+            stage = "provider";
+            const response = await this.getProvider().prompt({
+                systemPrompt,
+                userInput: input.message,
+                userImages: input.userImages,
+                userContent: input.userContent,
+                inputFiles: input.inputFiles,
+                history: this.cloneData(session.messages.slice(-(this.config.historyLimit ?? 20)).map(message => ({
+                    role: message.role,
+                    content: message.userContent?.length
+                        ? this.combineHistoryUserContent(message.content, message.userContent)
+                        : message.content,
+                }))),
+                memory: input.memory,
+                memoryHeader: input.memoryHeader,
+                knowledgeBase: input.knowledgeBase,
+                knowledgeBaseHeader: input.knowledgeBaseHeader,
+                tools,
+                toolMaxIterations: input.toolMaxIterations ?? this.config.toolMaxIterations,
+                model: input.model ?? this.config.model,
+                operationTitle: input.operationTitle ?? this.config.operationTitle ?? "drax-agent-message",
+                operationGroup: input.operationGroup ?? this.config.operationGroup ?? "drax-agent",
+                ip: input.ip,
+                userAgent: input.userAgent,
+                tenant: input.tenantId ?? session.tenantId ?? null,
+                user: input.userId ?? session.userId ?? null,
+                audioResponse: input.audioResponse,
+            });
+
+            stage = "normalize";
+            const assistantMessage = this.normalizeOutput(this.cloneData(response.output));
+            return {
+                ...(input.correlationId ? {correlationId: input.correlationId} : {}),
+                message: assistantMessage,
+                navigationPath: navigationState.path,
+                output: response.output,
+                tokens: response.tokens,
+                inputTokens: response.inputTokens,
+                outputTokens: response.outputTokens,
+                time: response.time,
+                ...(response.audio ? {audio: response.audio} : {}),
+            };
+        } catch (error) {
+            throw this.controlledError(error, "AGENT_TURN_FAILED", "Unable to execute the agent turn.", stage, input.correlationId);
+        }
     }
 
     protected async createSession(input: DraxAgentSessionInput = {}): Promise<DraxAgentSession> {
@@ -144,21 +308,25 @@ class DraxAgent {
             id: input.sessionId ?? randomUUID(),
             userId: input.userId ?? null,
             tenantId: input.tenantId ?? null,
+            ownerAgentIdentifier: this.identifier,
+            conversationType: this.type,
             messages: [],
             createdAt: new Date(),
             updatedAt: new Date(),
         };
 
-        this.sessions.set(this.getSessionKey(session.userId, session.tenantId, session.id), session);
+        this.claimSession(session);
         await this.persistSessionCreate(session);
+        this.sessions.set(this.getSessionKey(session.userId, session.tenantId, session.id), session);
         return session;
     }
 
     protected async resolveSession(input: DraxAgentSessionInput): Promise<DraxAgentSession> {
         if (!input.sessionId) {
-            return this.startSession(input);
+            return this.createSession(input);
         }
 
+        this.assertSessionClaim(input);
         const existingSession = this.getSession(input);
         if (existingSession) {
             return existingSession;
@@ -167,6 +335,7 @@ class DraxAgent {
         const persistedSession = await this.findPersistedSession(input);
         if (persistedSession) {
             const session = this.hydrateSession(persistedSession, input);
+            this.claimSession(session);
             this.sessions.set(this.getSessionKey(session.userId, session.tenantId, session.id), session);
             return session;
         }
@@ -188,6 +357,9 @@ class DraxAgent {
         }));
 
         session.recordId = this.stringifyRecordId(record);
+        if (!session.recordId) {
+            throw new Error("Session creation was not confirmed");
+        }
     }
 
     protected async persistSessionUpdate(
@@ -209,33 +381,36 @@ class DraxAgent {
         }
 
         if (!session.recordId) {
-            await this.persistSessionCreate(session);
-        }
-
-        if (!session.recordId) {
-            return;
+            throw new Error("Session record is unavailable");
         }
 
         const storedUsage = await this.resolveStoredUsage(session.recordId);
 
-        await sessionService.updatePartial(session.recordId, this.buildSessionPayload(session, {
+        const updated = await sessionService.updatePartial(session.recordId, this.buildSessionPayload(session, {
             lastMessageAt: usage.lastMessageAt,
             messageCount: session.messages.length,
             inputTokens: storedUsage.inputTokens + (usage.inputTokens ?? 0),
             outputTokens: storedUsage.outputTokens + (usage.outputTokens ?? 0),
             tokens: storedUsage.tokens + (usage.tokens ?? 0),
         }));
+        if (!updated) {
+            throw new Error("Session update was not confirmed");
+        }
     }
 
-    protected buildSessionPayload(session: DraxAgentSession, overrides: Partial<IAgentSessionBase> = {}): IAgentSessionBase {
+    protected buildSessionPayload(session: DraxAgentSession, overrides: Partial<IAgentSessionBase> = {}): IAgentSessionBase & SessionOwnership {
         return {
             sessionId: session.id,
+            ownerAgentIdentifier: session.ownerAgentIdentifier,
+            conversationType: session.conversationType,
+            lastResolvedAgentIdentifier: session.lastResolvedAgentIdentifier,
             title: this.resolveSessionTitle(session.messages),
             lastMessageAt: session.messages.length > 0 ? session.updatedAt : null,
             messages: session.messages.map(message => ({
-                role: message.role,
+                ...this.cloneData(message),
                 content: this.stringifyMessageContent(message.content),
-                createdAt: session.updatedAt,
+
+                createdAt: message.createdAt ?? session.updatedAt,
             })),
             messageCount: session.messages.length,
             inputTokens: 0,
@@ -247,7 +422,7 @@ class DraxAgent {
         };
     }
 
-    protected async findPersistedSession(input: DraxAgentSessionInput): Promise<IAgentSession | null> {
+    protected async findPersistedSession(input: DraxAgentSessionInput): Promise<StoredAgentSession | null> {
         if (!input.sessionId) {
             return null;
         }
@@ -257,21 +432,39 @@ class DraxAgent {
             return null;
         }
 
-        const filters = [
-            ...(input.tenantId ? [{field: "tenant", operator: "eq", value: input.tenantId}] : []),
-            ...(input.userId ? [{field: "user", operator: "eq", value: input.userId}] : []),
-        ];
-
-        const sessions = await sessionService.findBy("sessionId", input.sessionId, 1, filters);
-        return sessions?.[0] ?? null;
+        // Never hide an existing session behind scope filters, including null/anonymous scopes.
+        const sessions = await sessionService.findBy("sessionId", input.sessionId, 2);
+        if ((sessions?.length ?? 0) > 1) {
+            throw new DraxAgentError({
+                code: "SESSION_CONFLICT", statusCode: 409, stage: "session",
+                message: "The session identifier is ambiguous.",
+            });
+        }
+        const record: StoredAgentSession | null = sessions?.[0] ?? null;
+        if (record) {
+            this.assertSessionOwnership({
+                userId: this.stringifyRelationId(record.user),
+                tenantId: this.stringifyRelationId(record.tenant),
+                ownerAgentIdentifier: record.ownerAgentIdentifier,
+                conversationType: record.conversationType,
+            }, input);
+        }
+        return record;
     }
 
-    protected hydrateSession(record: IAgentSession, input: DraxAgentSessionInput): DraxAgentSession {
+    protected hydrateSession(record: StoredAgentSession, input: DraxAgentSessionInput): DraxAgentSession {
+        this.assertSessionOwnership({
+            userId: this.stringifyRelationId(record.user), tenantId: this.stringifyRelationId(record.tenant),
+            ownerAgentIdentifier: record.ownerAgentIdentifier, conversationType: record.conversationType,
+        }, input);
         const session: DraxAgentSession = {
             id: record.sessionId,
             recordId: this.stringifyRecordId(record),
-            userId: input.userId ?? this.stringifyRelationId(record.user) ?? null,
-            tenantId: input.tenantId ?? this.stringifyRelationId(record.tenant) ?? null,
+            userId: this.stringifyRelationId(record.user),
+            tenantId: this.stringifyRelationId(record.tenant),
+            ownerAgentIdentifier: record.ownerAgentIdentifier,
+            conversationType: record.conversationType,
+            lastResolvedAgentIdentifier: record.lastResolvedAgentIdentifier,
             messages: this.normalizeStoredMessages(record.messages ?? []),
             createdAt: record.createdAt ? new Date(record.createdAt) : new Date(),
             updatedAt: record.updatedAt ? new Date(record.updatedAt) : new Date(),
@@ -280,12 +473,15 @@ class DraxAgent {
         return session;
     }
 
-    protected normalizeStoredMessages(messages: IAgentSessionBase["messages"]): IPromptMessage[] {
+    protected normalizeStoredMessages(messages: Array<{
+        role: string; content: string;
+    } & Partial<Omit<DraxAgentSessionMessage, "role" | "content">>>): DraxAgentSessionMessage[] {
         return (messages ?? [])
             .filter(message => message.role === "user" || message.role === "assistant" || message.role === "system")
             .map(message => ({
+                ...this.cloneData(message),
                 role: message.role as IPromptMessage["role"],
-                content: message.content,
+                ...(message.createdAt ? {createdAt: new Date(message.createdAt)} : {}),
             }));
     }
 
@@ -296,6 +492,9 @@ class DraxAgent {
         }
 
         const record = await sessionService.findById(recordId);
+        if (!record) {
+            throw new Error("Stored session usage is unavailable");
+        }
         return {
             inputTokens: this.normalizeNumber(record?.inputTokens),
             outputTokens: this.normalizeNumber(record?.outputTokens),
@@ -315,6 +514,29 @@ class DraxAgent {
 
         const title = this.stringifyMessageContent(firstUserMessage.content).trim();
         return title.length > 80 ? `${title.slice(0, 77)}...` : title;
+    }
+
+    protected combineHistoryUserContent(
+        content: IPromptMessage["content"],
+        userContent: IPromptContentPart[] = [],
+        userImages: IPromptImage[] = [],
+    ): IPromptContentPart[] {
+        const parts = this.cloneData(userContent);
+        const samePart = (left: IPromptContentPart, right: IPromptContentPart): boolean =>
+            left.type === "text" && right.type === "text"
+                ? left.text === right.text
+                : left.type === "image" && right.type === "image"
+                    && left.imageUrl === right.imageUrl && (left.detail ?? "auto") === (right.detail ?? "auto");
+        const original: IPromptContentPart[] = typeof content === "string" ? [{type: "text", text: content}] : content;
+        // Keep all existing metadata parts; add only original content not already represented there.
+        parts.unshift(...this.cloneData(original.filter(part => !parts.some(existing => samePart(existing, part)))));
+        for (const image of userImages) {
+            const part: IPromptContentPart = {type: "image", imageUrl: image.url, ...(image.detail ? {detail: image.detail} : {})};
+            if (!parts.some(existing => samePart(existing, part))) {
+                parts.push(part);
+            }
+        }
+        return parts;
     }
 
     protected stringifyMessageContent(content: IPromptMessage["content"]): string {
@@ -338,7 +560,86 @@ class DraxAgent {
     }
 
     protected getSessionKey(userId: string | null | undefined, tenantId: string | null | undefined, sessionId: string): string {
-        return `${tenantId ?? "global"}:${userId ?? "anonymous"}:${sessionId}`;
+        return JSON.stringify([tenantId ?? null, userId ?? null, sessionId]);
+    }
+
+    protected cloneData<T>(value: T): T {
+        return structuredClone(value);
+    }
+
+    private static assertSessionAvailable(sessionId: string, correlationId?: string): void {
+        if (DraxAgent.inFlightSessions.has(sessionId) || DraxAgent.crudReservations.has(sessionId)) {
+            throw new DraxAgentError({
+                code: "SESSION_BUSY", statusCode: 409, correlationId, stage: "session",
+                message: "Another operation is already running for this session.",
+            });
+        }
+    }
+
+    private async withSessionLock<T>(sessionId: string, correlationId: string | undefined, action: () => Promise<T>): Promise<T> {
+        DraxAgent.assertSessionAvailable(sessionId, correlationId);
+        DraxAgent.inFlightSessions.add(sessionId);
+        try {
+            return await action();
+        } finally {
+            DraxAgent.inFlightSessions.delete(sessionId);
+        }
+    }
+
+    private assertSessionClaim(input: DraxAgentSessionInput): void {
+        const claim = DraxAgent.sessionClaims.get(input.sessionId);
+        if (claim) {
+            this.assertSessionOwnership(claim, input);
+        }
+        if (DraxAgent.indeterminateSessions.has(input.sessionId)) {
+            throw new DraxAgentError({
+                code: "SESSION_PERSISTENCE_INDETERMINATE", statusCode: 500,
+                sessionId: input.sessionId, stage: "persistence", operationMayHaveCompleted: true,
+                message: "Session persistence is uncertain. Reconcile the stored operation before continuing.",
+            });
+        }
+    }
+
+    private assertSessionOwnership(
+        session: SessionOwnership & Pick<DraxAgentSession, "userId" | "tenantId">,
+        input: DraxAgentSessionInput,
+    ): void {
+        const legacy = session.ownerAgentIdentifier == null && session.conversationType == null;
+        if ((session.userId ?? null) !== (input.userId ?? null)
+            || (session.tenantId ?? null) !== (input.tenantId ?? null)
+            || (legacy ? this.type !== "specialist" : (
+                session.ownerAgentIdentifier !== this.identifier || session.conversationType !== this.type
+            ))) {
+            throw new DraxAgentError({
+                code: "SESSION_ACCESS_DENIED", statusCode: 403, stage: "session",
+                message: "The session does not belong to this agent and access scope.",
+            });
+        }
+    }
+
+    private claimSession(session: DraxAgentSession): void {
+        const input = {sessionId: session.id, userId: session.userId, tenantId: session.tenantId};
+        this.assertSessionClaim(input);
+        DraxAgent.sessionClaims.set(session.id, {
+            ownerAgentIdentifier: this.identifier, conversationType: this.type,
+            userId: session.userId ?? null, tenantId: session.tenantId ?? null,
+        });
+    }
+
+    private controlledError(error: unknown, code: string, message: string, stage: string, correlationId?: string, sessionId?: string): DraxAgentError {
+        if (error instanceof DraxAgentError) {
+            const denied = error.code === "AGENT_ACCESS_DENIED" || error.code === "SESSION_ACCESS_DENIED";
+            // A claim-based indeterminate failure has already checked owner/scope, even before hydration.
+            const safeSessionId = denied ? undefined : sessionId ?? (
+                error.code === "SESSION_PERSISTENCE_INDETERMINATE" ? error.sessionId : undefined
+            );
+            return new DraxAgentError({
+                code: error.code, message: error.message, statusCode: error.statusCode,
+                stage: error.stage ?? stage, correlationId: correlationId ?? error.correlationId,
+                sessionId: safeSessionId, operationMayHaveCompleted: error.operationMayHaveCompleted,
+            });
+        }
+        return new DraxAgentError({code, message, statusCode: 500, stage, correlationId, sessionId});
     }
 
     protected async buildSystemPrompt(context: DraxAgentPromptContext, toolBuilders: DraxAgentToolBuilder[]): Promise<string> {
@@ -408,7 +709,10 @@ class DraxAgent {
         navigationState: {path: string | null},
     ): IPromptTool[] {
         return tools.map(tool => ({
-            ...tool,
+            name: tool.name,
+            description: tool.description,
+            parameters: this.cloneData(tool.parameters),
+            navigation: this.cloneData(tool.navigation),
             execute: async (args: any) => {
                 if (this.config.logToolExecution) {
                     console.log("[drax-agent] tool:start", {

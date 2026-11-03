@@ -217,7 +217,7 @@ class PersonCrud extends EntityCrud implements IEntityCrud {
             refDisplay: 'name'
           },
           {name: 'city', type: 'string', label: 'city', default: ''},
-          {name: 'street', type: 'longString', label: 'street', default: ''},
+          {name: 'street', type: 'longString', label: 'street', default: '', editor:'html'},
           {name: 'zip', type: 'number', label: 'zip', default: null},
           {name: 'casa', type: 'boolean', label: 'casa', default: false}
 

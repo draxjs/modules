@@ -3,12 +3,17 @@ import type {ComponentPublicInstance} from 'vue'
 import {useDraxAgent} from '../composables'
 import VManagerBot from './vbots/VManagerBot.vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   compact?: boolean
   showTitle?: boolean
+  initialAgentIdentifier?: string
+  allowManualSelection?: boolean
+  showResolvedAgent?: boolean
 }>(), {
   compact: false,
   showTitle: true,
+  allowManualSelection: true,
+  showResolvedAgent: false,
 })
 
 const {
@@ -16,8 +21,11 @@ const {
   agentsLoading,
   canSend,
   compactSpeechStatusLabel,
+  currentResolvedAgentLabel,
+  destinationReady,
   error,
   getFeatureButtonClass,
+  getResolvedAgentLabel,
   input,
   interimSpeech,
   loading,
@@ -42,6 +50,7 @@ const {
   speechError,
   speechSupported,
   startNewSession,
+  stopTextToSpeech,
   textToSpeechEnabled,
   textToSpeechVoiceItems,
   textToSpeechVoicesLoading,
@@ -54,7 +63,7 @@ const {
   toggleVisualBot,
   visualBotButtonLabel,
   visualBotVisible,
-} = useDraxAgent()
+} = useDraxAgent(props)
 
 function setMessagesContainer(element: Element | ComponentPublicInstance | null) {
   messagesContainer.value = element instanceof HTMLElement ? element : null
@@ -73,7 +82,7 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
           'chatbot-task__compact-control--listening': speechEnabled,
           'chatbot-task__compact-control--loading': loading,
           'chatbot-task__compact-control--speaking': textToSpeechSpeaking,
-          'chatbot-task__compact-control--error': Boolean(speechError),
+          'chatbot-task__compact-control--error': Boolean(speechError || error),
         }"
       >
         <span
@@ -81,13 +90,17 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
           class="chatbot-task__compact-processing"
           aria-hidden="true"
         />
-        <span
+        <button
           v-if="textToSpeechSpeaking"
           class="chatbot-task__compact-speaking"
-          aria-hidden="true"
+          type="button"
+          aria-label="Silenciar esta respuesta"
+          title="Silenciar esta respuesta"
+          @pointerdown.stop
+          @click.stop="stopTextToSpeech"
         >
           <v-icon icon="mdi-volume-high" size="16" />
-        </span>
+        </button>
 
         <v-btn
           v-if="speechSupported"
@@ -98,6 +111,7 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
           :icon="speechButtonIcon"
           :aria-label="speechButtonLabel"
           :title="speechButtonLabel"
+          :disabled="!destinationReady"
           @pointerdown.stop
           @click="toggleSpeechRecognition"
         />
@@ -116,15 +130,19 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
 
       <span
         class="chatbot-task__compact-status"
+        :title="error || speechError || compactSpeechStatusLabel || undefined"
         :class="{
           'chatbot-task__compact-status--active': speechEnabled,
           'chatbot-task__compact-status--loading': loading,
           'chatbot-task__compact-status--speaking': textToSpeechSpeaking,
-          'chatbot-task__compact-status--error': Boolean(speechError),
+          'chatbot-task__compact-status--error': Boolean(speechError || error),
         }"
       >
         {{ compactSpeechStatusLabel }}
       </span>
+      <small v-if="showResolvedAgent && currentResolvedAgentLabel" class="chatbot-task__resolved-agent">
+        Atendido por {{ currentResolvedAgentLabel }}
+      </small>
     </template>
 
     <template v-else>
@@ -152,7 +170,7 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
             @update:model-value="selectAgent"
           >
             <template #selection>
-              <span class="chatbot-task__agent-selection">{{ selectedAgent?.identifier ?? 'default' }}</span>
+              <span class="chatbot-task__agent-selection">{{ selectedAgent?.identifier ?? selectedAgentIdentifier }}</span>
             </template>
           </v-combobox>
 
@@ -237,6 +255,7 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
             color="primary"
             variant="tonal"
             prepend-icon="mdi-plus"
+            :disabled="!destinationReady || loading"
             :loading="loading"
             @click="startNewSession"
           >
@@ -270,6 +289,12 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
           >
             <div class="chatbot-task__message">
               {{ message.content }}
+              <small
+                v-if="showResolvedAgent && message.role === 'assistant' && message.resolvedAgentIdentifier"
+                class="chatbot-task__resolved-agent"
+              >
+                Atendido por {{ getResolvedAgentLabel(message.resolvedAgentIdentifier) }}
+              </small>
             </div>
           </div>
 
@@ -287,6 +312,8 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
           <VManagerBot
             :visible="true"
             :speaking="textToSpeechSpeaking"
+            silence-on-click
+            @silence="stopTextToSpeech"
           />
         </div>
       </div>
@@ -299,7 +326,7 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
           auto-grow
           max-rows="5"
           hide-details
-          :disabled="loading"
+          :disabled="loading || !destinationReady"
           variant="outlined"
           @keydown.enter.exact.prevent="sendMessage"
         />
@@ -312,6 +339,7 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
           :icon="speechButtonIcon"
           :aria-label="speechButtonLabel"
           :title="speechButtonLabel"
+          :disabled="!destinationReady"
           @click="toggleSpeechRecognition"
         />
 
@@ -410,8 +438,14 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
   background: rgb(var(--v-theme-primary));
   border: 2px solid rgb(var(--v-theme-surface));
   border-radius: 999px;
+  padding: 0;
+  cursor: pointer;
   animation: chatbot-task-compact-speaking 1s ease-in-out infinite;
-  pointer-events: none;
+}
+
+.chatbot-task__compact-speaking:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
 }
 
 .chatbot-task__compact-control .v-btn {
@@ -586,6 +620,13 @@ function setMessagesContainer(element: Element | ComponentPublicInstance | null)
   color: rgb(var(--v-theme-on-surface));
   background: rgb(var(--v-theme-surface));
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+.chatbot-task__resolved-agent {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  opacity: 0.7;
 }
 
 .chatbot-task__message--loading {

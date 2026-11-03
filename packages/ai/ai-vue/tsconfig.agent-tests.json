@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": [
+    "src/composables/useDraxAgent.ts",
+    "src/components/DraxAgent.vue",
+    "src/components/DraxAgentExpress.vue",
+    "test/**/*.test.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": [],
+  "compilerOptions": {
+    "composite": false,
+    "types": ["node", "vite/client"]
+  }
+}

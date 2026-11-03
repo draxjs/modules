@@ -115,6 +115,30 @@ import type {
     DraxAgentSystemPrompt,
 } from "./interfaces/IDraxAgent.js";
 
+export {DraxAgentRouter, DraxAgentRoutingDecisionSchema} from "./agents/DraxAgentRouter.js";
+export {DraxAgentError} from "./agents/DraxAgentError.js";
+export {AgentSessionBaseSchema, AgentSessionSchema} from "./schemas/AgentSessionSchema.js";
+export type {DraxAgentErrorOptions} from "./agents/DraxAgentError.js";
+export type {DraxAgentRoutingDecision} from "./agents/DraxAgentRouter.js";
+export type {
+    DraxAgentRouterConfig,
+    DraxAgentCatalogEntry as DraxAgentRouterCatalogEntry,
+} from "./interfaces/IDraxAgentRouter.js";
+export type {DraxAgentCatalogEntry, DraxAgentCatalogResponse} from "./interfaces/IDraxAgentController.js";
+export type {
+    DraxAgentKind,
+    DraxAgentRoutingConfig,
+    DraxAgentAccessContext,
+    DraxAgentAccessConfig,
+    DraxAgentTurnError,
+    DraxAgentTurnMetrics,
+    DraxAgentTurnOutput,
+    DraxAgentSessionMessage,
+} from "./interfaces/IDraxAgent.js";
+export type {
+    IAgentSession, IAgentSessionBase, IAgentSessionMessage, IAgentSessionConversationType,
+} from "./interfaces/IAgentSession.js";
+
 export type {
 
     IAILogRepository,

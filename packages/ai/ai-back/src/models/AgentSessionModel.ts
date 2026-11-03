@@ -5,14 +5,37 @@ import uniqueValidator from 'mongoose-unique-validator';
 import mongoosePaginate from 'mongoose-paginate-v2'
 import type {IAgentSession} from '../interfaces/IAgentSession'
 
+const AgentSessionContentPartSchema = new mongoose.Schema({
+    type: {type: String, enum: ['text', 'image'], required: true},
+    // Empty text is valid in prompt content parts, but Mongoose's required string validator rejects it.
+    text: {type: String, required: function () { return this.type === 'text' && this.text !== ''; }},
+    imageUrl: {type: String, required: function () { return this.type === 'image'; }},
+    detail: {type: String, enum: ['auto', 'low', 'high']}
+}, {_id: false});
+
+const AgentSessionInputFileSchema = new mongoose.Schema({
+    filename: {type: String},
+    filepath: {type: String},
+    size: {type: Number},
+    mimetype: {type: String},
+    url: {type: String}
+}, {_id: false});
+
 const AgentSessionSchema = new mongoose.Schema<IAgentSession>({
             sessionId: {type: String,   required: true, index: true, unique: false },
+            ownerAgentIdentifier: {type: String, required: false},
+            conversationType: {type: String, enum: ['specialist', 'router'], required: false},
+            lastResolvedAgentIdentifier: {type: String, required: false},
             title: {type: String,   required: false, index: false, unique: false },
             lastMessageAt: {type: Date,   required: false, index: true, unique: false },
             messages: [{ 
                         role: {type: String,  enum: ['user', 'assistant', 'system'], required: true, index: false, unique: false },
             content: {type: String,   required: true, index: false, unique: false },
-            createdAt: {type: Date,   required: false, index: false, unique: false } 
+            createdAt: {type: Date,   required: false, index: false, unique: false },
+            resolvedAgentIdentifier: {type: String, required: false},
+            correlationId: {type: String, required: false},
+            userContent: {type: [AgentSessionContentPartSchema], default: undefined},
+            inputFiles: {type: [AgentSessionInputFileSchema], default: undefined}
             }],
             messageCount: {type: Number,   required: false, index: false, unique: false },
             inputTokens: {type: Number,   required: false, index: false, unique: false },

@@ -1,13 +1,25 @@
+import type {IAIInputFile, IAIPromptContentPart} from '@drax/ai-share';
 
-interface IAgentSessionBase {
-    sessionId: string
-    title?: string
-    lastMessageAt?: Date
-    messages?: Array<{
+type IAgentSessionConversationType = 'specialist' | 'router'
+
+interface IAgentSessionMessage {
     role: string
     content: string
     createdAt?: Date
-    }>
+    resolvedAgentIdentifier?: string
+    correlationId?: string
+    userContent?: IAIPromptContentPart[]
+    inputFiles?: IAIInputFile[]
+}
+
+interface IAgentSessionBase {
+    sessionId: string
+    ownerAgentIdentifier?: string
+    conversationType?: IAgentSessionConversationType
+    lastResolvedAgentIdentifier?: string
+    title?: string
+    lastMessageAt?: Date
+    messages?: IAgentSessionMessage[]
     messageCount?: number
     inputTokens?: number
     outputTokens?: number
@@ -21,13 +33,12 @@ interface IAgentSessionBase {
 interface IAgentSession {
     _id: string
     sessionId: string
+    ownerAgentIdentifier?: string
+    conversationType?: IAgentSessionConversationType
+    lastResolvedAgentIdentifier?: string
     title?: string
     lastMessageAt?: Date
-    messages?: Array<{
-    role: string
-    content: string
-    createdAt?: Date
-    }>
+    messages?: IAgentSessionMessage[]
     messageCount?: number
     inputTokens?: number
     outputTokens?: number
@@ -39,6 +50,8 @@ interface IAgentSession {
 }
 
 export type {
-IAgentSessionBase, 
-IAgentSession
+IAgentSessionBase,
+IAgentSession,
+IAgentSessionConversationType,
+IAgentSessionMessage
 }

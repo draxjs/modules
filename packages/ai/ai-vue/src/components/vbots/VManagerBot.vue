@@ -9,7 +9,26 @@ type BotKey = 'robot' | 'jarvis' | 'nexus'
 const props = defineProps<{
   visible: boolean
   speaking: boolean
+  silenceOnClick?: boolean
 }>()
+const emit = defineEmits<{
+  silence: []
+}>()
+
+const menuOpen = ref(false)
+const canSilence = computed(() => props.silenceOnClick === true && props.speaking)
+
+watch(canSilence, (value) => {
+  if (value) {
+    menuOpen.value = false
+  }
+})
+
+function handleBotClick() {
+  if (canSilence.value) {
+    emit('silence')
+  }
+}
 
 const storageKey = 'drax.visualBot.selected'
 const robotOption = {
@@ -77,6 +96,8 @@ watch(selectedBot, (value) => {
 <template>
   <v-menu
     v-if="props.visible"
+    v-model="menuOpen"
+    :open-on-click="!canSilence"
     location="top end"
     :close-on-content-click="true"
   >
@@ -85,8 +106,11 @@ watch(selectedBot, (value) => {
         v-bind="menuProps"
         class="visual-bot-manager"
         type="button"
-        :aria-label="`Seleccionar bot visual. Actual: ${selectedOption.label}`"
-        :title="`Bot visual: ${selectedOption.label}`"
+        :aria-label="canSilence ? 'Silenciar esta respuesta' : `Seleccionar bot visual. Actual: ${selectedOption.label}`"
+        :aria-haspopup="canSilence ? undefined : 'menu'"
+        :aria-expanded="canSilence ? undefined : menuOpen"
+        :title="canSilence ? 'Silenciar esta respuesta' : `Bot visual: ${selectedOption.label}`"
+        @click="handleBotClick"
       >
         <component
           :is="selectedOption.component"

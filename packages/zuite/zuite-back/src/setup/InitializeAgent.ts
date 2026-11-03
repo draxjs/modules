@@ -1,5 +1,5 @@
 import {DraxAgentFactory, BuilderTool} from "@drax/ai-back"
-import type {DraxAgentConfig} from "@drax/ai-back"
+import type {DraxAgentConfig, IAIProvider} from "@drax/ai-back"
 import {CountryServiceFactory} from "../modules/people/factory/services/CountryServiceFactory.js"
 import {LanguageServiceFactory} from "../modules/people/factory/services/LanguageServiceFactory.js"
 import {PersonServiceFactory} from "../modules/people/factory/services/PersonServiceFactory.js"
@@ -25,7 +25,16 @@ Los campos de pertenencia o auditoría se toman del contexto autenticado, nunca 
 No cambies tenant, user ni createdBy en una actualización. Si falta contexto requerido, no ejecutes la escritura.
 `
 
-async function initializeAgent(): Promise<void> {
+interface InitializeAgentOptions {
+    router?: boolean
+    includeGeneralAssistant?: boolean
+    routingProvider?: IAIProvider
+    routingModel?: string
+}
+
+async function initializeAgent(options: InitializeAgentOptions = {}): Promise<void> {
+    const routerEnabled = options.router === true
+    const includeGeneralAssistant = routerEnabled && options.includeGeneralAssistant === true
 
     // Cada builder pertenece a un solo especialista; no reunirlos en el agente default.
     // BuilderTool llama al service: los prompts no reemplazan autorización ni filtros de tenant en backend.
@@ -58,7 +67,20 @@ async function initializeAgent(): Promise<void> {
     const configDefault: DraxAgentConfig = {
         tools: [],
         toolBuilders: [],
-        systemPrompt: `Sos Guía Zuite, el orientador de los agentes especialistas.
+        ...(routerEnabled ? {
+            access: {requireUser: true},
+            routing: includeGeneralAssistant ? {
+                eligible: true,
+                capabilities: "Conocimiento general y ayuda conceptual sin acceso a datos del sistema. No consulta ni modifica catálogos o fichas de Zuite ni resuelve pedidos que combinen dominios del sistema.",
+                examples: ["¿Qué es un sustantivo?", "Explicame cómo organizar una agenda personal."]
+            } : {eligible: false}
+        } : {}),
+        systemPrompt: includeGeneralAssistant ? `Sos el Asistente general Zuite.
+Respondé en español, de forma breve y en texto plano, sin markdown ni emojis.
+Ofrecé conocimiento general y ayuda conceptual, distinguiéndolos de los datos del sistema.
+No tenés tools ni acceso a registros, archivos o datos privados de Zuite. No inventes datos del sistema ni afirmes haber consultado o realizado operaciones.
+Para consultar o mantener países, idiomas o personas del sistema, indicá el especialista country, language o person respectivamente.
+No podés ejecutar operaciones ni delegarlas; si el pedido combina dominios del sistema, pedí separarlo en consultas individuales.` : `Sos Guía Zuite, el orientador de los agentes especialistas.
 Respondé en español, de forma breve y en texto plano, sin markdown ni emojis.
 No tenés tools ni acceso a los registros y no podés ejecutar operaciones ni delegarlas automáticamente.
 Ayudá al usuario a elegir un especialista desde el selector de agentes:
@@ -78,7 +100,15 @@ Trabajá con description, flag, metadata y notes solo cuando el usuario lo solic
 Cada nota debe contener texto; su fecha es opcional. Al modificar notes o metadata, preservá los valores existentes que no se pidió cambiar.
 Al crear, completá createdBy con userId del contexto autenticado y tenant con tenantId si existe. Sin userId, no crees el país.
 Para idiomas indicá el agente language (Léxico); para personas, person (Nexo).`,
-        toolBuilders: [countryTool]
+        toolBuilders: [countryTool],
+        ...(routerEnabled ? {
+            access: {requireUser: true},
+            routing: {
+                eligible: true,
+                capabilities: "Consulta, alta y actualización del catálogo Country de Zuite: nombre, descripción, bandera, metadata y notas. Solo países del sistema; no administra idiomas ni personas ni resuelve pedidos que requieran varios especialistas.",
+                examples: ["Listá los países registrados.", "Actualizá la descripción del país con ID indicado."]
+            }
+        } : {})
     }
 
     const configLanguage: DraxAgentConfig = {
@@ -92,7 +122,15 @@ archivedAt representa la fecha de archivo: cambiala solo ante un pedido explíci
 No uses archivedAt para simular un borrado. No completes test.date ni test.note salvo pedido explícito.
 Language no tiene campos tenant, user ni createdBy: no los agregues.
 Para países indicá el agente country (Atlas); para personas y sus idiomas asociados, person (Nexo).`,
-        toolBuilders: [languageTool]
+        toolBuilders: [languageTool],
+        ...(routerEnabled ? {
+            access: {requireUser: true},
+            routing: {
+                eligible: true,
+                capabilities: "Consulta, alta y actualización del catálogo Language de Zuite: nombre, metadatos de icono y fecha de archivo. Solo idiomas del catálogo; no traduce, no administra personas ni países ni resuelve pedidos que requieran varios especialistas.",
+                examples: ["Listá los idiomas registrados.", "Archivá el idioma con ID indicado en la fecha especificada."]
+            }
+        } : {})
     }
 
     const configPerson: DraxAgentConfig = {
@@ -107,10 +145,20 @@ No tenés tools de Country ni Language: si solo recibís nombres para esas relac
 No muestres secret ni lo incluyas en resúmenes. No solicites secretos para completar una ficha; limitá los demás datos personales a lo necesario para el pedido.
 Al crear, usá tenantId y userId del contexto autenticado para tenant y user cuando estén disponibles.
 No ofrezcas eliminar personas ni operaciones masivas: esas tools no están habilitadas.`,
-        toolBuilders: [personTool]
+        toolBuilders: [personTool],
+        ...(routerEnabled ? {
+            access: {requireUser: true},
+            routing: {
+                eligible: true,
+                capabilities: "Consulta, alta y actualización de fichas Person de Zuite: identidad, domicilio y relaciones por IDs existentes con países e idiomas. Solo personas; no crea ni modifica países o idiomas, no revela secretos ni resuelve pedidos que requieran varios especialistas.",
+                examples: ["Buscá la ficha de una persona por nombre.", "Actualizá la calle de la persona con ID indicado."]
+            }
+        } : {})
     }
 
-    DraxAgentFactory.instance("default", "Guía Zuite — Orientación para elegir el agente especialista adecuado")
+    DraxAgentFactory.instance("default", includeGeneralAssistant
+        ? "Asistente general Zuite — Conocimiento y ayuda general sin acceso a datos del sistema"
+        : "Guía Zuite — Orientación para elegir el agente especialista adecuado")
         .configure(configDefault)
     DraxAgentFactory.instance("country", "Atlas — Especialista en países: consulta, alta y actualización del catálogo")
         .configure(configCountry)
@@ -118,7 +166,20 @@ No ofrezcas eliminar personas ni operaciones masivas: esas tools no están habil
         .configure(configLanguage)
     DraxAgentFactory.instance("person", "Nexo — Especialista en personas: consulta, alta y actualización de fichas personales")
         .configure(configPerson)
+
+    if (routerEnabled) {
+        DraxAgentFactory.router("auto", "Automático — Selección de un único especialista autorizado para cada consulta", {
+            tools: [],
+            toolBuilders: [],
+            routing: {recommended: true},
+            access: {requireUser: true},
+            candidateIdentifiers: ["country", "language", "person", ...(includeGeneralAssistant ? ["default"] : [])],
+            routingProvider: options.routingProvider,
+            routingModel: options.routingModel
+        })
+    }
 }
 
+export type {InitializeAgentOptions}
 export {initializeAgent}
 export default initializeAgent

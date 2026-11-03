@@ -7,8 +7,25 @@ interface IChatbotTaskSessionResponse {
   sessionId: string
 }
 
+interface IAgentResponseError {
+  code: string
+  stage: string
+  message: string
+  operationMayHaveCompleted?: boolean
+  audioFailed?: boolean
+}
+
+interface IAgentResponseMetrics {
+  breakdown?: Record<string, unknown>
+  [key: string]: unknown
+}
+
 interface IChatbotTaskMessageResponse {
   agentIdentifier?: string
+  resolvedAgentIdentifier?: string
+  correlationId?: string
+  error?: IAgentResponseError
+  metrics?: IAgentResponseMetrics
   sessionId: string
   message: string
   navigationPath?: string | null
@@ -18,10 +35,18 @@ interface IChatbotTaskMessageResponse {
 interface IAgentOption {
   identifier: string
   description: string
+  type?: 'specialist' | 'router'
+  routing?: {
+    eligible?: boolean
+    capabilities?: string
+    examples?: string[]
+    recommended?: boolean
+  }
 }
 
 interface IAgentListResponse {
   agents: IAgentOption[]
+  recommendedAgentIdentifier?: string
 }
 
 class ChatbotTaskProvider {
@@ -64,5 +89,5 @@ class ChatbotTaskProvider {
   }
 }
 
-export type {IAgentListResponse, IAgentOption, IChatbotTaskMessageResponse, IChatbotTaskSessionResponse}
+export type {IAgentListResponse, IAgentOption, IAgentResponseError, IAgentResponseMetrics, IChatbotTaskMessageResponse, IChatbotTaskSessionResponse}
 export default ChatbotTaskProvider

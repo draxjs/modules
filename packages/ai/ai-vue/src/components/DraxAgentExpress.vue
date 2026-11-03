@@ -3,10 +3,15 @@ import {computed, onBeforeUnmount, ref} from 'vue'
 import {useDraxAgent} from '../composables'
 import VManagerBot from './vbots/VManagerBot.vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   allowNavigationToggle?: boolean
+  initialAgentIdentifier?: string
+  allowManualSelection?: boolean
+  showResolvedAgent?: boolean
 }>(), {
   allowNavigationToggle: false,
+  allowManualSelection: true,
+  showResolvedAgent: false,
 })
 
 const {
@@ -15,6 +20,8 @@ const {
   assistantSpeechPendingText,
   assistantSpeechSpokenText,
   currentAssistantMessage,
+  currentResolvedAgentLabel,
+  destinationReady,
   error,
   input,
   interimSpeech,
@@ -41,7 +48,7 @@ const {
   textToSpeechSupported,
   toggleNavigation,
   toggleTextToSpeech,
-} = useDraxAgent()
+} = useDraxAgent(props)
 
 const activePointerId = ref<number | null>(null)
 
@@ -52,6 +59,10 @@ const statusLabel = computed(() => {
 
   if (error.value) {
     return error.value
+  }
+
+  if (!destinationReady.value) {
+    return 'Cargando agentes...'
   }
 
   if (loading.value) {
@@ -75,7 +86,7 @@ const textModeButtonLabel = computed(() => textToSpeechEnabled.value
 const selectedAgentLabel = computed(() => selectedAgent.value?.identifier ?? selectedAgentIdentifier.value ?? 'default')
 
 function startHoldToTalk(event: PointerEvent) {
-  if (event.button !== 0 || !speechSupported.value || loading.value || textToSpeechSpeaking.value) {
+  if (event.button !== 0 || !destinationReady.value || !speechSupported.value || loading.value || textToSpeechSpeaking.value) {
     return
   }
 
@@ -249,6 +260,8 @@ onBeforeUnmount(() => {
       <VManagerBot
         :visible="true"
         :speaking="textToSpeechSpeaking"
+        silence-on-click
+        @silence="stopTextToSpeech"
       />
 
       <p
@@ -262,6 +275,10 @@ onBeforeUnmount(() => {
           {{ currentAssistantMessage }}
         </template>
       </p>
+
+      <small v-if="showResolvedAgent && currentResolvedAgentLabel" class="drax-agent-express__resolved-agent">
+        Atendido por {{ currentResolvedAgentLabel }}
+      </small>
 
       <v-btn
         v-if="textToSpeechSpeaking"
@@ -280,7 +297,7 @@ onBeforeUnmount(() => {
       <button
         class="drax-agent-express__mic-button"
         type="button"
-        :disabled="!speechSupported || loading || textToSpeechSpeaking"
+        :disabled="!destinationReady || !speechSupported || loading || textToSpeechSpeaking"
         :aria-pressed="speechPressToTalkActive"
         :aria-label="statusLabel"
         @pointerdown.prevent="startHoldToTalk"
@@ -299,6 +316,7 @@ onBeforeUnmount(() => {
 
       <p
         class="drax-agent-express__status"
+        :title="statusLabel"
         :class="{'drax-agent-express__status--error': speechError || error}"
       >
         {{ statusLabel }}
@@ -392,6 +410,13 @@ onBeforeUnmount(() => {
 .drax-agent-express__message-spoken {
   color: rgb(var(--v-theme-primary));
   transition: color 120ms ease;
+}
+
+.drax-agent-express__resolved-agent {
+  max-width: 100%;
+  color: rgba(var(--v-theme-on-surface), 0.68);
+  font-size: 0.72rem;
+  text-align: center;
 }
 
 .drax-agent-express__silence-button {

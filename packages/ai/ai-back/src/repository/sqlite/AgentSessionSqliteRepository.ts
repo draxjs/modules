@@ -20,21 +20,30 @@ class AgentSessionSqliteRepository extends AbstractSqliteRepository<IAgentSessio
     protected verbose: boolean = false;
     protected tableFields: SqliteTableField[] = [
         {name: "sessionId", type: "TEXT", unique: false, primary: false},
+{name: "ownerAgentIdentifier", type: "TEXT", unique: false, primary: false},
+{name: "conversationType", type: "TEXT", unique: false, primary: false},
+{name: "lastResolvedAgentIdentifier", type: "TEXT", unique: false, primary: false},
 {name: "title", type: "TEXT", unique: false, primary: false},
 {name: "lastMessageAt", type: "TEXT", unique: false, primary: false},
 {name: "messages", type: "TEXT", unique: false, primary: false},
 {name: "messageCount", type: "NUMERIC", unique: false, primary: false},
-{name: "messageCount", type: "TEXT", unique: false, primary: false},
 {name: "inputTokens", type: "NUMERIC", unique: false, primary: false},
-{name: "inputTokens", type: "TEXT", unique: false, primary: false},
 {name: "outputTokens", type: "NUMERIC", unique: false, primary: false},
-{name: "outputTokens", type: "TEXT", unique: false, primary: false},
 {name: "tokens", type: "NUMERIC", unique: false, primary: false},
-{name: "tokens", type: "TEXT", unique: false, primary: false},
 {name: "tenant", type: "TEXT", unique: false, primary: false},
 {name: "user", type: "TEXT", unique: false, primary: false}
     ]
-  
+
+    async prepareItem(item: any) {
+        // Columns added by build() are NULL on legacy rows; keep the opt-in contract optional.
+        for (const field of ['ownerAgentIdentifier', 'conversationType', 'lastResolvedAgentIdentifier']) {
+            if (item[field] === null) {
+                delete item[field]
+            }
+        }
+        return item
+    }
+
 }
 
 export default AgentSessionSqliteRepository

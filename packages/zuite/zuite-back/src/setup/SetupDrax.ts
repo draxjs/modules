@@ -43,7 +43,7 @@ async function SetupDrax(){
 
     await CreateSystemRoles()
 
-    await initializeAgent()
+    await initializeAgent({router: true})
 }
 
 export default SetupDrax

@@ -1,11 +1,36 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {AgentProvider, TTSProvider, TTSVoiceProvider} from '@drax/ai-front'
-import type {IAgentOption, IAIPromptAudioParams, IAIPromptAudioResponse, ITTSProviderInfo, ITTSVoice} from '@drax/ai-front'
+import type {IAgentOption, IAgentResponseError, IAgentResponseMetrics, IChatbotTaskMessageResponse, IAIPromptAudioParams, IAIPromptAudioResponse, ITTSProviderInfo, ITTSVoice} from '@drax/ai-front'
 
 export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
+  resolvedAgentIdentifier?: string
+  correlationId?: string
+  error?: IAgentResponseError
+  metrics?: IAgentResponseMetrics
+}
+
+export interface UseDraxAgentOptions {
+  initialAgentIdentifier?: string
+  allowManualSelection?: boolean
+}
+
+function getAgentErrorPayload(value: any): Partial<IChatbotTaskMessageResponse> | undefined {
+  return [value?.error?.body, value?.body, value?.response?.data, value?.data, value].find((payload) => (
+    typeof payload?.error?.code === 'string'
+    && typeof payload?.error?.stage === 'string'
+    && typeof payload?.error?.message === 'string'
+  ))
+}
+
+function formatAgentError(details: IAgentResponseError, correlationId?: string) {
+  const reference = correlationId ? ` Referencia: ${correlationId}.` : ''
+  const completionWarning = details.operationMayHaveCompleted
+    ? ' La operacion puede haberse completado. Verifica el resultado antes de volver a intentarlo.'
+    : ''
+  return `${details.message} (${details.code}; etapa: ${details.stage}).${reference}${completionWarning}`
 }
 
 interface BrowserSpeechRecognition extends EventTarget {
@@ -95,12 +120,14 @@ function readStoredTextToSpeechVoice() {
   return safeLocalStorageGet(textToSpeechVoiceStorageKey)
 }
 
-export function useDraxAgent() {
+export function useDraxAgent(options: UseDraxAgentOptions = {}) {
   const router = useRouter()
   const sessionId = ref<string>()
   const agents = ref<IAgentOption[]>([...defaultAgents])
-  const selectedAgentIdentifier = ref('default')
+  const initialAgentIdentifier = options.initialAgentIdentifier?.trim()
+  const selectedAgentIdentifier = ref(initialAgentIdentifier || 'default')
   const agentsLoading = ref(false)
+  const destinationReady = ref(false)
   const messages = ref<ChatMessage[]>([
     {
       role: 'assistant',
@@ -110,6 +137,8 @@ export function useDraxAgent() {
   const input = ref('')
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const responseError = ref<IAgentResponseError | null>(null)
+  const correlationId = ref<string>()
   const messagesContainer = ref<HTMLElement | null>(null)
   const speechRecognition = ref<BrowserSpeechRecognition | null>(null)
   const speechSupported = ref(false)
@@ -157,12 +186,17 @@ export function useDraxAgent() {
   const visualBotVisible = ref(true)
   const navigationEnabled = ref(true)
 
-  const canSend = computed(() => input.value.trim().length > 0 && !loading.value)
+  const canSend = computed(() => destinationReady.value && input.value.trim().length > 0
+    && !loading.value && !responseError.value?.operationMayHaveCompleted)
   const speechButtonIcon = computed(() => speechEnabled.value ? 'mdi-microphone-off' : 'mdi-microphone')
   const speechButtonLabel = computed(() => speechEnabled.value ? 'Apagar microfono' : 'Prender microfono')
   const compactSpeechStatusLabel = computed(() => {
-    if (speechError.value) {
-      return 'Error'
+    if (speechError.value || error.value) {
+      return speechError.value || error.value
+    }
+
+    if (!destinationReady.value) {
+      return 'Cargando agentes'
     }
 
     if (loading.value) {
@@ -232,22 +266,33 @@ export function useDraxAgent() {
   const navigationButtonLabel = computed(() => navigationEnabled.value
     ? 'Apagar navegacion automatica'
     : 'Prender navegacion automatica')
-  const selectedAgent = computed(() => agents.value.find((agent) => agent.identifier === selectedAgentIdentifier.value) ?? agents.value[0])
-  const showAgentSelector = computed(() => agents.value.length > 1)
+  const selectedAgent = computed(() => agents.value.find((agent) => agent.identifier === selectedAgentIdentifier.value))
+  const showAgentSelector = computed(() => options.allowManualSelection !== false && agents.value.length > 1)
   const agentSelectItems = computed(() => agents.value.map((agent) => ({
     title: agent.description ? `${agent.identifier} - ${agent.description}` : agent.identifier,
     value: agent.identifier,
   })))
-  const currentAssistantMessage = computed(() => {
+  const currentAssistantResponse = computed(() => {
     for (let index = messages.value.length - 1; index >= 0; index -= 1) {
       const message = messages.value[index]
       if (message?.role === 'assistant') {
-        return message.content
+        return message
       }
     }
 
-    return initialAssistantMessage
+    return undefined
   })
+  const currentAssistantMessage = computed(() => currentAssistantResponse.value?.content ?? initialAssistantMessage)
+  const currentResolvedAgentLabel = computed(() => getResolvedAgentLabel(currentAssistantResponse.value?.resolvedAgentIdentifier))
+
+  function getResolvedAgentLabel(identifier?: string) {
+    if (!identifier) {
+      return ''
+    }
+
+    const description = agents.value.find((agent) => agent.identifier === identifier)?.description?.replace(/\s+/g, ' ').trim()
+    return description ? (description.length > 100 ? `${description.slice(0, 97)}...` : description) : 'Asistente'
+  }
   const assistantSpeechMessage = computed(() => textToSpeechSpeaking.value
     ? textToSpeechMessage.value
     : currentAssistantMessage.value)
@@ -270,21 +315,29 @@ export function useDraxAgent() {
         ? response.agents
         : [...defaultAgents]
 
-      if (!agents.value.some((agent) => agent.identifier === selectedAgentIdentifier.value)) {
-        selectedAgentIdentifier.value = agents.value[0]?.identifier ?? 'default'
+      if (!initialAgentIdentifier) {
+        const recommendedAgent = agents.value.find((agent) => agent.identifier === response.recommendedAgentIdentifier)
+          ?? agents.value.find((agent) => agent.type === 'router' && agent.routing?.recommended)
+        selectedAgentIdentifier.value = recommendedAgent?.identifier
+          ?? agents.value.find((agent) => agent.identifier === 'default')?.identifier
+          ?? agents.value[0]?.identifier
+          ?? 'default'
       }
     } catch {
+      // Older backends may not expose the listing endpoint. Keep their default fallback.
       agents.value = [...defaultAgents]
-      selectedAgentIdentifier.value = 'default'
+      selectedAgentIdentifier.value = initialAgentIdentifier || 'default'
     } finally {
       agentsLoading.value = false
+      destinationReady.value = true
     }
   }
 
   function selectAgent(value: unknown) {
     const identifier = typeof value === 'string' ? value : null
 
-    if (!identifier || identifier === selectedAgentIdentifier.value) {
+    if (!destinationReady.value || loading.value || options.allowManualSelection === false
+      || !identifier || identifier === selectedAgentIdentifier.value) {
       return
     }
 
@@ -294,6 +347,10 @@ export function useDraxAgent() {
     }
 
     selectedAgentIdentifier.value = identifier
+    stopTextToSpeech()
+    error.value = null
+    responseError.value = null
+    correlationId.value = undefined
     sessionId.value = undefined
     messages.value = [
       {
@@ -304,8 +361,15 @@ export function useDraxAgent() {
   }
 
   async function startNewSession() {
+    if (!destinationReady.value || loading.value) {
+      return
+    }
+
+    const previousResponseError = responseError.value
     loading.value = true
     error.value = null
+    responseError.value = null
+    correlationId.value = undefined
 
     try {
       const response = await AgentProvider.instance.startSession(selectedAgentIdentifier.value)
@@ -318,7 +382,15 @@ export function useDraxAgent() {
       ]
       speakAssistantMessage('Nueva sesion iniciada. Que tarea queres registrar?')
     } catch (e: any) {
-      error.value = e?.message ?? 'No se pudo iniciar una nueva sesion.'
+      const payload = getAgentErrorPayload(e)
+      // A failed explicit reset must not unlock an uncertain conversation.
+      responseError.value = previousResponseError?.operationMayHaveCompleted
+        ? previousResponseError
+        : payload?.error ?? null
+      correlationId.value = payload?.correlationId
+      error.value = payload?.error
+        ? formatAgentError(payload.error, payload.correlationId)
+        : e?.message ?? 'No se pudo iniciar una nueva sesion.'
     } finally {
       loading.value = false
       await scrollToBottom()
@@ -333,6 +405,8 @@ export function useDraxAgent() {
     const message = input.value.trim()
     input.value = ''
     error.value = null
+    responseError.value = null
+    correlationId.value = undefined
     loading.value = true
     messages.value.push({role: 'user', content: message})
     await scrollToBottom()
@@ -344,23 +418,58 @@ export function useDraxAgent() {
         selectedAgentIdentifier.value,
         buildPromptAudioResponseParams(),
       )
-      sessionId.value = response.sessionId
-      messages.value.push({role: 'assistant', content: response.message})
-      await navigateAgentResponse(response.navigationPath)
-      speakAssistantMessage(response.message, response.audio)
+      appendAgentResponse(response)
+      if (!response.error) {
+        await navigateAgentResponse(response.navigationPath)
+      }
+      speakAgentResponse(response)
     } catch (e: any) {
-      error.value = e?.message ?? 'No se pudo enviar el mensaje.'
-      const fallbackMessage = 'No pude procesar el pedido. Proba de nuevo en unos segundos.'
-      messages.value.push({
-        role: 'assistant',
-        content: fallbackMessage,
-      })
-      speakAssistantMessage(fallbackMessage)
+      const payload = getAgentErrorPayload(e)
+      if (payload) {
+        appendAgentResponse(payload)
+        speakAgentResponse(payload)
+      } else {
+        error.value = e?.message ?? 'No se pudo enviar el mensaje.'
+        const fallbackMessage = 'No pude procesar el pedido. Proba de nuevo en unos segundos.'
+        messages.value.push({role: 'assistant', content: fallbackMessage})
+        speakAssistantMessage(fallbackMessage)
+      }
     } finally {
       loading.value = false
       await scrollToBottom()
       await sendPendingSpeechMessage()
     }
+  }
+
+  function appendAgentResponse(response: Partial<IChatbotTaskMessageResponse>) {
+    if (response.sessionId) {
+      sessionId.value = response.sessionId
+    }
+    responseError.value = response.error ?? null
+    correlationId.value = response.correlationId
+    if (response.error) {
+      error.value = formatAgentError(response.error, response.correlationId)
+      // Do not automatically submit queued speech after an uncertain operation.
+      speechAutoSendPending.value = false
+    }
+    messages.value.push({
+      role: 'assistant',
+      content: response.message || error.value || '',
+      resolvedAgentIdentifier: response.resolvedAgentIdentifier,
+      correlationId: response.correlationId,
+      error: response.error,
+      metrics: response.metrics,
+    })
+  }
+
+  function speakAgentResponse(response: Partial<IChatbotTaskMessageResponse>) {
+    // Do not automatically retry synthesis after the backend reports an audio failure.
+    if (response.error?.stage === 'audio' || response.error?.audioFailed) {
+      return
+    }
+
+    const message = response.audio ? response.message ?? '' : error.value || response.message || ''
+    speakAssistantMessage(message, response.audio)
   }
 
   async function scrollToBottom() {
@@ -584,7 +693,7 @@ export function useDraxAgent() {
   }
 
   function toggleSpeechRecognition() {
-    if (!speechRecognition.value) {
+    if (!destinationReady.value || !speechRecognition.value) {
       return
     }
 
@@ -606,7 +715,7 @@ export function useDraxAgent() {
   }
 
   function startPressToTalk() {
-    if (!speechRecognition.value || loading.value || speechPressToTalkActive.value) {
+    if (!destinationReady.value || !speechRecognition.value || loading.value || speechPressToTalkActive.value) {
       return
     }
 
@@ -1195,12 +1304,12 @@ export function useDraxAgent() {
     return speechRecognitionError !== 'no-speech'
   }
 
-  onMounted(() => {
-    loadAgents()
+  onMounted(async () => {
     loadTextToSpeechProviders()
     loadConfiguredTextToSpeechVoices()
     setupSpeechRecognition()
     setupTextToSpeech()
+    await loadAgents()
   })
 
   onBeforeUnmount(() => {
@@ -1235,8 +1344,13 @@ export function useDraxAgent() {
     canSend,
     compactSpeechStatusLabel,
     currentAssistantMessage,
+    currentResolvedAgentLabel,
+    destinationReady,
     error,
+    responseError,
+    correlationId,
     getFeatureButtonClass,
+    getResolvedAgentLabel,
     input,
     interimSpeech,
     loading,

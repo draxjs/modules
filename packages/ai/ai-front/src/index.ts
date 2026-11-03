@@ -16,6 +16,8 @@ import type {
 import type {
     IAgentListResponse,
     IAgentOption,
+    IAgentResponseError,
+    IAgentResponseMetrics,
     IChatbotTaskMessageResponse,
     IChatbotTaskSessionResponse,
 } from './providers/AgentProvider.js'
@@ -91,6 +93,8 @@ export type {
     ITTSProvidersResponse,
     IAgentListResponse,
     IAgentOption,
+    IAgentResponseError,
+    IAgentResponseMetrics,
     IChatbotTaskMessageResponse,
     IChatbotTaskSessionResponse,
     ITTSVoice,
