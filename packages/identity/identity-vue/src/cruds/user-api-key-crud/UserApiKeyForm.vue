@@ -56,8 +56,9 @@ const ipv6Address = [
 <template>
 
 
-  <v-form v-model="valid" ref="formRef" @submit.prevent="submit">
+  <v-form class="crud-dialog__custom-form" v-model="valid" ref="formRef" @submit.prevent="submit">
     <v-card flat>
+      <div class="crud-dialog__custom-form-body">
 
       <template v-if="!valueModel.readonly || store.operation == 'view'">
 
@@ -102,6 +103,8 @@ const ipv6Address = [
 
         </v-card-text>
       </template>
+
+      </div>
 
       <v-card-actions>
         <v-spacer></v-spacer>

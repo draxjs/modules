@@ -58,8 +58,9 @@ const {
 <template>
 
 
-  <v-form v-model="valid" ref="formRef" @submit.prevent="submit">
+  <v-form class="crud-dialog__custom-form" v-model="valid" ref="formRef" @submit.prevent="submit">
     <v-card flat>
+      <div class="crud-dialog__custom-form-body">
       <v-alert v-if="valueModel.readonly && store.operation != 'view'" type="warning">
         {{ t('role.readonly') }}
       </v-alert>
@@ -109,6 +110,8 @@ const {
 
         </v-card-text>
       </template>
+
+      </div>
 
       <v-card-actions>
         <v-spacer></v-spacer>

@@ -81,8 +81,9 @@ function confirmPasswordRule(value: string) {
 </script>
 
 <template>
-  <v-form v-model="valid" ref="formRef" @submit.prevent="submit">
+  <v-form class="crud-dialog__custom-form" v-model="valid" ref="formRef" @submit.prevent="submit">
     <v-card flat>
+      <div class="crud-dialog__custom-form-body">
 
       <v-alert v-if="valueModel.readonly && store.operation != 'view'" type="warning">
         {{ t('role.readonly') }}
@@ -226,6 +227,8 @@ function confirmPasswordRule(value: string) {
           </v-col>
         </v-row>
       </v-card-text>
+
+      </div>
 
       <v-card-actions>
         <v-spacer></v-spacer>

@@ -46,7 +46,7 @@ class RoleCrud extends EntityCrud implements IEntityCrud {
 
   get refs(){
     return {
-
+      Role: RoleCrud.instance,
     }
   }
 
@@ -101,6 +101,10 @@ class RoleCrud extends EntityCrud implements IEntityCrud {
   }
 
   get filterButtons() {
+    return false
+  }
+
+  get isRouteFormEnable(){
     return false
   }
 

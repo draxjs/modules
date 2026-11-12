@@ -82,4 +82,33 @@ const title = computed(() => {
   min-height: 0;
 }
 
+/* Slotted forms keep their own fields and actions, but share the dialog layout.
+   Wrap all content before v-card-actions in crud-dialog__custom-form-body. */
+.crud-dialog--fixed-actions .crud-dialog__content :deep(.crud-dialog__custom-form) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.crud-dialog--fixed-actions .crud-dialog__content :deep(.crud-dialog__custom-form > .v-card) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.crud-dialog--fixed-actions .crud-dialog__content :deep(.crud-dialog__custom-form-body) {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.crud-dialog--fixed-actions .crud-dialog__content :deep(.crud-dialog__custom-form > .v-card > .v-card-actions) {
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
 </style>

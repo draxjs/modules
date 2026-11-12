@@ -101,6 +101,10 @@ class TenantCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
+  get isRouteFormEnable(){
+    return false
+  }
+
 }
 
 export default TenantCrud

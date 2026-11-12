@@ -104,6 +104,10 @@ class UserApiKeyCrud extends EntityCrud implements IEntityCrud {
     return false
   }
 
+  get isRouteFormEnable(){
+    return false
+  }
+
 }
 
 export default UserApiKeyCrud

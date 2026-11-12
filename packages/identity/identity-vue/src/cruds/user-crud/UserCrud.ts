@@ -153,6 +153,10 @@ class UserCrud extends EntityCrud implements IEntityCrud {
   get containerFluid(): boolean{
     return true
   }
+
+  get isRouteFormEnable(){
+    return false
+  }
 }
 
 export default UserCrud
