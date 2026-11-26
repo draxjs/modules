@@ -7,13 +7,14 @@ interface IUser{
     id?: string
     username: string
     email: string
-    password: string
+    password?: string
     active: boolean
     name: string
     phone: string
     avatar: string
     role: IRole
     origin?: string
+    ldapDn?: string
     createdAt?: string
     updatedAt?: string
     tenant?: ITenant
@@ -47,12 +48,13 @@ interface IUserCreate {
     id?: string
     name: string
     username: string
-    password: string
+    password?: string
     email: string
     active: boolean | number
     phone: string
     role: string
     origin?: string
+    ldapDn?: string
     tenant?: string
     groups?: string[] | string
     createdAt?: string

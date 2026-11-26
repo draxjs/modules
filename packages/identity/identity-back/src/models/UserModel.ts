@@ -14,8 +14,9 @@ const UserMongoSchema = new mongoose.Schema<IUser>({
         index: true,
         validate: {
             validator: function (value: string) {
-                let r = /^[a-zA-Z0-9]+$/;
-                return r.test(value);
+                return this.origin === 'LDAP'
+                    ? value.length <= 256 && Boolean(value.trim()) && !/[\0\r\n]/.test(value)
+                    : /^[a-zA-Z0-9]+$/.test(value);
             },
             message: "Invalid username format"
         }
@@ -33,7 +34,7 @@ const UserMongoSchema = new mongoose.Schema<IUser>({
             message: "Invalid email format"
         }
     },
-    password: {type: String, required: true,  index: false, select: false},
+    password: {type: String, required: function () { return this.origin !== 'LDAP'; }, index: false, select: false},
     name: {type: String, required: false,  index: false},
     active: {type: Boolean, required: true, default: false,  index: false},
     phone: {
@@ -63,6 +64,7 @@ const UserMongoSchema = new mongoose.Schema<IUser>({
         index: false
     },
     origin: {type: String, required: false, index:false},
+    ldapDn: {type: String, required: function () { return this.origin === 'LDAP'; }},
     groups: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Group',

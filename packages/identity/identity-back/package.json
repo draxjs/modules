@@ -23,7 +23,9 @@
     "testSqliteRepositoryRole": "node --import tsx --test test/repository/sqlite/role*",
     "testServiceRole": "node --import tsx --test test/services/role*",
     "testServiceUser": "node --import tsx --test test/services/user*",
-    "testcoverage": "node --import tsx --experimental-test-coverage  test/services/*"
+    "testcoverage": "node --import tsx --experimental-test-coverage  test/services/*",
+    "testLdap": "vitest run test/services/ldap-service.test.ts test/endpoints/ldap-route.test.ts",
+    "testLdapIntegration": "node tools/ldap/run-integration.mjs"
   },
   "author": "Cristian Incarnato & Drax Team",
   "license": "ISC",
@@ -35,7 +37,8 @@
     "@drax/identity-share": "^3.67.0",
     "bcryptjs": "^2.4.3",
     "graphql": "^16.8.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "ldapts": "9.2.0"
   },
   "peerDependencies": {
     "better-sqlite3": "^11.0.0 || ^12.0.0",
@@ -63,5 +66,8 @@
       "debug": "0"
     }
   },
-  "gitHead": "55eccb1f82bf0e09736f3fa701088a1a8162129a"
+  "gitHead": "55eccb1f82bf0e09736f3fa701088a1a8162129a",
+  "engines": {
+    "node": ">=22"
+  }
 }

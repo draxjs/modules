@@ -1,5 +1,12 @@
 enum IdentityConfig {
 
+    LdapEnabled = "DRAX_LDAP_ENABLED",
+    LdapUrl = "DRAX_LDAP_URL",
+    LdapUsersDn = "DRAX_LDAP_USERS_DN",
+    LdapGroupsDn = "DRAX_LDAP_GROUPS_DN",
+    LdapStartTLS = "DRAX_LDAP_STARTTLS",
+    LdapDefaultRole = "DRAX_LDAP_DEFAULT_ROLE",
+
     RegistrationTenantEnabled = "DRAX_REGISTRATION_TENANT_ENABLED",
     EmailVerificationTTLSeconds = "DRAX_EMAIL_VERIFICATION_TTL_SECONDS",
     EmailVerificationResendCooldownSeconds = "DRAX_EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS",

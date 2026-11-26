@@ -6,6 +6,7 @@
 
 ## Secciones
 
+- [LDAP nativo](./ldap.md)
 - `config`: claves de entorno específicas del módulo.
 - `controllers`: endpoints REST para auth, usuarios, roles, tenants, sesiones y API keys.
 - `errors`: errores propios como credenciales inválidas.
