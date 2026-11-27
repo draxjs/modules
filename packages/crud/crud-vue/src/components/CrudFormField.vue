@@ -161,6 +161,7 @@ const hasHideDetails = computed(() => {
     <component
         :is="field.editor === 'html' ? HtmlEditor : field.editor === 'markdown' ? MarkdownEditor : VTextarea"
         v-if="field.type === 'longString'"
+        :allow-source="field.editor === 'html' ? true : undefined"
         :id="`crud-form-field-long-string-${name}`"
         class="crud-form-field__long-string-input"
         :rows="field.rows || 5"
@@ -172,7 +173,7 @@ const hasHideDetails = computed(() => {
         :placeholder="placeholder ?? field.placeholder"
         :persistent-placeholder="persistentPlaceholder ?? field.persistentPlaceholder"
         v-model="valueModel"
-        :readonly="readonly"
+        :readonly="field.editor === 'html' ? readonly || undefined : readonly"
         :error-messages="inputErrors"
         :rules="rules"
         :density="density"

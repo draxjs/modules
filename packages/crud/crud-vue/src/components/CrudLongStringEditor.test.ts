@@ -37,6 +37,12 @@ describe('longString editor configuration', () => {
     wrapper.unmount()
   })
 
+  it('lets the HTML editor inherit readonly from VForm', () => {
+    const wrapper = setup('html')
+    expect(wrapper.getComponent(HtmlEditor).props('readonly')).toBeUndefined()
+    wrapper.unmount()
+  })
+
   it.each([['html', HtmlEditor], ['markdown', MarkdownEditor]] as const)(
     'renders the %s editor and forwards validation and presentation props',
     (editor, component) => {
@@ -49,6 +55,7 @@ describe('longString editor configuration', () => {
         modelValue: 'Texto inicial', label: 'Body', readonly: true,
         rules, errorMessages: ['Error remoto'],
       })
+      if (editor === 'html') expect(wrapper.getComponent(HtmlEditor).props('allowSource')).toBe(true)
       wrapper.unmount()
     },
   )

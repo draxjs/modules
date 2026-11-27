@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
-import {VBtn, VIcon, VInput} from 'vuetify/components'
+import {computed, defineComponent, onBeforeUnmount, onMounted, provide, ref, watch} from 'vue'
+import {VBtn, VIcon, VInput, VTextarea} from 'vuetify/components'
+import {FormKey, useForm, type FormProvide} from 'vuetify/lib/composables/form.js'
 import DOMPurify from 'dompurify'
 
 type InputProps = InstanceType<typeof VInput>['$props']
@@ -12,6 +13,7 @@ const props = withDefaults(defineProps<{
   rows?: number | string
   readonly?: boolean
   disabled?: boolean
+  allowSource?: boolean
   rules?: InputProps['rules']
   errorMessages?: string | string[]
   hint?: string
@@ -35,6 +37,7 @@ const props = withDefaults(defineProps<{
   // Undefined lets VInput inherit these states from VForm.
   readonly: undefined,
   disabled: undefined,
+  allowSource: false,
 })
 
 const emit = defineEmits<{
@@ -44,11 +47,24 @@ const emit = defineEmits<{
 }>()
 
 const editorRef = ref<HTMLDivElement>()
-const inputRef = ref<InstanceType<typeof VInput>>()
+const sourceRef = ref<InstanceType<typeof VTextarea>>()
 const focused = ref(false)
 const html = ref('')
+const sourceMode = ref(false)
+const {isReadonly, isDisabled} = useForm({
+  get readonly() { return props.readonly ?? null },
+  get disabled() { return props.disabled ?? null },
+})
 let savedSelection: Range | null = null
 const minHeight = computed(() => `${Math.max(1, Number(props.rows) || 5) * 1.5}em`)
+
+// The outer VInput owns validation and form resets in both modes.
+const SourceField = defineComponent({
+  setup(_, {slots}) {
+    provide<FormProvide | null>(FormKey, null)
+    return () => slots.default?.()
+  },
+})
 
 const commands = [
   {command: 'undo', title: 'Deshacer', icon: 'mdi-undo'},
@@ -73,39 +89,60 @@ const sizes = [
   {value: '2', title: 'Pequeño'}, {value: '3', title: 'Normal'},
   {value: '5', title: 'Grande'}, {value: '7', title: 'Muy grande'},
 ]
+const allowedTags = ['p', 'div', 'br', 'span', 'b', 'strong', 'i', 'em', 'u', 's', 'strike',
+  'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'a', 'font', 'h1', 'h2', 'h3',
+  'h4', 'h5', 'h6', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'hr']
+const allowedAttributes = ['href', 'title', 'style', 'color', 'face', 'size', 'align', 'colspan', 'rowspan']
+const emailAttributes = ['src', 'alt', 'width', 'height', 'role', 'cellspacing', 'cellpadding', 'border', 'bgcolor']
 
 function sanitize(value: string) {
   if (typeof window === 'undefined' || !DOMPurify.isSupported) return ''
   return DOMPurify.sanitize(value, {
-    ALLOWED_TAGS: ['p', 'div', 'br', 'span', 'b', 'strong', 'i', 'em', 'u', 's', 'strike',
-      'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'a', 'font', 'h1', 'h2', 'h3',
-      'h4', 'h5', 'h6', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'hr'],
-    ALLOWED_ATTR: ['href', 'title', 'style', 'color', 'face', 'size', 'align', 'colspan', 'rowspan'],
+    ALLOWED_TAGS: props.allowSource ? [...allowedTags, 'img'] : allowedTags,
+    ALLOWED_ATTR: props.allowSource ? [...allowedAttributes, ...emailAttributes] : allowedAttributes,
     ALLOW_DATA_ATTR: false,
     ALLOW_ARIA_ATTR: false,
   })
 }
 
 function syncModel(value: string | null | undefined) {
-  html.value = sanitize(value || '')
-  if (editorRef.value && editorRef.value.innerHTML !== html.value) {
-    editorRef.value.innerHTML = html.value
+  const raw = value ?? ''
+  const clean = !props.allowSource || editorRef.value ? sanitize(raw) : ''
+  html.value = props.allowSource ? raw : clean
+  syncVisual(clean)
+}
+
+function syncVisual(clean: string) {
+  const editor = editorRef.value
+  if (editor && editor.innerHTML !== clean) {
+    editor.innerHTML = clean
     savedSelection = null
   }
 }
-watch(() => props.modelValue, syncModel, {immediate: true})
+
+watch([() => props.modelValue, () => props.allowSource], ([value, allowSource]) => {
+  if (!allowSource) setSourceMode(false)
+  syncModel(value)
+}, {immediate: true})
+watch(editorRef, editor => {
+  if (editor) syncVisual(sanitize(html.value))
+}, {flush: 'post'})
+
+function setSourceMode(active: boolean) {
+  if (sourceMode.value === active || (active && (!props.allowSource || isDisabled.value))) return
+  sourceMode.value = active
+  focused.value = false
+  savedSelection = null
+}
 
 function isBlocked() {
-  // VInput's validation classes also reflect inherited VForm state.
-  const classes = inputRef.value?.$el?.classList
-  return props.readonly || props.disabled || classes?.contains('v-input--readonly') ||
-    classes?.contains('v-input--disabled')
+  return isReadonly.value || isDisabled.value
 }
 
 function focusEditor() {
-  if (!props.disabled && !inputRef.value?.$el?.classList.contains('v-input--disabled')) {
-    editorRef.value?.focus()
-  }
+  if (isDisabled.value) return
+  if (sourceMode.value) sourceRef.value?.focus()
+  else editorRef.value?.focus()
 }
 
 function saveEditorSelection() {
@@ -147,7 +184,8 @@ function onInput() {
   }
   const text = editor.innerText ?? editor.textContent ?? ''
   // Browsers leave <br> or empty blocks behind after deleting the last character.
-  html.value = text.replace(/\u00a0/g, ' ').trim() || editor.querySelector('hr, table') ? clean : ''
+  const nonTextContent = editor.querySelector(props.allowSource ? 'hr, table, img' : 'hr, table')
+  html.value = text.replace(/\u00a0/g, ' ').trim() || nonTextContent ? clean : ''
   emit('update:modelValue', html.value)
   emit('update:text', text)
   emit('touched', true)
@@ -202,11 +240,24 @@ function onPaste(event: ClipboardEvent) {
 }
 
 function clear() {
-  if (isBlocked() || !editorRef.value) return
-  editorRef.value.innerHTML = ''
-  savedSelection = null
-  onInput()
+  if (isBlocked()) return
+  if (sourceMode.value) {
+    onSourceInput('')
+  } else if (editorRef.value) {
+    syncVisual('')
+    onInput()
+  }
   focusEditor()
+}
+
+function onSourceInput(value: string | null) {
+  if (isBlocked()) return
+  html.value = value ?? ''
+  const content = document.createElement('template')
+  content.innerHTML = sanitize(html.value)
+  emit('update:modelValue', html.value)
+  emit('update:text', content.content.textContent ?? '')
+  emit('touched', true)
 }
 
 function onValidationModelUpdate(value: string | null) {
@@ -235,8 +286,8 @@ defineExpose({focus: focusEditor, focusEditor, applyFormat, clear})
 
 <template>
   <VInput
-    ref="inputRef"
     class="html-editor"
+    :class="{'html-editor--email': allowSource}"
     :model-value="html"
     :name="name"
     :label="label"
@@ -262,7 +313,30 @@ defineExpose({focus: focusEditor, focusEditor, applyFormat, clear})
         <label v-if="label" :id="`${id.value}-label`" :for="id.value" class="html-editor__label" :class="{'html-editor__label--single': singleLine}">
           {{ label }}
         </label>
-        <div class="html-editor__toolbar" role="toolbar" aria-label="Formato de texto" @pointerdown.capture="saveEditorSelection" @focusin="saveEditorSelection">
+        <div v-if="allowSource" class="html-editor__toolbar" role="group" aria-label="Modo de edición HTML">
+          <VBtn type="button" size="small" :variant="sourceMode ? 'text' : 'tonal'" :aria-pressed="!sourceMode"
+            :aria-controls="id.value" :disabled="isDisabled.value" @click="setSourceMode(false)">
+            Visual
+          </VBtn>
+          <VBtn type="button" size="small" :variant="sourceMode ? 'tonal' : 'text'" :aria-pressed="sourceMode"
+            :aria-controls="id.value" :disabled="isDisabled.value" @click="setSourceMode(true)">
+            Código HTML
+          </VBtn>
+        </div>
+        <SourceField v-if="sourceMode">
+          <VTextarea
+            :id="id.value" ref="sourceRef" :model-value="html" :rows="rows" :density="density"
+            variant="plain" hide-details :clearable="clearable && !isReadonly.value" :clear-icon="clearIcon"
+            :prepend-inner-icon="prependInnerIcon" :append-inner-icon="appendInnerIcon"
+            :readonly="isReadonly.value" :disabled="isDisabled.value"
+            :placeholder="placeholder" :persistent-placeholder="persistentPlaceholder"
+            :error="isValid.value === false" :aria-invalid="isValid.value === false" :aria-describedby="messagesId.value"
+            :aria-labelledby="label ? `${id.value}-label` : undefined"
+            :aria-label="label ? undefined : 'Código HTML'"
+            @update:model-value="onSourceInput" @update:focused="$event ? focused = true : onBlur()"
+          />
+        </SourceField>
+        <div v-if="!sourceMode" class="html-editor__toolbar" role="toolbar" aria-label="Formato de texto" @pointerdown.capture="saveEditorSelection" @focusin="saveEditorSelection">
           <VBtn
             v-for="item in commands" :key="item.command"
             :icon="item.icon" :title="item.title" :aria-label="item.title"
@@ -279,7 +353,7 @@ defineExpose({focus: focusEditor, focusEditor, applyFormat, clear})
           </select>
           <input type="color" aria-label="Color de texto" title="Color de texto" :disabled="isDisabled.value || isReadonly.value" @change="applyFormat('foreColor', ($event.target as HTMLInputElement).value)">
         </div>
-        <div class="html-editor__content">
+        <div v-if="!sourceMode" class="html-editor__content">
           <VIcon v-if="prependInnerIcon" :icon="prependInnerIcon" class="html-editor__inner-icon" />
           <div
             :id="id.value" ref="editorRef" class="html-editor__body"
@@ -333,6 +407,8 @@ defineExpose({focus: focusEditor, focusEditor, applyFormat, clear})
 .html-editor.v-input--density-comfortable .html-editor__body { padding: 10px; }
 .html-editor__body :deep(ul), .html-editor__body :deep(ol) { padding-left: 24px; }
 .html-editor__body :deep(blockquote) { border-left: 3px solid rgba(var(--v-theme-on-surface), .3); padding-left: 12px; margin: 8px 0; }
-.html-editor__body :deep(table) { border-collapse: collapse; max-width: 100%; }
-.html-editor__body :deep(td), .html-editor__body :deep(th) { border: 1px solid rgba(var(--v-theme-on-surface), .25); padding: 4px 8px; }
+.html-editor--email .html-editor__body { white-space: normal; }
+.html-editor:not(.html-editor--email) .html-editor__body :deep(table) { border-collapse: collapse; max-width: 100%; }
+.html-editor:not(.html-editor--email) .html-editor__body :deep(td),
+.html-editor:not(.html-editor--email) .html-editor__body :deep(th) { border: 1px solid rgba(var(--v-theme-on-surface), .25); padding: 4px 8px; }
 </style>
