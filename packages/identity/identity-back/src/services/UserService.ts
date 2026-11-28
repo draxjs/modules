@@ -21,6 +21,9 @@ import RefreshTokenServiceFactory from "../factory/RefreshTokenServiceFactory.js
 import TenantServiceFactory from "../factory/TenantServiceFactory.js";
 import UserVerificationService from './UserVerificationService.js';
 import {userSecretFields} from '../utils/UserSecrets.js';
+import LdapService, {type LdapIdentity} from './LdapService.js';
+import RoleServiceFactory from '../factory/RoleServiceFactory.js';
+import {ldapConfig, ldapEnabled} from '../config/LdapConfig.js';
 
 class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
@@ -30,7 +33,8 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         userRepository: IUserRepository,
         private readonly passwordPolicyService: PasswordPolicyService = PasswordPolicyServiceFactory(),
         private readonly userPasswordHistoryService: UserPasswordHistoryService = UserPasswordHistoryServiceFactory(),
-        private refreshTokenService?: RefreshTokenService
+        private refreshTokenService?: RefreshTokenService,
+        private readonly ldapService: LdapService = new LdapService()
     ) {
         super(userRepository, UserBaseSchema);
         this._repository = userRepository;
@@ -51,8 +55,21 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
     async auth(username: string, password: string, {userAgent, ip}, rememberMe: boolean = false) {
         let user = null
-        user = await this.findByUsernameWithPassword(username)
-        if (user && user.active && AuthUtils.checkPassword(password, user.password)) {
+        if (typeof username === 'string' && typeof password === 'string' && username.trim() && password.trim()) {
+            user = await this.findByUsernameWithPassword(username)
+            if ((!user || (user.origin === 'LDAP' && user.active)) && ldapEnabled()) {
+                try {
+                    const identity = await this.ldapService.authenticate(username, password);
+                    user = await this.resolveLdapUser(identity);
+                } catch (error) {
+                    if (!(error instanceof BadCredentialsError)) throw error;
+                    user = null;
+                }
+            } else if (!user || user.origin === 'LDAP' || !user.active || !AuthUtils.checkPassword(password, user.password)) {
+                user = null;
+            }
+        }
+        if (user && user.active) {
 
             const {sessionUUID, ...refresh} = await this.generateSession(user, userAgent, ip, rememberMe);
 
@@ -81,6 +98,40 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
     }
 
+    private async resolveLdapUser(identity: LdapIdentity): Promise<IUser> {
+        const existing = await this.findByUsernameWithPassword(identity.username);
+        if (existing) {
+            if (existing.origin !== 'LDAP' || !existing.active || existing.ldapDn !== identity.dn) {
+                throw new BadCredentialsError();
+            }
+            return existing;
+        }
+        if (identity.groupName === null) throw new BadCredentialsError();
+        const roleName = identity.groupName ?? ldapConfig().defaultRole;
+        if (!roleName) throw new BadCredentialsError();
+        const role = await RoleServiceFactory().findByName(roleName);
+        if (!role) throw new BadCredentialsError();
+        const data: IUserCreate = {
+            name: identity.name,
+            username: identity.username,
+            email: identity.email,
+            active: true,
+            role: role._id.toString(),
+            phone: '',
+            origin: 'LDAP',
+            ldapDn: identity.dn
+        };
+        if (!UserBaseSchema.safeParse(data).success) throw new BadCredentialsError();
+        try {
+            return await this._repository.create(data);
+        } catch (error) {
+            const concurrent = await this.findByUsernameWithPassword(identity.username);
+            if (concurrent?.origin === 'LDAP' && concurrent.active && concurrent.ldapDn === identity.dn) return concurrent;
+            if (error instanceof ValidationError || (error as {code?: number})?.code === 11000) throw new BadCredentialsError();
+            throw error;
+        }
+    }
+
     private async generateSession(user, userAgent, ip, rememberMe: boolean = false) {
         const sessionUUID = randomUUID()
         const refresh: {refreshToken?: string, refreshExpiresAt?: string} = rememberMe === true && RefreshTokenService.enabled()
@@ -104,6 +155,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     /** Server-only: call only after verifying a trusted external identity, never an unverified email. */
     async authByEmail(email: string, createIfNotFound: boolean = false, userData: IUserCreate, {userAgent, ip}, rememberMe: boolean = false) {
         let user = await this.findByEmail(email)
+        if (user?.origin === 'LDAP') throw new BadCredentialsError();
 
         if (!user && createIfNotFound) {
             userData.password = userData.password ? userData.password : await this.passwordPolicyService.generateCompatiblePassword()
@@ -140,7 +192,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
     async changeUserPassword(userId: string, newPassword: string):Promise<IUser> {
         const user = await this._repository.findByIdWithPassword(userId)
-        if (user) {
+        if (user && user.origin !== 'LDAP') {
             await this.passwordPolicyService.validatePassword(newPassword,  {
                 field: 'newPassword',
                 userId,
@@ -159,7 +211,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
     async changeOwnPassword(userId: string, currentPassword: string, newPassword: string): Promise<IUser> {
         const user = await this._repository.findByIdWithPassword(userId)
-        if (user && user.active) {
+        if (user && user.active && user.origin !== 'LDAP') {
 
             if (currentPassword === newPassword) {
                 throw new ValidationError([{field: 'newPassword', reason: 'validation.password.currentDifferent'}])
@@ -199,7 +251,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         try{
             const recoveryCode = randomUUID()
             const user = await this._repository.findByEmail(email)
-            if(user && user.active){
+            if(user && user.active && user.origin !== 'LDAP'){
                 await this._repository.updatePartial(user._id, {recoveryCode: recoveryCode})
                 return recoveryCode
             }else{
@@ -214,7 +266,7 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
     async changeUserPasswordByCode(recoveryCode: string, newPassword: string): Promise<IUser> {
         try {
             const user = await this._repository.findByRecoveryCode(recoveryCode)
-            if (user && user.active) {
+            if (user && user.active && user.origin !== 'LDAP') {
                 await this.passwordPolicyService.validatePassword(newPassword, {
                     field: 'newPassword',
                     userId: user._id.toString(),
@@ -310,9 +362,12 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
 
     async create(userData: IUserCreate): Promise<IUser> {
         try {
+            if (userData.origin === 'LDAP' || userData.ldapDn !== undefined) {
+                throw new ValidationError([{field: 'origin', reason: 'validation.invalid'}]);
+            }
             userData.name = userData?.name?.trim()
             userData.username = userData?.username.trim()
-            userData.password = userData?.password.trim()
+            userData.password = userData?.password?.trim()
             userData.tenant = userData.tenant === "" ? null : userData.tenant
 
             await UserCreateSchema.parseAsync(userData)
@@ -333,8 +388,25 @@ class UserService extends AbstractService<IUser, IUserCreate, IUserUpdate> {
         }
     }
 
+    private async protectLdapIdentity(id: string, userData: Partial<IUserUpdate>): Promise<void> {
+        const existing = await this.findById(id);
+        if (existing?.origin === 'LDAP' && userData.username !== undefined && userData.username !== existing.username) {
+            throw new ValidationError([{field: 'username', reason: 'validation.invalid'}]);
+        }
+        const protectedData = userData as Partial<IUserUpdate> & {origin?: string; ldapDn?: string};
+        delete protectedData.origin;
+        delete protectedData.ldapDn;
+        delete protectedData.password;
+    }
+
+    override async updatePartial(id: string, userData: IUserUpdate): Promise<IUser> {
+        await this.protectLdapIdentity(id, userData);
+        return super.updatePartial(id, userData);
+    }
+
     async update(id: string, userData: IUserUpdate) {
         try {
+            await this.protectLdapIdentity(id, userData);
             userData.name = userData?.name.trim()
             userData.username = userData?.username.trim()
             delete userData.password

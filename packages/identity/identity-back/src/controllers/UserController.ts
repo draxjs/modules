@@ -14,6 +14,7 @@ import RoleServiceFactory from "../factory/RoleServiceFactory.js";
 import UserService from "../services/UserService.js";
 import UserPermissions from "../permissions/UserPermissions.js";
 import BadCredentialsError from "../errors/BadCredentialsError.js";
+import LdapUnavailableError from "../errors/LdapUnavailableError.js";
 import {join} from "path";
 import {IdentityConfig} from "../config/IdentityConfig.js";
 import UserEmailService from "../services/UserEmailService.js";
@@ -90,11 +91,11 @@ class UserController extends AbstractFastifyController<IUser, IUserCreate, IUser
             this.onUserLoggedIn(request, user, session)
             return tokens
         } catch (e) {
-            console.error('/api/auth error', e)
-            if (e instanceof BadCredentialsError) {
+            if (e instanceof BadCredentialsError || e instanceof LdapUnavailableError) {
                 reply.code(e.statusCode)
                 return reply.send(e.body)
             }
+            console.error('/api/auth error', e)
             reply.code(500)
             reply.send({error: 'error.server'})
         }

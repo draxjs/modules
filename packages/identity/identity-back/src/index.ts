@@ -11,6 +11,7 @@ import UserPasswordHistoryServiceFactory from "./factory/UserPasswordHistoryServ
 
 import RoleService from "./services/RoleService.js";
 import UserService from "./services/UserService.js";
+import LdapService from './services/LdapService.js';
 import UserVerificationService from './services/UserVerificationService.js';
 import TenantService from "./services/TenantService.js";
 import PermissionService from "./services/PermissionService.js";
@@ -38,6 +39,7 @@ import {apiKeyMiddleware} from "./middleware/apiKeyMiddleware.js";
 import IdentityConfig from "./config/IdentityConfig.js";
 import PasswordPolicyConfig from "./config/PasswordPolicyConfig.js";
 import BadCredentialsError from "./errors/BadCredentialsError.js";
+import LdapUnavailableError from './errors/LdapUnavailableError.js';
 
 import CreateUserIfNotExist from "./setup/CreateUserIfNotExist.js";
 import CreateTenantIfNotExist from "./setup/CreateTenantIfNotExist.js";
@@ -115,7 +117,6 @@ export type {
 }
 
 export {
-
     //Schemas
     UserSchema,
     UserBaseSchema,
@@ -130,6 +131,7 @@ export {
 
     //Service
     UserService,
+    LdapService,
     UserVerificationService,
     RoleService,
     TenantService,
@@ -221,6 +223,7 @@ export {
 
     //Errors
     BadCredentialsError,
+    LdapUnavailableError,
     defaultPasswordPolicy,
     PasswordPolicySchema,
 

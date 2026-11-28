@@ -6,6 +6,7 @@ import type {IUserRepository} from '../interfaces/IUserRepository.js';
 import IdentityConfig from '../config/IdentityConfig.js';
 import BadCredentialsError from '../errors/BadCredentialsError.js';
 import AuthUtils from '../utils/AuthUtils.js';
+import {ldapEnabled} from '../config/LdapConfig.js';
 
 class RefreshTokenService {
     constructor(private repository: IRefreshTokenRepository, private users: IUserRepository) {}
@@ -23,8 +24,17 @@ class RefreshTokenService {
         return typeof value === 'string' && /^[A-Za-z0-9_-]{43}$/.test(value);
     }
 
+    private credentialFingerprint(user: IUser): string | undefined {
+        if (user.origin === 'LDAP') {
+            return ldapEnabled() && user.ldapDn ? this.hash(`LDAP:${user.ldapDn}`) : undefined;
+        }
+        return user.password ? this.hash(user.password) : undefined;
+    }
+
     async issue(user: IUser, session: string) {
         if (!RefreshTokenService.enabled()) throw new BadCredentialsError();
+        const fingerprint = this.credentialFingerprint(user);
+        if (!fingerprint) throw new BadCredentialsError();
         const configured = DraxConfig.getOrLoad(IdentityConfig.RefreshTokenTTLSeconds);
         const ttl = configured === undefined || configured === null || configured === '' ? 2592000 : Number(configured);
         const expiresAt = Date.now() + ttl * 1000;
@@ -34,8 +44,8 @@ class RefreshTokenService {
         const refreshToken = randomBytes(32).toString('base64url');
         await this.repository.create({
             tokenHash: this.hash(refreshToken), userId: user._id.toString(), session,
-            // Binding to the current password hash also covers password writes outside UserService.
-            passwordFingerprint: this.hash(user.password), expiresAt
+            // Local password changes or LDAP binding changes invalidate remembered sessions.
+            passwordFingerprint: fingerprint, expiresAt
         });
         return {refreshToken, refreshExpiresAt: new Date(expiresAt).toISOString()};
     }
@@ -46,7 +56,7 @@ class RefreshTokenService {
         const record = await this.repository.find(tokenHash);
         if (!record || record.expiresAt <= Date.now()) throw new BadCredentialsError();
         const user = await this.users.findByIdWithPassword(record.userId);
-        if (!user || !user.active || !user.role?._id || !user.password || this.hash(user.password) !== record.passwordFingerprint) {
+        if (!user || !user.active || !user.role?._id || this.credentialFingerprint(user) !== record.passwordFingerprint) {
             await this.repository.revoke(tokenHash);
             throw new BadCredentialsError();
         }
